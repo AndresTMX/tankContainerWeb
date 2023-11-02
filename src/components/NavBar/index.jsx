@@ -22,7 +22,10 @@ const pages = [
     { to: '/calidad', text: 'Calidad' },
     { to: '/lavado', text: 'Lavado' },
 ];
-const settings = ['Perfil', 'Cuenta', 'Cerrar sesión'];
+const settings = [
+    {to:'/perfil', text:'Perfil'},
+    {to:'/login', text:'Cerrar Sesión'},
+];
 
 function NavBar() {
 
@@ -177,8 +180,21 @@ function NavBar() {
                             onClose={handleCloseUserMenu}
                         >
                             {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center">{setting}</Typography>
+                                <MenuItem key={setting.text} onClick={handleCloseUserMenu}>
+                                    <NavLink
+                                        className='link'
+                                        style={({ isActive }) => ({
+                                            textDecoration: 'none',
+                                            marginLeft: '25px',
+                                            marginRigth: '25px',
+                                            color: isActive ? "#025E73" : "gray",
+                                            fontWeight: isActive ? 600 : 400,
+                                            fontSize: isActive ? '18px' : '16px'
+                                        })}
+                                        to={setting.to}
+                                    >
+                                        {setting.text}
+                                    </NavLink>
                                 </MenuItem>
                             ))}
                         </Menu>

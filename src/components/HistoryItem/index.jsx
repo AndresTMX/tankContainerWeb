@@ -32,7 +32,8 @@ function HistoryItem({hora, linea, tracto, tipo, tanque, operador, celular, firm
             justifyContent:'space-between',
             backgroundColor:'whitesmoke',
             padding:'20px',
-            borderRadius:'4px'
+            borderRadius:'4px',
+            minWidth:'300px'
         }}>
             <Stack flexDirection='row' alignItems='center' gap='10px'>
             <Chip color={tipo === 'Entrada'? 'success':'warning'} label={tipo}/>

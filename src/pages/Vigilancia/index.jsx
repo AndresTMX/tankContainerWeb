@@ -116,13 +116,16 @@ function Vigilancia() {
                 alignItems:'center',
                 gap:'15px',
                 backgroundColor:'whitesmoke',
-                width:'auto',
+                width:'90vw',
+                maxWidth:'400px',
+                minWidth:'300px',
                 padding:'20px',
                 borderRadius:'4px'
             }}
             >
 
                 <SelectSimple
+                width={'100%'}
                 title={'Tipo de registro'}
                 value={typeMove}
                 options={['Entrada', 'Salida']}
@@ -130,6 +133,7 @@ function Vigilancia() {
                 />
 
                 <SelectSimple 
+                width={'100%'}
                 title={'Linea transportista'}
                 value={select}
                 options={listTransporters}
@@ -137,12 +141,14 @@ function Vigilancia() {
                 />
 
                 <InputText 
+                width={'100%'}
                 label='Numero de tracto'
                 value={tracto}
                 onChangue={handleChangeTracto}
                 />
 
                 <SelectSimple
+                width={'100%'}
                 title={'Operador'}
                 value={operator}
                 options={listOperators}

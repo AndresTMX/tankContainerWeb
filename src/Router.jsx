@@ -2,9 +2,14 @@
 import { HashRouter, Routes, Route } from "react-router-dom"
 import { UI } from "./UI"
 import { Login } from "./pages/Login"
+import { Perfil } from "./pages/Perfil"
 import { Vigilancia } from "./pages/Vigilancia"
-import { ErrorPage } from "./pages/Error"
 import { Maniobras } from "./pages/Maniobras"
+import { Reparaciones } from "./pages/Reparaciones"
+import { Prelavado } from "./pages/Prelavado"
+import { Calidad } from "./pages/Calidad"
+import { Lavado } from "./pages/Lavado"
+import { ErrorPage } from "./pages/Error"
 //theme material ui
 import { ThemeProvider ,createTheme } from '@mui/material/styles';
 
@@ -34,6 +39,15 @@ function Router() {
         />
 
         <Route
+        path="/perfil"
+        element={
+          <UI>
+            <Perfil/>
+          </UI>
+        }
+        />
+
+        <Route
         path="/vigilancia"
         element={
           <UI>
@@ -47,6 +61,42 @@ function Router() {
         element={
           <UI>
             <Maniobras/>
+          </UI>
+        }
+        />
+
+        <Route
+        path="/reparaciones"
+        element={
+          <UI>
+            <Reparaciones/>
+          </UI>
+        }
+        />
+
+        <Route
+        path="/prelavado"
+        element={
+          <UI>
+            <Prelavado/>
+          </UI>
+        }
+        />
+
+        <Route
+        path="/calidad"
+        element={
+          <UI>
+            <Calidad/>
+          </UI>
+        }
+        />
+
+        <Route
+        path="/lavado"
+        element={
+          <UI>
+            <Lavado/>
           </UI>
         }
         />

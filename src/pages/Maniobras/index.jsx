@@ -120,7 +120,7 @@ function Maniobras() {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
-                minHeight: '80vh'
+                minHeight: '80vh',
             }}>
 
                 {!tank &&
@@ -146,9 +146,9 @@ function Maniobras() {
                                             celular={item.celular}
                                         >
                                             <Button
-                                            size="small"
+                                                size="small"
                                                 variant="contained"
-                                                key={index}
+                                                key={item.contenedor}
                                                 onClick={() => selectTank(index)}
                                             >Checklist</Button>
                                         </HistoryItem>
@@ -169,7 +169,7 @@ function Maniobras() {
                 sx={{
                     display:'flex',
                     flexDirection:'column',
-                    gap:'10px'
+                    gap:'10px',
                 }}
                 >
                     <h3>Check list de inspección</h3>
@@ -181,6 +181,7 @@ function Maniobras() {
                      operador={tank.operador}
                      celular={tank.celular}
                      action={discardTank}
+                     submit={() => {}}
                     />
                     <CheckList
                         listInputs={listCheck}

@@ -10,6 +10,7 @@ function UI({children}) {
             display:'flex',
             flexDirection:'column',
             justifyContent:'center',
+            paddingBottom:'50px',
         }}
         >
             {children}

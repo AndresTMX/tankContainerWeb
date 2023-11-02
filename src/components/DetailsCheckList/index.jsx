@@ -1,20 +1,24 @@
 import { useState } from "react";
-import { Box, Chip, Stack, Button, IconButton, Typography, Modal, Paper, Divider } from "@mui/material";
+import { Box, Chip, Stack, Button, IconButton, Typography, Modal, Paper, Divider, Fade } from "@mui/material";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-function DetailsCheckList({ hora, linea, tracto, tanque, operador, celular, action }) {
+function DetailsCheckList({ hora, linea, tracto, tanque, operador, celular, action, submit }) {
 
-    const IsSmall = useMediaQuery('(max-width:950px)');
     const IsExtraSmall = useMediaQuery('(max-width:750px)');
 
     const dateTransform = `${hora.$H}:${hora.$m}`
 
-    const [modal, setModal] = useState(false);
+    const [modal, setModal] = useState({modal1:false, modal2:false});
 
     const ToggleModal = () => {
-        setModal(!modal)
+        setModal({...modal, modal1: !modal.modal1})
+    }
+
+    const ShowModalWarning = () => {
+        setModal({...modal, modal2: !modal.modal2})
     }
 
     const ToggleAction = () => {
@@ -49,16 +53,24 @@ function DetailsCheckList({ hora, linea, tracto, tanque, operador, celular, acti
                         <ContactPhoneIcon />
                     </IconButton>
                     <Button
+                    onClick={ShowModalWarning}
+                    variant='contained'
+                    >
+                        Check
+                    </Button>
+                    <IconButton
                         variant="contained"
                         color='error'
                         onClick={ToggleAction}
-                    >Descartar</Button>
+                    >
+                        <DoDisturbIcon/>
+                    </IconButton>
                     </>}
                     <Stack flexDirection='row' flexWrap={IsExtraSmall? 'wrap' :'nowrap'} gap='10px' width={IsExtraSmall? '100%': 'auto'} >
                         <span>{linea}</span>
-                        <Divider orientation={IsSmall? 'horizontal' : 'vertical'} flexItem />
+                        <Divider orientation={'vertical'} flexItem />
                         <span>{tracto}</span>
-                        <Divider orientation={IsSmall? 'horizontal' : 'vertical'} flexItem />
+                        <Divider orientation={'vertical'} flexItem />
                         <span>{tanque}</span>
                     </Stack>
 
@@ -70,16 +82,24 @@ function DetailsCheckList({ hora, linea, tracto, tanque, operador, celular, acti
                         <ContactPhoneIcon />
                     </IconButton>
                     <Button
+                    variant='contained'
+                    onClick={ShowModalWarning}
+                    >
+                        Check
+                    </Button>
+                    <IconButton
                         variant="contained"
                         color='error'
                         onClick={ToggleAction}
-                    >Descartar</Button>
+                    >
+                        <DoDisturbIcon/>
+                    </IconButton>
                     </>}
                 </Box>
             </Paper>
 
             <Modal
-                open={modal}
+                open={modal.modal1}
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -89,6 +109,10 @@ function DetailsCheckList({ hora, linea, tracto, tanque, operador, celular, acti
 
                 }}
             >
+                <Fade
+                 in={modal.modal1}
+                 timeout={500}
+                >
                 <Box
                     sx={{
                         display: 'flex',
@@ -124,6 +148,64 @@ function DetailsCheckList({ hora, linea, tracto, tanque, operador, celular, acti
 
 
                 </Box>
+                </Fade>
+            </Modal>
+
+            <Modal
+                open={modal.modal2}
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'absolute',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+
+                }}
+            >
+                <Fade
+                in={modal.modal2}
+                timeout={500}
+                >
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '15px',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: 'white',
+                        width: 'auto',
+                        padding: '20px',
+                        borderRadius: '4px'
+                    }}
+                >
+                    <Typography variant="h6">¿Desea completar el check list?</Typography>
+                    
+                    <Stack 
+                    gap='10px'
+                    flexDirection={IsExtraSmall? 'column' : 'row'}>
+
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        color='primary'
+                        size="small"
+                        onClick={ShowModalWarning}>
+                        completar
+                    </Button>
+
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        color='error'
+                        size="small"
+                        onClick={ShowModalWarning}>
+                        cancelar
+                    </Button>
+                    </Stack>
+
+                </Box>
+                </Fade>
             </Modal>
         </>
     );
