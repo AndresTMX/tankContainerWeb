@@ -11,6 +11,7 @@ function UI({children}) {
             flexDirection:'column',
             justifyContent:'center',
             paddingBottom:'50px',
+            msOverflowY:'hidden'
         }}
         >
             {children}

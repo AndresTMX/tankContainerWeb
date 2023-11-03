@@ -7,6 +7,7 @@ import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
 function HistoryItem({hora, linea, tracto, tipo, tanque, operador, celular, firma, children}) {
 
     const IsSmall = useMediaQuery('(max-width:840px)');
+    const IsExtraSmall = useMediaQuery('(max-width:450px)');
 
     const dayTransform = `${hora.$D}/${hora.$H}/${hora.$y}`
 
@@ -35,26 +36,31 @@ function HistoryItem({hora, linea, tracto, tipo, tanque, operador, celular, firm
             borderRadius:'4px',
             minWidth:'300px'
         }}>
-            <Stack flexDirection='row' alignItems='center' gap='10px'>
-            <Chip color={tipo === 'Entrada'? 'success':'warning'} label={tipo}/>
+            <Stack flexDirection='row' alignItems='center'>
+            {/* <Chip color={tipo === 'Entrada'? 'success':'warning'} label={tipo}/> */}
             <Chip color='info' label={dateTransform} icon={<AccessTimeIcon/>} sx={{fontWeight:500, paddingRight:'2px'}}/>
             </Stack>
 
             <Stack 
             width={IsSmall? 'auto': '400px'}
-            flexDirection={IsSmall? 'column' : 'row'} 
-            justifyContent={IsSmall? 'flex-start' : 'space-between'}
+            flexDirection={IsExtraSmall? 'column' : 'row'} 
+            justifyContent={IsExtraSmall? 'flex-start' : 'space-around'}
             alignItems={IsSmall? 'start':'center'} 
             gap='10px'>
             <span>{linea}</span>
-            <Divider orientation={IsSmall? 'horizontal' : 'vertical'} flexItem />
+            <Divider orientation={IsExtraSmall? 'horizontal' : 'vertical'} flexItem />
             <span>{tracto}</span>
-            <Divider orientation={IsSmall? 'horizontal' : 'vertical'} flexItem />
+            <Divider orientation={IsExtraSmall? 'horizontal' : 'vertical'} flexItem />
             <span>{tanque}</span>
-            <Divider orientation={IsSmall? 'horizontal' : 'vertical'} flexItem />
+            {!IsSmall && <Divider orientation='vertical' flexItem />}
             </Stack>
 
-            <Stack flexDirection={IsSmall? 'column':'row'} width={IsSmall? '100%' : '30%'} alignItems={IsSmall? 'start': 'center'} justifyContent='space-between' gap='10px'>
+            <Stack 
+            flexDirection={IsSmall? 'column':'row'} 
+            width={IsSmall? '100%' : '300px'} 
+            alignItems={IsSmall? 'start': 'center'} 
+            justifyContent='space-between' 
+            gap='10px'>
             <span>{shortName}</span>
             <Stack flexDirection='row'>
                 {children}

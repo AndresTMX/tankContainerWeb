@@ -4,14 +4,12 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import { NavLink } from 'react-router-dom';
 
 const pages = [
@@ -24,7 +22,7 @@ const pages = [
 ];
 const settings = [
     {to:'/perfil', text:'Perfil'},
-    {to:'/login', text:'Cerrar Sesión'},
+    {to:'/', text:'Cerrar Sesión'},
 ];
 
 function NavBar() {
@@ -112,7 +110,7 @@ function NavBar() {
                                             fontSize:isActive? '18px' : '16px'
                                         })}
                                         to={page.to}
-                                        key={index}
+                                        key={page.text}
                                     >
                                         {page.text}
                                     </NavLink>

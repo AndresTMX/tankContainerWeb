@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Container, Box, Stack, Button, Fade } from "@mui/material";
+import { Container, Box, Stack, Button, Fade, Paper } from "@mui/material";
 import { CheckList } from "../../components/Checklist";
 import { useCheckList } from "../../Hooks/useChecklist";
 import { DetailsCheckList } from "../../components/DetailsCheckList";
@@ -130,32 +130,34 @@ function Maniobras() {
 
 
                         <Box>
-                            <h3>Contenedores en cola</h3>
+                                <h1>Contenedores en cola de revisión</h1>
+                            <Paper elevation={4} sx={{padding:'20px'}}>
 
-                            <Stack spacing='5px'>
-                                {
-                                    filterHistory.map((item, index) => (
-                                        <HistoryItem
-                                            key={index}
-                                            hora={item.hora}
-                                            linea={item.linea}
-                                            tracto={item.tracto}
-                                            tipo={item.tipo}
-                                            tanque={item.tanque}
-                                            operador={item.operador}
-                                            celular={item.celular}
-                                        >
-                                            <Button
-                                                size="small"
-                                                variant="contained"
-                                                key={item.contenedor}
-                                                onClick={() => selectTank(index)}
-                                            >Checklist</Button>
-                                        </HistoryItem>
-                                    ))
-                                }
-                            </Stack>
+                                <Stack spacing='5px'>
+                                    {
+                                        filterHistory.map((item, index) => (
+                                            <HistoryItem
+                                                key={index}
+                                                hora={item.hora}
+                                                linea={item.linea}
+                                                tracto={item.tracto}
+                                                tipo={item.tipo}
+                                                tanque={item.tanque}
+                                                operador={item.operador}
+                                                celular={item.celular}
+                                            >
+                                                <Button
+                                                    size="small"
+                                                    variant="contained"
+                                                    key={item.contenedor}
+                                                    onClick={() => selectTank(index)}
+                                                >Checklist</Button>
+                                            </HistoryItem>
+                                        ))
+                                    }
+                                </Stack>
 
+                            </Paper>
                         </Box>
                     </Fade>
                 }

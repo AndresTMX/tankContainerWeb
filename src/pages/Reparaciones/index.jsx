@@ -2,11 +2,16 @@
 import { useState } from "react";
 //imports materialui
 import { Container, Box, Tabs, Tab, Button, Stack, Fade, Paper, Divider } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { MaintenancesItem } from "../../components/MaintenancesITem";
 import { currentDate } from "../../Helpers/date";
 
 function Reparaciones() {
+
+    const IsSmall = useMediaQuery('(max-width:900px)')
+    const IsExtraSmall = useMediaQuery('(max-width:450px)');
+
 
     const [tab, setTab] = useState(0);
 
@@ -80,10 +85,16 @@ function Reparaciones() {
             alignItems:'center',
             justifyContent:'center',
             width:'100%',
+            overflow:'hidden'
         }}
         >
 
-             <Tabs value={tab} onChange={ToggleTab} >
+             <Tabs 
+             value={tab}
+              onChange={ToggleTab}
+              variant={IsSmall? "scrollable": ''}
+              scrollButtons="auto"
+              >
                 <Tab label="Reparaciones Pendientes"  />
                 <Tab label="Reparaciones En Proceso"  />
                 <Tab label="Reparaciones Realizadas" />
@@ -97,7 +108,7 @@ function Reparaciones() {
                     <Paper 
                     elevation={4}
                     sx={{
-                        padding:'20px'
+                        padding:IsExtraSmall? '10px' : '20px',
                     }}
                     >
                         <Stack gap='10px'>

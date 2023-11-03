@@ -2,6 +2,7 @@ import '../../main.css'
 import { useState, useEffect } from "react";
 import { Container, Box, Paper, Button, Typography, Fade } from "@mui/material";
 import { InputText } from "../../components/InputText";
+import { NavLink } from 'react-router-dom';
 
 function Login() {
     
@@ -10,7 +11,7 @@ function Login() {
     useEffect(() => {
         setTimeout(() => {
             setAnimate(true)
-        },500)
+        },400)
     }, [])
 
 
@@ -80,13 +81,19 @@ function Login() {
                                 value={user.password}
                             />
 
-                            <Button
+                            <NavLink 
+                            to='/vigilancia'
+                            style={{width:'100%'}}
+                            >
+                                 <Button
                                 fullWidth
                                 variant="contained"
                                 type="submit"
                             >
                                 Iniciar Sesión
                             </Button>
+                            </NavLink>
+                           
                         </Paper>
                     </form>
                     </Fade>

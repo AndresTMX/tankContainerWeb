@@ -11,7 +11,9 @@ function MaintenancesItem({maintance}) {
 
     const { hora, linea, tracto, tanque, operador, celular, status, tipo, date_end } = maintance;
 
-    const IsSmall = useMediaQuery('(max-width:840px)');
+    const IsSmall = useMediaQuery('(max-width:940px)');
+    const IsExtraSmall = useMediaQuery('(max-width:450px)');
+
 
     const dateTransform = `${hora.$H}:${hora.$m}`
 
@@ -35,11 +37,12 @@ function MaintenancesItem({maintance}) {
         sx={{
             display:'flex',
             gap:'15px',
-            alignItems:'center',
-            flexDirection:'row',
+            alignItems:IsSmall? 'start' : 'center',
+            flexDirection:IsSmall? 'column' : 'row',
             backgroundColor:'whitesmoke',
             padding:'20px',
-            borderRadius:'4px'
+            borderRadius:'4px',
+            width: IsSmall? '100%' : 'auto',
         }}
         >
 
@@ -50,16 +53,16 @@ function MaintenancesItem({maintance}) {
             
             <Stack 
             width={IsSmall? 'auto': '400px'}
-            flexDirection={IsSmall? 'column' : 'row'} 
+            flexDirection={IsExtraSmall? 'column':'row'} 
             justifyContent={IsSmall? 'flex-start' : 'space-between'}
             alignItems={IsSmall? 'start':'center'} 
             gap='10px'>
             <span>{linea}</span>
-            <Divider orientation={IsSmall? 'horizontal' : 'vertical'} flexItem />
+            <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
             <span>{tracto}</span>
-            <Divider orientation={IsSmall? 'horizontal' : 'vertical'} flexItem />
+            <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
             <span>{tanque}</span>
-            <Divider orientation={IsSmall? 'horizontal' : 'vertical'} flexItem />
+            <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
             </Stack>
 
             <Stack flexDirection='row' alignItems='center' gap='10px'>
@@ -94,7 +97,13 @@ function MaintenancesItem({maintance}) {
 
             >
                 <Fade in={modal.modal1} timeout={500} >
-                    <Box>
+                    <Box 
+                    sx={{
+                        display:'flex',
+                        placeItems:'center',
+                        height:'100vh'
+                    }} 
+                    >
                         <Paper
                             elevation={4}
                             sx={{
@@ -164,7 +173,13 @@ function MaintenancesItem({maintance}) {
 
             >
                 <Fade in={modal.modal2} timeout={500} >
-                    <Box>
+                    <Box
+                    sx={{
+                        display:'flex',
+                        placeItems:'center',
+                        height:'100vh'
+                    }}
+                    >
                         <Paper
                             elevation={4}
                             sx={{

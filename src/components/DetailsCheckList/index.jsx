@@ -182,8 +182,11 @@ function DetailsCheckList({ hora, linea, tracto, tanque, operador, celular, acti
                     <Typography variant="h6">¿Desea completar el check list?</Typography>
                     
                     <Stack 
+                    width={'100%'}
                     gap='10px'
-                    flexDirection={IsExtraSmall? 'column' : 'row'}>
+                    flexDirection={'row'}
+                    justifyContent={'space-between'}
+                    >
 
                     <Button
                         fullWidth

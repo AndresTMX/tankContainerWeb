@@ -1,7 +1,7 @@
 //imports hooks
 import { useState } from "react";
 //imports materialui
-import { Container, Box, Tabs, Tab, Button, Stack, Fade } from "@mui/material";
+import { Container, Box, Tabs, Tab, Button, Stack, Fade, Typography, Paper } from "@mui/material";
 //import custom components
 import { SelectSimple } from "../../components/SelectSimple";
 import { InputText } from "../../components/InputText";
@@ -108,6 +108,8 @@ function Vigilancia() {
             timeout={500}
             in={tab === 0? true: false}
             >
+            <Container sx={{display:'flex', flexDirection:'column', gap:'20px'}}>
+                <Typography variant="h6">Formulario de registro</Typography>
             <Box
             sx={{
                 display:'flex',
@@ -158,6 +160,7 @@ function Vigilancia() {
                 <Button fullWidth variant="contained">Registrar</Button>             
                 
             </Box>
+            </Container>
             </Fade>
             </CustomTabPanel>
 
@@ -166,25 +169,30 @@ function Vigilancia() {
             timeout={500}
             in={tab === 1? true: false}
             >
-                <Box>
-                    <Stack spacing='5px'>
-                        {
-                            mockHistory.map((item, index) => (
-                                <HistoryItem
-                                key={index}
-                                hora={item.hora}
-                                linea={item.linea}
-                                tracto={item.tracto}
-                                tipo={item.tipo}
-                                tanque={item.tanque}
-                                operador={item.operador}
-                                celular={item.celular}
-                                />
-                            ))
-                        }
-                    </Stack>
-                </Box>
-                </Fade>
+                        <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                            <Typography variant="h6">Historial de registros</Typography>
+                            <Box>
+                                <Paper elevation={4} sx={{padding:'20px'}}>
+                                <Stack spacing='5px'>
+                                    {
+                                        mockHistory.map((item, index) => (
+                                            <HistoryItem
+                                                key={index}
+                                                hora={item.hora}
+                                                linea={item.linea}
+                                                tracto={item.tracto}
+                                                tipo={item.tipo}
+                                                tanque={item.tanque}
+                                                operador={item.operador}
+                                                celular={item.celular}
+                                            />
+                                        ))
+                                    }
+                                </Stack>
+                                </Paper>
+                            </Box>
+                        </Container>
+            </Fade>
             </CustomTabPanel>
 
             
