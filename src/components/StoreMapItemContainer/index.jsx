@@ -29,7 +29,7 @@ function StoreMapItemContainer({ infoContainer }) {
 
     /*/
 
-    const [modal, setModal] = useState(false);
+    const [modal, setModal] = useState({modal1:false, modal2:false});
     const colorContainer = infoContainer.number != '' ? '#0092ba' : 'whitesmoke';
     const textContainer = infoContainer.number != '' ? infoContainer.number : '';
     const dateCheck = infoContainer.number != '' ? infoContainer.checkIn : false;
@@ -38,7 +38,11 @@ function StoreMapItemContainer({ infoContainer }) {
     const totalRepairs = dateCheck ? infoContainer.repairs.intern + infoContainer.repairs.extern : false;
 
     const ToggleModal = () => {
-        setModal(!modal)
+        if(textContainer != ''){
+            setModal({...modal, modal1: !modal.modal1})
+        }else{
+            setModal({...modal, modal2: !modal.modal2})
+        }
     }
 
     return (
@@ -50,52 +54,78 @@ function StoreMapItemContainer({ infoContainer }) {
                 </IconButton>
             </Paper>
 
-            <Modal open={modal}>
-                <Fade in={modal} timeout={500}>
-                    <Container sx={{display:'flex', justifyContent:'center', alignItems:'center', height:'100%', width:'100%'}}>
+            <Modal open={modal.modal1}>
+                <Fade in={modal.modal1} timeout={500}>
+                    <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%' }}>
                         <Box>
-                            <Paper sx={{ display:'flex', padding:'20px', gap:'10px', flexDirection:'column'}}>
+                            <Paper sx={{ display: 'flex', padding: '20px', gap: '10px', flexDirection: 'column' }}>
                                 <Typography variant="h6">
-                                    {textContainer != '' ? `Detalles del contendor ${textContainer}` : 'Espacio disponible'}
+                                    {`Detalles del contendor ${textContainer}`}
                                 </Typography>
 
-                                {dateCheck && <Box>
-                                    <Stack>
-                                        <strong>Line de contenedor</strong>
-                                        <span>{infoContainer.line}</span>
+                                <Stack flexDirection='row' alignItems='center' gap='10px'>
+                                    <Stack flexDirection='row' gap='5px'>
+                                        <strong>Bloque: </strong>
+                                        <span>{infoContainer.location.block}</span>
+                                    </Stack>
+                                    <Stack flexDirection='row' gap='5px'>
+                                        <strong>Número: </strong>
+                                        <span>{infoContainer.location.position}</span>
+                                    </Stack>
+                                </Stack>
+
+                                <Stack>
+                                    <strong>Linea de contenedor</strong>
+                                    <span>{infoContainer.line}</span>
+                                </Stack>
+
+                                <Stack>
+                                    <strong>Almacenado desde</strong>
+                                    <span>{dayTransform}</span>
+                                </Stack>
+
+                                <strong>Reparaciones</strong>
+                                <Stack flexDirection='row' justifyContent='space-around'>
+                                    <Stack flexDirection='column' gap='4px' alignItems='center'>
+                                        <strong>Internas</strong>
+                                        <span>{infoContainer.repairs.intern}</span>
                                     </Stack>
 
-                                    <Stack>
-                                        <strong>Almacenado desde</strong>
-                                        <span>{dayTransform}</span>
+                                    <Stack flexDirection='column' gap='4px' alignItems='center'>
+                                        <strong>Externas</strong>
+                                        <span>{infoContainer.repairs.extern}</span>
                                     </Stack>
 
-                                    <Stack flexDirection='column' justifyContent='space-around'>
-                                        <strong>Reparaciones</strong>
-                                        <Stack flexDirection='row' justifyContent='space-between'>
-                                            <span>Internas</span>
-                                            <span>Externas</span>
-                                            <span>Totales</span>
-                                        </Stack>
-
-                                        <Stack flexDirection='row' justifyContent='space-between'>
-                                            <span>{infoContainer.repairs.intern}</span>
-                                            <span>{infoContainer.repairs.extern}</span>
-                                            <span>{totalRepairs}</span>
-                                        </Stack>
-
+                                    <Stack flexDirection='column' gap='4px' alignItems='center'>                                        
+                                        <strong>Totales</strong>
+                                        <span>{totalRepairs}</span>
                                     </Stack>
 
-                                    <Stack spacing='0'>
-                                        <strong>Ultima reparacion</strong>
-                                        <span>{infoContainer.last_reparation.type === 'inter'? 'Interna' : 'Externa'}</span>
-                                        <p>{infoContainer.last_reparation.description}</p>
-                                    </Stack>
+                                </Stack>
 
-                                </Box>}
+                                    <strong>Ultima reparacion</strong>
+                                <Stack flexDirection='row' gap='10px'>
+                                    <strong>Tipo:</strong>
+                                    <span>{infoContainer.last_reparation.type === 'inter' ? 'Interna' : 'Externa'}</span>
+                                </Stack>
 
-                                <Stack flexDirection='row' justifyContent={dateCheck? 'space-between': 'center'} gap='10px'>
-                                    {dateCheck && <Button fullWidth variant='contained' color='primary'>Lavar</Button>}
+                                <Stack spacing='5px'>
+                                    <strong>Comentarios</strong>
+                                    <p>{infoContainer.last_reparation.description}</p>
+                                </Stack>
+
+
+                                <Stack 
+                                flexDirection='row' 
+                                justifyContent={dateCheck ? 'space-between' : 'center'} 
+                                marginTop='10px'
+                                gap='10px'>
+                                    <Button
+                                        fullWidth
+                                        variant='contained'
+                                        color='primary'>
+                                        Lavar
+                                    </Button>
                                     <Button
                                         fullWidth
                                         onClick={ToggleModal}
@@ -110,6 +140,43 @@ function StoreMapItemContainer({ infoContainer }) {
                     </Container>
                 </Fade>
             </Modal>
+
+            <Modal open={modal.modal2}>
+                <Fade in={modal.modal2} timeout={500}>
+                    <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%' }}>
+                        <Box>
+                            <Paper sx={{ display: 'flex', padding: '20px', gap: '10px', flexDirection: 'column' }}>
+                                <Typography variant="h6">
+                                    Espacio disponible
+                                </Typography>
+
+                                <Stack flexDirection='row' alignItems='center' gap='10px'>
+                                    <Stack flexDirection='row' gap='5px'>
+                                        <strong>Bloque: </strong>
+                                        <span>{infoContainer.location.block}</span>
+                                    </Stack>
+                                    <Stack flexDirection='row' gap='5px'>
+                                        <strong>Número: </strong>
+                                        <span>{infoContainer.location.position}</span>
+                                    </Stack>
+                                </Stack>
+
+
+                                <Button
+                                    fullWidth
+                                    onClick={ToggleModal}
+                                    variant='contained'
+                                    color='error'>
+                                    Cerrar
+                                </Button>
+
+                            </Paper>
+                        </Box>
+                    </Container>
+                </Fade>
+            </Modal>
+
+
         </>
     );
 }

@@ -1,5 +1,7 @@
+import { useState } from "react";
 //imports materialui
 import { Container, Box, Tabs, Tab, Button, Stack, Fade, Paper, Divider } from "@mui/material";
+import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { StoreMap } from "../../components/StoreMap";
 import { currentDate } from "../../Helpers/date";
 function Prelavado() {
@@ -237,20 +239,55 @@ function Prelavado() {
       
    ]
 
+   const [tab, setTab] = useState(0)
+
+   const ToggleTab = (event, newValue) => {
+      setTab(newValue)
+   }
+
     return ( 
         <>
          <Container sx={{display:'flex', flexDirection:'column', gap:'20x', alignItems:'center'}}>
-            <h2>Contenedores en prelavado</h2>
-            <Box
-            sx={{
-               display:'flex',
-               placeItems:'center'
-            }}
-            >
-               <Paper elevation={4} sx={{padding:'10px'}}>
-                <StoreMap dataContainers={mockDataContainers}/>
-               </Paper>
-            </Box>
+
+            <Tabs value={tab} onChange={ToggleTab} >
+                <Tab label="Agenda de lavados"  />
+                <Tab label="Mapa de almacen" />
+            </Tabs>
+
+             <CustomTabPanel value={tab} index={0}>
+                <Container>
+                   <Fade in={tab} timeout={500}>
+                      <Box
+                         sx={{
+                            display: 'flex',
+                            placeItems: 'center'
+                         }}
+                      >
+                         <Paper elevation={4} sx={{ padding: '10px' }}>
+                           
+                         </Paper>
+                      </Box>
+                   </Fade>
+                </Container>
+             </CustomTabPanel>
+
+             <CustomTabPanel value={tab} index={1}>
+                <Container>
+                   <Fade in={tab} timeout={500}>
+                      <Box
+                         sx={{
+                            display: 'flex',
+                            placeItems: 'center'
+                         }}
+                      >
+                         <Paper elevation={4} sx={{ padding: '10px' }}>
+                            <StoreMap dataContainers={mockDataContainers} />
+                         </Paper>
+                      </Box>
+                   </Fade>
+                </Container>
+             </CustomTabPanel>
+
          </Container>
         </>
      );
