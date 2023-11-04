@@ -4,6 +4,8 @@ import { Container, Box, Tabs, Tab, Button, Stack, Fade, Paper, Divider } from "
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { StoreMap } from "../../components/StoreMap";
 import { currentDate } from "../../Helpers/date";
+//calendar experimental
+import { WashingAgend } from "../../components/WashingAgend";
 function Prelavado() {
 
    const mockDataContainers = [
@@ -240,9 +242,11 @@ function Prelavado() {
    ]
 
    const [tab, setTab] = useState(0)
+   const [fade, setFade] = useState(false)
 
    const ToggleTab = (event, newValue) => {
       setTab(newValue)
+      setFade(!fade)
    }
 
     return ( 
@@ -256,7 +260,7 @@ function Prelavado() {
 
              <CustomTabPanel value={tab} index={0}>
                 <Container>
-                   <Fade in={tab} timeout={500}>
+                   <Fade in={!fade} timeout={500}>
                       <Box
                          sx={{
                             display: 'flex',
@@ -264,7 +268,7 @@ function Prelavado() {
                          }}
                       >
                          <Paper elevation={4} sx={{ padding: '10px' }}>
-                           
+                           <WashingAgend/>
                          </Paper>
                       </Box>
                    </Fade>
@@ -273,7 +277,7 @@ function Prelavado() {
 
              <CustomTabPanel value={tab} index={1}>
                 <Container>
-                   <Fade in={tab} timeout={500}>
+                   <Fade in={fade} timeout={500}>
                       <Box
                          sx={{
                             display: 'flex',
