@@ -13,7 +13,6 @@ function HistoryItem({ data, children }) {
     const checkIn = data.checkIn;
     const linea = data.linea;
     const tracto = data.tracto;
-    const pipa = data.pipa;
     const tanques = data?.tanques;
     const operador =  data?.operador;
     const checkOut = data?.checkOut;
@@ -21,7 +20,7 @@ function HistoryItem({ data, children }) {
     const tanquesNum = tanques? tanques.length: 0;
     //tipo de carga
     const typeRegister =  checkOut === undefined? 'Entrada' : 'Salida';
-    const typeChargue = pipa != undefined? 'Pipa': 'Tanques';
+    const typeChargue = tanques? 'Tanques': 'Pipa';
     //fecha y hora de entrada formateada
     const dayInput = checkIn ? `${checkIn.$D}/${checkIn.$H}/${checkIn.$y}`:'00:00'
     const dateInput = checkIn ? `${checkIn.$H}:${checkIn.$m}`:'00:00'

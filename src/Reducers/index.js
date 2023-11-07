@@ -4,6 +4,8 @@ const initialState = {
     registers:mockRegisters,
     prelavado:[],
     reparacion:[],
+    notification:false,
+    loading:false,
 };
 
 //Use reducer que valida los objetos
@@ -19,6 +21,8 @@ const actionTypes = {
     setRegisters: 'SET_REGISTERS',
     setPrelavado: 'SET_PRELAVADO',
     setReparacion:'SET_REPARACION',
+    setNotification: 'SET_NOTIFICATION',
+    setLoading: 'SET_LOADING'
   
 }
 
@@ -36,6 +40,14 @@ const reducerObject = (state, payload) => ({
     [actionTypes.setReparacion]:{
         ...state,
         reparacion: payload
+    },
+    [actionTypes.setNotification]:{
+        ...state,
+        notification: payload
+    },
+    [actionTypes.setLoading]:{
+        ...state,
+        loading: payload
     },
 
 });

@@ -12,11 +12,16 @@ import { HistoryItem } from "../../components/HistoryItem";
 import { DevelopmentContext } from "../../Context";
 //hook
 import { useRegister } from "../../Hooks/useRegister";
+//notification
+import { Notification } from "../../components/Notification";
+//loader
+import {LoadingState} from "../../components/LoadingState";
 
 function Vigilancia() {
 
     const [state, dispatch] = useContext(DevelopmentContext);
-    const {addRegister, send} = useRegister(dispatch)
+    console.log("🚀 ~ file: index.jsx:23 ~ Vigilancia ~ state:", state)
+    const {addRegister } = useRegister()
 
     const {registers} = state
 
@@ -43,39 +48,18 @@ function Vigilancia() {
     const InputRegisters = state? registers.filter( (register) => register.checkOut === undefined ) : [];
     const ExitRegisters = state? registers.filter( (register) => register.checkOut != undefined ) : [];
 
-    const [modal, setModal] = useState({modal1:false, modal2:false})
+    const [modal, setModal] = useState(false)
     const [select, setSelet] = useState('');
     const [tracto, setTracto] = useState('');
     const [typeChargue, setTypeChargue] = useState('');
     const [operator, setOperator] = useState('')
     const [tab, setTab] = useState(0)
     const [numTank, setNumTank] = useState(0)
-    const [dataTank, setDataTank] = useState([
-        {
-            numTank1: '',
-        },
-        {
-            numTank2: '',
-        },
-        {
-            numTank3: '',
-        },
-        {
-            numTank4: '',
-        },
-    ])
+    const [dataTank, setDataTank] = useState({numTank1: '', numTank2: '', numTank3: '', numTank4: ''})
 
     const handleChangeList = (event) => {
         setSelet(event.target.value);
     };
-
-    const OnChangueDataTank = (event, index) => {
-        const update = dataTank[index] = event.target.value
-        setDataTank({
-            ...dataTank,
-            update
-        })
-    }
 
     const handleNumTank = (event) => {
         setNumTank(event.target.value)
@@ -99,20 +83,18 @@ function Vigilancia() {
 
     const ToggleModalRegister = (event) => {
         event.preventDefault();
-        setModal({...modal, modal1: true, modal2: false})
+        setModal(!modal)
     }
 
     const submitRegister = () => {
         const register = {select, tracto, typeChargue, operator, numTank, dataTank }
         addRegister(register)
-        setTimeout(() => {
-            setModal({...modal, modal1:!modal.modal1})
-        },1000)
+        CancelSubmit()
         
     }
 
     const CancelSubmit = () => {
-        setModal({...modal , modal1:!modal.modal1,})
+        setModal(!modal)
     }
 
     const clearInputs = () => {
@@ -206,7 +188,7 @@ function Vigilancia() {
                                         width='100%'
                                         label={'Tanque #1'}
                                         value={dataTank.numTank1}
-                                        onChangue={(event) => OnChangueDataTank(event, 0)}
+                                        onChangue={(event) => setDataTank({...dataTank, numTank1: event.target.value})}
                                     />
                                 )}
 
@@ -215,8 +197,9 @@ function Vigilancia() {
                                         required={true}
                                         width='100%'
                                         label={'Tanque #2'}
-                                        value={dataTank.numTank1}
-                                        onChangue={(event) => OnChangueDataTank(event, 1)}
+                                        value={dataTank.numTank2}
+                                        onChangue={(event) => setDataTank({...dataTank, numTank2: event.target.value})}
+
                                     />
                                 )}
 
@@ -225,8 +208,9 @@ function Vigilancia() {
                                         required={true}
                                         width='100%'
                                         label={'Tanque #3'}
-                                        value={dataTank.numTank1}
-                                        onChangue={(event) => OnChangueDataTank(event, 2)}
+                                        value={dataTank.numTank3}
+                                        onChangue={(event) => setDataTank({...dataTank, numTank3: event.target.value})}
+
                                     />
                                 )}
 
@@ -235,8 +219,9 @@ function Vigilancia() {
                                         required={true}
                                         width='100%'
                                         label={'Tanque #4'}
-                                        value={dataTank.numTank1}
-                                        onChangue={(event) => OnChangueDataTank(event, 3)}
+                                        value={dataTank.numTank4}
+                                        onChangue={(event) => setDataTank({...dataTank, numTank4: event.target.value})}
+
                                     />
                                 )}
 
@@ -332,15 +317,25 @@ function Vigilancia() {
 
             </Container>
 
-            <Modal open={modal.modal1}>
-                <Fade in={modal.modal1} timeout={500}>
+            <Modal open={modal}>
+                <Fade in={modal} timeout={500}>
                     <Container>
                         <Box sx={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100vh'}}>
                             <Paper sx={{display: 'flex', flexDirection:'column', padding:'20px', gap:'20px'}}>
                                 <Typography>¿Seguro que quiere enviar este registro?</Typography>
                                 <Stack flexDirection='row' justifyContent='space-between' gap='10px'>
-                                    <Button fullWidth variant="contained" color="primary" onClick={submitRegister}>Enviar</Button>
-                                    <Button fullWidth variant="contained" color="error" onClick={CancelSubmit}>Cancelar</Button>
+                                    <Button 
+                                    fullWidth 
+                                    variant="contained" 
+                                    color="primary" 
+                                    onClick={submitRegister}
+                                    >Enviar</Button>
+                                    <Button 
+                                    fullWidth 
+                                    variant="contained" 
+                                    color="error" on
+                                    onClick={CancelSubmit}>Can
+                                    celar</Button>
                                 </Stack>
 
                             </Paper>
@@ -349,22 +344,11 @@ function Vigilancia() {
                 </Fade>
             </Modal>
 
-            <Modal open={modal.modal2}>
-                <Fade in={modal.modal2} timeout={500}>
-                    <Container>
-                        <Box sx={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100vh'}}>
-                            <Paper sx={{display: 'flex', flexDirection:'column', padding:'20px', gap:'20px'}}>
-                                <Typography>Registro enviado</Typography>
+            <Notification/>
 
-                                <Button 
-                                fullWidth
-                                color='error'
-                                onClick={CancelSubmit}>Ok</Button>
-                            </Paper>
-                        </Box>
-                    </Container>
-                </Fade>
-            </Modal>
+            <LoadingState duration={1000}/>
+
+            
         </>
     );
 }

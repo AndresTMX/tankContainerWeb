@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Container, Box, Stack, Button, Fade, Paper, Typography } from "@mui/material";
 import { CheckList } from "../../components/Checklist";
 import { useCheckList } from "../../Hooks/useChecklist";
 import { DetailsCheckList } from "../../components/DetailsCheckList";
-import { currentDate } from "../../Helpers/date";
 import { HistoryItem } from "../../components/HistoryItem";
-//dataFake
-import { mockRegisters } from "../../dataFake";
+//context
+import { DevelopmentContext } from "../../Context";
 
 function Maniobras() {
+
+    const [state, dispatch] = useContext(DevelopmentContext);
+
+    const {registers} = state;
     
-    const filterHistory = mockRegisters.filter(item => item.checkOut === undefined)
+    const filterHistory = registers.filter(item => item.checkOut === undefined)
 
     //inicio del hook de checklist
     const mockListCheck = [
