@@ -1,6 +1,6 @@
 import { Checkbox, FormControlLabel } from "@mui/material";
 
-function InputCheck({value, onchangue, name}) {
+function InputCheck({value, onchangue, name }) {
     return ( 
         <>
          <FormControlLabel

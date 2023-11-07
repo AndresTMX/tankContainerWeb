@@ -3,7 +3,7 @@ import { TextField, FormControl, InputLabel, OutlinedInput, IconButton, InputAdo
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
-function InputText({ label, variant, value, onChangue, width, type }) {
+function InputText({ label, variant, value, onChangue, width, type, required }) {
 
     const [pass, setPass] = useState(false);
 
@@ -19,6 +19,7 @@ function InputText({ label, variant, value, onChangue, width, type }) {
 
             {type != 'password' &&
                 <TextField
+                    required={required}
                     type={type ? type : 'text'}
                     sx={{
                         width: width ? width : '200px'
@@ -32,6 +33,7 @@ function InputText({ label, variant, value, onChangue, width, type }) {
                 <FormControl sx={{ m: 1, width: width ? width : '200px' }} variant="outlined">
                     <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                     <OutlinedInput
+                        required={true}
                         id="outlined-adornment-password"
                         type={pass ? 'text' : 'password'}
                         endAdornment={

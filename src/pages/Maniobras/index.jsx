@@ -1,66 +1,31 @@
 import { useState } from "react";
-import { Container, Box, Stack, Button, Fade, Paper } from "@mui/material";
+import { Container, Box, Stack, Button, Fade, Paper, Typography } from "@mui/material";
 import { CheckList } from "../../components/Checklist";
 import { useCheckList } from "../../Hooks/useChecklist";
 import { DetailsCheckList } from "../../components/DetailsCheckList";
 import { currentDate } from "../../Helpers/date";
 import { HistoryItem } from "../../components/HistoryItem";
+//dataFake
+import { mockRegisters } from "../../dataFake";
 
 function Maniobras() {
-    //mockup history
-    const mockHistory = [
-        {
-            hora:currentDate,
-            linea:'Linea random',
-            tracto:'Un tracto chido',
-            tipo:'Salida',
-            tanque:'C-2356',
-            operador:'Juan Miguel Salazar Perez',
-            celular:'5577828470'
-        },
-        {
-            hora:currentDate,
-            linea:'Linea random2',
-            tracto:'Un tracto maso',
-            tipo:'Entrada',
-            tanque:'C-2352',
-            operador:'Lucas Ascencio Lopez',
-            celular:'5577828470'
-        },
-        {
-            hora:currentDate,
-            linea:'Linea random3',
-            tracto:'Un tracto ñe',
-            tipo:'Salida',
-            tanque:'C-8299',
-            operador:'Armando Mendoza Lopez',
-            celular:'5577828470'
-        },
-        {
-            hora:currentDate,
-            linea:'Linea random4',
-            tracto:'Un tracto bien',
-            tipo:'Entrada',
-            tanque:'C-2632',
-            operador:'Antonio Lopez De La Cruz',
-            celular:'5577828470'
-        },
-    ]
-
-    const filterHistory = mockHistory.filter(item => item.tipo === 'Entrada')
+    
+    const filterHistory = mockRegisters.filter(item => item.checkOut === undefined)
 
     //inicio del hook de checklist
     const mockListCheck = [
         {
             name: 'input 1',
-            value: false,
+            value: null,
+            value2: null,
             preview: '',
             image: '',
             coment: '',
         },
         {
             name: 'input 2',
-            value: false,
+            value: null,
+            value2: null,
             preview: '',
             image: '',
             coment: '',
@@ -68,7 +33,8 @@ function Maniobras() {
         },
         {
             name: 'input 3',
-            value: false,
+            value: null,
+            value2: null,
             preview: '',
             image: '',
             coment: '',
@@ -76,7 +42,8 @@ function Maniobras() {
         },
         {
             name: 'input 4',
-            value: false,
+            value: null,
+            value2: null,
             preview: '',
             image: '',
             coment: '',
@@ -84,28 +51,30 @@ function Maniobras() {
         },
         {
             name: 'input 5',
-            value: false,
+            value: null,
+            value2: null,
             preview: '',
             image: '',
             coment: '',
         },
         {
             name: 'input 6',
-            value: false,
+            value: null,
+            value2: null,
             preview: '',
             image: '',
             coment: '',
         },
     ]
     const { actions, states } = useCheckList(mockListCheck)
-    const { ChangueInput, ChangueComent, ChangueImage, DiscardImage } = actions
-    const { listCheck } = states
+    const { ChangueInput, ChangueComent, ChangueImage, DiscardImage, ChangueNextStep } = actions
+    const { listCheck, nextStep } = states
     ///fin del hook
 
     const [tank, setTank] = useState(null);
 
-    const selectTank = (index) => {
-        const select = filterHistory[index];
+    const selectTank = (idRegiser) => {
+        const select = filterHistory.find((item) => item.id === idRegiser)
         setTank(select)
     }
 
@@ -119,8 +88,8 @@ function Maniobras() {
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'center',
                 minHeight: '80vh',
+                marginTop:'20px'
             }}>
 
                 {!tank &&
@@ -128,37 +97,38 @@ function Maniobras() {
                         timeout={500}
                         in={!tank}>
 
+                        <Container 
+                        sx={{
+                            display:'flex',
+                             flexDirection:'column', 
+                             gap:'20px', 
+                             alignItems:'center', 
+                             justifyContent:'center'
+                             }}>
+                            <Typography variant="h6">Contenedores en cola de revisión</Typography>
+                            <Box>
+                                <Paper elevation={4} sx={{ padding: '20px', }}>
+                                    <Stack spacing='5px'>
+                                        {
+                                            filterHistory.map((item, index) => (
+                                                <HistoryItem
+                                                    key={index}
+                                                    data={item}
+                                                >
+                                                    <Button 
+                                                    variant="contained" 
+                                                    color="primary"
+                                                    onClick={() => selectTank(item.id)}
+                                                    >Check</Button>
+                                                </HistoryItem>
+                                            ))
+                                        }
+                                    </Stack>
+                                </Paper>
+                            </Box>
 
-                        <Box>
-                                <h1>Contenedores en cola de revisión</h1>
-                            <Paper elevation={4} sx={{padding:'20px'}}>
 
-                                <Stack spacing='5px'>
-                                    {
-                                        filterHistory.map((item, index) => (
-                                            <HistoryItem
-                                                key={index}
-                                                hora={item.hora}
-                                                linea={item.linea}
-                                                tracto={item.tracto}
-                                                tipo={item.tipo}
-                                                tanque={item.tanque}
-                                                operador={item.operador}
-                                                celular={item.celular}
-                                            >
-                                                <Button
-                                                    size="small"
-                                                    variant="contained"
-                                                    key={item.contenedor}
-                                                    onClick={() => selectTank(index)}
-                                                >Checklist</Button>
-                                            </HistoryItem>
-                                        ))
-                                    }
-                                </Stack>
-
-                            </Paper>
-                        </Box>
+                        </Container>
                     </Fade>
                 }
 
@@ -176,13 +146,10 @@ function Maniobras() {
                 >
                     <h3>Check list de inspección</h3>
                     <DetailsCheckList
-                     hora={tank.hora}
-                     linea={tank.linea}
-                     tracto={tank.tracto}
-                     tanque={tank.tanque}
-                     operador={tank.operador}
-                     celular={tank.celular}
+                     data={tank}
                      action={discardTank}
+                     ChangueNextStep={ChangueNextStep}
+                     nextStep={nextStep}
                      submit={() => {}}
                     />
                     <CheckList

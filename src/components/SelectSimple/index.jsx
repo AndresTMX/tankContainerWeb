@@ -1,6 +1,6 @@
 import { FormControl, InputLabel, Select, MenuItem, FormHelperText } from "@mui/material";
 
-function SelectSimple({title, value, options, onChange, helperText, width}) {
+function SelectSimple({title, value, options, onChange, helperText, width, required}) {
 
 
     return (
@@ -8,6 +8,7 @@ function SelectSimple({title, value, options, onChange, helperText, width}) {
             <FormControl sx={{ m: 1, width: width? width: '200px' }}>
                 <InputLabel>{title}</InputLabel>
                 <Select
+                    required={required}
                     value={value}
                     label={title}
                     onChange={onChange}

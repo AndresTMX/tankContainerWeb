@@ -3,15 +3,53 @@ import { useState } from "react";
 function useCheckList(listInputs) {
 
     const [listCheck, SetListCheck] = useState(listInputs)
+    const [nextStep, setNextStep] = useState('')
     
-    const ChangueInput = (indexInput) => {
+    const ChangueInput = (indexInput, checkbox) => {
 
         const copyState = [...listCheck]
+      
+        let prevState1 = copyState[indexInput].value 
+        let prevState2 = copyState[indexInput].value2
 
-        copyState[indexInput].value = !copyState[indexInput].value
+        if(prevState1 === null && checkbox === 1){
+            copyState[indexInput].value = true
+            copyState[indexInput].value2 = false
+        }
+
+        if(prevState1 === true && checkbox === 1){
+            copyState[indexInput].value = false
+            copyState[indexInput].value2 = false
+        }
+
+        if(prevState1 === false && checkbox === 1){
+            copyState[indexInput].value = true
+            copyState[indexInput].value2 = false
+        }
+
+        if(prevState2 === null && checkbox === 2){
+            copyState[indexInput].value = false
+            copyState[indexInput].value2 = true
+        }
+
+        if(prevState2 === true && checkbox === 2){
+            copyState[indexInput].value = true
+            copyState[indexInput].value2 = false
+        }
+
+        if(prevState2 === false && checkbox === 2){
+            copyState[indexInput].value = false
+            copyState[indexInput].value2 = true
+        }
 
         SetListCheck(copyState)
     } 
+    //     const copyState = [...listCheck]
+
+    //     copyState[indexInput].no = !copyState[indexInput].no
+
+    //     SetListCheck(copyState)
+    // } 
 
     const ChangueComent = (indexInput, value) => {
         const copyState = [...listCheck]
@@ -21,10 +59,10 @@ function useCheckList(listInputs) {
         SetListCheck(copyState)
     }
 
-    const ChangueImage = (indexInput, e) => {
+    const ChangueImage = (indexInput, event) => {
         const copyState = [...listCheck]
 
-        const file = e.target.files[0];
+        const file = event.target.files[0];
         const urlImage = URL.createObjectURL(file);
         if(file){
             copyState[indexInput].image = file
@@ -44,9 +82,13 @@ function useCheckList(listInputs) {
         SetListCheck(copyState)
     }
 
-    const actions = {ChangueInput, ChangueComent, ChangueImage, DiscardImage}
+    const ChangueNextStep = (event) => {
+        setNextStep(event.target.value)
+    }
 
-    const states = {listCheck}
+    const actions = {ChangueInput, ChangueComent, ChangueImage, DiscardImage, ChangueNextStep}
+
+    const states = {listCheck, nextStep}
 
     return {actions, states}
 }

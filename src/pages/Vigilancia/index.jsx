@@ -1,16 +1,26 @@
 //imports hooks
-import { useState } from "react";
+import { useState, useContext } from "react";
 //imports materialui
-import { Container, Box, Tabs, Tab, Button, Stack, Fade, Typography, Paper, } from "@mui/material";
+import { Container, Box, Tabs, Tab, Button, Stack, Fade, Typography, Paper, Modal,  } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 //import custom components
 import { SelectSimple } from "../../components/SelectSimple";
 import { InputText } from "../../components/InputText";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { HistoryItem } from "../../components/HistoryItem";
-//days
-import { currentDate } from "../../Helpers/date";
+//context
+import { DevelopmentContext } from "../../Context";
+//hook
+import { useRegister } from "../../Hooks/useRegister";
 
 function Vigilancia() {
+
+    const [state, dispatch] = useContext(DevelopmentContext);
+    const {addRegister, send} = useRegister(dispatch)
+
+    const {registers} = state
+
+    const IsSmall = useMediaQuery('(max-width:900px)');
 
     const listTransporters = [
         'transportista 1',
@@ -30,40 +40,10 @@ function Vigilancia() {
         'operador 7',
     ]
 
-    const mockHistory = [
-        {
-            hora: currentDate,
-            linea: 'Linea random',
-            tracto: 'Un tracto chido',
-            tipo: 'Salida',
-            tanque: 'C-2356',
-            operador: 'Juan Miguel Salazar Perez',
-            celular: '5577828470'
-        },
-        {
-            hora: currentDate,
-            linea: 'Linea random2',
-            tracto: 'Un tracto maso',
-            tipo: 'Entrada',
-            tanque: 'C-2352',
-            operador: 'Lucas Ascencio Lopez',
-            celular: '5577828470'
-        },
-        {
-            hora: currentDate,
-            linea: 'Linea random3',
-            tracto: 'Un tracto ñe',
-            tipo: 'Salida',
-            tanque: 'C-8299',
-            operador: 'Armando Mendoza Lopez',
-            celular: '5577828470'
-        }
-    ]
+    const InputRegisters = state? registers.filter( (register) => register.checkOut === undefined ) : [];
+    const ExitRegisters = state? registers.filter( (register) => register.checkOut != undefined ) : [];
 
-    const ExitRegisters = mockHistory? mockHistory.filter( (register) => register.tipo === 'Salida' ) : [];
-    const InputRegisters = mockHistory? mockHistory.filter( (register) => register.tipo === 'Entrada' ) : [];
-
-
+    const [modal, setModal] = useState({modal1:false, modal2:false})
     const [select, setSelet] = useState('');
     const [tracto, setTracto] = useState('');
     const [typeChargue, setTypeChargue] = useState('');
@@ -117,6 +97,46 @@ function Vigilancia() {
         setTab(newValue)
     }
 
+    const ToggleModalRegister = (event) => {
+        event.preventDefault();
+        setModal({...modal, modal1: true, modal2: false})
+    }
+
+    const submitRegister = () => {
+        const register = {select, tracto, typeChargue, operator, numTank, dataTank }
+        addRegister(register)
+        setTimeout(() => {
+            setModal({...modal, modal1:!modal.modal1})
+        },1000)
+        
+    }
+
+    const CancelSubmit = () => {
+        setModal({...modal , modal1:!modal.modal1,})
+    }
+
+    const clearInputs = () => {
+        setSelet('')
+        setTracto('')
+        setTypeChargue('')
+        setDataTank([
+            {
+                numTank1: '',
+            },
+            {
+                numTank2: '',
+            },
+            {
+                numTank3: '',
+            },
+            {
+                numTank4: '',
+            },
+        ])
+        setOperator('')
+        setNumTank(0)
+    }
+
     return (
         <>
             <Container
@@ -144,6 +164,7 @@ function Vigilancia() {
                     >
                         <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             <Typography variant="h6">Formulario de registro</Typography>
+                            <form onSubmit={ToggleModalRegister}>
                             <Box
                                 sx={{
                                     display: 'flex',
@@ -161,6 +182,7 @@ function Vigilancia() {
                             >
 
                                 <SelectSimple
+                                    required={true}
                                     width={'100%'}
                                     title={'Tipo de carga'}
                                     value={typeChargue}
@@ -170,6 +192,7 @@ function Vigilancia() {
 
                                 {typeChargue === 'Tanque' &&
                                     <SelectSimple
+                                        required={true}
                                         width={'100%'}
                                         title={'Numero de tanques'}
                                         value={numTank}
@@ -179,6 +202,7 @@ function Vigilancia() {
 
                                 {numTank >= 1 && typeChargue === 'Tanque' && (
                                     <InputText
+                                        required={true}
                                         width='100%'
                                         label={'Tanque #1'}
                                         value={dataTank.numTank1}
@@ -188,6 +212,7 @@ function Vigilancia() {
 
                                 {numTank >= 2 && typeChargue === 'Tanque' && (
                                     <InputText
+                                        required={true}
                                         width='100%'
                                         label={'Tanque #2'}
                                         value={dataTank.numTank1}
@@ -197,6 +222,7 @@ function Vigilancia() {
 
                                 {numTank >= 3 && typeChargue === 'Tanque' && (
                                     <InputText
+                                        required={true}
                                         width='100%'
                                         label={'Tanque #3'}
                                         value={dataTank.numTank1}
@@ -206,6 +232,7 @@ function Vigilancia() {
 
                                 {numTank >= 4 && typeChargue === 'Tanque' && (
                                     <InputText
+                                        required={true}
                                         width='100%'
                                         label={'Tanque #4'}
                                         value={dataTank.numTank1}
@@ -214,6 +241,7 @@ function Vigilancia() {
                                 )}
 
                                 <SelectSimple
+                                    required={true}
                                     width={'100%'}
                                     title={'Linea transportista'}
                                     value={select}
@@ -222,6 +250,7 @@ function Vigilancia() {
                                 />
 
                                 <InputText
+                                    required={true}
                                     width={'100%'}
                                     label='Numero de tracto'
                                     value={tracto}
@@ -229,6 +258,7 @@ function Vigilancia() {
                                 />
 
                                 <SelectSimple
+                                    required={true}
                                     width={'100%'}
                                     title={'Operador'}
                                     value={operator}
@@ -236,9 +266,16 @@ function Vigilancia() {
                                     onChange={(e) => handleChangueOperator(e.target.value)}
                                 />
 
-                                <Button fullWidth variant="contained">Registrar</Button>
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained">
+                                    Registrar
+                                </Button>
+
 
                             </Box>
+                                </form>
                         </Container>
                     </Fade>
                 </CustomTabPanel>
@@ -251,19 +288,13 @@ function Vigilancia() {
                         <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             <Typography variant="h6">Entradas</Typography>
                             <Box>
-                                <Paper elevation={4} sx={{ padding: '20px' }}>
+                                <Paper elevation={4} sx={{ padding: '20px'}}>
                                     <Stack spacing='5px'>
                                         {
-                                            ExitRegisters.map((item, index) => (
+                                            InputRegisters.map((item, index) => (
                                                 <HistoryItem
                                                     key={index}
-                                                    hora={item.hora}
-                                                    linea={item.linea}
-                                                    tracto={item.tracto}
-                                                    tipo={item.tipo}
-                                                    tanque={item.tanque}
-                                                    operador={item.operador}
-                                                    celular={item.celular}
+                                                    data={item}
                                                 />
                                             ))
                                         }
@@ -285,16 +316,10 @@ function Vigilancia() {
                                 <Paper elevation={4} sx={{ padding: '20px' }}>
                                     <Stack spacing='5px'>
                                         {
-                                            InputRegisters.map((item, index) => (
+                                            ExitRegisters.map((item, index) => (
                                                 <HistoryItem
                                                     key={index}
-                                                    hora={item.hora}
-                                                    linea={item.linea}
-                                                    tracto={item.tracto}
-                                                    tipo={item.tipo}
-                                                    tanque={item.tanque}
-                                                    operador={item.operador}
-                                                    celular={item.celular}
+                                                    data={item}
                                                 />
                                             ))
                                         }
@@ -305,9 +330,41 @@ function Vigilancia() {
                     </Fade>
                 </CustomTabPanel>
 
-
-
             </Container>
+
+            <Modal open={modal.modal1}>
+                <Fade in={modal.modal1} timeout={500}>
+                    <Container>
+                        <Box sx={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100vh'}}>
+                            <Paper sx={{display: 'flex', flexDirection:'column', padding:'20px', gap:'20px'}}>
+                                <Typography>¿Seguro que quiere enviar este registro?</Typography>
+                                <Stack flexDirection='row' justifyContent='space-between' gap='10px'>
+                                    <Button fullWidth variant="contained" color="primary" onClick={submitRegister}>Enviar</Button>
+                                    <Button fullWidth variant="contained" color="error" onClick={CancelSubmit}>Cancelar</Button>
+                                </Stack>
+
+                            </Paper>
+                        </Box>
+                    </Container>
+                </Fade>
+            </Modal>
+
+            <Modal open={modal.modal2}>
+                <Fade in={modal.modal2} timeout={500}>
+                    <Container>
+                        <Box sx={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100vh'}}>
+                            <Paper sx={{display: 'flex', flexDirection:'column', padding:'20px', gap:'20px'}}>
+                                <Typography>Registro enviado</Typography>
+
+                                <Button 
+                                fullWidth
+                                color='error'
+                                onClick={CancelSubmit}>Ok</Button>
+                            </Paper>
+                        </Box>
+                    </Container>
+                </Fade>
+            </Modal>
         </>
     );
 }

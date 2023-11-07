@@ -24,10 +24,14 @@ let theme = createTheme({
   },
 });
 
+//context
+import { DevelopmentProvider } from "./Context"
+
 function Router() {
 
   return (
   <ThemeProvider theme={theme}>
+    <DevelopmentProvider>
     <HashRouter>
       <Routes>
 
@@ -108,6 +112,7 @@ function Router() {
 
       </Routes>
     </HashRouter>
+    </DevelopmentProvider>
   </ThemeProvider>
   )
 }

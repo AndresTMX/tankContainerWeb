@@ -1,23 +1,38 @@
 import { useState } from "react";
 import { Box, Button, IconButton, Chip, Stack, Modal, Typography, Divider, Fade, Icon } from "@mui/material";
+import { TextGeneral } from "../TextGeneral";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
+import InfoIcon from '@mui/icons-material/Info';
 
-function HistoryItem({ hora, linea, tracto, tipo, tanque, operador, celular, firma, children }) {
+function HistoryItem({ data, children }) {
 
-    const IsSmall = useMediaQuery('(max-width:840px)');
-    const IsExtraSmall = useMediaQuery('(max-width:450px)');
+    const IsSmall = useMediaQuery('(max-width:900px)');
+    // const IsExtraSmall = useMediaQuery('(max-width:450px)');
+    //datos
+    const checkIn = data.checkIn;
+    const linea = data.linea;
+    const tracto = data.tracto;
+    const pipa = data.pipa;
+    const tanques = data?.tanques;
+    const operador =  data?.operador;
+    const checkOut = data?.checkOut;
+    //numero de tanques por carga
+    const tanquesNum = tanques? tanques.length: 0;
+    //tipo de carga
+    const typeRegister =  checkOut === undefined? 'Entrada' : 'Salida';
+    const typeChargue = pipa != undefined? 'Pipa': 'Tanques';
+    //fecha y hora de entrada formateada
+    const dayInput = checkIn ? `${checkIn.$D}/${checkIn.$H}/${checkIn.$y}`:'00:00'
+    const dateInput = checkIn ? `${checkIn.$H}:${checkIn.$m}`:'00:00'
+    //fecha y hora de salida formateada
+    const dayOutput = checkOut ? `${checkOut.$D}/${checkOut.$H}/${checkOut.$y}`: '00:00';
+    const dateOutput = checkOut ? `${checkOut.$H}:${checkOut.$m}`: '00:00';
+    //Nmbre corto del operador
+    const OperatorSliceName = operador.name.split(' ').slice(0, 2);
+    const shortNameOperator = `${OperatorSliceName[0]} ${OperatorSliceName[1]}`;
 
-    const dayTransform = `${hora.$D}/${hora.$H}/${hora.$y}`
-
-    const dateTransform = `${hora.$H}:${hora.$m}`
-
-    const sliceName = operador.split(' ').slice(0, 2);
-
-    const shortName = `${sliceName[0]} ${sliceName[1]}`;
-
-    const [modal, setModal] = useState({modal1: false, modal2:false});
+    const [modal, setModal] = useState({modal1: false, modal2:false, modal3:false});
 
     const ToggleModalInfoOperator = () => {
         setModal({...modal, modal1: !modal.modal1})
@@ -25,6 +40,10 @@ function HistoryItem({ hora, linea, tracto, tipo, tanque, operador, celular, fir
 
     const ToggleModalInfoDate = () => {
         setModal({...modal, modal2: !modal.modal2})
+    }
+
+    const ToggleModalInfoChargue = () => {
+        setModal({...modal, modal3: !modal.modal3})
     }
 
     return (
@@ -35,49 +54,54 @@ function HistoryItem({ hora, linea, tracto, tipo, tanque, operador, celular, fir
                     flexDirection: IsSmall ? 'column' : 'row',
                     gap: '10px',
                     justifyContent: 'space-between',
+                    alignItems:!IsSmall? 'center': 'start',
                     backgroundColor: 'whitesmoke',
                     padding: '20px',
                     borderRadius: '4px',
-                    minWidth: '300px'
+                    minWidth:'250px'
                 }}>
-                <Stack flexDirection='row' alignItems='center'>
+
                     <Chip 
                     color='info' 
-                    label={dateTransform} 
+                    label={typeRegister === 'Entrada'? dateInput: dateOutput} 
                     icon={<AccessTimeIcon />} 
                     sx={{ fontWeight: 500, paddingRight: '2px' }}
                     onClick={ToggleModalInfoDate}
                     />
-                </Stack>
 
                 <Stack
-                    width={IsSmall ? 'auto' : '400px'}
-                    flexDirection={IsExtraSmall ? 'column' : 'row'}
-                    justifyContent={IsExtraSmall ? 'flex-start' : 'space-around'}
+                    sx={{maxWidth:'700px'}}
+                    width={IsSmall ? '100%' : '450px'}
+                    flexDirection={IsSmall ? 'column' : 'row'}
+                    justifyContent={IsSmall ? 'flex-start' : 'space-around'}
                     alignItems={IsSmall ? 'start' : 'center'}
                     gap='10px'>
-                    <span>{linea}</span>
-                    <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
-                    <span>{tracto}</span>
-                    <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
-                    <span>{tanque}</span>
-                    {!IsSmall && <Divider orientation='vertical' flexItem />}
+                    <TextGeneral text={linea} label="Linea" />
+                    <Divider orientation={IsSmall ? 'horizontal' : 'vertical'} flexItem />
+                    <TextGeneral label='Tracto' text={tracto}/>
+                    <Divider orientation={IsSmall ? 'horizontal' : 'vertical'} flexItem />
+                    <TextGeneral label='Tipo de carga' text={typeChargue}/>
+                    {typeChargue === 'Tanques' && 
+                    <>
+                    <Divider orientation={IsSmall ? 'horizontal' : 'vertical'} flexItem />
+                    <TextGeneral variant='chip' label='Cantidad' text={tanquesNum} onClick={ToggleModalInfoChargue}/>
+                    </>}
                 </Stack>
 
                 <Stack
-                    flexDirection={IsSmall ? 'column' : 'row'}
-                    width={IsSmall ? '100%' : '300px'}
-                    alignItems={IsSmall ? 'start' : 'center'}
+                    flexDirection={'row'}
+                    alignItems={'center'}
                     justifyContent='space-between'
                     gap='10px'>
-                    <span>{shortName}</span>
-                    <Stack flexDirection='row'>
-                        {children}
+                    {!IsSmall && <Divider orientation='vertical' flexItem />}
+                    <TextGeneral label='Operador' text={shortNameOperator} />
+                    <Stack flexDirection='row' gap='10px'>
                         <IconButton
-                            color="primary"
+                            color="info"
                             onClick={ToggleModalInfoOperator}>
-                            <ContactPhoneIcon />
+                            <InfoIcon/>
                         </IconButton>
+                        {children}
                     </Stack>
 
                 </Stack>
@@ -111,16 +135,10 @@ function HistoryItem({ hora, linea, tracto, tipo, tanque, operador, celular, fir
                             borderRadius: '4px'
                         }}
                     >
-                        <Typography variant='h6'>Informacion del operador</Typography>
-                        <Stack spacing='0px'>
-                            <strong>Nombre del operador</strong>
-                            <p>{operador}</p>
-                        </Stack>
+                        <Typography variant='h6'>Información del operador</Typography>
 
-                        <Stack spacing='0px'>
-                            <strong>Contacto</strong>
-                            <p>{celular}</p>
-                        </Stack>
+                        <TextGeneral text={operador.name} label="Nombre del operador"/>
+                        <TextGeneral text={operador.celular} label="Contacto del operador"/>
 
                         <Button
                             fullWidth
@@ -164,22 +182,66 @@ function HistoryItem({ hora, linea, tracto, tipo, tanque, operador, celular, fir
                             borderRadius: '4px'
                         }}
                     >
-                        <Typography variant='h6'>Detalles de fecha y hora</Typography>
-                        <Stack spacing='0px'>
-                            <strong>Fecha de ingreso</strong>
-                            <p>{operador}</p>
-                        </Stack>
+                        <Typography variant='h6'>{`Informacion de ${typeRegister}`}</Typography>
 
-                        <Stack spacing='0px'>
-                            <strong>Hora de ingreso</strong>
-                            <p>{celular}</p>
-                        </Stack>
+                        <TextGeneral label={`Fecha de ${typeRegister}`} text={typeRegister != 'Salida'? dayInput:dayOutput }/>
+                        <TextGeneral label={`Hora de ${typeRegister}`} text={typeRegister != 'Salida'? dateInput:dateOutput }/>
 
                         <Button
                             fullWidth
                             variant="contained"
                             color='error'
                             onClick={ToggleModalInfoDate}>
+                            cerrar
+                        </Button>
+
+                    </Box>
+                </Fade>
+
+
+            </Modal>
+
+            <Modal
+                open={modal.modal3}
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'absolute',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+
+                }}
+            >
+                <Fade
+                    timeout={500}
+                    in={modal.modal3}
+                >
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '15px',
+                            alignItems: 'start',
+                            justifyContent: 'center',
+                            backgroundColor: 'white',
+                            width: 'auto',
+                            padding: '20px',
+                            borderRadius: '4px'
+                        }}
+                    >
+                        <Typography variant='h6'>{`Informacion de la carga `}</Typography>
+
+                        {typeChargue === 'Tanques' && (
+                            tanques.map((tanque) => (
+                                <TextGeneral key={tanque.tanque} label={'N° de tanque'} text={tanque.tanque}/>
+                            ))
+                        )}
+
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            color='error'
+                            onClick={ToggleModalInfoChargue}>
                             cerrar
                         </Button>
 

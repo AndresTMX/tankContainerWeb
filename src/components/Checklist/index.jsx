@@ -4,7 +4,7 @@ import { InputCheck } from "../InputCheck";
 import { InputImage } from "../InputImage";
 import { InputText } from "../InputText";
 
-function CheckList({listInputs, ChangueInput, ChangueComent, ChangueImage, DiscardImage}) {
+function CheckList({listInputs, ChangueInput, ChangueComent, ChangueImage, DiscardImage, }) {
 
     const IsSmall = useMediaQuery('(max-width:850px)');
 
@@ -34,8 +34,13 @@ function CheckList({listInputs, ChangueInput, ChangueComent, ChangueImage, Disca
                             width: '100%',
                         }}
                     >
-                        
-                        <InputCheck name={item.name} value={item.value} onchangue={(e) => ChangueInput(index, e.target.value)} />
+                        <Stack>
+                        <p>{item.name}</p>
+                           <Stack flexDirection={'row'} flexWrap='wrap'>
+                            <InputCheck name={'Correcto'} value={item.value} onchangue={(e) => ChangueInput(index, 1)} />
+                            <InputCheck name={'Incorrecto'} value={item.value2} onchangue={(e) => ChangueInput(index, 2)} />
+                           </Stack>
+                        </Stack>
                         <InputText width={IsSmall? '100%' : '300px'} value={item.coment} label={'Comentarios'} onChangue={(e) => ChangueComent(index, e.target.value)} />
                         <InputImage index={index} discardImage={DiscardImage} preview={item.preview} onChangue={(e) => ChangueImage(index, e)} />
                         {IsSmall && <Divider orientation={'horizontal'} flexItem />}
