@@ -15,7 +15,7 @@ function DetailsCheckList({ data, action, submit, ChangueNextStep, nextStep }) {
      const checkIn = data.checkIn;
      const linea = data.linea;
      const tracto = data.tracto;
-     const pipa = data.pipa;
+     const pipa = data.tanques? false: true;
      const tanques = data?.tanques;
      const operador =  data?.operador;
      const checkOut = data?.checkOut;
@@ -23,7 +23,7 @@ function DetailsCheckList({ data, action, submit, ChangueNextStep, nextStep }) {
      const tanquesNum = tanques? tanques.length: 0;
      //tipo de carga
      const typeRegister =  checkOut === undefined? 'Entrada' : 'Salida';
-     const typeChargue = pipa != undefined? 'Pipa': 'Tanques';
+     const typeChargue = pipa? 'Pipa': 'Tanques';
      //fecha y hora de entrada formateada
      const dayInput = checkIn ? `${checkIn.$D}/${checkIn.$H}/${checkIn.$y}`:'00:00'
      const dateInput = checkIn ? `${checkIn.$H}:${checkIn.$m}`:'00:00'
@@ -88,7 +88,7 @@ function DetailsCheckList({ data, action, submit, ChangueNextStep, nextStep }) {
                         <Divider orientation={IsExtraSmall? 'horizontal':'vertical'} flexItem />
                         <TextGeneral label='Tracto' text={tracto} />
                         <Divider orientation={IsExtraSmall? 'horizontal':'vertical'} flexItem />
-                        <TextGeneral label='N° Tanques' text={tanquesNum} />
+                        {!pipa && <TextGeneral label='N° Tanques' text={tanquesNum} />}
                     </Stack>
 
                     <IconButton
@@ -96,12 +96,14 @@ function DetailsCheckList({ data, action, submit, ChangueNextStep, nextStep }) {
                         onClick={ToggleModal}>
                         <InfoIcon />
                     </IconButton>
+
                     <Button
                         variant='contained'
                         onClick={ShowModalWarning}
                     >
                         Check
                     </Button>
+                    
                     <IconButton
                         variant="contained"
                         color='error'

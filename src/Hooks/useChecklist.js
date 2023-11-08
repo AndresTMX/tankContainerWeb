@@ -4,6 +4,8 @@ function useCheckList(listInputs) {
 
     const [listCheck, SetListCheck] = useState(listInputs)
     const [nextStep, setNextStep] = useState('')
+    const [indexQuestion, setIndexQuestion] = useState(0)
+    const [modalComent, setModalComent] = useState(false)
     
     const ChangueInput = (indexInput, checkbox) => {
 
@@ -51,10 +53,10 @@ function useCheckList(listInputs) {
     //     SetListCheck(copyState)
     // } 
 
-    const ChangueComent = (indexInput, value) => {
+    const ChangueComent = (event) => {
         const copyState = [...listCheck]
 
-        copyState[indexInput].coment = value
+        copyState[indexComent].coment = event.target.value
 
         SetListCheck(copyState)
     }
@@ -86,9 +88,19 @@ function useCheckList(listInputs) {
         setNextStep(event.target.value)
     }
 
-    const actions = {ChangueInput, ChangueComent, ChangueImage, DiscardImage, ChangueNextStep}
+    const SelectQuestionComent = (index) => {
+        setIndexQuestion(index)
+        setModalComent(!modalComent)
 
-    const states = {listCheck, nextStep}
+    }
+
+    const ToggleModalComent = () => {
+        setModalComent(!modalComent)
+    }
+
+    const actions = {ChangueInput, ChangueComent, ChangueImage, DiscardImage, ChangueNextStep, SelectQuestionComent, ToggleModalComent}
+
+    const states = {listCheck, nextStep, indexQuestion, modalComent}
 
     return {actions, states}
 }

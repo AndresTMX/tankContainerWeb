@@ -1,11 +1,13 @@
 import { useState, useContext } from "react";
 import { Container, Box, Stack, Button, Fade, Paper, Typography } from "@mui/material";
-import { CheckList } from "../../components/Checklist";
+// import { CheckList } from "../../components/Checklist";
 import { useCheckList } from "../../Hooks/useChecklist";
 import { DetailsCheckList } from "../../components/DetailsCheckList";
 import { HistoryItem } from "../../components/HistoryItem";
 //context
 import { DevelopmentContext } from "../../Context";
+//newCheckList
+import { CheckListMaiobras } from "../../sections/CheckListManiobras";
 
 function Maniobras() {
 
@@ -155,13 +157,18 @@ function Maniobras() {
                      nextStep={nextStep}
                      submit={() => {}}
                     />
-                    <CheckList
+
+                    <CheckListMaiobras/>
+
+                    {/* <CheckList
                         listInputs={listCheck}
                         ChangueInput={ChangueInput}
                         ChangueComent={ChangueComent}
                         ChangueImage={ChangueImage}
                         DiscardImage={DiscardImage}
-                    />
+                    /> */}
+
+
 
                 </Box>
                 </Fade>
