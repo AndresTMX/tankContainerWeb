@@ -1,6 +1,6 @@
 import { Typography, Button, Stack, Paper } from "@mui/material";
 
-function Step1() {
+function Step1({nextStep}) {
     return ( 
         <>
         <Paper 
@@ -24,6 +24,7 @@ function Step1() {
             <Stack
             alignItems='center'>
             <Button 
+            onClick={nextStep}
             sx={{maxWidth:'250px'}}
             fullWidth
             color="primary" 

@@ -6,6 +6,7 @@ const initialState = {
     reparacion:[],
     notification:false,
     loading:false,
+    maniobrasCheckList:{}
 };
 
 //Use reducer que valida los objetos
@@ -22,7 +23,8 @@ const actionTypes = {
     setPrelavado: 'SET_PRELAVADO',
     setReparacion:'SET_REPARACION',
     setNotification: 'SET_NOTIFICATION',
-    setLoading: 'SET_LOADING'
+    setLoading: 'SET_LOADING',
+    setManiobrasCheck: 'SET_MANIOBRAS_CHECK',
   
 }
 
@@ -48,6 +50,10 @@ const reducerObject = (state, payload) => ({
     [actionTypes.setLoading]:{
         ...state,
         loading: payload
+    },
+    [actionTypes.setManiobrasCheck]:{
+        ...state,
+        maniobrasCheckList: payload
     },
 
 });

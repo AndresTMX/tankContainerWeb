@@ -3,7 +3,7 @@ import { useState } from "react";
 function useCheckList(listInputs) {
 
     const [listCheck, SetListCheck] = useState(listInputs)
-    const [nextStep, setNextStep] = useState('')
+    // const [nextStep, setNextStep] = useState('')
     const [indexQuestion, setIndexQuestion] = useState(0)
     const [modalComent, setModalComent] = useState(false)
     
@@ -35,7 +35,7 @@ function useCheckList(listInputs) {
         }
 
         if(prevState2 === true && checkbox === 2){
-            copyState[indexInput].value = true
+            copyState[indexInput].value = false
             copyState[indexInput].value2 = false
         }
 
@@ -56,7 +56,7 @@ function useCheckList(listInputs) {
     const ChangueComent = (event) => {
         const copyState = [...listCheck]
 
-        copyState[indexComent].coment = event.target.value
+        copyState[indexQuestion].coment = event.target.value
 
         SetListCheck(copyState)
     }
@@ -84,9 +84,9 @@ function useCheckList(listInputs) {
         SetListCheck(copyState)
     }
 
-    const ChangueNextStep = (event) => {
-        setNextStep(event.target.value)
-    }
+    // const ChangueNextStep = (event) => {
+    //     setNextStep(event.target.value)
+    // }
 
     const SelectQuestionComent = (index) => {
         setIndexQuestion(index)
@@ -98,9 +98,10 @@ function useCheckList(listInputs) {
         setModalComent(!modalComent)
     }
 
-    const actions = {ChangueInput, ChangueComent, ChangueImage, DiscardImage, ChangueNextStep, SelectQuestionComent, ToggleModalComent}
 
-    const states = {listCheck, nextStep, indexQuestion, modalComent}
+    const actions = {ChangueInput, ChangueComent, ChangueImage, DiscardImage,SelectQuestionComent, ToggleModalComent}
+
+    const states = {listCheck, indexQuestion, modalComent}
 
     return {actions, states}
 }

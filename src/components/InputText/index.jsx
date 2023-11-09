@@ -17,12 +17,25 @@ function InputText({ label, variant, value, onChangue, width, type, required }) 
     return (
         <>
 
-            {type != 'password' &&
+            {type === 'password' &&
                 <TextField
                     required={required}
                     type={type ? type : 'text'}
                     sx={{
                         width: width ? width : '200px'
+                    }}
+                    value={value}
+                    label={label}
+                    onChange={onChangue}
+                    variant={variant ? variant : "outlined"} />}
+
+            {type === 'textarea' &&
+                <TextField
+                    required
+                    multiline
+                    maxRows={5}
+                    sx={{
+                        width: width ? width : '200px',
                     }}
                     value={value}
                     label={label}

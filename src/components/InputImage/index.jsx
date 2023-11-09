@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Button, CardMedia, Modal , Card, Box, FormControl} from '@mui/material';
+import { Button, CardMedia, Modal, Card, Box, FormControl, Container } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 //icons
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 
-function InputImage({ index, preview, onChangue, discardImage}) {
+function InputImage({ index, preview, onChangue, discardImage }) {
 
     const [modal, setModal] = useState(false);
 
@@ -12,16 +12,6 @@ function InputImage({ index, preview, onChangue, discardImage}) {
         setModal(!modal)
     }
 
-    const style = {
-        display:'flex',
-        justifyContent:'center',
-        alignItems:'center',
-        position: 'absolute',
-        width: '100%',
-        height:'100%',
-        boxShadow: 24,
-        p: 4,
-      };      
 
     const DiscardAndClose = () => {
         discardImage(index)
@@ -29,17 +19,17 @@ function InputImage({ index, preview, onChangue, discardImage}) {
     }
 
 
-    return ( 
+    return (
         <>
-           <FormControl>
-           <input
-                type="file"
-                accept="image/*"
-                id={`image-${index}input`}
-                style={{ display: "none" }}
-                onChange={onChangue}
-                disabled={preview? true: false}
-            />
+            <FormControl>
+                <input
+                    type="file"
+                    accept="image/*"
+                    id={`image-${index}input`}
+                    style={{ display: "none" }}
+                    onChange={onChangue}
+                    disabled={preview ? true : false}
+                />
                 <label htmlFor={`image-${index}input`}>
                     <Box
                         sx={{
@@ -49,60 +39,69 @@ function InputImage({ index, preview, onChangue, discardImage}) {
                             gap: '10px'
                         }}>
                         <Button
-                            onClick={preview? ToggleModal : () => {} }
+                            onClick={preview ? ToggleModal : () => { }}
                             variant="contained"
                             component="span"
                             startIcon={<AddAPhotoIcon />}
                         >
-                            {preview? 'Ver' : 'Subir'}
+                            {preview ? 'Ver' : 'Subir'}
                         </Button>
-                        <CheckCircleIcon sx={{ color: preview? 'green' : 'gray' }} />
+                        <CheckCircleIcon sx={{ color: preview ? 'green' : 'gray' }} />
                     </Box>
                 </label>
-                
-           </FormControl>
-            
-            {modal && (
-                <Modal 
-                sx={style}
-                open={modal}
-                >
-                    <Card 
-                    sx={{
-                        display:'flex',
-                        flexDirection:'column',
-                        gap:'10px',
-                        padding:'15px',
-                        maxWidth:'400px',
-                        minWidth:'300px'
-                    }}>
-                        <CardMedia
-                            component="img"
-                            alt="Selected"
-                            height="200"
-                            image={preview}
-                        />
-                       
-                        <Button 
-                        onClick={ToggleModal}
-                        fullWidth 
-                        variant='contained' 
-                        color='error' 
-                        >Cerrar</Button>
 
-                         <Button 
-                        onClick={DiscardAndClose}
-                        fullWidth 
-                        variant='contained' 
-                        color='warning' 
-                        >Descartar</Button>
-                        
-                    </Card>
+            </FormControl>
+
+            {modal && (
+                <Modal
+                    open={modal}>
+                    <Container
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        width: '100%',
+                        height: '100%',
+                        p: 4,
+                    }}
+                    >
+                        <Card
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '10px',
+                                padding: '15px',
+                                maxWidth: '400px',
+                                minWidth: '300px'
+                            }}>
+                            <CardMedia
+                                component="img"
+                                alt="Selected"
+                                height="200"
+                                image={preview}
+                            />
+
+                            <Button
+                                onClick={ToggleModal}
+                                fullWidth
+                                variant='contained'
+                                color='error'
+                            >Cerrar</Button>
+
+                            <Button
+                                onClick={DiscardAndClose}
+                                fullWidth
+                                variant='contained'
+                                color='warning'
+                            >Descartar</Button>
+
+                        </Card>
+                    </Container>
 
                 </Modal>)}
- 
+
         </>
-     );
+    );
 }
 
-export {InputImage};
+export { InputImage };
