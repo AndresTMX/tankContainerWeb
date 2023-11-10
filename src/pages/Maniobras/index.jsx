@@ -4,6 +4,8 @@ import { Container, Box, Stack, Button, Fade, Paper, Typography } from "@mui/mat
 import { useCheckList } from "../../Hooks/useChecklist";
 import { DetailsCheckList } from "../../components/DetailsCheckList";
 import { HistoryItem } from "../../components/HistoryItem";
+//Notification
+import { Notification } from "../../components/Notification";
 //context
 import { DevelopmentContext } from "../../Context";
 //newCheckList
@@ -175,6 +177,8 @@ function Maniobras() {
                 }
 
             </Container>
+
+            <Notification/>
         </>
     );
 }

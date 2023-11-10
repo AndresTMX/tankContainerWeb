@@ -11,7 +11,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 //icons
 import ChatIcon from '@mui/icons-material/Chat';
 
-function Step4({step, nextStep, previusStep}) {
+function Step4({ step, nextStep, previusStep }) {
 
     const IsSmall = useMediaQuery('(max-width:850px)');
     const [state, dispatch] = useContext(DevelopmentContext);
@@ -23,7 +23,6 @@ function Step4({step, nextStep, previusStep}) {
         {
             question: '¿La llave inglesa u otra llave pueden agarrar la parte superior del anillo con facilidad?',
             value: null,
-            value2: null,
             preview: '',
             image: '',
             coment: '',
@@ -40,14 +39,22 @@ function Step4({step, nextStep, previusStep}) {
     const SaveChanguesOnGloablState = () => {
         const newState = { ...state.maniobrasCheckList, valvulaCierre3: { checkList: listCheck } }
         dispatch({ type: actionTypes.setManiobrasCheck, payload: newState })
-        nextStep()
+
+        const inputQuestion = listCheck[0].value;
+
+        if(inputQuestion === 'si'){
+            nextStep(5)
+        }else{
+            setMessage(2)
+        }
+        
     }
 
     return (
         <>
 
             {message === 0 && (
-                <Fade in={message === 0? true: false} timeout={500}>
+                <Fade in={message === 0 ? true : false} timeout={500}>
                     <Paper
                         elevation={4}
                         sx={{
@@ -60,7 +67,7 @@ function Step4({step, nextStep, previusStep}) {
                             padding: '20px'
                         }}>
                         <Typography variant="h5">
-                        Abra el pie de la válvula y asegúrese de que el cable remoto de emergencia ubicado en un lado del tanque funcione correctamente cerrando la válvula cuando se jala.
+                            Abra el pie de la válvula y asegúrese de que el cable remoto de emergencia ubicado en un lado del tanque funcione correctamente cerrando la válvula cuando se jala.
                         </Typography>
 
                         <Stack
@@ -70,9 +77,9 @@ function Step4({step, nextStep, previusStep}) {
                         >
 
                             <ButtonsNavigationCheck
-                            step={step}
-                            nextStep={() => setMessage(1)}
-                            previusStep={previusStep} />
+                                step={step}
+                                nextStep={() => setMessage(1)}
+                                previusStep={() => previusStep(2)} />
 
                         </Stack>
                     </Paper>
@@ -80,7 +87,7 @@ function Step4({step, nextStep, previusStep}) {
             )}
 
             {message === 1 &&
-                <Fade in={message === 1? true: false} timeout={500}>
+                <Fade in={message === 1 ? true : false} timeout={500}>
                     <Paper
                         elevation={4}
                         sx={{
@@ -122,12 +129,16 @@ function Step4({step, nextStep, previusStep}) {
                                     <Stack flexDirection='row' gap='20px' alignItems='center' justifyContent='center'>
                                         <Stack flexDirection='column' alignItems='center' >
                                             <strong>Si</strong>
-                                            <InputCheck value={item.value} onchangue={(e) => ChangueInput(index, 1)} />
+                                            <InputCheck 
+                                            value={item.value === 'si' ? true : false} 
+                                            onchangue={(e) => ChangueInput(index, 'si')} />
 
                                         </Stack>
                                         <Stack flexDirection='column' alignItems='center'>
                                             <strong>No</strong>
-                                            <InputCheck value={item.value2} onchangue={(e) => ChangueInput(index, 2)} />
+                                            <InputCheck 
+                                            value={item.value === 'no' ? true : false} 
+                                            onchangue={(e) => ChangueInput(index, 'no')} />
                                         </Stack>
                                     </Stack>
 
@@ -150,7 +161,7 @@ function Step4({step, nextStep, previusStep}) {
 
                         <ButtonsNavigationCheck
                             step={step}
-                            nextStep={() => setMessage(2)}
+                            nextStep={SaveChanguesOnGloablState}
                             previusStep={() => setMessage(0)} />
 
                     </Paper>
@@ -158,7 +169,7 @@ function Step4({step, nextStep, previusStep}) {
             }
 
             {message === 2 && (
-                <Fade in={message === 2? true:false} timeout={500}>
+                <Fade in={message === 2 ? true : false} timeout={500}>
                     <Paper
                         elevation={4}
                         sx={{
@@ -171,7 +182,7 @@ function Step4({step, nextStep, previusStep}) {
                             padding: '20px'
                         }}>
                         <Typography variant="h5">
-                        {'Remplácelo con una tuerca cuadrada (square notch top ring) proporcionado por agmark.'}
+                            {'Remplácelo con una tuerca cuadrada (square notch top ring) proporcionado por agmark.'}
                         </Typography>
 
                         <Stack
@@ -183,13 +194,13 @@ function Step4({step, nextStep, previusStep}) {
                             <Button
                                 variant="contained"
                                 color="warning"
-                                onClick={() => setMessage(1) }>
+                                onClick={() => setMessage(1)}>
                                 volver a checklist
                             </Button>
 
                             <Button
                                 variant="contained"
-                                onClick={SaveChanguesOnGloablState}>
+                                onClick={() => nextStep(5)}>
                                 Ok
                             </Button>
                         </Stack>
@@ -209,7 +220,7 @@ function Step4({step, nextStep, previusStep}) {
                 >
                     <Fade in={modalComent} timeout={500}>
                         <Paper
-                           elevation={4}
+                            elevation={4}
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',

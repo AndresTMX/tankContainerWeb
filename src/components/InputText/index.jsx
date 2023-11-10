@@ -17,10 +17,9 @@ function InputText({ label, variant, value, onChangue, width, type, required }) 
     return (
         <>
 
-            {type === 'password' &&
+            {!type &&
                 <TextField
                     required={required}
-                    type={type ? type : 'text'}
                     sx={{
                         width: width ? width : '200px'
                     }}

@@ -22,7 +22,6 @@ function Step2({step, nextStep, previusStep}) {
         {
             question: '¿Todas las partes estén trabajando correctamente?',
             value: null,
-            value2: null,
             preview: '',
             image: '',
             coment: '',
@@ -30,7 +29,6 @@ function Step2({step, nextStep, previusStep}) {
         {
             question: '¿Tiene daño mayores (Abolladuras, rayas profundas, etc.)?',
             value: null,
-            value2: null,
             preview: '',
             image: '',
             coment: '',
@@ -39,16 +37,14 @@ function Step2({step, nextStep, previusStep}) {
         {
             question: '¿Algunos de los empaques necesita remplazarse?',
             value: null,
-            value2: null,
             preview: '',
             image: '',
             coment: '',
 
         },
         {
-            question: '¿Es una válvulas sanitaria 3A?',
+            question: '¿Es una válvula sanitaria 3A?',
             value: null,
-            value2: null,
             preview: '',
             image: '',
             coment: '',
@@ -68,13 +64,30 @@ function Step2({step, nextStep, previusStep}) {
     const stateCheckList = maniobrasCheckList.empaques? maniobrasCheckList.empaques.checkList : mockListCheck;
 
     const { actions, states } = useCheckList(stateCheckList)
-    const { ChangueInput, ChangueComent, ChangueImage, DiscardImage, SelectQuestionComent, ToggleModalComent } = actions
+    const { ChangueInput, ChangueComent, ChangueImage, DiscardImage, SelectQuestionComent, ToggleModalComent, ValidateInputs } = actions
     const { listCheck, indexQuestion, modalComent } = states
 
     const SaveChanguesOnGloablState = () => {
         const newState = {...state.maniobrasCheckList, empaques:{checkList:listCheck} }
         dispatch({type: actionTypes.setManiobrasCheck, payload:newState })
-        nextStep()
+
+        const sanitaria3AInput = listCheck[3].value;
+        const cierre3Input = listCheck[4].value;
+
+        const inputsEmpty = ValidateInputs()
+
+        if(sanitaria3AInput === cierre3Input & inputsEmpty){
+            dispatch({type: actionTypes.setNotification, payload: 'Una valvula no puede ser 3A y con cierre 3'})
+        }
+
+        if(sanitaria3AInput === 'si' && inputsEmpty & sanitaria3AInput != cierre3Input){
+            nextStep(3)
+        }
+
+        if(cierre3Input  === 'si' && inputsEmpty & sanitaria3AInput != cierre3Input){
+            nextStep(4)
+        }
+
     }
     
     return ( 
@@ -88,7 +101,7 @@ function Step2({step, nextStep, previusStep}) {
             padding:'20px',
             width:'100%'
         }}>
-            <Typography variant="h6">Revisión de empaques</Typography>
+            <Typography variant="h6">Revisión de empaques de valvula de descarga</Typography>
 
              <FormGroup
                 sx={{
@@ -120,12 +133,12 @@ function Step2({step, nextStep, previusStep}) {
                         <Stack flexDirection='row' gap='20px' alignItems='center' justifyContent='center'>
                             <Stack flexDirection='column' alignItems='center' >
                                 <strong>Si</strong>
-                                <InputCheck value={item.value} onchangue={(e) => ChangueInput(index, 1)} />
+                                <InputCheck value={item.value === 'si' ? true:false} onchangue={(e) => ChangueInput(index, 'si')} />
 
                             </Stack>
                            <Stack flexDirection='column' alignItems='center'>
                             <strong>No</strong>
-                            <InputCheck value={item.value2} onchangue={(e) => ChangueInput(index, 2)} />
+                            <InputCheck value={item.value === 'no' ? true:false} onchangue={(e) => ChangueInput(index, 'no')} />
                            </Stack>
                         </Stack>
 
@@ -149,7 +162,7 @@ function Step2({step, nextStep, previusStep}) {
             <ButtonsNavigationCheck 
             step={step} 
             nextStep={SaveChanguesOnGloablState} 
-            previusStep={previusStep}/>
+            previusStep={() => previusStep(1)}/>
           
         </Paper>
 

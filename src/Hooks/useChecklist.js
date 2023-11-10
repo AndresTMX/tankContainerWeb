@@ -1,48 +1,32 @@
-import { useState } from "react";
+import { actionTypes } from "../Reducers";
+import { useState, useContext} from "react";
+import { DevelopmentContext } from "../Context";
 
 function useCheckList(listInputs) {
 
-    const [listCheck, SetListCheck] = useState(listInputs)
     // const [nextStep, setNextStep] = useState('')
-    const [indexQuestion, setIndexQuestion] = useState(0)
-    const [modalComent, setModalComent] = useState(false)
+    const [state, dispatch] = useContext(DevelopmentContext);
+    const [listCheck, SetListCheck] = useState(listInputs);
+    const [indexQuestion, setIndexQuestion] = useState(0);
+    const [modalComent, setModalComent] = useState(false);
     
-    const ChangueInput = (indexInput, checkbox) => {
+    const ValidateInputs = () => {
+        
+        const validateInputs =  listCheck.filter((question) => question.value === null).length
+
+        if(validateInputs > 0){
+            dispatch({type: actionTypes.setNotification, payload: 'Complete el checklist para continuar'})
+            return false
+        }
+
+        return true
+    }
+    
+    const ChangueInput = (indexInput, newValue) => {
 
         const copyState = [...listCheck]
-      
-        let prevState1 = copyState[indexInput].value 
-        let prevState2 = copyState[indexInput].value2
 
-        if(prevState1 === null && checkbox === 1){
-            copyState[indexInput].value = true
-            copyState[indexInput].value2 = false
-        }
-
-        if(prevState1 === true && checkbox === 1){
-            copyState[indexInput].value = false
-            copyState[indexInput].value2 = false
-        }
-
-        if(prevState1 === false && checkbox === 1){
-            copyState[indexInput].value = true
-            copyState[indexInput].value2 = false
-        }
-
-        if(prevState2 === null && checkbox === 2){
-            copyState[indexInput].value = false
-            copyState[indexInput].value2 = true
-        }
-
-        if(prevState2 === true && checkbox === 2){
-            copyState[indexInput].value = false
-            copyState[indexInput].value2 = false
-        }
-
-        if(prevState2 === false && checkbox === 2){
-            copyState[indexInput].value = false
-            copyState[indexInput].value2 = true
-        }
+        copyState[indexInput].value = newValue
 
         SetListCheck(copyState)
     } 
@@ -99,7 +83,7 @@ function useCheckList(listInputs) {
     }
 
 
-    const actions = {ChangueInput, ChangueComent, ChangueImage, DiscardImage,SelectQuestionComent, ToggleModalComent}
+    const actions = {ChangueInput, ChangueComent, ChangueImage, DiscardImage,SelectQuestionComent, ToggleModalComent, ValidateInputs}
 
     const states = {listCheck, indexQuestion, modalComent}
 

@@ -24,7 +24,6 @@ function Step3({ step, nextStep, previusStep }) {
         {
             question: '¿Cambios en el enpaque del O-ring de piston?',
             value: null,
-            value2: null,
             preview: '',
             image: '',
             coment: '',
@@ -32,7 +31,6 @@ function Step3({ step, nextStep, previusStep }) {
         {
             question: '¿Cambios en el empaque del asiento del piston?',
             value: null,
-            value2: null,
             preview: '',
             image: '',
             coment: '',
@@ -41,7 +39,6 @@ function Step3({ step, nextStep, previusStep }) {
         {
             question: '¿Cambios en el empaque de la valvula de alivio?',
             value: null,
-            value2: null,
             preview: '',
             image: '',
             coment: '',
@@ -50,7 +47,6 @@ function Step3({ step, nextStep, previusStep }) {
         {
             question: 'Cambios en el empaque de brida ciega?',
             value: null,
-            value2: null,
             preview: '',
             image: '',
             coment: '',
@@ -62,13 +58,19 @@ function Step3({ step, nextStep, previusStep }) {
     const stateCheckList = maniobrasCheckList.valvula3A ? maniobrasCheckList.valvula3A.checkList : mockListCheck;
 
     const { actions, states } = useCheckList(stateCheckList)
-    const { ChangueInput, ChangueComent, ChangueImage, DiscardImage, SelectQuestionComent, ToggleModalComent } = actions
+    const { ChangueInput, ChangueComent, ChangueImage, DiscardImage, SelectQuestionComent, ToggleModalComent, ValidateInputs } = actions
     const { listCheck, indexQuestion, modalComent } = states
 
     const SaveChanguesOnGloablState = () => {
         const newState = { ...state.maniobrasCheckList, valvula3A: { checkList: listCheck } }
         dispatch({ type: actionTypes.setManiobrasCheck, payload: newState })
-        setMessage(true)
+
+        const inputsEmpty = ValidateInputs()
+
+        if(inputsEmpty){
+            setMessage(true)
+        }
+
     }
 
     return (
@@ -117,12 +119,12 @@ function Step3({ step, nextStep, previusStep }) {
                                     <Stack flexDirection='row' gap='20px' alignItems='center' justifyContent='center'>
                                         <Stack flexDirection='column' alignItems='center' >
                                             <strong>Si</strong>
-                                            <InputCheck value={item.value} onchangue={(e) => ChangueInput(index, 1)} />
+                                            <InputCheck value={item.value === 'si' ? true: false} onchangue={(e) => ChangueInput(index, 'si')} />
 
                                         </Stack>
                                         <Stack flexDirection='column' alignItems='center'>
                                             <strong>No</strong>
-                                            <InputCheck value={item.value2} onchangue={(e) => ChangueInput(index, 2)} />
+                                            <InputCheck value={item.value === 'no' ? true: false} onchangue={(e) => ChangueInput(index, 'no')} />
                                         </Stack>
                                     </Stack>
 
@@ -146,7 +148,7 @@ function Step3({ step, nextStep, previusStep }) {
                         <ButtonsNavigationCheck
                             step={step}
                             nextStep={SaveChanguesOnGloablState}
-                            previusStep={previusStep} />
+                            previusStep={() => previusStep(2)} />
 
                     </Paper>
                 </Fade>
@@ -184,14 +186,13 @@ function Step3({ step, nextStep, previusStep }) {
 
                             <Button
                                 variant="contained"
-                                onClick={nextStep}>
+                                onClick={() => nextStep(4)}>
                                 Ok
                             </Button>
                         </Stack>
                     </Paper>
                 </Fade>
             )}
-
 
             <Modal open={modalComent}>
                 <Container

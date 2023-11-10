@@ -11,7 +11,7 @@ function Step1({nextStep}) {
             gap:'20px', 
             padding:'20px',
             }}>
-            <Typography variant="h6">Revisión de empaques</Typography>
+            <Typography variant="h6">Revisión de empaques de valvula de descarga</Typography>
 
             <Typography variant='body1'>
             {'Desensamble la válvula de descarga, asegúrese de que todas las partes estén trabajando correctamente y no tienen daños mayores (Abolladuras, rayas profundas, etc.)'}
@@ -24,7 +24,7 @@ function Step1({nextStep}) {
             <Stack
             alignItems='center'>
             <Button 
-            onClick={nextStep}
+            onClick={() => nextStep(2)}
             sx={{maxWidth:'250px'}}
             fullWidth
             color="primary" 

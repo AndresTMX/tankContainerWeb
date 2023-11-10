@@ -14,97 +14,111 @@ function HistoryItem({ data, children }) {
     const linea = data.linea;
     const tracto = data.tracto;
     const tanques = data?.tanques;
-    const operador =  data?.operador;
+    const operador = data?.operador;
     const checkOut = data?.checkOut;
     //numero de tanques por carga
-    const tanquesNum = tanques? tanques.length: 0;
+    const tanquesNum = tanques ? tanques.length : 0;
     //tipo de carga
-    const typeRegister =  checkOut === undefined? 'Entrada' : 'Salida';
-    const typeChargue = tanques? 'Tanques': 'Pipa';
+    const typeRegister = checkOut === undefined ? 'Entrada' : 'Salida';
+    const typeChargue = tanques ? 'Tanques' : 'Pipa';
     //fecha y hora de entrada formateada
-    const dayInput = checkIn ? `${checkIn.$D}/${checkIn.$H}/${checkIn.$y}`:'00:00'
-    const dateInput = checkIn ? `${checkIn.$H}:${checkIn.$m}`:'00:00'
+    const dayInput = checkIn ? `${checkIn.$D}/${checkIn.$H}/${checkIn.$y}` : '00:00'
+    const dateInput = checkIn ? `${checkIn.$H}:${checkIn.$m}` : '00:00'
     //fecha y hora de salida formateada
-    const dayOutput = checkOut ? `${checkOut.$D}/${checkOut.$H}/${checkOut.$y}`: '00:00';
-    const dateOutput = checkOut ? `${checkOut.$H}:${checkOut.$m}`: '00:00';
+    const dayOutput = checkOut ? `${checkOut.$D}/${checkOut.$H}/${checkOut.$y}` : '00:00';
+    const dateOutput = checkOut ? `${checkOut.$H}:${checkOut.$m}` : '00:00';
     //Nmbre corto del operador
     const OperatorSliceName = operador.name.split(' ').slice(0, 2);
     const shortNameOperator = `${OperatorSliceName[0]} ${OperatorSliceName[1]}`;
 
-    const [modal, setModal] = useState({modal1: false, modal2:false, modal3:false});
+    const [modal, setModal] = useState({ modal1: false, modal2: false, modal3: false });
 
     const ToggleModalInfoOperator = () => {
-        setModal({...modal, modal1: !modal.modal1})
+        setModal({ ...modal, modal1: !modal.modal1 })
     }
 
     const ToggleModalInfoDate = () => {
-        setModal({...modal, modal2: !modal.modal2})
+        setModal({ ...modal, modal2: !modal.modal2 })
     }
 
     const ToggleModalInfoChargue = () => {
-        setModal({...modal, modal3: !modal.modal3})
+        setModal({ ...modal, modal3: !modal.modal3 })
     }
 
     return (
         <>
-            <Box
+            <Stack
                 sx={{
-                    display: 'flex',
-                    flexDirection: IsSmall ? 'column' : 'row',
-                    gap: '10px',
-                    justifyContent: 'space-between',
-                    alignItems:!IsSmall? 'center': 'start',
                     backgroundColor: 'whitesmoke',
                     padding: '20px',
                     borderRadius: '4px',
-                    minWidth:'250px'
-                }}>
+                    minWidth: '250px'
+                }}
+            >
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: IsSmall ? 'column' : 'row',
+                        gap: '10px',
+                        justifyContent: 'space-between',
+                        alignItems: !IsSmall ? 'center' : 'start',
+                    }}>
 
-                    <Chip 
-                    color='info' 
-                    label={typeRegister === 'Entrada'? dateInput: dateOutput} 
-                    icon={<AccessTimeIcon />} 
-                    sx={{ fontWeight: 500, paddingRight: '2px' }}
-                    onClick={ToggleModalInfoDate}
+                    <Chip
+                        color='info'
+                        label={typeRegister === 'Entrada' ? dateInput : dateOutput}
+                        icon={<AccessTimeIcon />}
+                        sx={{ fontWeight: 500, paddingRight: '2px' }}
+                        onClick={ToggleModalInfoDate}
                     />
 
-                <Stack
-                    sx={{maxWidth:'700px'}}
-                    width={IsSmall ? '100%' : '450px'}
-                    flexDirection={IsSmall ? 'column' : 'row'}
-                    justifyContent={IsSmall ? 'flex-start' : 'space-around'}
-                    alignItems={IsSmall ? 'start' : 'center'}
-                    gap='10px'>
-                    <TextGeneral text={linea} label="Linea" />
-                    <Divider orientation={IsSmall ? 'horizontal' : 'vertical'} flexItem />
-                    <TextGeneral label='Tracto' text={tracto}/>
-                    <Divider orientation={IsSmall ? 'horizontal' : 'vertical'} flexItem />
-                    <TextGeneral label='Tipo de carga' text={typeChargue}/>
-                    {typeChargue === 'Tanques' && 
-                    <>
-                    <Divider orientation={IsSmall ? 'horizontal' : 'vertical'} flexItem />
-                    <TextGeneral variant='chip' label='Cantidad' text={tanquesNum} onClick={ToggleModalInfoChargue}/>
-                    </>}
-                </Stack>
-
-                <Stack
-                    flexDirection={'row'}
-                    alignItems={'center'}
-                    justifyContent='space-between'
-                    gap='10px'>
-                    {!IsSmall && <Divider orientation='vertical' flexItem />}
-                    <TextGeneral label='Operador' text={shortNameOperator} />
-                    <Stack flexDirection='row' gap='10px'>
-                        <IconButton
-                            color="info"
-                            onClick={ToggleModalInfoOperator}>
-                            <InfoIcon/>
-                        </IconButton>
-                        {children}
+                    <Stack
+                        sx={{ maxWidth: '700px' }}
+                        width={IsSmall ? '100%' : '450px'}
+                        flexDirection={IsSmall ? 'column' : 'row'}
+                        justifyContent={IsSmall ? 'flex-start' : 'space-around'}
+                        alignItems={IsSmall ? 'start' : 'center'}
+                        gap='10px'>
+                        <TextGeneral text={linea} label="Linea" />
+                        <Divider orientation={IsSmall ? 'horizontal' : 'vertical'} flexItem />
+                        <TextGeneral label='Tracto' text={tracto} />
+                        <Divider orientation={IsSmall ? 'horizontal' : 'vertical'} flexItem />
+                        <TextGeneral label='Tipo de carga' text={typeChargue} />
+                        {typeChargue === 'Tanques' &&
+                            <>
+                                {/* <Divider orientation={IsSmall ? 'horizontal' : 'vertical'} flexItem /> */}
+                                {/* <TextGeneral variant='chip' label='Cantidad' text={tanquesNum} onClick={ToggleModalInfoChargue}/> */}
+                            </>}
                     </Stack>
 
-                </Stack>
-            </Box>
+                    <Stack
+                        flexDirection={'row'}
+                        alignItems={'center'}
+                        justifyContent='space-between'
+                        gap='10px'>
+                        {!IsSmall && <Divider orientation='vertical' flexItem />}
+                        <TextGeneral label='Operador' text={shortNameOperator} />
+                        <Stack flexDirection='row' gap='10px'>
+                            <IconButton
+                                color="info"
+                                onClick={ToggleModalInfoOperator}>
+                                <InfoIcon />
+                            </IconButton>
+                            {children}
+                        </Stack>
+
+                    </Stack>
+                </Box>
+                {typeChargue === 'Tanques' && (
+                    <Stack>
+                        {tanques.map((tanque) => (
+                        <Box>
+                           <TextGeneral variant='row' label='N° tanque' text={tanque.tanque} />
+                        </Box>
+                    ))}
+                    </Stack>
+                )}
+            </Stack>
 
             <Modal
                 open={modal.modal1}
@@ -136,8 +150,8 @@ function HistoryItem({ data, children }) {
                     >
                         <Typography variant='h6'>Información del operador</Typography>
 
-                        <TextGeneral text={operador.name} label="Nombre del operador"/>
-                        <TextGeneral text={operador.celular} label="Contacto del operador"/>
+                        <TextGeneral text={operador.name} label="Nombre del operador" />
+                        <TextGeneral text={operador.celular} label="Contacto del operador" />
 
                         <Button
                             fullWidth
@@ -183,8 +197,8 @@ function HistoryItem({ data, children }) {
                     >
                         <Typography variant='h6'>{`Informacion de ${typeRegister}`}</Typography>
 
-                        <TextGeneral label={`Fecha de ${typeRegister}`} text={typeRegister != 'Salida'? dayInput:dayOutput }/>
-                        <TextGeneral label={`Hora de ${typeRegister}`} text={typeRegister != 'Salida'? dateInput:dateOutput }/>
+                        <TextGeneral label={`Fecha de ${typeRegister}`} text={typeRegister != 'Salida' ? dayInput : dayOutput} />
+                        <TextGeneral label={`Hora de ${typeRegister}`} text={typeRegister != 'Salida' ? dateInput : dateOutput} />
 
                         <Button
                             fullWidth
@@ -232,7 +246,7 @@ function HistoryItem({ data, children }) {
 
                         {typeChargue === 'Tanques' && (
                             tanques.map((tanque) => (
-                                <TextGeneral key={tanque.tanque} label={'N° de tanque'} text={tanque.tanque}/>
+                                <TextGeneral key={tanque.tanque} label={'N° de tanque'} text={tanque.tanque} />
                             ))
                         )}
 

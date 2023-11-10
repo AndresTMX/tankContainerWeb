@@ -11,8 +11,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 //icons
 import ChatIcon from '@mui/icons-material/Chat';
 
-
-function Step6({ step, nextStep, previusStep }) {
+function Step7({ step, nextStep, previusStep }) {
 
     const IsSmall = useMediaQuery('(max-width:850px)');
     const [state, dispatch] = useContext(DevelopmentContext);
@@ -21,14 +20,14 @@ function Step6({ step, nextStep, previusStep }) {
 
     const mockListCheck = [
         {
-            question: '¿Se cambio la tapa superior?',
+            question: '¿Los tornillos y tuercas de la brida ciega  estan en buenas condiciones y apretados con fuerza de maquina?',
             value: null,
             preview: '',
             image: '',
             coment: '',
         },
         {
-            question: '¿Se cambiaron las mariposas de la tapa?',
+            question: '¿Las argollas de sellos estan en buenas condiciones?',
             value: null,
             preview: '',
             image: '',
@@ -36,35 +35,43 @@ function Step6({ step, nextStep, previusStep }) {
 
         },
         {
-            question: '¿Se cambiaron las argollas de sellos?',
+            question: '¿El tanque puede resellarse apropiadamente?',
             value: null,
             preview: '',
             image: '',
             coment: '',
 
         },
+
+        {
+            question:'¿Las bisagras de las puertas está en optimo funcionamiento?',
+            value: null,
+            preview: '',
+            image: '',
+            coment: '',
+        }
 
     ]
 
-    const stateCheckList = maniobrasCheckList.valvulasDescarga ? maniobrasCheckList.valvulasDescarga.checkList : mockListCheck;
+    const stateCheckList = maniobrasCheckList.tapaderaDomo ? maniobrasCheckList.tapaderaDomo.checkList : mockListCheck;
 
     const { actions, states } = useCheckList(stateCheckList)
     const { ChangueInput, ChangueComent, ChangueImage, DiscardImage, SelectQuestionComent, ToggleModalComent, ValidateInputs } = actions
     const { listCheck, indexQuestion, modalComent } = states
 
     const SaveChanguesOnGloablState = () => {
-        const newState = { ...state.maniobrasCheckList, valvulasDescarga: { checkList: listCheck } }
+        const newState = { ...state.maniobrasCheckList, tapaderaDomo: { checkList: listCheck } }
         dispatch({ type: actionTypes.setManiobrasCheck, payload: newState })
 
-        const inputsEmpty = ValidateInputs()
+        const inputsEmpty = ValidateInputs();
 
         if(inputsEmpty){
-            nextStep(7)
+            nextStep(8)
         }
 
     }
 
-    return (
+    return ( 
         <>
 
             <Paper
@@ -76,7 +83,7 @@ function Step6({ step, nextStep, previusStep }) {
                     padding: '20px',
                     width: '100%'
                 }}>
-                <Typography variant="h6">Revisión de cambios de empaque en las valvulas de descarga</Typography>
+                <Typography variant="h6">Revisión de tapadera superior del domo</Typography>
 
                 <FormGroup
                     sx={{
@@ -108,12 +115,12 @@ function Step6({ step, nextStep, previusStep }) {
                             <Stack flexDirection='row' gap='20px' alignItems='center' justifyContent='center'>
                                 <Stack flexDirection='column' alignItems='center' >
                                     <strong>Si</strong>
-                                    <InputCheck value={item.value ==='si'? true:false} onchangue={() => ChangueInput(index, 'si')} />
+                                    <InputCheck value={item.value === 'si' ? true: false} onchangue={() => ChangueInput(index, 'si')} />
 
                                 </Stack>
                                 <Stack flexDirection='column' alignItems='center'>
                                     <strong>No</strong>
-                                    <InputCheck value={item.value ==='no'? true:false} onchangue={() => ChangueInput(index, 'no')} />
+                                    <InputCheck value={item.value === 'no' ? true: false} onchangue={() => ChangueInput(index, 'no')} />
                                 </Stack>
                             </Stack>
 
@@ -137,7 +144,7 @@ function Step6({ step, nextStep, previusStep }) {
                 <ButtonsNavigationCheck
                     step={step}
                     nextStep={SaveChanguesOnGloablState}
-                    previusStep={() => previusStep(5)} />
+                    previusStep={() => previusStep(6)} />
 
             </Paper>
 
@@ -183,7 +190,7 @@ function Step6({ step, nextStep, previusStep }) {
                 </Container>
             </Modal>
         </>
-    );
+     );
 }
 
-export { Step6 };
+export {Step7};
