@@ -8,7 +8,7 @@ function CustomTabPanel({children, value, index}) {
             aria-labelledby={`simple-tab-${index}`}
         >
             {value === index && (
-                <Box sx={{ p: 3,}}>
+                <Box sx={{paddingTop:'20px'}}>
                    {children}
                 </Box>
             )}

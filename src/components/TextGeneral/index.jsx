@@ -19,12 +19,11 @@ function TextGeneral({ text, label, variant, onClick }) {
             )}
 
              {variant === 'row' && (
-                <Box sx={{display:'flex', alignItems:'center', flexDirection:'row', gap:'20px'}}>
+                <Box sx={{display:'flex', alignItems:'center', flexDirection:'row', gap:'10px'}}>
                     <Typography variant="subtitle2">{label}</Typography>
                     <Box sx={{
-                        backgroundColor:'white',
                         padding:'5px',
-                        borderRadius:'5px'
+                        borderRadius:'5px',
                     }}>
                     <Typography variant='body1'>{text}</Typography>
                     </Box>

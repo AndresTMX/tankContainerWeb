@@ -1,9 +1,10 @@
 //imports hooks
 import { useState, useContext } from "react";
 //imports materialui
-import { Container, Box, Tabs, Tab, Button, Stack, Fade, Typography, Paper, Modal,  } from "@mui/material";
+import { Container, Box, Tabs, Tab, Button, Stack, Fade, Typography, Paper, Modal, } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //import custom components
+import { ContainerScroll } from "../../components/ContainerScroll";
 import { SelectSimple } from "../../components/SelectSimple";
 import { InputText } from "../../components/InputText";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
@@ -15,15 +16,14 @@ import { useRegister } from "../../Hooks/useRegister";
 //notification
 import { Notification } from "../../components/Notification";
 //loader
-import {LoadingState} from "../../components/LoadingState";
+import { LoadingState } from "../../components/LoadingState";
 
 function Vigilancia() {
 
     const [state, dispatch] = useContext(DevelopmentContext);
-    console.log("🚀 ~ file: index.jsx:23 ~ Vigilancia ~ state:", state)
-    const {addRegister } = useRegister()
+    const { addRegister } = useRegister()
 
-    const {registers} = state
+    const { registers } = state
 
     const IsSmall = useMediaQuery('(max-width:900px)');
 
@@ -45,8 +45,8 @@ function Vigilancia() {
         'operador 7',
     ]
 
-    const InputRegisters = state? registers.filter( (register) => register.checkOut === undefined ) : [];
-    const ExitRegisters = state? registers.filter( (register) => register.checkOut != undefined ) : [];
+    const InputRegisters = state ? registers.filter((register) => register.checkOut === undefined) : [];
+    const ExitRegisters = state ? registers.filter((register) => register.checkOut != undefined) : [];
 
     const [modal, setModal] = useState(false)
     const [select, setSelet] = useState('');
@@ -55,7 +55,7 @@ function Vigilancia() {
     const [operator, setOperator] = useState('')
     const [tab, setTab] = useState(0)
     const [numTank, setNumTank] = useState(0)
-    const [dataTank, setDataTank] = useState({numTank1: '', numTank2: '', numTank3: '', numTank4: ''})
+    const [dataTank, setDataTank] = useState({ numTank1: '', numTank2: '', numTank3: '', numTank4: '' })
 
     const handleChangeList = (event) => {
         setSelet(event.target.value);
@@ -87,10 +87,10 @@ function Vigilancia() {
     }
 
     const submitRegister = () => {
-        const register = {select, tracto, typeChargue, operator, numTank, dataTank }
+        const register = { select, tracto, typeChargue, operator, numTank, dataTank }
         addRegister(register)
         CancelSubmit()
-        
+
     }
 
     const CancelSubmit = () => {
@@ -125,9 +125,8 @@ function Vigilancia() {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
+                    alignItems: IsSmall? '': 'center',
                     justifyContent: 'center',
-                    width: '100%',
                 }}
             >
 
@@ -145,122 +144,121 @@ function Vigilancia() {
                         in={tab === 0 ? true : false}
                     >
                         <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            <Typography variant="h6">Formulario de registro</Typography>
                             <form onSubmit={ToggleModalRegister}>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    gap: '15px',
-                                    backgroundColor: 'whitesmoke',
-                                    width: '90vw',
-                                    maxWidth: '400px',
-                                    minWidth: '300px',
-                                    padding: '20px',
-                                    borderRadius: '4px'
-                                }}
-                            >
+                                <Paper
+                                elevation={4}
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        gap: '15px',
+                                        width: '100%',
+                                        maxWidth: '400px',
+                                        minWidth: '300px',
+                                        padding: '20px',
+                                        borderRadius: '4px',
+                                    }}
+                                >
 
-                                <SelectSimple
-                                    required={true}
-                                    width={'100%'}
-                                    title={'Tipo de carga'}
-                                    value={typeChargue}
-                                    options={['Tanque', 'Pipa']}
-                                    onChange={handleChangueTypeChargue}
-                                />
-
-                                {typeChargue === 'Tanque' &&
                                     <SelectSimple
                                         required={true}
                                         width={'100%'}
-                                        title={'Numero de tanques'}
-                                        value={numTank}
-                                        options={[1, 2, 3, 4]}
-                                        onChange={handleNumTank}
-                                    />}
+                                        title={'Tipo de carga'}
+                                        value={typeChargue}
+                                        options={['Tanque', 'Pipa']}
+                                        onChange={handleChangueTypeChargue}
+                                    />
 
-                                {numTank >= 1 && typeChargue === 'Tanque' && (
+                                    {typeChargue === 'Tanque' &&
+                                        <SelectSimple
+                                            required={true}
+                                            width={'100%'}
+                                            title={'Numero de tanques'}
+                                            value={numTank}
+                                            options={[1, 2, 3, 4]}
+                                            onChange={handleNumTank}
+                                        />}
+
+                                    {numTank >= 1 && typeChargue === 'Tanque' && (
+                                        <InputText
+                                            required={true}
+                                            width='100%'
+                                            label={'Tanque #1'}
+                                            value={dataTank.numTank1}
+                                            onChangue={(event) => setDataTank({ ...dataTank, numTank1: event.target.value })}
+                                        />
+                                    )}
+
+                                    {numTank >= 2 && typeChargue === 'Tanque' && (
+                                        <InputText
+                                            required={true}
+                                            width='100%'
+                                            label={'Tanque #2'}
+                                            value={dataTank.numTank2}
+                                            onChangue={(event) => setDataTank({ ...dataTank, numTank2: event.target.value })}
+
+                                        />
+                                    )}
+
+                                    {numTank >= 3 && typeChargue === 'Tanque' && (
+                                        <InputText
+                                            required={true}
+                                            width='100%'
+                                            label={'Tanque #3'}
+                                            value={dataTank.numTank3}
+                                            onChangue={(event) => setDataTank({ ...dataTank, numTank3: event.target.value })}
+
+                                        />
+                                    )}
+
+                                    {numTank >= 4 && typeChargue === 'Tanque' && (
+                                        <InputText
+                                            required={true}
+                                            width='100%'
+                                            label={'Tanque #4'}
+                                            value={dataTank.numTank4}
+                                            onChangue={(event) => setDataTank({ ...dataTank, numTank4: event.target.value })}
+
+                                        />
+                                    )}
+
+                                    <SelectSimple
+                                        required={true}
+                                        width={'100%'}
+                                        title={'Linea transportista'}
+                                        value={select}
+                                        options={listTransporters}
+                                        onChange={handleChangeList}
+                                    />
+
                                     <InputText
                                         required={true}
-                                        width='100%'
-                                        label={'Tanque #1'}
-                                        value={dataTank.numTank1}
-                                        onChangue={(event) => setDataTank({...dataTank, numTank1: event.target.value})}
+                                        width={'100%'}
+                                        label='Numero de tracto'
+                                        value={tracto}
+                                        onChangue={handleChangeTracto}
                                     />
-                                )}
 
-                                {numTank >= 2 && typeChargue === 'Tanque' && (
-                                    <InputText
+                                    <SelectSimple
                                         required={true}
-                                        width='100%'
-                                        label={'Tanque #2'}
-                                        value={dataTank.numTank2}
-                                        onChangue={(event) => setDataTank({...dataTank, numTank2: event.target.value})}
-
+                                        width={'100%'}
+                                        title={'Operador'}
+                                        value={operator}
+                                        options={listOperators}
+                                        onChange={(e) => handleChangueOperator(e.target.value)}
                                     />
-                                )}
 
-                                {numTank >= 3 && typeChargue === 'Tanque' && (
-                                    <InputText
-                                        required={true}
-                                        width='100%'
-                                        label={'Tanque #3'}
-                                        value={dataTank.numTank3}
-                                        onChangue={(event) => setDataTank({...dataTank, numTank3: event.target.value})}
-
-                                    />
-                                )}
-
-                                {numTank >= 4 && typeChargue === 'Tanque' && (
-                                    <InputText
-                                        required={true}
-                                        width='100%'
-                                        label={'Tanque #4'}
-                                        value={dataTank.numTank4}
-                                        onChangue={(event) => setDataTank({...dataTank, numTank4: event.target.value})}
-
-                                    />
-                                )}
-
-                                <SelectSimple
-                                    required={true}
-                                    width={'100%'}
-                                    title={'Linea transportista'}
-                                    value={select}
-                                    options={listTransporters}
-                                    onChange={handleChangeList}
-                                />
-
-                                <InputText
-                                    required={true}
-                                    width={'100%'}
-                                    label='Numero de tracto'
-                                    value={tracto}
-                                    onChangue={handleChangeTracto}
-                                />
-
-                                <SelectSimple
-                                    required={true}
-                                    width={'100%'}
-                                    title={'Operador'}
-                                    value={operator}
-                                    options={listOperators}
-                                    onChange={(e) => handleChangueOperator(e.target.value)}
-                                />
-
-                                <Button
-                                    type="submit"
-                                    fullWidth
-                                    variant="contained">
-                                    Registrar
-                                </Button>
+                                    <Button
+                                        type="submit"
+                                        fullWidth
+                                        variant="contained">
+                                        Registrar
+                                    </Button>
 
 
-                            </Box>
-                                </form>
+                                </Paper>
+                            </form>
                         </Container>
                     </Fade>
                 </CustomTabPanel>
@@ -270,23 +268,21 @@ function Vigilancia() {
                         timeout={500}
                         in={tab === 1 ? true : false}
                     >
-                        <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            <Typography variant="h6">Entradas</Typography>
-                            <Box>
-                                <Paper elevation={4} sx={{ padding: '20px'}}>
-                                    <Stack spacing='5px'>
-                                        {
-                                            InputRegisters.map((item, index) => (
-                                                <HistoryItem
-                                                    key={index}
-                                                    data={item}
-                                                />
-                                            ))
-                                        }
-                                    </Stack>
-                                </Paper>
-                            </Box>
-                        </Container>
+                        <Box>
+                            <ContainerScroll height='78vh'>
+                                <Stack gap='20px'>
+                                    {
+                                        InputRegisters.map((item, index) => (
+                                            <HistoryItem
+                                                type='vigilancia'
+                                                key={index}
+                                                data={item}
+                                            />
+                                        ))
+                                    }
+                                </Stack>
+                            </ContainerScroll>
+                        </Box>
                     </Fade>
                 </CustomTabPanel>
 
@@ -295,23 +291,21 @@ function Vigilancia() {
                         timeout={500}
                         in={tab === 2 ? true : false}
                     >
-                        <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            <Typography variant="h6">Salidas</Typography>
                             <Box>
-                                <Paper elevation={4} sx={{ padding: '20px' }}>
-                                    <Stack spacing='5px'>
+                                <ContainerScroll height='78vh'>
+                                    <Stack gap='20px'>
                                         {
                                             ExitRegisters.map((item, index) => (
                                                 <HistoryItem
+                                                   type='vigilancia'
                                                     key={index}
                                                     data={item}
                                                 />
                                             ))
                                         }
                                     </Stack>
-                                </Paper>
+                                </ContainerScroll>
                             </Box>
-                        </Container>
                     </Fade>
                 </CustomTabPanel>
 
@@ -320,22 +314,22 @@ function Vigilancia() {
             <Modal open={modal}>
                 <Fade in={modal} timeout={500}>
                     <Container>
-                        <Box sx={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100vh'}}>
-                            <Paper sx={{display: 'flex', flexDirection:'column', padding:'20px', gap:'20px'}}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+                            <Paper sx={{ display: 'flex', flexDirection: 'column', padding: '20px', gap: '20px' }}>
                                 <Typography>¿Seguro que quiere enviar este registro?</Typography>
                                 <Stack flexDirection='row' justifyContent='space-between' gap='10px'>
-                                    <Button 
-                                    fullWidth 
-                                    variant="contained" 
-                                    color="primary" 
-                                    onClick={submitRegister}
+                                    <Button
+                                        fullWidth
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={submitRegister}
                                     >Enviar</Button>
-                                    <Button 
-                                    fullWidth 
-                                    variant="contained" 
-                                    color="error" on
-                                    onClick={CancelSubmit}>Can
-                                    celar</Button>
+                                    <Button
+                                        fullWidth
+                                        variant="contained"
+                                        color="error" on
+                                        onClick={CancelSubmit}>Can
+                                        celar</Button>
                                 </Stack>
 
                             </Paper>
@@ -344,11 +338,11 @@ function Vigilancia() {
                 </Fade>
             </Modal>
 
-            <Notification/>
+            <Notification />
 
-            <LoadingState duration={1000}/>
+            <LoadingState duration={1000} />
 
-            
+
         </>
     );
 }

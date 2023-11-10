@@ -76,7 +76,7 @@ function Step6({ step, nextStep, previusStep }) {
                     padding: '20px',
                     width: '100%'
                 }}>
-                <Typography variant="h6">Revisión de cambios de empaque en las valvulas de descarga</Typography>
+                <Typography variant="h6">Revisión de cambios de empaque en la tapadera superior</Typography>
 
                 <FormGroup
                     sx={{

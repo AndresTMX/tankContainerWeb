@@ -27,6 +27,7 @@ function Step3({ step, nextStep, previusStep }) {
             preview: '',
             image: '',
             coment: '',
+            part:' O-ring de piston'
         },
         {
             question: '¿Cambios en el empaque del asiento del piston?',
@@ -34,6 +35,7 @@ function Step3({ step, nextStep, previusStep }) {
             preview: '',
             image: '',
             coment: '',
+            part:'asiento del piston'
 
         },
         {
@@ -42,6 +44,7 @@ function Step3({ step, nextStep, previusStep }) {
             preview: '',
             image: '',
             coment: '',
+            part:'valvula de alivio'
 
         },
         {
@@ -50,6 +53,7 @@ function Step3({ step, nextStep, previusStep }) {
             preview: '',
             image: '',
             coment: '',
+            part:'brida ciega'
 
         },
 
@@ -186,7 +190,7 @@ function Step3({ step, nextStep, previusStep }) {
 
                             <Button
                                 variant="contained"
-                                onClick={() => nextStep(4)}>
+                                onClick={() => nextStep(5)}>
                                 Ok
                             </Button>
                         </Stack>

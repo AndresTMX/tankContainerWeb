@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
-import { Container, Box, Stack, Button, Fade, Paper, Typography } from "@mui/material";
-// import { CheckList } from "../../components/Checklist";
+import { Container, Box, Stack, Fade, Paper, Typography, Modal } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { ContainerScroll } from "../../components/ContainerScroll";
 import { useCheckList } from "../../Hooks/useChecklist";
 import { DetailsCheckList } from "../../components/DetailsCheckList";
 import { HistoryItem } from "../../components/HistoryItem";
@@ -12,11 +13,11 @@ import { DevelopmentContext } from "../../Context";
 import { CheckListMaiobras } from "../../sections/CheckListManiobras";
 
 function Maniobras() {
-
+    const IsSmall = useMediaQuery('(max-width:900px)');
     const [state, dispatch] = useContext(DevelopmentContext);
 
-    const {registers} = state;
-    
+    const { registers } = state;
+
     const filterHistory = registers.filter(item => item.checkOut === undefined)
 
     //inicio del hook de checklist
@@ -80,9 +81,10 @@ function Maniobras() {
 
     const [tank, setTank] = useState(null);
 
-    const selectTank = (idRegiser) => {
-        const select = filterHistory.find((item) => item.id === idRegiser)
-        setTank(select)
+    const selectTank = (idRegiser, numTank) => {
+        const selectRegister = filterHistory.find((item) => item.id === idRegiser);
+        const selectTank = selectRegister.tanques.find((tank) => tank.tanque === numTank);
+        setTank({ data: selectRegister, tank: selectTank })
     }
 
     const discardTank = () => {
@@ -91,94 +93,95 @@ function Maniobras() {
 
     return (
         <>
-            <Container 
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                minHeight: '80vh',
-                marginTop:'20px'
-            }}>
+            <Container
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minHeight: '80vh',
+                    marginTop: '20px',
+                    padding:'0px',
+                }}>
+
 
                 {!tank &&
+                    <Container
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '20px',
+                            justifyContent: 'center',
+                            alignItems: !IsSmall ? 'center' : ''
+                        }}>
+                        <Typography variant="h6">Contenedores en cola de revisión</Typography>
+                        <Box sx={{ maxWidth: '900px' }}>
+                            <ContainerScroll height='75vh'>
+                                <Stack spacing='20px'>
+                                    {
+                                        filterHistory.map((item, index) => (
+                                            <HistoryItem
+                                                key={index}
+                                                id={item.id}
+                                                data={item}
+                                                type='maniobras'
+                                                select={selectTank}
+                                            />))
+                                    }
+                                </Stack>
+                            </ContainerScroll>
+                        </Box>
+
+
+                    </Container>}
+
+
+                {tank &&
                     <Fade
                         timeout={500}
-                        in={!tank}>
+                        in={tank}
+                    >
+                        <Container
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}>
+                
+                                <Paper
+                                    elevation={4}
+                                    sx={{
+                                        width: '100%',
+                                        maxWidth: '900px',
+                                        padding: '20px',
+                                    }}
+                                >
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: '10px',
+                                        }}
+                                    >
+                                        <DetailsCheckList
+                                            state={state}
+                                            data={tank}
+                                            action={discardTank}
+                                            ChangueNextStep={ChangueNextStep}
+                                            nextStep={nextStep}
+                                            submit={() => { }}
+                                        />
 
-                        <Container 
-                        sx={{
-                            display:'flex',
-                             flexDirection:'column', 
-                             gap:'20px', 
-                             alignItems:'center', 
-                             justifyContent:'center'
-                             }}>
-                            <Typography variant="h6">Contenedores en cola de revisión</Typography>
-                            <Box>
-                                <Paper elevation={4} sx={{ padding: '20px', }}>
-                                    <Stack spacing='5px'>
-                                        {
-                                            filterHistory.map((item, index) => (
-                                                <HistoryItem
-                                                    key={index}
-                                                    data={item}
-                                                >
-                                                    <Button 
-                                                    variant="contained" 
-                                                    color="primary"
-                                                    onClick={() => selectTank(item.id)}
-                                                    >Check</Button>
-                                                </HistoryItem>
-                                            ))
-                                        }
-                                    </Stack>
+                                        <CheckListMaiobras />
+
+                                    </Box>
                                 </Paper>
-                            </Box>
-
-
                         </Container>
                     </Fade>
                 }
 
-                {tank && 
-                <Fade
-                timeout={500}
-                in={tank}
-                >                
-                <Box
-                sx={{
-                    display:'flex',
-                    flexDirection:'column',
-                    gap:'10px',
-                }}
-                >
-                    <h3>Check list de inspección</h3>
-                    <DetailsCheckList
-                     data={tank}
-                     action={discardTank}
-                     ChangueNextStep={ChangueNextStep}
-                     nextStep={nextStep}
-                     submit={() => {}}
-                    />
-
-                    <CheckListMaiobras/>
-
-                    {/* <CheckList
-                        listInputs={listCheck}
-                        ChangueInput={ChangueInput}
-                        ChangueComent={ChangueComent}
-                        ChangueImage={ChangueImage}
-                        DiscardImage={DiscardImage}
-                    /> */}
-
-
-
-                </Box>
-                </Fade>
-                }
-
             </Container>
 
-            <Notification/>
+            <Notification />
         </>
     );
 }

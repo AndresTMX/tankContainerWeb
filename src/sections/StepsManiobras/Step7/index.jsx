@@ -60,7 +60,7 @@ function Step7({ step, nextStep, previusStep }) {
     const { listCheck, indexQuestion, modalComent } = states
 
     const SaveChanguesOnGloablState = () => {
-        const newState = { ...state.maniobrasCheckList, tapaderaDomo: { checkList: listCheck } }
+        const newState = { ...state.maniobrasCheckList, complete: true, tapaderaDomo: { checkList: listCheck } }
         dispatch({ type: actionTypes.setManiobrasCheck, payload: newState })
 
         const inputsEmpty = ValidateInputs();

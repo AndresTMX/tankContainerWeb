@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { DevelopmentContext } from "../../../Context";
 import { actionTypes } from "../../../Reducers";
 import { Typography, Stack, Paper, FormGroup, Divider, IconButton, Button, Container, Modal, Fade, Box } from "@mui/material";
+import { ContainerScroll } from "../../../components/ContainerScroll";
 import { useCheckList } from "../../../Hooks/useChecklist";
 import { InputImage } from "../../../components/InputImage";
 import { InputText } from "../../../components/InputText";
@@ -82,13 +83,15 @@ function Step5({ step, nextStep, previusStep }) {
                     </Stack>
                 </FormGroup>
 
-                {cuviertaValvula?.type === 'cabinet' && (
-                    <ChceckListCabinet step={step} nextStep={nextStep} previusStep={previusStep} />
-                )}
+                    {cuviertaValvula?.type === 'cabinet' && (
+                        <ChceckListCabinet step={step} nextStep={nextStep} previusStep={previusStep} />
+                    )}
 
-                {cuviertaValvula?.type === 'bucket' && (
-                    <ChceckListBucket step={step} nextStep={nextStep} previusStep={previusStep} />
-                )}
+                    {cuviertaValvula?.type === 'bucket' && (
+                        <ChceckListBucket step={step} nextStep={nextStep} previusStep={previusStep} />
+                    )}
+
+               
 
 
             </Paper>
