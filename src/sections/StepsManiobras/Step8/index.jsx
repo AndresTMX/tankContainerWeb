@@ -15,8 +15,9 @@ function Step8({previusStep}) {
     const TypeValvula = TypeValvula3A? 'Valvula 3A': 'Valvula Cierre 3';
 
     const TypeCubierataValvula = maniobrasCheckList.cuviertaValvula.type;
-    const CheckListCubiertaValvula = maniobrasCheckList.cuviertaValvula?.checkList ? maniobrasCheckList.cuviertaValvula.checkList.filter((question) => question.value != null): [];
-    const TapaderaDomoCheckList = maniobrasCheckList.tapaderaDomo?.checkList ? maniobrasCheckList.tapaderaDomo.checkList.filter((question) => question.value != null):[];
+    const ValvulasDescargaChecklist = maniobrasCheckList.valvulasDescarga?.checkList? maniobrasCheckList.valvulasDescarga.checkList:[];
+    const CheckListCubiertaValvula = maniobrasCheckList.cuviertaValvula?.checkList ? maniobrasCheckList.cuviertaValvula.checkList: [];
+    const TapaderaDomoCheckList = maniobrasCheckList.tapaderaDomo?.checkList ? maniobrasCheckList.tapaderaDomo.checkList:[];
     const EmpaquesTapaderaSuperior = maniobrasCheckList.empaques?.checkList? maniobrasCheckList.empaques.checkList: [];
     //si es 3A
     const cambiosValvula3A = maniobrasCheckList?.valvula3A? maniobrasCheckList.valvula3A.checkList.filter((question) => question.value != null):[]
@@ -95,6 +96,15 @@ function Step8({previusStep}) {
                             ))}   
                    </Stack>
                     <Divider orientation={'horizontal'} flexItem />
+                   </Box>
+
+                   <Box sx={{display:'flex', flexDirection:'column', gap:'10px'}}>
+                   <strong>Empaques de la valvula de descarga </strong>
+                   <Stack gap='5px'>
+                            {ValvulasDescargaChecklist.map((item) => (
+                                <TextGeneral key={item.question} label={item.question} text={item.value} color="warning"/>
+                            ))}   
+                   </Stack>
                    </Box>
 
                    <Box sx={{display:'flex', flexDirection:'column', gap:'10px'}}>
