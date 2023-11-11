@@ -241,12 +241,10 @@ function Prelavado() {
       
    ]
 
-   const [tab, setTab] = useState(0)
-   const [fade, setFade] = useState(false)
+   const [tab, setTab] = useState(1)
 
    const ToggleTab = (event, newValue) => {
       setTab(newValue)
-      setFade(!fade)
    }
 
     return ( 
@@ -255,12 +253,13 @@ function Prelavado() {
 
             <Tabs value={tab} onChange={ToggleTab} >
                 <Tab label="Agenda de lavados"  />
+                <Tab label="Lavados pendientes" />
                 <Tab label="Mapa de almacen" />
             </Tabs>
 
              <CustomTabPanel value={tab} index={0}>
                 <Container>
-                   <Fade in={!fade} timeout={500}>
+                   <Fade in={tab === 0? true:false} timeout={500}>
                       <Box
                          sx={{
                             display: 'flex',
@@ -277,7 +276,24 @@ function Prelavado() {
 
              <CustomTabPanel value={tab} index={1}>
                 <Container>
-                   <Fade in={fade} timeout={500}>
+                   <Fade in={tab === 1? true:false} timeout={500}>
+                      <Box
+                         sx={{
+                            display: 'flex',
+                            placeItems: 'center'
+                         }}
+                      >
+                         <Paper elevation={4} sx={{ padding: '10px' }}>
+                          
+                         </Paper>
+                      </Box>
+                   </Fade>
+                </Container>
+             </CustomTabPanel>
+
+             <CustomTabPanel value={tab} index={2}>
+                <Container>
+                   <Fade in={tab === 2? true:false} timeout={500}>
                       <Box
                          sx={{
                             display: 'flex',

@@ -1,7 +1,8 @@
 //imports hooks
 import { useState } from "react";
 //imports materialui
-import { Container, Box, Tabs, Tab, Button, Stack, Fade, Paper, Divider } from "@mui/material";
+import { Container, Box, Tabs, Tab, Button, Stack, Fade, Paper, Divider, Typography } from "@mui/material";
+import { Searcher } from "../../components/Searcher";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { MaintenancesItem } from "../../components/MaintenancesITem";
@@ -102,9 +103,23 @@ function Reparaciones() {
 
             <CustomTabPanel value={tab} index={0}>
                 <Fade timeout={500} in={tab === 0? true: false}>
-                    <Box>
-                    <h1>Reparaciones Pendientes</h1>
-                    <p>Todos las reparaciones pendientes</p>
+                    <Box 
+                    sx={{
+                        display:'flex',
+                        flexDirection:'column',
+                        gap:'10px',
+                    }}
+                    >
+
+                <Stack spacing='5px'>
+                <Typography variant="h6">Reparaciones Pendientes</Typography>
+                <Typography variant="subtitle2">Todos las reparaciones pendientes</Typography>
+                </Stack>
+
+                <Stack alignItems='flex-end'>
+                <Searcher/>
+                </Stack>
+
                     <Paper 
                     elevation={4}
                     sx={{
@@ -123,9 +138,22 @@ function Reparaciones() {
 
             <CustomTabPanel value={tab} index={1}>
                 <Fade timeout={500} in={tab === 1? true: false}>
-                <Box>
-                <h1>Reparaciones en proceso</h1>
-                <p>Todos las reparaciones en proceso</p>
+                <Box 
+                sx={{
+                    display:'flex',
+                    flexDirection:'column',
+                    gap:'10px',
+                }}
+                >
+
+                 <Stack spacing='5px'>
+                <Typography variant="h6">Reparaciones en proceso</Typography>
+                <Typography variant="subtitle2">Todos las reparaciones en proceso</Typography>
+                </Stack>
+
+                <Stack alignItems='flex-end'>
+                <Searcher/>
+                </Stack>
 
                 <Paper 
                     elevation={4}
@@ -145,9 +173,21 @@ function Reparaciones() {
 
             <CustomTabPanel value={tab} index={2}>
                 <Fade timeout={500} in={tab === 2? true: false}>
-                <Box>
-                <h1>Reparaciones realizadas</h1>
-                <p>Ultimas 20 reparaciones</p>
+                <Box 
+                sx={{
+                    display:'flex',
+                    flexDirection:'column',
+                    gap:'10px',
+                }}>
+
+                <Stack spacing='5px'>
+                <Typography variant="h6">Reparaciones realizadas</Typography>
+                <Typography variant="subtitle2">Ultimas 20 reparaciones</Typography>
+                </Stack>
+
+                <Stack alignItems='flex-end'>
+                <Searcher/>
+                </Stack>
 
                 <Paper 
                     elevation={4}
