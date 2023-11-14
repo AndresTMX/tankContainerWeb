@@ -20,6 +20,7 @@
     "@fullcalendar/timegrid": "^6.1.9",
     "@mui/icons-material": "^5.14.15",
     "@mui/material": "^5.14.15",
+    "@supabase/supabase-js": "^2.38.4",
     "dayjs": "^1.11.10",
     "import": "^0.0.6",
     "localforage": "^1.10.0",

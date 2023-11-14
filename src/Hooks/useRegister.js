@@ -1,14 +1,39 @@
-import { useState, useContext, } from "react";
+import { useState, useContext, useEffect } from "react";
 import { DevelopmentContext } from "../Context";
 import { actionTypes } from "../Reducers";
 import { currentDate } from "../Helpers/date";
 
+
 function useRegister() {
 
+    const [data, setData ] = useState([]);
+
+    // useEffect(()=> {
+    //     getData()
+    // }, [])
+
+    const getData = async() => {
+        const { response } = await supabase.from("registros").select();
+        setData(response)
+        console.log(response)
+    }
     // const [loading, setLoading] = useState(false);
     const [state, dispatch] = useContext(DevelopmentContext)
 
     const { registers } = state;
+
+    const addRegisterSuppabase = (data) => {
+        const {rol, nombre, puesto, contacto  } = data
+    }
+
+    const addUserSuppabase = async() => {
+        // const {rol, nombre, puesto, contacto  } = data
+
+    //     const { error } = await supabase
+    //    .from('usuarios')
+    //    .insert({rol:"user", nombre:"usuario prueba", puesto:"desarrollador", contacto:"5577828470"})
+    //    console.log(error)
+    }
 
     const openAndCloseNotification = () => {
         dispatch({ type: actionTypes.setLoading, payload: true })
@@ -21,6 +46,8 @@ function useRegister() {
     const addRegister = (newRegister) => {
 
         const { dataTank, numTank, operator, select, tracto, typeChargue } = newRegister;
+
+
 
         const newState = [...registers]
 
@@ -75,7 +102,9 @@ function useRegister() {
 
     }
 
-    return { addRegister }
+
+
+    return { addRegister, addUserSuppabase }
 }
 
 export { useRegister };

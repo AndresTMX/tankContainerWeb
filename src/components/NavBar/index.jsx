@@ -21,6 +21,7 @@ const pages = [
     { to: '/lavado', text: 'Lavado' },
 ];
 const settings = [
+    {to:'/admin', text:'Admin'},
     {to:'/perfil', text:'Perfil'},
     {to:'/', text:'Cerrar Sesión'},
 ];

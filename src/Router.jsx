@@ -1,6 +1,7 @@
 //router
 import { HashRouter, Routes, Route } from "react-router-dom"
 import { UI } from "./UI"
+import { PageAdmin } from "./pages/Admin"
 import { Login } from "./pages/Login"
 import { Perfil } from "./pages/Perfil"
 import { Vigilancia } from "./pages/Vigilancia"
@@ -11,7 +12,7 @@ import { Calidad } from "./pages/Calidad"
 import { Lavado } from "./pages/Lavado"
 import { ErrorPage } from "./pages/Error"
 //theme material ui
-import { ThemeProvider ,createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 let theme = createTheme({
   palette: {
@@ -26,95 +27,125 @@ let theme = createTheme({
 
 //context
 import { DevelopmentProvider } from "./Context"
+import { AuthProvider } from "./Context/AuthContext"
+//route protect
+import { RouteProtect } from "./containers/RouteProtect"
 
 function Router() {
 
   return (
-  <ThemeProvider theme={theme}>
-    <DevelopmentProvider>
-    <HashRouter>
-      <Routes>
+    <ThemeProvider theme={theme}>
+      <AuthProvider>
+        <DevelopmentProvider>
+          <HashRouter>
+            <Routes>
 
-      <Route
-        path="/"
-        element={
-            <Login/>
-        }
-        />
+              <Route
+                path="/"
+                element={
+                  <Login />
+                }
+              />
 
-        <Route
-        path="/perfil"
-        element={
-          <UI>
-            <Perfil/>
-          </UI>
-        }
-        />
+              <Route
+                path="/admin"
+                element={
+                  <RouteProtect>
+                    <UI>
+                      <PageAdmin />
+                    </UI>
+                  </RouteProtect>
+                }
+              />
 
-        <Route
-        path="/vigilancia"
-        element={
-          <UI>
-            <Vigilancia/>
-          </UI>
-        }
-        />
+              <Route
+                path="/perfil"
+                element={
+                 <RouteProtect>
+                   <UI>
+                    <Perfil />
+                  </UI>
+                 </RouteProtect>
+                }
+              />
 
-        <Route
-        path="/maniobras"
-        element={
-          <UI>
-            <Maniobras/>
-          </UI>
-        }
-        />
+              <Route
+                path="/vigilancia"
+                element={
+                 <RouteProtect>
+                   <UI>
+                    <Vigilancia />
+                  </UI>
+                 </RouteProtect>
+                }
+              />
 
-        <Route
-        path="/reparaciones"
-        element={
-          <UI>
-            <Reparaciones/>
-          </UI>
-        }
-        />
+              <Route
+                path="/maniobras"
+                element={
+                  <RouteProtect>
+                    <UI>
+                    <Maniobras />
+                  </UI>
+                  </RouteProtect>
+                }
+              />
 
-        <Route
-        path="/prelavado"
-        element={
-          <UI>
-            <Prelavado/>
-          </UI>
-        }
-        />
+              <Route
+                path="/reparaciones"
+                element={
+                  <RouteProtect>
+                    <UI>
+                    <Reparaciones />
+                  </UI>
+                  </RouteProtect>
+                }
+              />
 
-        <Route
-        path="/calidad"
-        element={
-          <UI>
-            <Calidad/>
-          </UI>
-        }
-        />
+              <Route
+                path="/prelavado"
+                element={
+                  <RouteProtect>
+                    <UI>
+                    <Prelavado />
+                  </UI>
+                  </RouteProtect>
+                }
+              />
 
-        <Route
-        path="/lavado"
-        element={
-          <UI>
-            <Lavado/>
-          </UI>
-        }
-        />
+              <Route
+                path="/calidad"
+                element={
+                 <RouteProtect>
+                   <UI>
+                    <Calidad />
+                  </UI>
+                 </RouteProtect>
+                }
+              />
 
-         <Route
-        path="*"
-        element={<ErrorPage/>}
-        />
+              <Route
+                path="/lavado"
+                element={
+                  <RouteProtect>
+                    <UI>
+                    <Lavado />
+                  </UI>
+                  </RouteProtect>
+                }
+              />
 
-      </Routes>
-    </HashRouter>
-    </DevelopmentProvider>
-  </ThemeProvider>
+              <Route
+                path="*"
+                element={<ErrorPage />}
+              />
+
+            </Routes>
+          </HashRouter>
+        </DevelopmentProvider>
+      </AuthProvider>
+    </ThemeProvider>
   )
 }
 
-export {Router}
+export { Router }

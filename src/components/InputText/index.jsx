@@ -45,6 +45,8 @@ function InputText({ label, variant, value, onChangue, width, type, required }) 
                 <FormControl sx={{ m: 1, width: width ? width : '200px' }} variant="outlined">
                     <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                     <OutlinedInput
+                        value={value}
+                        onChange={onChangue}
                         required={true}
                         id="outlined-adornment-password"
                         type={pass ? 'text' : 'password'}

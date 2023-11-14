@@ -7,8 +7,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import { NavLink } from "react-router-dom";
 //components
 import { InfoUser } from "../../components/InfoUser";
+//suppabase
+import { useRegister } from "../../Hooks/useRegister";
 
 function Perfil() {
+
+   const {addUserSuppabase} = useRegister()
 
    const dataUser = [
       {
@@ -83,6 +87,8 @@ function Perfil() {
 
                </Paper>
             </Box>
+
+            <Button variant='contained' onClick={addUserSuppabase}>Registrar usuario</Button>
 
          </Container>
         </>

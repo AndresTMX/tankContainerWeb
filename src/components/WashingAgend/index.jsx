@@ -4,7 +4,7 @@ import { Container, Box, Paper, Button, IconButton, Stack, Fade } from '@mui/mat
 //dependencies librarie fullcalendarjs
 import { formatDate } from '@fullcalendar/core'
 import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
+// import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { INITIAL_EVENTS, createEventId } from '../../Helpers/calendar'
