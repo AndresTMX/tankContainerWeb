@@ -1,111 +1,153 @@
-import { createContext } from "react";
 import { Container } from "@mui/material";
-import { Navigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import { useSupabase } from "../../Hooks/useSupabase";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useSession } from "../../Hooks/sessionManagment/useSession";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useLocation, useNavigate, Navigate } from "react-router-dom";
+import { useSupabase } from "../../Hooks/useSupabase";
 
 const AuthContext = createContext();
 
 function AuthProvider({ children }) {
+  const { supabase } = useSupabase();
+  const [key, setKey] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-    const { supabase } = useSupabase();
+  const logIn = async (email, password) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      setKey(data.user.id);
+      const session = JSON.stringify(data.user);
+      sessionStorage.setItem(data.user.id, session);
+      setLoading(false)
+      navigate("/admin")
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    const logIn = async (email, password) => {
-        try {
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password,
-            })
-            console.log("🚀 ~ file: index.jsx:21 ~ logIn ~ data:", data)
-            console.log(email, password)
-        } catch (error) {
-            
-        }
+  const logOut = async () => {
+    try {
+      console.log('cerrar sesion')
+      const { error } = await supabase.auth.signOut();
+      navigate("/")
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getAuth = async () => {
+    setLoading(true)
+    const { data, error } = await supabase.auth.getSession();
+
+    if (data.session != null) {
+      const newKey = data.session.user.id;
+      const newSession = JSON.stringify(data.session.user);
+      setKey(newKey);
+      sessionStorage.setItem(newKey, newSession);
+      setLoading(false);
     }
 
-    const logOut = async () => {
-        try {
-            const { error } = await supabase.auth.signOut()
-        } catch (error) {
-
-        }
+    if (data.session === null) {
+      navigate("/");
+      setLoading(false);
     }
+  };
 
-    const auth = { logIn, logOut }
+  const auth = { logIn, logOut, getAuth, setLoading, key, loading };
 
-    return (
-        <AuthContext.Provider value={auth}>
-            {children}
-        </AuthContext.Provider>
-    );
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }
 
 export { AuthProvider, AuthContext };
 
-
 function RouteProtect({ children }) {
 
-    const { session, loading } = useSession();
-    const location = useLocation()
-    const routeCurrent = location.pathname;
+  const { key, loading, getAuth, setLoading } = useContext(AuthContext);
+  const navigate = useNavigate()
 
-    const routes = [
-        {
-            rol: 'admin',
-            routes: ['/', '/admin', 'developer', '/perfil', '/vigilancia', '/maniobras', '/reparaciones', '/prelavado', '/calidad', '/lavado']
-        },
-        {
-            rol: 'developer',
-            routes: ['/', '/admin', 'developer', '/perfil', '/vigilancia', '/maniobras', '/reparaciones', '/prelavado', '/calidad', '/lavado']
-        },
-        {
-            rol: 'vigilante',
-            routes: ['/', '/vigilancia',]
-        },
-    ]
+  useEffect(() => {
+    getAuth();
+  }, []);
 
-    function asignedModules(routes, userRol, pathname) {
+  const session = JSON.parse(sessionStorage.getItem(key));
+  const location = useLocation();
+  const routeCurrent = location.pathname;
 
-        const licenses = routes.find((route) => route.rol === userRol);
+  const routes = [
+    {
+      rol: "admin",
+      routes: [
+        "/",
+        "/admin",
+        "/perfil",
+        "/vigilancia",
+        "/maniobras",
+        "/reparaciones",
+        "/prelavado",
+        "/calidad",
+        "/lavado",
+      ],
+    },
+    {
+      rol: "developer",
+      routes: [
+        "/",
+        "/admin",
+        "/perfil",
+        "/vigilancia",
+        "/maniobras",
+        "/reparaciones",
+        "/prelavado",
+        "/calidad",
+        "/lavado",
+      ],
+    },
+    {
+      rol: "vigilante",
+      routes: ["/", "/vigilancia"],
+    },
+  ];
 
-        const routesAprove = licenses?.routes;
+  function asignedModules(routes, userRol, pathname) {
+    const licenses = routes.find((route) => route.rol === userRol);
 
-        if (routesAprove.includes(pathname)) {
-            return children
-        } else {
-            return <Navigate to={routesAprove[1]} />
-        }
+    const routesAprove = licenses?.routes;
 
+    if (routesAprove.includes(pathname)) {
+      return children;
+    } else {
+      return <Navigate to={routesAprove[1]} />;
     }
+  }
 
-    if (loading) {
-        return (
-            <Container
-                maxWidth='xxs'
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: '100vh',
-                    backgroundColor: 'whitesmoke',
+  if (loading) {
+    return (
+      <Container
+        maxWidth="xxs"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          backgroundColor: "whitesmoke",
+        }}
+      >
+        <CircularProgress />
+      </Container>
+    );
+  }
 
+  if(!session){
+    navigate("/")
+  }
 
-                }}>
-                <CircularProgress />
-            </Container>
-        )
-    }
-
-    if (!loading && !session) {
-        return <Navigate to="/" />;
-    }
-
-    return asignedModules(routes, session.rol, routeCurrent);
-
-
+  if (!loading) {
+    return asignedModules(routes, session.user_metadata.rol, routeCurrent);
+  }
 }
 
 export { RouteProtect };

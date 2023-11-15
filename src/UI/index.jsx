@@ -11,7 +11,6 @@ function UI({ children }) {
           flexDirection: 'column',
           justifyContent: 'center',
           paddingBottom: '50px',
-          overflow: 'hidden',
           "&::-webkit-scrollbar": {
             width: "8px",
           },

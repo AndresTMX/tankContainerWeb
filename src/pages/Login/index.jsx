@@ -1,16 +1,15 @@
+import '../../main.css'
 import { useContext } from 'react';
 import { AuthContext } from '../../Context/AuthContext';
-import '../../main.css'
 import { useState, useEffect } from "react";
 import { Container, Box, Paper, Button, Typography, Fade } from "@mui/material";
 import { InputText } from "../../components/InputText";
-import { NavLink } from 'react-router-dom';
 
 function Login() {
     
+    const { logIn:initSession, logOut } = useContext(AuthContext);
     const [user, setUser] = useState({ email: '', password: '' })
     const [animate, setAnimate] = useState(false)
-    const { logIn, logOut } = useContext(AuthContext);
 
 
     useEffect(() => {
@@ -20,11 +19,9 @@ function Login() {
     }, [])
 
 
-    const submit = (e) => {
+    const submit = async(e) => {
         e.preventDefault()
-        logIn(user.email, user.password)
-        console.log(user.email, user.password)
-
+        const {data, error} = await initSession(user.email, user.password)
     }
 
     return (
@@ -90,18 +87,14 @@ function Login() {
                                 onChangue={(e)=> setUser({...user, password: e.target.value})}
                             />
 
-                            <NavLink 
-                            to='/vigilancia'
-                            style={{width:'100%'}}
-                            >
-                                 <Button
+                          
+                            <Button
                                 fullWidth
                                 variant="contained"
                                 type="submit"
                             >
                                 Iniciar Sesión
                             </Button>
-                            </NavLink>
                            
                         </Paper>
                     </form>

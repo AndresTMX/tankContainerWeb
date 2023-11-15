@@ -1,5 +1,6 @@
 import './../../main.css'
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { AuthContext } from "../../Context/AuthContext/"
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -11,23 +12,30 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { NavLink } from 'react-router-dom';
-
-const pages = [
-    { to: '/vigilancia', text: 'Vigilancia' },
-    { to: '/maniobras', text: 'Maniobras' },
-    { to: '/reparaciones', text: 'Reparación' },
-    { to: '/prelavado', text: 'Prelavado' },
-    { to: '/calidad', text: 'Calidad' },
-    { to: '/lavado', text: 'Lavado' },
-];
-const settings = [
-    {to:'/admin', text:'Admin'},
-    {to:'/perfil', text:'Perfil'},
-    {to:'/', text:'Cerrar Sesión'},
-];
+import { Button } from '@mui/material';
 
 function NavBar() {
 
+    const {  logIn, logOut, getAuth, setLoading, key, loading  } = useContext(AuthContext);
+
+    const finishSession = async() => {
+        const error = await logOut()
+    }
+
+    const pages = [
+        { to: '/vigilancia', text: 'Vigilancia' },
+        { to: '/maniobras', text: 'Maniobras' },
+        { to: '/reparaciones', text: 'Reparación' },
+        { to: '/prelavado', text: 'Prelavado' },
+        { to: '/calidad', text: 'Calidad' },
+        { to: '/lavado', text: 'Lavado' },
+    ];
+    const settings = [
+        {to:'/admin', text:'Admin', type: 'link'},
+        {to:'/perfil', text:'Perfil', type: 'link'},
+        {to:'/', text:'Cerrar Sesión', type: 'action', onClick:finishSession },
+    ];    
+    
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
   
@@ -98,8 +106,8 @@ function NavBar() {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            {pages.map((page, index) => (
-                                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                            {pages.map((page) => (
+                                <MenuItem key={page.text} onClick={handleCloseNavMenu}>
                                     <NavLink
                                         className='link'
                                         style={({ isActive }) => ({
@@ -111,7 +119,6 @@ function NavBar() {
                                             fontSize:isActive? '18px' : '16px'
                                         })}
                                         to={page.to}
-                                        key={page.text}
                                     >
                                         {page.text}
                                     </NavLink>
@@ -139,6 +146,7 @@ function NavBar() {
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map((page) => (
                             <NavLink
+                            key={page.text}
                             className='link'
                             style={({ isActive }) => ({
                                 textDecoration:'none',
@@ -149,7 +157,7 @@ function NavBar() {
                                 fontSize:isActive? '18px' : '16px'
                             })}
                             to={page.to}
-                            key={page.text}
+                            
                         >
                             {page.text}
                         </NavLink>
@@ -180,7 +188,9 @@ function NavBar() {
                         >
                             {settings.map((setting) => (
                                 <MenuItem key={setting.text} onClick={handleCloseUserMenu}>
-                                    <NavLink
+                                    <>
+                                    {setting.type === 'link' && (
+                                        <NavLink
                                         className='link'
                                         style={({ isActive }) => ({
                                             textDecoration: 'none',
@@ -194,6 +204,17 @@ function NavBar() {
                                     >
                                         {setting.text}
                                     </NavLink>
+                                    )}
+
+                                    {setting.type === 'action' && (
+                                        <Button
+                                        onClick={setting.onClick}
+                                        color='error'>
+                                            {setting.text}
+                                        </Button>
+                                    )}
+                                    
+                                    </>
                                 </MenuItem>
                             ))}
                         </Menu>

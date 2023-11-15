@@ -38,7 +38,12 @@ function Router() {
         <AuthProvider>
           <DevelopmentProvider>
             <Routes>
-              <Route path="/" element={<Login />} />
+
+              <Route 
+              path="/" 
+              element={
+                  <Login />
+              } />
 
               <Route
                 path="/admin"
