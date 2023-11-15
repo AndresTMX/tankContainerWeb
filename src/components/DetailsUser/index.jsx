@@ -1,16 +1,6 @@
 import { Paper, Stack, Typography } from "@mui/material";
-import { useSupabase } from "../../Hooks/useSupabase";
 
 function DetailsUser({user}) {
-
-    // const {supabase} = useSupabase()
-
-    // const getSesion = async() => {
-    //     const { data, error } = await supabase.auth.getSession()
-    //     console.log("🚀 ~ file: index.jsx:8 ~ getSesion ~ data:", data)
-    // }
-
-    // getSesion()
     
     return (
         <>

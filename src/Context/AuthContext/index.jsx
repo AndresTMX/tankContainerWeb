@@ -2,12 +2,11 @@ import { Container } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate, Navigate } from "react-router-dom";
-import { useSupabase } from "../../Hooks/useSupabase";
+import supabase from "../../supabase";
 
 const AuthContext = createContext();
 
 function AuthProvider({ children }) {
-  const { supabase } = useSupabase();
   const [key, setKey] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();

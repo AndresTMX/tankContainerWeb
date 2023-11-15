@@ -1,11 +1,10 @@
 import { useContext, useState } from "react";
-import { useSupabase } from "../useSupabase";
 import { DevelopmentContext } from "../../Context";
 import { actionTypes } from "../../Reducers";
+import supabase from "../../supabase";
 
 function useCreateUser() {
-
-    const { supabase } = useSupabase();
+    
     const [state, dispatch] = useContext(DevelopmentContext);
     const roles = ['admin', 'developer', 'vigilante', 'Maniobrista', 'Reparador', 'Lavador', 'Gestor de calidad'];
     const [dataUser, setDataUser] = useState({ rol: "", first_name: "", last_name: "", position: "", phone: "", email: "", password: "" })

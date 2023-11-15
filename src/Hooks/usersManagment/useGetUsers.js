@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { useSupabase } from "../useSupabase";
+import supabase from "../../supabase";
 
 function useGetUsers() {
 
-    const { supabase } = useSupabase();
     const [users, setUsers] = useState([])
     const [update, setUpdate] = useState(false);
 

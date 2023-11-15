@@ -138,7 +138,7 @@ function PageAdmin() {
 
                     <Box>
                         {users.map((user) => (
-                            <DetailsUser user={user} />
+                            <DetailsUser key={user.first_name} user={user} />
                         ))}
                     </Box>
                 </Box>
