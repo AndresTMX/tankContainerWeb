@@ -42,7 +42,15 @@ function useCreateUser() {
                     {
                         email: dataUser.email,
                         password: dataUser.password,
-                    }
+                        options:{
+                            data: {
+                                 rol: dataUser.rol,
+                                 first_name: dataUser.first_name,
+                                 last_name: dataUser.last_name,
+                                 phone: dataUser.phone
+                              }
+                        }
+                    }, 
                 )
 
                 const { error: errorAddData } = await supabase

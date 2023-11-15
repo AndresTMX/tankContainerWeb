@@ -1,51 +1,44 @@
 //router
-import { HashRouter, Routes, Route } from "react-router-dom"
-import { UI } from "./UI"
-import { PageAdmin } from "./pages/Admin"
-import { Login } from "./pages/Login"
-import { Perfil } from "./pages/Perfil"
-import { Vigilancia } from "./pages/Vigilancia"
-import { Maniobras } from "./pages/Maniobras"
-import { Reparaciones } from "./pages/Reparaciones"
-import { Prelavado } from "./pages/Prelavado"
-import { Calidad } from "./pages/Calidad"
-import { Lavado } from "./pages/Lavado"
-import { ErrorPage } from "./pages/Error"
+import { HashRouter, Routes, Route } from "react-router-dom";
+import { UI } from "./UI";
+import { PageAdmin } from "./pages/Admin";
+import { Login } from "./pages/Login";
+import { Perfil } from "./pages/Perfil";
+import { Vigilancia } from "./pages/Vigilancia";
+import { Maniobras } from "./pages/Maniobras";
+import { Reparaciones } from "./pages/Reparaciones";
+import { Prelavado } from "./pages/Prelavado";
+import { Calidad } from "./pages/Calidad";
+import { Lavado } from "./pages/Lavado";
+import { ErrorPage } from "./pages/Error";
 //theme material ui
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 let theme = createTheme({
   palette: {
     primary: {
-      main: '#0092ba',
+      main: "#0092ba",
     },
     secondary: {
-      main: '#025E73',
+      main: "#025E73",
     },
   },
 });
 
 //context
-import { DevelopmentProvider } from "./Context"
-import { AuthProvider } from "./Context/AuthContext"
+import { DevelopmentProvider } from "./Context";
+import { AuthProvider } from "./Context/AuthContext";
 //route protect
-import { RouteProtect } from "./containers/RouteProtect"
+import { RouteProtect } from "./Context/AuthContext";
 
 function Router() {
-
   return (
-    <ThemeProvider theme={theme}>
-      <AuthProvider>
-        <DevelopmentProvider>
-          <HashRouter>
+    <HashRouter>
+      <ThemeProvider theme={theme}>
+        <AuthProvider>
+          <DevelopmentProvider>
             <Routes>
-
-              <Route
-                path="/"
-                element={
-                  <Login />
-                }
-              />
+              <Route path="/" element={<Login />} />
 
               <Route
                 path="/admin"
@@ -61,22 +54,22 @@ function Router() {
               <Route
                 path="/perfil"
                 element={
-                 <RouteProtect>
-                   <UI>
-                    <Perfil />
-                  </UI>
-                 </RouteProtect>
+                  <RouteProtect>
+                    <UI>
+                      <Perfil />
+                    </UI>
+                  </RouteProtect>
                 }
               />
 
               <Route
                 path="/vigilancia"
                 element={
-                 <RouteProtect>
-                   <UI>
-                    <Vigilancia />
-                  </UI>
-                 </RouteProtect>
+                  <RouteProtect>
+                    <UI>
+                      <Vigilancia />
+                    </UI>
+                  </RouteProtect>
                 }
               />
 
@@ -85,8 +78,8 @@ function Router() {
                 element={
                   <RouteProtect>
                     <UI>
-                    <Maniobras />
-                  </UI>
+                      <Maniobras />
+                    </UI>
                   </RouteProtect>
                 }
               />
@@ -96,8 +89,8 @@ function Router() {
                 element={
                   <RouteProtect>
                     <UI>
-                    <Reparaciones />
-                  </UI>
+                      <Reparaciones />
+                    </UI>
                   </RouteProtect>
                 }
               />
@@ -107,8 +100,8 @@ function Router() {
                 element={
                   <RouteProtect>
                     <UI>
-                    <Prelavado />
-                  </UI>
+                      <Prelavado />
+                    </UI>
                   </RouteProtect>
                 }
               />
@@ -116,11 +109,11 @@ function Router() {
               <Route
                 path="/calidad"
                 element={
-                 <RouteProtect>
-                   <UI>
-                    <Calidad />
-                  </UI>
-                 </RouteProtect>
+                  <RouteProtect>
+                    <UI>
+                      <Calidad />
+                    </UI>
+                  </RouteProtect>
                 }
               />
 
@@ -129,23 +122,19 @@ function Router() {
                 element={
                   <RouteProtect>
                     <UI>
-                    <Lavado />
-                  </UI>
+                      <Lavado />
+                    </UI>
                   </RouteProtect>
                 }
               />
 
-              <Route
-                path="*"
-                element={<ErrorPage />}
-              />
-
+              <Route path="*" element={<ErrorPage />} />
             </Routes>
-          </HashRouter>
-        </DevelopmentProvider>
-      </AuthProvider>
-    </ThemeProvider>
-  )
+          </DevelopmentProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </HashRouter>
+  );
 }
 
-export { Router }
+export { Router };

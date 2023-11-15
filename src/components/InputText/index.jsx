@@ -49,7 +49,7 @@ function InputText({ label, variant, value, onChangue, width, type, required }) 
                         onChange={onChangue}
                         required={true}
                         id="outlined-adornment-password"
-                        type={pass ? 'text' : 'password'}
+                        type={'password'}
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton

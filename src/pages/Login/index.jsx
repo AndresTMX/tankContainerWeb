@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+import { AuthContext } from '../../Context/AuthContext';
 import '../../main.css'
 import { useState, useEffect } from "react";
 import { Container, Box, Paper, Button, Typography, Fade } from "@mui/material";
@@ -8,6 +10,9 @@ function Login() {
     
     const [user, setUser] = useState({ email: '', password: '' })
     const [animate, setAnimate] = useState(false)
+    const { logIn, logOut } = useContext(AuthContext);
+
+
     useEffect(() => {
         setTimeout(() => {
             setAnimate(true)
@@ -17,6 +22,9 @@ function Login() {
 
     const submit = (e) => {
         e.preventDefault()
+        logIn(user.email, user.password)
+        console.log(user.email, user.password)
+
     }
 
     return (
@@ -68,10 +76,10 @@ function Login() {
                             </Typography>
 
                             <InputText
-                                type='email'
                                 label='email'
                                 width='250px'
                                 value={user.email}
+                                onChangue={(e)=> setUser({...user, email: e.target.value})}
                             />
 
                             <InputText
@@ -79,6 +87,7 @@ function Login() {
                                 label='password'
                                 width='250px'
                                 value={user.password}
+                                onChangue={(e)=> setUser({...user, password: e.target.value})}
                             />
 
                             <NavLink 
