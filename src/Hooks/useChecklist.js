@@ -1,27 +1,26 @@
 import { actionTypes } from "../Reducers";
-import { useState, useContext} from "react";
+import { useState, useContext } from "react";
 import { DevelopmentContext } from "../Context";
 
 function useCheckList(listInputs) {
 
-    // const [nextStep, setNextStep] = useState('')
     const [state, dispatch] = useContext(DevelopmentContext);
     const [listCheck, SetListCheck] = useState(listInputs);
     const [indexQuestion, setIndexQuestion] = useState(0);
     const [modalComent, setModalComent] = useState(false);
-    
-    const ValidateInputs = () => {
-        
-        const validateInputs =  listCheck.filter((question) => question.value === null).length
 
-        if(validateInputs > 0){
-            dispatch({type: actionTypes.setNotification, payload: 'Complete el checklist para continuar'})
+    const ValidateInputs = () => {
+
+        const validateInputs = listCheck.filter((question) => question.value === null).length
+
+        if (validateInputs > 0) {
+            dispatch({ type: actionTypes.setNotification, payload: 'Complete el checklist para continuar' })
             return false
         }
 
         return true
     }
-    
+
     const ChangueInput = (indexInput, newValue) => {
 
         const copyState = [...listCheck]
@@ -29,7 +28,7 @@ function useCheckList(listInputs) {
         copyState[indexInput].value = newValue
 
         SetListCheck(copyState)
-    } 
+    }
     //     const copyState = [...listCheck]
 
     //     copyState[indexInput].no = !copyState[indexInput].no
@@ -50,7 +49,7 @@ function useCheckList(listInputs) {
 
         const file = event.target.files[0];
         const urlImage = URL.createObjectURL(file);
-        if(file){
+        if (file) {
             copyState[indexInput].image = file
             copyState[indexInput].preview = urlImage
         }
@@ -61,16 +60,12 @@ function useCheckList(listInputs) {
     const DiscardImage = (indexInput) => {
         const copyState = [...listCheck]
 
-            copyState[indexInput].image = ''
-            copyState[indexInput].preview = ''
-        
+        copyState[indexInput].image = ''
+        copyState[indexInput].preview = ''
+
 
         SetListCheck(copyState)
     }
-
-    // const ChangueNextStep = (event) => {
-    //     setNextStep(event.target.value)
-    // }
 
     const SelectQuestionComent = (index) => {
         setIndexQuestion(index)
@@ -83,11 +78,11 @@ function useCheckList(listInputs) {
     }
 
 
-    const actions = {ChangueInput, ChangueComent, ChangueImage, DiscardImage,SelectQuestionComent, ToggleModalComent, ValidateInputs}
+    const actions = { ChangueInput, ChangueComent, ChangueImage, DiscardImage, SelectQuestionComent, ToggleModalComent, ValidateInputs }
 
-    const states = {listCheck, indexQuestion, modalComent}
+    const states = { listCheck, indexQuestion, modalComent }
 
-    return {actions, states}
+    return { actions, states }
 }
 
-export {useCheckList};
+export { useCheckList };

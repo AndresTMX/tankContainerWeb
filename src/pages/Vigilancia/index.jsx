@@ -12,20 +12,15 @@ import { HistoryItem } from "../../components/HistoryItem";
 //context
 import { DevelopmentContext } from "../../Context";
 //hook
-import { useRegister } from "../../Hooks/useRegister";
+import { useFormRegister } from "../../Hooks/useFormRegister";
 //notification
 import { Notification } from "../../components/Notification";
 //loader
 import { LoadingState } from "../../components/LoadingState";
+import { actionTypes } from "../../Reducers";
 
 function Vigilancia() {
 
-    const [state, dispatch] = useContext(DevelopmentContext);
-    const { addRegister } = useRegister()
-
-    const { registers } = state
-
-    const IsSmall = useMediaQuery('(max-width:900px)');
 
     const listTransporters = [
         'transportista 1',
@@ -45,78 +40,36 @@ function Vigilancia() {
         'operador 7',
     ]
 
+    const IsSmall = useMediaQuery('(max-width:900px)');
+    const [state, dispatch] = useContext(DevelopmentContext);
+    const { statesFormRegister, functionsFormRegister } = useFormRegister(listOperators, listTransporters);
+
+    const { typeChargue, tracto, select, operator, numTank, dataTank } = statesFormRegister;
+    const { handleChangeList, handleNumTank, handleChangeTracto, handleChangueTypeChargue, handleChangueOperator, addRegister, setDataTank } = functionsFormRegister;
+
+    const { registers, notification } = state
+
     const InputRegisters = state ? registers.filter((register) => register.checkOut === undefined) : [];
     const ExitRegisters = state ? registers.filter((register) => register.checkOut != undefined) : [];
 
     const [modal, setModal] = useState(false)
-    const [select, setSelet] = useState('');
-    const [tracto, setTracto] = useState('');
-    const [typeChargue, setTypeChargue] = useState('');
-    const [operator, setOperator] = useState('')
     const [tab, setTab] = useState(0)
-    const [numTank, setNumTank] = useState(0)
-    const [dataTank, setDataTank] = useState({ numTank1: '', numTank2: '', numTank3: '', numTank4: '' })
 
-    const handleChangeList = (event) => {
-        setSelet(event.target.value);
-    };
-
-    const handleNumTank = (event) => {
-        setNumTank(event.target.value)
+    const ToggleModalForm = (event) => {
+        setModal(!modal)
     }
 
-    const handleChangeTracto = (event) => {
-        setTracto(event.target.value);
-    };
-
-    const handleChangueTypeChargue = (event) => {
-        setTypeChargue(event.target.value)
-    }
-
-    const handleChangueOperator = (value) => {
-        setOperator(value)
+    const ToggleModalNotification = () => {
+        dispatch({ type: actionTypes.setNotification, payload: !notification })
     }
 
     const ToggleTab = (event, newValue) => {
         setTab(newValue)
     }
 
-    const ToggleModalRegister = (event) => {
-        event.preventDefault();
-        setModal(!modal)
-    }
-
     const submitRegister = () => {
-        const register = { select, tracto, typeChargue, operator, numTank, dataTank }
-        addRegister(register)
-        CancelSubmit()
-
-    }
-
-    const CancelSubmit = () => {
         setModal(!modal)
-    }
-
-    const clearInputs = () => {
-        setSelet('')
-        setTracto('')
-        setTypeChargue('')
-        setDataTank([
-            {
-                numTank1: '',
-            },
-            {
-                numTank2: '',
-            },
-            {
-                numTank3: '',
-            },
-            {
-                numTank4: '',
-            },
-        ])
-        setOperator('')
-        setNumTank(0)
+        addRegister()
     }
 
     return (
@@ -125,7 +78,7 @@ function Vigilancia() {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: IsSmall? '': 'center',
+                    alignItems: IsSmall ? '' : 'center',
                     justifyContent: 'center',
                 }}
             >
@@ -144,9 +97,9 @@ function Vigilancia() {
                         in={tab === 0 ? true : false}
                     >
                         <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            <form onSubmit={ToggleModalRegister}>
+                            <form onSubmit={ToggleModalForm}>
                                 <Paper
-                                elevation={4}
+                                    elevation={4}
                                     sx={{
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -154,7 +107,6 @@ function Vigilancia() {
                                         alignItems: 'center',
                                         gap: '15px',
                                         width: '100%',
-                                        maxWidth: '400px',
                                         minWidth: '300px',
                                         padding: '20px',
                                         borderRadius: '4px',
@@ -291,21 +243,21 @@ function Vigilancia() {
                         timeout={500}
                         in={tab === 2 ? true : false}
                     >
-                            <Box>
-                                <ContainerScroll height='78vh'>
-                                    <Stack gap='20px'>
-                                        {
-                                            ExitRegisters.map((item, index) => (
-                                                <HistoryItem
-                                                   type='vigilancia'
-                                                    key={index}
-                                                    data={item}
-                                                />
-                                            ))
-                                        }
-                                    </Stack>
-                                </ContainerScroll>
-                            </Box>
+                        <Box>
+                            <ContainerScroll height='78vh'>
+                                <Stack gap='20px'>
+                                    {
+                                        ExitRegisters.map((item, index) => (
+                                            <HistoryItem
+                                                type='vigilancia'
+                                                key={index}
+                                                data={item}
+                                            />
+                                        ))
+                                    }
+                                </Stack>
+                            </ContainerScroll>
+                        </Box>
                     </Fade>
                 </CustomTabPanel>
 
@@ -328,7 +280,7 @@ function Vigilancia() {
                                         fullWidth
                                         variant="contained"
                                         color="error" on
-                                        onClick={CancelSubmit}>Can
+                                        onClick={ToggleModalForm}>Can
                                         celar</Button>
                                 </Stack>
 

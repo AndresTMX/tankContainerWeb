@@ -126,6 +126,7 @@ function NavBar() {
                             ))}
                         </Menu>
                     </Box>
+
                     <Box
                      sx={{
                         mr: 2,
@@ -137,12 +138,13 @@ function NavBar() {
                         textDecoration: 'none',
                     }}
                     >
-                       <img 
+                       {/* <img 
                        height='50px'
                        width='auto'
                        src='src/assets/TankContainer.png'
-                       alt='logo'/>
+                       alt='logo'/> */}
                     </Box>
+
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map((page) => (
                             <NavLink
@@ -165,9 +167,9 @@ function NavBar() {
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
-                        <Tooltip title="Open settings">
+                        <Tooltip title="Ajustes de usuario">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                <Avatar alt="user"/>
                             </IconButton>
                         </Tooltip>
                         <Menu
