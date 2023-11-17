@@ -8,6 +8,7 @@ function useCreateUser() {
     const [state, dispatch] = useContext(DevelopmentContext);
     const roles = ['admin', 'developer', 'vigilante', 'Maniobrista', 'Reparador', 'Lavador', 'Gestor de calidad'];
     const [dataUser, setDataUser] = useState({ rol: "", first_name: "", last_name: "", position: "", phone: "", email: "", password: "" })
+    const [modal, setModal] = useState({form: false})
     const [error, setError] = useState(null);
 
     const validateDataUser = () => {
@@ -75,7 +76,11 @@ function useCreateUser() {
 
     }
 
-    return { dataUser, setDataUser, createUser }
+    const toggleForm = () => {
+        setModal({...modal, form:!modal.form })
+    }
+
+    return { dataUser, setDataUser, createUser, toggleForm, modal }
 }
 
 export { useCreateUser };

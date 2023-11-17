@@ -1,8 +1,5 @@
-import { useState, useContext, } from "react";
+import { useState } from "react";
 import { usePostRegister } from "./registersManagment/usePostRegister";
-import { DevelopmentContext } from "../Context";
-import { actionTypes } from "../Reducers";
-import { currentDate } from "../Helpers/date";
 
 function useFormRegister() {
 
@@ -10,8 +7,8 @@ function useFormRegister() {
     const [typeChargue, setTypeChargue] = useState('');
     const [tracto, setTracto] = useState('');
     const [select, setSelet] = useState('');
-    const [operator, setOperator] = useState('')
-    const [numTank, setNumTank] = useState(0)
+    const [operator, setOperator] = useState('');
+    const [numTank, setNumTank] = useState(0);
     const [dataTank, setDataTank] = useState({ numTank1: '', numTank2: '', numTank3: '', numTank4: '' })
 
     const handleChangeList = (event) => {
@@ -53,7 +50,8 @@ function useFormRegister() {
                     registers.push({
                         numero:value,
                         carga: typeChargue,
-                        operador:operator
+                        operador:operator,
+                        linea: select
                     })
                 }
              });
@@ -61,12 +59,12 @@ function useFormRegister() {
             registers.push({
                 numero: tracto,
                 carga: typeChargue,
-                operador:operator
+                operador:operator,
+                linea: select
             })
         }
 
         sendRegisters(registers)
-
     }
 
     const statesFormRegister = { typeChargue,tracto,select,operator,numTank, dataTank  }

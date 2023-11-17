@@ -35,7 +35,14 @@ function usePostRegister() {
         try {
             const { data, error } = await supabase
                 .from(tableRegistersDetails)
-                .insert({ registro_id: idRegister, carga: register.carga, numero: register.numero,})
+                .insert(
+                    { 
+                      registro_id: idRegister,
+                      carga: register.carga, 
+                      numero: register.numero, 
+                      linea: register.linea,
+                      operador_id:register.operador,
+                    })
                 .select()
         } catch (error) {
             console.log(error)

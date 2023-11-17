@@ -7,24 +7,46 @@ function useGetOperators() {
     const [operators, setOperators] = useState([])
     const [loadingOperators, setLoadingOperators] = useState(null)
     const [errorOperators, setErrorOperators] = useState(null)
+    const [update, setUpdate] = useState(false)
 
     useEffect(() => {
-        getOperators();
-    }, [])
+        const cache = JSON.parse(localStorage.getItem('operadores'));
+        if(!cache){
+            getOperators();
+        }
+
+        if(cache){
+            setOperators(cache)
+        }
+    }, [update])
 
 
     const getOperators = async () => {
+        setLoadingOperators(true)
         try {
-            setLoadingOperators(true)
             const { data, error } = await supabase
                 .from(tablaOperadores)
                 .select()
             setOperators(data)
             setLoadingOperators(false)
+            localStorage.setItem('operadores', JSON.stringify(data))
         } catch (error) {
-        setErrorOperators(error)
+            setErrorOperators(error)
+            setLoadingOperators(false)
+        }
     }
-}
 
+    const updateOperators = () => {
+        localStorage.removeItem('operadores');
+        setUpdate(!update)
+    }
+
+    const states = {operators, loadingOperators}
+
+    const functions = {updateOperators}
+
+    return {states, functions}
+
+}
 
 export { useGetOperators };

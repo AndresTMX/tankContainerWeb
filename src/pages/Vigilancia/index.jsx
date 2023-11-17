@@ -1,7 +1,7 @@
 //imports hooks
 import { useState, useContext } from "react";
 //imports materialui
-import { Container, Box, Tabs, Tab, Button, Stack, Fade, Typography, Paper, Modal, } from "@mui/material";
+import { Container, Box, Tabs, Tab, Button, Stack, Fade, Typography, Paper, Modal, IconButton } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //import custom components
 import { ContainerScroll } from "../../components/ContainerScroll";
@@ -13,14 +13,27 @@ import { HistoryItem } from "../../components/HistoryItem";
 import { DevelopmentContext } from "../../Context";
 //hook
 import { useFormRegister } from "../../Hooks/useFormRegister";
+import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";
 //notification
 import { Notification } from "../../components/Notification";
 //loader
 import { LoadingState } from "../../components/LoadingState";
 import { actionTypes } from "../../Reducers";
+//icon
+import UpdateIcon from '@mui/icons-material/Update';
 
 function Vigilancia() {
 
+    const { states, functions } = useGetOperators();
+
+    const { loadingOperators, operators } = states;
+
+    const { updateOperators } = functions;
+
+    const operatorsName = !loadingOperators ? operators.map((operator) => ({
+        id: operator.id,
+        nombre: operator.nombre
+    })) : [];
 
     const listTransporters = [
         'transportista 1',
@@ -30,19 +43,9 @@ function Vigilancia() {
         'transportista 5',
     ]
 
-    const listOperators = [
-        'operador 1',
-        'operador 2',
-        'operador 3',
-        'operador 4',
-        'operador 5',
-        'operador 6',
-        'operador 7',
-    ]
-
     const IsSmall = useMediaQuery('(max-width:900px)');
     const [state, dispatch] = useContext(DevelopmentContext);
-    const { statesFormRegister, functionsFormRegister } = useFormRegister(listOperators, listTransporters);
+    const { statesFormRegister, functionsFormRegister } = useFormRegister();
 
     const { typeChargue, tracto, select, operator, numTank, dataTank } = statesFormRegister;
     const { handleChangeList, handleNumTank, handleChangeTracto, handleChangueTypeChargue, handleChangueOperator, addRegister, setDataTank } = functionsFormRegister;
@@ -97,6 +100,27 @@ function Vigilancia() {
                         in={tab === 0 ? true : false}
                     >
                         <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                            <Paper 
+                                elevation='2'
+                                sx={{
+                                paddingLeft:'10px',
+                                paddingRight:'10px'
+                                }}>
+                                <Stack 
+                                width='100%' 
+                                flexDirection='row' 
+                                alignItems='center' 
+                                justifyContent='space-between'>
+                                    <Typography>
+                                        Actualizar operadores
+                                    </Typography>
+                                    <IconButton 
+                                    color="primary"
+                                    onClick={updateOperators}> 
+                                        <UpdateIcon/>
+                                    </IconButton>
+                                </Stack>
+                            </Paper>
                             <form onSubmit={ToggleModalForm}>
                                 <Paper
                                     elevation={4}
@@ -112,7 +136,6 @@ function Vigilancia() {
                                         borderRadius: '4px',
                                     }}
                                 >
-
                                     <SelectSimple
                                         required={true}
                                         width={'100%'}
@@ -193,11 +216,12 @@ function Vigilancia() {
                                     />
 
                                     <SelectSimple
+                                        type={'obj'}
                                         required={true}
                                         width={'100%'}
                                         title={'Operador'}
                                         value={operator}
-                                        options={listOperators}
+                                        options={operatorsName}
                                         onChange={(e) => handleChangueOperator(e.target.value)}
                                     />
 

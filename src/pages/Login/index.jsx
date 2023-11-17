@@ -1,7 +1,6 @@
 import '../../main.css'
-import { useContext } from 'react';
+import { useState, useEffect, useContext } from "react";
 import { AuthContext } from '../../Context/AuthContext';
-import { useState, useEffect } from "react";
 import { Container, Box, Paper, Button, Typography, Fade } from "@mui/material";
 import { InputText } from "../../components/InputText";
 
