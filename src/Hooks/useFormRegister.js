@@ -75,7 +75,7 @@ function useFormRegister() {
       });
     }
     console.log(registers);
-    sendRegisters(registers)
+    sendRegisters(registers, 'entrada')
     clearInputs()
   };
 

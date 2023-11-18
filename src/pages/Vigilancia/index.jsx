@@ -4,11 +4,9 @@ import { useState, useContext } from "react";
 import { Container, Box, Tabs, Tab, Button, Stack, Fade, Typography, Paper, Modal, IconButton } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //import custom components
-import { ContainerScroll } from "../../components/ContainerScroll";
 import { SelectSimple } from "../../components/SelectSimple";
 import { InputText } from "../../components/InputText";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
-import { HistoryItem } from "../../components/HistoryItem";
 //context
 import { DevelopmentContext } from "../../Context";
 //hook
@@ -132,7 +130,7 @@ function Vigilancia() {
                                         alignItems: 'center',
                                         gap: '15px',
                                         width: '100%',
-                                        minWidth: '300px',
+                                        minWidth: '200px',
                                         padding: '20px',
                                         borderRadius: '4px',
                                     }}

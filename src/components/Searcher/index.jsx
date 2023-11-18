@@ -1,4 +1,4 @@
-import { Box, IconButton, TextField, FormControl , Paper, InputBase} from "@mui/material";
+import { IconButton, Paper, InputBase} from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 
 function Searcher() {
@@ -9,7 +9,8 @@ function Searcher() {
             display:'flex',
             alignItems:'center',
             justifyContent:'space-between',
-            width:'300px'
+            width:'100%',
+            maxWidth:'400px'
         }}
         >
             <InputBase 

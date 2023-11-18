@@ -51,9 +51,9 @@ function usePostRegister() {
         }
     }
 
-    const sendRegisters = async(data) => {
+    const sendRegisters = async(data, type) => {
         dispatch({type:actionTypes.setLoading, payload: true})
-        const registerData = await addRegisterData('entrada'); 
+        const registerData = await addRegisterData(type); 
         const dataValues = Object.values(data);
         const promises = dataValues.map(async (register) => {
             try {

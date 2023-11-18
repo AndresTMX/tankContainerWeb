@@ -1,24 +1,27 @@
 import { useState } from "react";
 import { Box, Button, IconButton, Chip, Stack, Modal, Typography, Divider, Fade, Paper } from "@mui/material";
 import { TextGeneral } from "../TextGeneral";
+//hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { usePostRegister } from "../../Hooks/registersManagment/usePostRegister";
+//icons
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
 import InfoIcon from '@mui/icons-material/Info';
+//helpers 
 import { dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
 
-function HistoryItem({ data, id, type, select }) {
+function HistoryItem({ data, type }) {
 
+    const { sendRegisters } = usePostRegister();
     const IsSmall = useMediaQuery('(max-width:900px)');
     const IsExtraSmall = useMediaQuery('(max-width:450px)');
 
-    // //datos
+    //datos
 
     const linea = data.registros_detalles[0].transportistas.name;
-
     const tracto = data.registros_detalles[0].tracto;
     const tanques = data.registros_detalles.map((registro) => ({
         id: registro.id,
@@ -49,12 +52,12 @@ function HistoryItem({ data, id, type, select }) {
         setModal({ ...modal, modal1: !modal.modal1 })
     }
 
-    const ToggleModalInfoDate = () => {
-        setModal({ ...modal, modal2: !modal.modal2 })
+    const sendExitRegister = (register) => {
+        console.log(register)
     }
 
-    const ToggleModalInfoChargue = () => {
-        setModal({ ...modal, modal3: !modal.modal3 })
+    const checkRegister = (register) => {
+        console.log(register)
     }
 
     return (
@@ -66,7 +69,6 @@ function HistoryItem({ data, id, type, select }) {
                 padding: '10px',
             }}>
 
-            {type === 'vigilancia' &&
                 <Stack
                     spacing='8px'
                     flexDirection='column'>
@@ -79,60 +81,71 @@ function HistoryItem({ data, id, type, select }) {
                     >
 
                         <Stack
-                         flexDirection='row'
-                         alignItems='center'
-                         flexWrap='wrap'
-                         gap='10px'
+                            flexDirection='row'
+                            alignItems='center'
+                            flexWrap='wrap'
+                            gap='10px'
                         >
-                        <Chip
-                            size="small"
-                            color={typeRegister === 'entrada' ? 'success' : 'warning'}
-                            label={typeRegister}
-                            icon={
-                                typeRegister === 'entrada' ?
-                                    <KeyboardDoubleArrowRightIcon />
-                                    :
-                                    <KeyboardDoubleArrowLeftIcon />
-                            }
-                            sx={{
-                                maxWidth: '100px',
-                                fontWeight: 500,
-                                padding: '5px',
-                            }}
-                        />
+                            <Chip
+                                size="small"
+                                color={typeRegister === 'entrada' ? 'success' : 'warning'}
+                                label={typeRegister}
+                                icon={
+                                    typeRegister === 'entrada' ?
+                                        <KeyboardDoubleArrowRightIcon />
+                                        :
+                                        <KeyboardDoubleArrowLeftIcon />
+                                }
+                                sx={{
+                                    maxWidth: '100px',
+                                    fontWeight: 500,
+                                    padding: '5px',
+                                }}
+                            />
 
-                        <Chip
-                            size="small"
-                            color='secondary'
-                            label={dayInput}
-                            icon={<CalendarTodayIcon />}
-                            sx={{
-                                width: '120px',
-                                fontWeight: 500,
-                                padding: '5px'
-                            }}
-                        />
+                            <Chip
+                                size="small"
+                                color='secondary'
+                                label={dayInput}
+                                icon={<CalendarTodayIcon />}
+                                sx={{
+                                    width: '120px',
+                                    fontWeight: 500,
+                                    padding: '5px'
+                                }}
+                            />
 
-                        <Chip
-                            size="small"
-                            color='info'
-                            label={dateInput}
-                            icon={<AccessTimeIcon />}
-                            sx={{
-                                maxWidth: '90px',
-                                fontWeight: 500,
-                                padding: '5px'
-                            }}
-                        />
+                            <Chip
+                                size="small"
+                                color='info'
+                                label={dateInput}
+                                icon={<AccessTimeIcon />}
+                                sx={{
+                                    maxWidth: '90px',
+                                    fontWeight: 500,
+                                    padding: '5px'
+                                }}
+                            />
                         </Stack>
 
-                        {typeChargue == 'Pipa' && (
-                        <Button 
-                        size="small"
-                        variant="contained" 
-                        color="info">
-                        marcar salida
-                        </Button>
+                        {(type === 'vigilancia' && typeChargue == 'Pipa') && (
+                            <Button
+                                onClick={() => sendExitRegister(data)}
+                                size="small"
+                                variant="contained"
+                                color="info">
+                                marcar salida
+                            </Button>
+                        )}
+
+                        {type === 'maniobras' && (
+                            <Button
+                                onClick={() => checkRegister(data)}
+                                size="small"
+                                variant="contained"
+                                color="info">
+                                check
+                            </Button>
                         )}
 
                     </Stack>
@@ -181,7 +194,7 @@ function HistoryItem({ data, id, type, select }) {
                         </Stack>
                     </Box>
 
-                    {typeChargue === 'Tanque' && (
+                    {(typeChargue === 'Tanque') && (
                         <Stack
                             justifyContent='center'
                             spacing='10px'
@@ -204,12 +217,26 @@ function HistoryItem({ data, id, type, select }) {
                                             label={`# ${index + 1}`}
                                             text={tanque.tanque} />
 
-                                        <Button 
-                                        size="small"
-                                        variant="contained" 
-                                        color="info">
-                                        marcar salida
-                                        </Button>
+
+                                        {(type === 'vigilancia' ) && (
+                                             <Button
+                                             onClick={() => sendExitRegister(data)}
+                                            size="small"
+                                            variant="contained"
+                                            color="info">
+                                            marcar salida
+                                         </Button>
+                                        )}
+
+                                        {(type === 'maniobras' ) && (
+                                             <Button
+                                             onClick={() => {}}
+                                             size="small"
+                                             variant="contained"
+                                             color="info">
+                                             Check
+                                         </Button>
+                                        )}
 
                                     </Box>
                                     {numeroTanques != (index + 1) && <Divider orientation={'horizontal'} flexItem />}
@@ -217,7 +244,7 @@ function HistoryItem({ data, id, type, select }) {
                             ))}
                         </Stack>
                     )}
-                </Stack>}
+                </Stack>
 
             {/* {type === 'maniobras' &&
                 <Stack
@@ -240,10 +267,9 @@ function HistoryItem({ data, id, type, select }) {
 
                         <Chip
                             color='info'
-                            label={typeRegister === 'Entrada' ? dateInput : dateOutput}
-                            icon={<AccessTimeIcon />}
+                            label={typeRegister}
+                            icon={<AccessTimeIcon/>}
                             sx={{ fontWeight: 500, paddingRight: '2px' }}
-                            onClick={ToggleModalInfoDate}
                         />
 
                         <Stack
@@ -315,8 +341,6 @@ function HistoryItem({ data, id, type, select }) {
                     )}
                 </Stack>} */}
 
-
-
             <Modal
                 open={modal.modal1}
                 sx={{
@@ -364,55 +388,6 @@ function HistoryItem({ data, id, type, select }) {
 
             </Modal>
 
-            <Modal
-                open={modal.modal3}
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    position: 'absolute',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-
-                }}
-            >
-                <Fade
-                    timeout={500}
-                    in={modal.modal3}
-                >
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '15px',
-                            alignItems: 'start',
-                            justifyContent: 'center',
-                            backgroundColor: 'white',
-                            width: 'auto',
-                            padding: '20px',
-                            borderRadius: '4px'
-                        }}
-                    >
-                        <Typography variant='h6'>{`Informacion de la carga `}</Typography>
-
-                        {typeChargue === 'Tanques' && (
-                            tanques.map((tanque) => (
-                                <TextGeneral key={tanque.tanque} label={'N° de tanque'} text={tanque.tanque} />
-                            ))
-                        )}
-
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            color='error'
-                            onClick={ToggleModalInfoChargue}>
-                            cerrar
-                        </Button>
-
-                    </Box>
-                </Fade>
-
-
-            </Modal>
         </Paper>
     );
 }
