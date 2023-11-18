@@ -1,13 +1,14 @@
+import { ConnectingAirportsOutlined } from "@mui/icons-material";
 import supabase from "../../supabase";
 import { useState, useEffect } from "react";
 
 function useGetTransporters() {
 
     const tableTransporters = 'transportistas';
+    const cache = JSON.parse(localStorage.getItem(tableTransporters));
     const [updateTransporters, setUpdateTransporters] = useState(false);
     const [loadingTransporters, setLoadingTransporters] = useState();
     const [errorTransporter, setErrorTransporter] = useState(null);
-    const cache = JSON.parse(localStorage.getItem(tableTransporters));
     const [transporters, setTransporters] = useState([]);
 
     useEffect(() => {
@@ -37,8 +38,8 @@ function useGetTransporters() {
     }
 
     const updateAllTransports = () => {
-        localStorage.removeItem(tableTransporters);
-        setUpdateTransporters(!updateTransporters)
+            localStorage.removeItem(tableTransporters);
+            setUpdateTransporters(!updateTransporters);
     }
 
     return { loadingTransporters, errorTransporter, updateAllTransports, transporters }

@@ -3,32 +3,44 @@ import { Box, Button, IconButton, Chip, Stack, Modal, Typography, Divider, Fade,
 import { TextGeneral } from "../TextGeneral";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
 import InfoIcon from '@mui/icons-material/Info';
+import { dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
 
 function HistoryItem({ data, id, type, select }) {
 
     const IsSmall = useMediaQuery('(max-width:900px)');
-    // const IsExtraSmall = useMediaQuery('(max-width:450px)');
-    //datos
-    const checkIn = data.checkIn;
-    const linea = data.linea;
-    const tracto = data.tracto;
-    const tanques = data?.tanques;
-    const operador = data?.operador;
-    const checkOut = data?.checkOut;
+    const IsExtraSmall = useMediaQuery('(max-width:450px)');
+
+    // //datos
+
+    const linea = data.registros_detalles[0].transportistas.name;
+
+    const tracto = data.registros_detalles[0].tracto;
+    const tanques = data.registros_detalles.map((registro) => ({
+        id: registro.id,
+        tanque: registro.numero_tanque
+    }));
+    const operador = data.registros_detalles[0].operadores;
+
     //numero de tanques por carga
-    const tanquesNum = tanques ? tanques.length : 0;
+    const numeroTanques = data.registros_detalles.length;
+
     //tipo de carga
-    const typeRegister = checkOut === undefined ? 'Entrada' : 'Salida';
-    const typeChargue = tanques ? 'Tanques' : 'Pipa';
+    const typeRegister = data.tipo_registro;
+
+    const typeChargue = data.registros_detalles[0].carga;
+
     //fecha y hora de entrada formateada
-    const dayInput = checkIn ? `${checkIn.$D}/${checkIn.$H}/${checkIn.$y}` : '00:00'
-    const dateInput = checkIn ? `${checkIn.$H}:${checkIn.$m}` : '00:00'
-    //fecha y hora de salida formateada
-    const dayOutput = checkOut ? `${checkOut.$D}/${checkOut.$H}/${checkOut.$y}` : '00:00';
-    const dateOutput = checkOut ? `${checkOut.$H}:${checkOut.$m}` : '00:00';
+    const dayInput = dateMXFormat(data.date_time);
+
+    const dateInput = datetimeMXFormat(data.date_time);
+
     //Nmbre corto del operador
-    const OperatorSliceName = operador.name.split(' ').slice(0, 2);
+    const OperatorSliceName = operador.nombre.split(' ').slice(0, 2);
     const shortNameOperator = `${OperatorSliceName[0]} ${OperatorSliceName[1]}`;
 
     const [modal, setModal] = useState({ modal1: false, modal2: false, modal3: false });
@@ -46,15 +58,85 @@ function HistoryItem({ data, id, type, select }) {
     }
 
     return (
-        <Paper sx={{ padding: '5px' }} elevation={4}>
+        <Paper
+            elevation={4}
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                padding: '10px',
+            }}>
 
             {type === 'vigilancia' &&
                 <Stack
-                    gap='10px'
-                    sx={{
-                        minWidth: '250px',
-                    }}
-                >
+                    spacing='8px'
+                    flexDirection='column'>
+
+                    <Stack
+                        flexDirection='row'
+                        justifyContent='space-between'
+                        flexWrap='wrap'
+                        gap='10px'
+                    >
+
+                        <Stack
+                         flexDirection='row'
+                         alignItems='center'
+                         flexWrap='wrap'
+                         gap='10px'
+                        >
+                        <Chip
+                            size="small"
+                            color={typeRegister === 'entrada' ? 'success' : 'warning'}
+                            label={typeRegister}
+                            icon={
+                                typeRegister === 'entrada' ?
+                                    <KeyboardDoubleArrowRightIcon />
+                                    :
+                                    <KeyboardDoubleArrowLeftIcon />
+                            }
+                            sx={{
+                                maxWidth: '100px',
+                                fontWeight: 500,
+                                padding: '5px',
+                            }}
+                        />
+
+                        <Chip
+                            size="small"
+                            color='secondary'
+                            label={dayInput}
+                            icon={<CalendarTodayIcon />}
+                            sx={{
+                                width: '120px',
+                                fontWeight: 500,
+                                padding: '5px'
+                            }}
+                        />
+
+                        <Chip
+                            size="small"
+                            color='info'
+                            label={dateInput}
+                            icon={<AccessTimeIcon />}
+                            sx={{
+                                maxWidth: '90px',
+                                fontWeight: 500,
+                                padding: '5px'
+                            }}
+                        />
+                        </Stack>
+
+                        {typeChargue == 'Pipa' && (
+                        <Button 
+                        size="small"
+                        variant="contained" 
+                        color="info">
+                        marcar salida
+                        </Button>
+                        )}
+
+                    </Stack>
+
                     <Box
                         sx={{
                             display: 'flex',
@@ -63,21 +145,13 @@ function HistoryItem({ data, id, type, select }) {
                             justifyContent: 'space-between',
                             alignItems: !IsSmall ? 'center' : 'start',
                             backgroundColor: 'whitesmoke',
-                            padding: '20px',
                             borderRadius: '4px',
-                        }}>
-
-                        <Chip
-                            color='info'
-                            label={typeRegister === 'Entrada' ? dateInput : dateOutput}
-                            icon={<AccessTimeIcon />}
-                            sx={{ fontWeight: 500, paddingRight: '2px' }}
-                            onClick={ToggleModalInfoDate}
-                        />
-
+                            padding: '15px'
+                        }}
+                    >
                         <Stack
                             sx={{ maxWidth: '700px' }}
-                            width={IsSmall ? '100%' : '450px'}
+                            width={IsSmall ? '100%' : '550px'}
                             flexDirection={IsSmall ? 'column' : 'row'}
                             justifyContent={IsSmall ? 'flex-start' : 'space-around'}
                             alignItems={IsSmall ? 'start' : 'center'}
@@ -107,14 +181,14 @@ function HistoryItem({ data, id, type, select }) {
                         </Stack>
                     </Box>
 
-                    {typeChargue === 'Tanques' && (
+                    {typeChargue === 'Tanque' && (
                         <Stack
-                            spacing='5px'
                             justifyContent='center'
+                            spacing='10px'
                             sx={{
-                                padding: '20px',
                                 borderRadius: '4px',
-                                backgroundColor: 'whitesmoke'
+                                backgroundColor: 'whitesmoke',
+                                padding: '15px'
                             }}>
                             <strong>Tanques</strong>
                             {tanques.map((tanque, index) => (
@@ -129,15 +203,23 @@ function HistoryItem({ data, id, type, select }) {
                                             variant='row'
                                             label={`# ${index + 1}`}
                                             text={tanque.tanque} />
+
+                                        <Button 
+                                        size="small"
+                                        variant="contained" 
+                                        color="info">
+                                        marcar salida
+                                        </Button>
+
                                     </Box>
-                                    {tanquesNum != (index + 1) && <Divider orientation={'horizontal'} flexItem />}
+                                    {numeroTanques != (index + 1) && <Divider orientation={'horizontal'} flexItem />}
                                 </>
                             ))}
                         </Stack>
                     )}
                 </Stack>}
 
-            {type === 'maniobras' &&
+            {/* {type === 'maniobras' &&
                 <Stack
                     gap='10px'
                     sx={{
@@ -231,7 +313,7 @@ function HistoryItem({ data, id, type, select }) {
                             ))}
                         </Stack>
                     )}
-                </Stack>}
+                </Stack>} */}
 
 
 
@@ -265,61 +347,14 @@ function HistoryItem({ data, id, type, select }) {
                     >
                         <Typography variant='h6'>Información del operador</Typography>
 
-                        <TextGeneral text={operador.name} label="Nombre del operador" />
-                        <TextGeneral text={operador.celular} label="Contacto del operador" />
+                        <TextGeneral text={operador.nombre} label="Nombre del operador" />
+                        <TextGeneral text={operador.contacto} label="Contacto del operador" />
 
                         <Button
                             fullWidth
                             variant="contained"
                             color='error'
                             onClick={ToggleModalInfoOperator}>
-                            cerrar
-                        </Button>
-
-                    </Box>
-                </Fade>
-
-
-            </Modal>
-
-            <Modal
-                open={modal.modal2}
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    position: 'absolute',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-
-                }}
-            >
-                <Fade
-                    timeout={500}
-                    in={modal.modal2}
-                >
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '15px',
-                            alignItems: 'start',
-                            justifyContent: 'center',
-                            backgroundColor: 'white',
-                            width: 'auto',
-                            padding: '20px',
-                            borderRadius: '4px'
-                        }}
-                    >
-                        <Typography variant='h6'>{`Informacion de ${typeRegister}`}</Typography>
-
-                        <TextGeneral label={`Fecha de ${typeRegister}`} text={typeRegister != 'Salida' ? dayInput : dayOutput} />
-                        <TextGeneral label={`Hora de ${typeRegister}`} text={typeRegister != 'Salida' ? dateInput : dateOutput} />
-
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            color='error'
-                            onClick={ToggleModalInfoDate}>
                             cerrar
                         </Button>
 

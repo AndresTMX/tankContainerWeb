@@ -14,6 +14,7 @@ import { DevelopmentContext } from "../../Context";
 //hook
 import { useFormRegister } from "../../Hooks/useFormRegister";
 import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";
+import { useGetTransporters } from "../../Hooks/transportersManagment/useGetTransporters";
 //notification
 import { Notification } from "../../components/Notification";
 //loader
@@ -21,6 +22,8 @@ import { LoadingState } from "../../components/LoadingState";
 import { actionTypes } from "../../Reducers";
 //icon
 import UpdateIcon from '@mui/icons-material/Update';
+//TabsComponents
+import { RegisterVigilancia } from "../../components/RegistersVigilancia";
 
 function Vigilancia() {
 
@@ -35,14 +38,6 @@ function Vigilancia() {
         nombre: operator.nombre
     })) : [];
 
-    const listTransporters = [
-        'transportista 1',
-        'transportista 2',
-        'transportista 3',
-        'transportista 4',
-        'transportista 5',
-    ]
-
     const IsSmall = useMediaQuery('(max-width:900px)');
     const [state, dispatch] = useContext(DevelopmentContext);
     const { statesFormRegister, functionsFormRegister } = useFormRegister();
@@ -52,6 +47,11 @@ function Vigilancia() {
 
     const { registers, notification } = state
 
+    const { transporters, updateAllTransports } = useGetTransporters();
+    const arrayTransporters = transporters.length >= 1 ? transporters.map((transporter) => ({
+        id: transporter.id,
+        nombre: transporter.name
+    })) : [];
     const InputRegisters = state ? registers.filter((register) => register.checkOut === undefined) : [];
     const ExitRegisters = state ? registers.filter((register) => register.checkOut != undefined) : [];
 
@@ -86,12 +86,13 @@ function Vigilancia() {
                 }}
             >
 
-                <Tabs value={tab} onChange={ToggleTab} >
-                    <Tab label="Registro de entrada" />
-                    <Tab label="Entadas" />
-                    <Tab label="Salidas" />
-                    <Tab label="Checklist de salida" />
-
+                <Tabs
+                    value={tab}
+                    onChange={ToggleTab}
+                    variant={IsSmall ? "scrollable" : null}
+                >
+                    <Tab label="Registro" />
+                    <Tab label="Historial" />
                 </Tabs>
 
                 <CustomTabPanel value={tab} index={0}>
@@ -99,25 +100,25 @@ function Vigilancia() {
                         timeout={500}
                         in={tab === 0 ? true : false}
                     >
-                        <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            <Paper 
+                        <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px' , }}>
+                            <Paper
                                 elevation='2'
                                 sx={{
-                                paddingLeft:'10px',
-                                paddingRight:'10px'
+                                    paddingLeft: '10px',
+                                    paddingRight: '10px'
                                 }}>
-                                <Stack 
-                                width='100%' 
-                                flexDirection='row' 
-                                alignItems='center' 
-                                justifyContent='space-between'>
-                                    <Typography>
-                                        Actualizar operadores
+                                <Stack
+                                    width='100%'
+                                    flexDirection='row'
+                                    alignItems='center'
+                                    justifyContent='space-between'>
+                                    <Typography color='GrayText'>
+                                        Actualizar datos
                                     </Typography>
-                                    <IconButton 
-                                    color="primary"
-                                    onClick={updateOperators}> 
-                                        <UpdateIcon/>
+                                    <IconButton
+                                        color="primary"
+                                        onClick={() => { updateOperators(); updateAllTransports(); }}>
+                                        <UpdateIcon />
                                     </IconButton>
                                 </Stack>
                             </Paper>
@@ -199,11 +200,12 @@ function Vigilancia() {
                                     )}
 
                                     <SelectSimple
+                                        type='obj'
                                         required={true}
                                         width={'100%'}
                                         title={'Linea transportista'}
                                         value={select}
-                                        options={listTransporters}
+                                        options={arrayTransporters}
                                         onChange={handleChangeList}
                                     />
 
@@ -232,7 +234,6 @@ function Vigilancia() {
                                         Registrar
                                     </Button>
 
-
                                 </Paper>
                             </form>
                         </Container>
@@ -245,42 +246,7 @@ function Vigilancia() {
                         in={tab === 1 ? true : false}
                     >
                         <Box>
-                            <ContainerScroll height='78vh'>
-                                <Stack gap='20px'>
-                                    {
-                                        InputRegisters.map((item, index) => (
-                                            <HistoryItem
-                                                type='vigilancia'
-                                                key={index}
-                                                data={item}
-                                            />
-                                        ))
-                                    }
-                                </Stack>
-                            </ContainerScroll>
-                        </Box>
-                    </Fade>
-                </CustomTabPanel>
-
-                <CustomTabPanel value={tab} index={2}>
-                    <Fade
-                        timeout={500}
-                        in={tab === 2 ? true : false}
-                    >
-                        <Box>
-                            <ContainerScroll height='78vh'>
-                                <Stack gap='20px'>
-                                    {
-                                        ExitRegisters.map((item, index) => (
-                                            <HistoryItem
-                                                type='vigilancia'
-                                                key={index}
-                                                data={item}
-                                            />
-                                        ))
-                                    }
-                                </Stack>
-                            </ContainerScroll>
+                            <RegisterVigilancia/>
                         </Box>
                     </Fade>
                 </CustomTabPanel>

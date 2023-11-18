@@ -1,7 +1,8 @@
 import { FormControl, InputLabel, Select, MenuItem, FormHelperText } from "@mui/material";
-
+import useMediaQuery from "@mui/material/useMediaQuery";
 function SelectSimple({title, value, options, onChange, helperText, width, required, type}) {
 
+    const IsMovile = useMediaQuery('(max-width:900px)')
 
     return (
         <>
@@ -13,6 +14,16 @@ function SelectSimple({title, value, options, onChange, helperText, width, requi
                     value={value}
                     label={title}
                     onChange={onChange}
+                    MenuProps={{
+                        anchorOrigin: {
+                          vertical: IsMovile? 'top': 'bottom',
+                          horizontal: 'left',
+                        },
+                        transformOrigin: {
+                          vertical: IsMovile?'bottom':'top',
+                          horizontal: 'left',
+                        },
+                      }}
                 >
                     {
                         options.map((option) => (
@@ -31,6 +42,16 @@ function SelectSimple({title, value, options, onChange, helperText, width, requi
                     value={value}
                     label={title}
                     onChange={onChange}
+                    MenuProps={{
+                        anchorOrigin: {
+                          vertical: IsMovile? 'top': 'bottom',
+                          horizontal: 'left',
+                        },
+                        transformOrigin: {
+                          vertical: IsMovile?'bottom':'top',
+                          horizontal: 'left',
+                        },
+                      }}
                 >
                     {
                         options.map((option) => (

@@ -17,3 +17,10 @@ export const dateMXFormat = (date) => {
     const day = datemx.$D;
     return `${day}/${month}/${year}`
 }
+
+export const datetimeMXFormat = (date) => {
+    const datemx = transformDate(date);
+    const hora = datemx.$H;
+    const minutes = datemx.$m;
+    return `${hora}: ${minutes}`
+}

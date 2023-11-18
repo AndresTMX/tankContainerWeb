@@ -15,6 +15,7 @@ import { useCreateUser } from "../../Hooks/usersManagment/useCreateUser";
 import { useGetUsers } from "../../Hooks/usersManagment/useGetUsers";
 import { useFormTransporter } from "../../Hooks/useFormTransporter";
 import { useGetTransporters } from "../../Hooks/transportersManagment/useGetTransporters";
+import { useDeleteTransporter } from "../../Hooks/transportersManagment/useDeleteTransporter";
 //helpers
 import { dateMXFormat } from "../../Helpers/date";
 
@@ -23,6 +24,7 @@ function PageAdmin() {
     const { dataUser, setDataUser, createUser, toggleForm, modal } = useCreateUser();
     const { transporter, setTransporter, addTransporter, transporterModal, toggleFormTransporter } = useFormTransporter();
     const { transporters, updateAllTransports } = useGetTransporters();
+    const { deleteTransporter } = useDeleteTransporter();
     const { users, updateUsers } = useGetUsers();
 
     return (
@@ -88,13 +90,13 @@ function PageAdmin() {
                                    <div>
                                    <Chip 
                                     size="small"
-                                    onClick={()=> {}}
                                     color='info' 
                                     icon={<EventAvailableIcon/>}
                                     label={`${dateMXFormat(item.created_at)}`} 
                                     />
                                     <IconButton
                                     color="error"
+                                    onClick={() => deleteTransporter(item.id)}
                                     >
                                         <DeleteIcon />
                                     </IconButton>
