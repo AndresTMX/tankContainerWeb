@@ -100,7 +100,7 @@ function Vigilancia() {
                     >
                         <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px' , }}>
                             <Paper
-                                elevation='2'
+                                elevation={2}
                                 sx={{
                                     paddingLeft: '10px',
                                     paddingRight: '10px'

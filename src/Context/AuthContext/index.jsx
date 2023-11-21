@@ -1,8 +1,8 @@
+import supabase from "../../supabase";
 import { Container } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
-import { createContext, useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate, Navigate } from "react-router-dom";
-import supabase from "../../supabase";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 
@@ -17,11 +17,13 @@ function AuthProvider({ children }) {
         email,
         password,
       });
+      if(!error){
       setKey(data.user.id);
       const session = JSON.stringify(data.user);
       sessionStorage.setItem(data.user.id, session);
       setLoading(false)
       navigate("/admin")
+      }
     } catch (error) {
       console.log(error);
     }
@@ -29,9 +31,10 @@ function AuthProvider({ children }) {
 
   const logOut = async () => {
     try {
-      console.log('cerrar sesion')
       const { error } = await supabase.auth.signOut();
+      if(!error){
       navigate("/")
+      }
     } catch (error) {
       console.log(error);
     }
@@ -41,7 +44,7 @@ function AuthProvider({ children }) {
     setLoading(true)
     const { data, error } = await supabase.auth.getSession();
 
-    if (data.session != null) {
+    if (!error) {
       const newKey = data.session.user.id;
       const newSession = JSON.stringify(data.session.user);
       setKey(newKey);

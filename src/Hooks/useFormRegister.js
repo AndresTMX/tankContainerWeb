@@ -74,7 +74,6 @@ function useFormRegister() {
         numero_tanque: null
       });
     }
-    console.log(registers);
     sendRegisters(registers, 'entrada')
     clearInputs()
   };

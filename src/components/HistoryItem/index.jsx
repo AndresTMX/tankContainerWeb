@@ -12,6 +12,7 @@ import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrow
 import InfoIcon from '@mui/icons-material/Info';
 //helpers 
 import { dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
+import { FormCheckTank } from "../FormCheckTank";
 
 function HistoryItem({ data, type }) {
 
@@ -19,8 +20,9 @@ function HistoryItem({ data, type }) {
     const IsSmall = useMediaQuery('(max-width:900px)');
     const IsExtraSmall = useMediaQuery('(max-width:450px)');
 
-    //datos
+    const [selectItems, setSelectItems] = useState([]);
 
+    //datos
     const linea = data.registros_detalles[0].transportistas.name;
     const tracto = data.registros_detalles[0].tracto;
     const tanques = data.registros_detalles.map((registro) => ({
@@ -32,9 +34,10 @@ function HistoryItem({ data, type }) {
     //numero de tanques por carga
     const numeroTanques = data.registros_detalles.length;
 
-    //tipo de carga
+    //Tipo de registros
     const typeRegister = data.tipo_registro;
-
+    
+    //tipo de carga
     const typeChargue = data.registros_detalles[0].carga;
 
     //fecha y hora de entrada formateada
@@ -52,22 +55,25 @@ function HistoryItem({ data, type }) {
         setModal({ ...modal, modal1: !modal.modal1 })
     }
 
-    const sendExitRegister = (register) => {
-        console.log(register)
+    const ToggleModalExitRegister = () => {
+        setModal({ ...modal, modal2: !modal.modal2 })
+        console.log(data)
     }
 
     const checkRegister = (register) => {
         console.log(register)
     }
 
+
     return (
-        <Paper
-            elevation={4}
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                padding: '10px',
-            }}>
+        <>
+            <Paper
+                elevation={4}
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    padding: '10px',
+                }}>
 
                 <Stack
                     spacing='8px'
@@ -128,9 +134,9 @@ function HistoryItem({ data, type }) {
                             />
                         </Stack>
 
-                        {(type === 'vigilancia' && typeChargue == 'Pipa') && (
+                        {(type === 'vigilancia' && typeChargue == 'Pipa' && typeRegister === 'entrada') && (
                             <Button
-                                onClick={() => sendExitRegister(data)}
+                                onClick={ToggleModalExitRegister}
                                 size="small"
                                 variant="contained"
                                 color="info">
@@ -218,24 +224,24 @@ function HistoryItem({ data, type }) {
                                             text={tanque.tanque} />
 
 
-                                        {(type === 'vigilancia' ) && (
-                                             <Button
-                                             onClick={() => sendExitRegister(data)}
-                                            size="small"
-                                            variant="contained"
-                                            color="info">
-                                            marcar salida
-                                         </Button>
+                                        {(type === 'vigilancia' && typeRegister === 'entrada') && (
+                                            <Button
+                                                onClick={ToggleModalExitRegister}
+                                                size="small"
+                                                variant="contained"
+                                                color="info">
+                                                marcar salida
+                                            </Button>
                                         )}
 
-                                        {(type === 'maniobras' ) && (
-                                             <Button
-                                             onClick={() => {}}
-                                             size="small"
-                                             variant="contained"
-                                             color="info">
-                                             Check
-                                         </Button>
+                                        {(type === 'maniobras') && (
+                                            <Button
+                                                onClick={() => { }}
+                                                size="small"
+                                                variant="contained"
+                                                color="info">
+                                                Check
+                                            </Button>
                                         )}
 
                                     </Box>
@@ -246,100 +252,7 @@ function HistoryItem({ data, type }) {
                     )}
                 </Stack>
 
-            {/* {type === 'maniobras' &&
-                <Stack
-                    gap='10px'
-                    sx={{
-                        minWidth: '250px',
-                    }}
-                >
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: IsSmall ? 'column' : 'row',
-                            gap: '10px',
-                            justifyContent: 'space-between',
-                            alignItems: !IsSmall ? 'center' : 'start',
-                            backgroundColor: 'whitesmoke',
-                            padding: '20px',
-                            borderRadius: '4px',
-                        }}>
-
-                        <Chip
-                            color='info'
-                            label={typeRegister}
-                            icon={<AccessTimeIcon/>}
-                            sx={{ fontWeight: 500, paddingRight: '2px' }}
-                        />
-
-                        <Stack
-                            sx={{ maxWidth: '700px' }}
-                            width={IsSmall ? '100%' : '450px'}
-                            flexDirection={IsSmall ? 'column' : 'row'}
-                            justifyContent={IsSmall ? 'flex-start' : 'space-around'}
-                            alignItems={IsSmall ? 'start' : 'center'}
-                            gap='10px'>
-                            <TextGeneral text={linea} label="Linea" />
-                            <Divider orientation={IsSmall ? 'horizontal' : 'vertical'} flexItem />
-                            <TextGeneral label='Tracto' text={tracto} />
-                            <Divider orientation={IsSmall ? 'horizontal' : 'vertical'} flexItem />
-                            <TextGeneral label='Tipo de carga' text={typeChargue} />
-                            <Divider orientation={IsSmall ? 'horizontal' : 'vertical'} flexItem />
-                        </Stack>
-
-                        <Stack
-                            flexDirection={'row'}
-                            alignItems={'center'}
-                            justifyContent='space-between'
-                            gap='10px'>
-                            <TextGeneral label='Operador' text={shortNameOperator} />
-                            <Stack flexDirection='row' gap='10px'>
-                                <IconButton
-                                    color="info"
-                                    onClick={ToggleModalInfoOperator}>
-                                    <InfoIcon />
-                                </IconButton>
-                            </Stack>
-
-                        </Stack>
-                    </Box>
-
-                    {typeChargue === 'Tanques' && (
-                        <Stack
-                            spacing='5px'
-                            justifyContent='center'
-                            sx={{
-                                padding: '20px',
-                                borderRadius: '4px',
-                                backgroundColor: 'whitesmoke'
-                            }}>
-                            <strong>Tanques</strong>
-                            {tanques.map((tanque, index) => (
-                                <>
-                                    <Box
-                                        sx={{
-                                            display: 'flex',
-                                            flexDirection: 'row',
-                                            justifyContent: 'space-between'
-                                        }}>
-                                        <TextGeneral
-                                            variant='row'
-                                            label='N° Tanque'
-                                            text={tanque.tanque} />
-                                        <Button
-                                            size="small"
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={() => select(id, tanque.tanque)}
-                                        >Check
-                                        </Button>
-                                    </Box>
-                                    {tanquesNum != (index + 1) && <Divider orientation={'horizontal'} flexItem />}
-                                </>
-                            ))}
-                        </Stack>
-                    )}
-                </Stack>} */}
+            </Paper>
 
             <Modal
                 open={modal.modal1}
@@ -388,7 +301,32 @@ function HistoryItem({ data, type }) {
 
             </Modal>
 
-        </Paper>
+            <Modal
+                open={modal.modal2}
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'absolute',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+
+                }}
+            >
+                <Fade
+                    timeout={500}
+                    in={modal.modal2}
+                >
+                    <Box>
+                        <FormCheckTank 
+                        data={data}  
+                        toggleModal={ToggleModalExitRegister} 
+                        />
+                    </Box>
+                </Fade>
+
+
+            </Modal>
+        </>
     );
 }
 
