@@ -1,12 +1,12 @@
 //imports hooks
 import { useState, useContext } from "react";
+import useMediaQuery from "@mui/material/useMediaQuery";
 //imports materialui
 import { Container, Box, Tabs, Tab, Button, Stack, Fade, Typography, Paper, Modal, IconButton } from "@mui/material";
-import useMediaQuery from "@mui/material/useMediaQuery";
 //import custom components
+import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { SelectSimple } from "../../components/SelectSimple";
 import { InputText } from "../../components/InputText";
-import { CustomTabPanel } from "../../components/CustomTabPanel";
 //context
 import { DevelopmentContext } from "../../Context";
 //hook
@@ -17,7 +17,6 @@ import { useGetTransporters } from "../../Hooks/transportersManagment/useGetTran
 import { Notification } from "../../components/Notification";
 //loader
 import { LoadingState } from "../../components/LoadingState";
-import { actionTypes } from "../../Reducers";
 //icon
 import UpdateIcon from '@mui/icons-material/Update';
 //TabsComponents
@@ -50,18 +49,13 @@ function Vigilancia() {
         id: transporter.id,
         nombre: transporter.name
     })) : [];
-    const InputRegisters = state ? registers.filter((register) => register.checkOut === undefined) : [];
-    const ExitRegisters = state ? registers.filter((register) => register.checkOut != undefined) : [];
+
 
     const [modal, setModal] = useState(false)
     const [tab, setTab] = useState(0)
 
     const ToggleModalForm = (event) => {
         setModal(!modal)
-    }
-
-    const ToggleModalNotification = () => {
-        dispatch({ type: actionTypes.setNotification, payload: !notification })
     }
 
     const ToggleTab = (event, newValue) => {
@@ -98,7 +92,7 @@ function Vigilancia() {
                         timeout={500}
                         in={tab === 0 ? true : false}
                     >
-                        <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px' , }}>
+                        <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px', }}>
                             <Paper
                                 elevation={2}
                                 sx={{
@@ -244,7 +238,7 @@ function Vigilancia() {
                         in={tab === 1 ? true : false}
                     >
                         <Box>
-                            <RegisterVigilancia/>
+                            <RegisterVigilancia />
                         </Box>
                     </Fade>
                 </CustomTabPanel>

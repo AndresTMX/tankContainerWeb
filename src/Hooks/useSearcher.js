@@ -1,24 +1,24 @@
 import { useState } from "react";
 
-function useSearcher() {
+function useSearcher(functionSearch) {
 
     const [search, setSearch] = useState('');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(null);
     const [error, setError] = useState(null)
 
-    const onChangueSearch = () => {
-        setSearch(search)
+    const onChangueSearch = (e) => {
+        setSearch(e.target.value)
     }
 
     const clearResults = () => {
         setResults([])
     }
 
-    const searching = async (search) => {
+    const searching = async () => {
         setLoading(true)
         try {
-            const resultsSearch = callApi(search);
+            const resultsSearch = await functionSearch(search);
             setResults(resultsSearch)
             setLoading(false)
         } catch (error) {
@@ -26,10 +26,14 @@ function useSearcher() {
             setLoading(false)
         }
     }
+
+    const searchingKey = (e) => {
+        e.key
+    }
   
     const states = {search, results, loading, error }
 
-    const functions = {searching}
+    const functions = {searching, onChangueSearch, clearResults}
 
 
     return {states, functions}

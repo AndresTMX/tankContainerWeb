@@ -1,27 +1,23 @@
-import { Box, Stack, Chip, Typography, Paper } from "@mui/material";
-import { HistoryItem } from "../HistoryItem";
-import { ContainerScroll } from "../ContainerScroll";
-import { useGetRegisters } from "../../Hooks/registersManagment/useGetRegisters";
-import { Searcher } from "../Searcher";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { useContext } from "react";
-import { DevelopmentContext } from "../../Context";
+import { Searcher } from "../Searcher";
+import { HistoryItem } from "../HistoryItem";
 import { actionTypes } from "../../Reducers";
+import { DevelopmentContext } from "../../Context";
+import { ContainerScroll } from "../ContainerScroll";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { Box, Stack, Chip, Typography, Paper } from "@mui/material";
+import { useGetRegisters } from "../../Hooks/registersManagment/useGetRegisters";
 
 function RegisterVigilancia() {
 
+    const isMovile = useMediaQuery("(max-width:640px)");
     const [state, dispatch] = useContext(DevelopmentContext)
     const { requestGetRegisters, errorGetRegisters, loadingGetRegisters } = useGetRegisters();
 
-    const isMovile = useMediaQuery("(max-width:640px)");
-
     const renderComponent = requestGetRegisters?.length >= 1 ? true : false;
-    const renderLoadingState =
-        !errorGetRegisters && loadingGetRegisters ? true : false;
-    const renderErrorState =
-        errorGetRegisters && !loadingGetRegisters ? true : false;
-    const renderAdvertainsmentCache =
-        errorGetRegisters && requestGetRegisters?.length >= 1;
+    const renderErrorState = errorGetRegisters && !loadingGetRegisters ? true : false;
+    const renderLoadingState = !errorGetRegisters && loadingGetRegisters ? true : false;
+    const renderAdvertainsmentCache = errorGetRegisters && requestGetRegisters?.length >= 1;
 
     return (
         <>
