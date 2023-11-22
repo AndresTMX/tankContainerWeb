@@ -1,5 +1,5 @@
 import { Paper, Button, IconButton, Stack, Typography, Chip } from "@mui/material";
-import { dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
+import { dateMX, dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
 //icons
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -10,7 +10,13 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 
 function ResultSearch({ typeItem, dataItem }) {
 
-    const isMovile = useMediaQuery('(max-width:850px)')
+    
+    const isMovile = useMediaQuery('(max-width:850px)');
+    
+    const time = dataItem.checkIn;
+    const dateTransform = dateMX(time)
+    const date = dateMXFormat(dateTransform)
+    const dateTime = datetimeMXFormat(dateTransform)
 
     return (
         <>
@@ -24,7 +30,7 @@ function ResultSearch({ typeItem, dataItem }) {
                             <Chip
                                 color="info"
                                 size="small"
-                                label={`${dateMXFormat(dataItem.checkIn)}`}
+                                label={date}
                                 icon={
                                     <CalendarTodayIcon />
                                 }
@@ -32,7 +38,7 @@ function ResultSearch({ typeItem, dataItem }) {
                             <Chip
                                 color="info"
                                 size="small"
-                                label={`${datetimeMXFormat(dataItem.checkIn)}`}
+                                label={dateTime}
                                 icon={
                                     <AccessTimeIcon />
                                 }
