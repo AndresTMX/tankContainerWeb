@@ -6,7 +6,8 @@ const initialState = {
     reparacion:[],
     notification:false,
     loading:false,
-    maniobrasCheckList:{}
+    maniobrasCheckList:{},
+    typeRegister:'entrada'
 };
 
 //Use reducer que valida los objetos
@@ -25,6 +26,7 @@ const actionTypes = {
     setNotification: 'SET_NOTIFICATION',
     setLoading: 'SET_LOADING',
     setManiobrasCheck: 'SET_MANIOBRAS_CHECK',
+    setTypeRegister: 'SET_TYPE_REGISTER'
   
 }
 
@@ -55,6 +57,10 @@ const reducerObject = (state, payload) => ({
         ...state,
         maniobrasCheckList: payload
     },
+    [actionTypes.setTypeRegister]:{
+        ...state,
+        typeRegister:payload
+    }
 
 });
 

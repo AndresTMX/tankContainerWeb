@@ -5,13 +5,16 @@ import CheckIcon from '@mui/icons-material/Check';
 import { useGetTransporters } from "../../Hooks/transportersManagment/useGetTransporters";
 import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";
 import { usePostRegister } from "../../Hooks/registersManagment/usePostRegister";
+import { useChangueType } from "../../Hooks/registersManagment/useChangueType";
 import { DevelopmentContext } from "../../Context";
 import { actionTypes } from "../../Reducers";
+//helpers
+import { transformRegisters } from "../../Helpers/transformRegisters";
 
 
 function FormCheckTank({ data, toggleModal }) {
 
-    const { sendRegisters } = usePostRegister();
+    const { sendOutputRegisters } = usePostRegister();
     const { transporters } = useGetTransporters();
     const { states } = useGetOperators();
     const { operators } = states;
@@ -28,13 +31,20 @@ function FormCheckTank({ data, toggleModal }) {
     const [selectOperator, setSelectOperator] = useState('');
 
     //datos
-    const typeChargue = data.registros_detalles[0].carga;
-    const linea = data.registros_detalles[0].transportistas.name;
-    const tracto = data.registros_detalles[0].tracto;
-    const tanques = data.registros_detalles.map((registro) => ({
-        id: registro.id,
-        tanque: registro.numero_tanque
-    }));
+    const {
+        typeRegister,
+        linea,
+        tanques,
+        tanquesParked,
+        operador,
+        tracto,
+        numeroTanques,
+        typeChargue,
+        dayInput,
+        dateInput,
+        OperatorSliceName,
+        shortNameOperator,
+    } = transformRegisters(data);
 
     const validateExist = (idItem) => {
         return selected.find((value) => value.id === idItem);
@@ -106,6 +116,7 @@ function FormCheckTank({ data, toggleModal }) {
             if (typeChargue === "Tanque") {
                 selected.map((value, index) => {
                     registers.push({
+                        id: tanques[index].id,
                         tracto: tracto,
                         carga: typeChargue,
                         operador: selectOperator,
@@ -116,6 +127,7 @@ function FormCheckTank({ data, toggleModal }) {
                 })
             } else {
                 registers.push({
+                    id: tanques[0].id,
                     tracto: tracto,
                     carga: typeChargue,
                     operador: selectOperator,
@@ -124,7 +136,12 @@ function FormCheckTank({ data, toggleModal }) {
                 });
             }
 
-            sendRegisters(registers, 'salida')
+            sendOutputRegisters(registers)
+            toggleModal()
+            setSelectOperator('')
+            setSelectTransporter('')
+            setSelected([])
+
         }
 
     }
@@ -157,7 +174,7 @@ function FormCheckTank({ data, toggleModal }) {
                     }}>
                     <Stack width='100%' spacing='10px'>
                         <Typography variant='caption'>{`${selected.length} de ${tanques.length} agregados`}</Typography>
-                        {tanques.map((tank) => (
+                        {tanquesParked.map((tank) => (
                             <Stack
                                 flexDirection='row'
                                 gap='10px'
@@ -209,7 +226,6 @@ function FormCheckTank({ data, toggleModal }) {
                         required={true}
                     />
 
-
                 </Box>
 
                 <Button
@@ -219,7 +235,6 @@ function FormCheckTank({ data, toggleModal }) {
                     variant="contained">
                     confirmar seleccionados
                 </Button>
-
 
                 <Button
                     fullWidth

@@ -24,3 +24,5 @@ export const datetimeMXFormat = (date) => {
     const minutes = datemx.$m;
     return `${hora}: ${minutes}`
 }
+
+export const currenDateFormatTz = dateMX(currentDate);
