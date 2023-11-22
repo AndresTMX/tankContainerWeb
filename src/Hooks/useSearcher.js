@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-function useSearcher(functionSearch) {
+function useSearcher(functionSearch, arraySearching) {
 
     const [search, setSearch] = useState('');
     const [results, setResults] = useState([]);
-    const [loading, setLoading] = useState(null);
-    const [error, setError] = useState(null)
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false)
 
     const onChangueSearch = (e) => {
         setSearch(e.target.value)
@@ -13,14 +13,21 @@ function useSearcher(functionSearch) {
 
     const clearResults = () => {
         setResults([])
+        setError(false)
     }
 
-    const searching = async () => {
-        setLoading(true)
+    const searching = () => {
         try {
-            const resultsSearch = await functionSearch(search);
+            setError(false)
+            setLoading(true)
+            setTimeout( () => {
+            const resultsSearch = functionSearch(search, arraySearching);
             setResults(resultsSearch)
             setLoading(false)
+            if(resultsSearch.length === 0){
+                setError('No results')
+            }
+            }, 2000)
         } catch (error) {
             setError(error)
             setLoading(false)
@@ -28,15 +35,22 @@ function useSearcher(functionSearch) {
     }
 
     const searchingKey = (e) => {
-        e.key
+
+       if( e.key === "Enter"){
+        searching();
+       } 
+
+       if(e.key === "Backspace" && search === ""){
+        clearResults();
+       }
     }
-  
-    const states = {search, results, loading, error }
 
-    const functions = {searching, onChangueSearch, clearResults}
+    const states = { search, results, loading, error }
+
+    const functions = { searching, onChangueSearch, clearResults, searchingKey }
 
 
-    return {states, functions}
+    return { states, functions }
 }
 
-export {useSearcher};
+export { useSearcher };

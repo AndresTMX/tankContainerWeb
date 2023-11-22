@@ -1,12 +1,19 @@
 import { useContext } from "react";
+//components
 import { Searcher } from "../Searcher";
 import { HistoryItem } from "../HistoryItem";
 import { actionTypes } from "../../Reducers";
 import { DevelopmentContext } from "../../Context";
 import { ContainerScroll } from "../ContainerScroll";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { Box, Stack, Chip, Typography, Paper } from "@mui/material";
+import { ResultSearch } from "../ResultsSearch";
+//helpers
+import { filterSearchVigilancia } from "../../Helpers/searcher";
+
+//hooks
 import { useGetRegisters } from "../../Hooks/registersManagment/useGetRegisters";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useSearcher } from "../../Hooks/useSearcher";
 
 function RegisterVigilancia() {
 
@@ -14,7 +21,12 @@ function RegisterVigilancia() {
     const [state, dispatch] = useContext(DevelopmentContext)
     const { requestGetRegisters, errorGetRegisters, loadingGetRegisters } = useGetRegisters();
 
-    const renderComponent = requestGetRegisters?.length >= 1 ? true : false;
+    const { states, functions } = useSearcher(filterSearchVigilancia, requestGetRegisters);
+    const { search, results, loading, error } = states;
+
+    const { searching, onChangueSearch, searchingKey } = functions;
+
+    const renderComponent = requestGetRegisters?.length >= 1 && !error && !loading && results.length === 0 ? true : false;
     const renderErrorState = errorGetRegisters && !loadingGetRegisters ? true : false;
     const renderLoadingState = !errorGetRegisters && loadingGetRegisters ? true : false;
     const renderAdvertainsmentCache = errorGetRegisters && requestGetRegisters?.length >= 1;
@@ -44,30 +56,36 @@ function RegisterVigilancia() {
                             width={isMovile ? "100%" : "auto"}
                         >
                             <Chip
-                                onClick={() => dispatch({type: actionTypes.setTypeRegister, payload: "entrada"})}
+                                onClick={() => dispatch({ type: actionTypes.setTypeRegister, payload: "entrada" })}
                                 color={state.typeRegister === "entrada" ? "success" : "default"}
                                 label="entradas"
                             />
                             <Chip
-                                onClick={() => dispatch({type: actionTypes.setTypeRegister, payload:"salida" })}
+                                onClick={() => dispatch({ type: actionTypes.setTypeRegister, payload: "salida" })}
                                 color={state.typeRegister === "salida" ? "info" : "default"}
                                 label="salidas"
                             />
                             <Chip
-                                onClick={() => dispatch({type: actionTypes.setTypeRegister, payload: "ambas"})}
+                                onClick={() => dispatch({ type: actionTypes.setTypeRegister, payload: "ambas" })}
                                 color={state.typeRegister === "ambas" ? "warning" : "default"}
                                 label="ambas"
                             />
                         </Stack>
 
                         <Stack width={isMovile ? "100%" : "auto"}>
-                            <Searcher />
+                            <Searcher
+                                onChangueSearch={onChangueSearch}
+                                searchingKey={searchingKey}
+                                searching={searching}
+                                search={search}
+                            />
                         </Stack>
                     </Stack>
                 </Paper>
 
                 <ContainerScroll height="62vh">
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: "20px", width:'100%' }}>
+
                         {renderAdvertainsmentCache && (
                             <Stack
                                 sx={{
@@ -104,9 +122,24 @@ function RegisterVigilancia() {
                             </Stack>
                         )}
 
-                        {renderErrorState && <p>Error state</p>}
+                        {renderErrorState && <Typography variant="subtitle">Error, recarga la pagina</Typography>}
 
-                        {renderLoadingState && <p>cargando...</p>}
+                        {(renderLoadingState) && <Typography variant="subtitle">cargando...</Typography>}
+
+                        {(loading) && <Typography variant="subtitle">cargando busqueda...</Typography>}
+
+                        {(error && !loading) && (
+                         <Typography variant="subtitle">
+                            Sin resultados
+                         </Typography>
+                        )}
+
+                        {(!loading && !error) && (
+                            results.map((result) => (
+                                <ResultSearch key={result.id} typeItem="vigilancia" dataItem={result} />
+                            ))
+                        )}
+
                     </Box>
                 </ContainerScroll>
             </Box>
