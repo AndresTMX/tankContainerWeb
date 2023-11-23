@@ -7,7 +7,8 @@ const initialState = {
     notification:false,
     loading:false,
     maniobrasCheckList:{},
-    typeRegister:'entrada'
+    typeRegister:'entrada',
+    selectItem:false
 };
 
 //Use reducer que valida los objetos
@@ -26,7 +27,8 @@ const actionTypes = {
     setNotification: 'SET_NOTIFICATION',
     setLoading: 'SET_LOADING',
     setManiobrasCheck: 'SET_MANIOBRAS_CHECK',
-    setTypeRegister: 'SET_TYPE_REGISTER'
+    setTypeRegister: 'SET_TYPE_REGISTER',
+    setSelectItem: 'SET_SELECT_ITEM'
   
 }
 
@@ -60,6 +62,10 @@ const reducerObject = (state, payload) => ({
     [actionTypes.setTypeRegister]:{
         ...state,
         typeRegister:payload
+    },
+    [actionTypes.setSelectItem]:{
+        ...state,
+        selectItem: payload
     }
 
 });

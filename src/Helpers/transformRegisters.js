@@ -1,5 +1,9 @@
 import { dateMXFormat, datetimeMXFormat } from "./date";
 
+/* 
+funcion que filtra los registros y devuelve sus datos formateados 
+para ser usados de manera general en registros de entrada o salida
+*/
 export const transformRegisters = (data) => {
   let typeRegister = data.type;
   let linea;
@@ -69,3 +73,40 @@ export const transformRegisters = (data) => {
     shortNameOperator,
   };
 };
+
+/* 
+funcion que filtra los registros de entrada y devuelve solo los 
+registros que tienen el status 'maniobras' para ser usados en la
+pagina de maniobras y posteriormente hacerles checklist
+*/
+export const filterInputRegistersForManiobras = (arrayRegisters) => {
+
+  const registersFiltered = []
+
+  arrayRegisters.map((register) => {
+      const arrayDetails = register.registros_detalles_entradas;
+      const checkIn = register.checkIn;
+      const linea = register.registros_detalles_entradas[0].transportistas.name;
+      const dayInput = dateMXFormat(register.checkIn);
+      const dateInput = datetimeMXFormat(register.checkIn);
+
+      const filteredDetails = arrayDetails.filter((detail) => detail.status === 'maniobras');
+
+      filteredDetails.map((item) => {
+
+        const id = item.id
+        const carga = item.carga
+        const operador = item.operadores
+        const status = item.status
+        const tracto = item.tracto
+        const numero_tanque = item.numero_tanque
+        const OperatorSliceName = operador.nombre.split(" ").slice(0, 2);
+        const shortNameOperator = `${OperatorSliceName[0]} ${OperatorSliceName[1]}`;
+        
+          registersFiltered.push({id, carga, operador, status, tracto, numero_tanque, checkIn, linea, dayInput, dateInput, OperatorSliceName, shortNameOperator })
+      });
+
+  })
+
+  return registersFiltered
+}

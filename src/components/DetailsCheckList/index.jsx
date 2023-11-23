@@ -1,126 +1,165 @@
-import { useState } from "react";
-import { Box, Chip, Stack, Button, IconButton, Typography, Modal, Paper, Divider, Fade } from "@mui/material";
+import { useState, useContext } from "react";
+import { Box, Chip, Stack, Button, Typography, Modal, Paper, Divider, Fade, IconButton } from "@mui/material";
 import { TextGeneral } from "../TextGeneral";
 import { SelectSimple } from '../SelectSimple';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+//icons
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
-import InfoIcon from '@mui/icons-material/Info';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+//hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { DevelopmentContext } from "../../Context";
+//helpers
+import { tiempoTranscurrido } from "../../Helpers/date";
 
-function DetailsCheckList({ state, data, action, submit, ChangueNextStep, nextStep }) {
+function DetailsCheckList({ submit, discardTank, ChangueNextStep, nextStep }) {
 
-    const complete = state.maniobrasCheckList?.complete
-    const IsSmall = useMediaQuery('(max-width:750px)');
-    const IsExtraSmall = useMediaQuery('(max-width:500px)');
-    //datos
-    const checkIn = data.data.checkIn;
-    const linea = data.data.linea;
-    const tracto = data.data.tracto;
-    const pipa = data.data.tanques ? false : true;
-    const tanques = data.data?.tanques;
-    const operador = data.data?.operador;
-    const checkOut = data.data?.checkOut;
-    //numero de tanques por carga
-    const tanquesNum = tanques ? tanques.length : 0;
-    //tipo de carga
-    const typeRegister = checkOut === undefined ? 'Entrada' : 'Salida';
-    const typeChargue = pipa ? 'Pipa' : 'Tanques';
-    //fecha y hora de entrada formateada
-    const dayInput = checkIn ? `${checkIn.$D}/${checkIn.$H}/${checkIn.$y}` : '00:00'
-    const dateInput = checkIn ? `${checkIn.$H}:${checkIn.$m}` : '00:00'
-    //fecha y hora de salida formateada
-    const dayOutput = checkOut ? `${checkOut.$D}/${checkOut.$H}/${checkOut.$y}` : '00:00';
-    const dateOutput = checkOut ? `${checkOut.$H}:${checkOut.$m}` : '00:00';
-    //Nmbre corto del operador
-    const OperatorSliceName = operador.name.split(' ').slice(0, 2);
-    const shortNameOperator = `${OperatorSliceName[0]} ${OperatorSliceName[1]}`;
-    const [modal, setModal] = useState({ modal1: false, modal2: false, modal3: false });
+    const [state, dispatch] = useContext(DevelopmentContext);
+    const { selectItem } = state;
 
-    const ToggleModal = () => {
-        setModal({ ...modal, modal1: !modal.modal1 })
-    }
+    const { carga, dayInput, dateInput, linea, numero_tanque, tracto, checkIn } = selectItem;
+
+    const time = tiempoTranscurrido(checkIn);
+
+    const IsSmall = useMediaQuery('(max-width:900px)');
+    const IsExtraSmall = useMediaQuery('(max-width:450px)');
+    const [modal, setModal] = useState(false);
 
     const ShowModalWarning = () => {
-        setModal({ ...modal, modal2: !modal.modal2 })
+        setModal(!modal)
     }
 
-    const ToggleAction = () => {
-        if (action) {
-            action()
-        }
-    }
+    const completeCheck = () => {
 
-    const ToggleModalDetailsDate = () => {
-        setModal({ ...modal, modal3: !modal.modal3 })
     }
 
     return (
         <>
-            <Paper
-                elevation={4}
-            >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        alignItems: 'center',
-                        gap: '20px',
-                        backgroundColor: 'whitesmoke',
-                        padding: '20px',
-                        borderRadius: '4px',
-                    }}
+            <Paper elevation={4}>
+
+                <Stack
+                    bgcolor="whitesmoke"
+                    borderRadius="4px"
+                    padding="10px"
+                    gap="10px"
                 >
-                    <Chip color='info'
-                        label={dateInput}
-                        icon={<AccessTimeIcon />}
-                        onClick={ToggleModalDetailsDate}
-                        sx={{
-                            fontWeight: 500,
-                            paddingRight: '2px'
-                        }} />
+                    <Stack
+                        justifyContent="space-between"
+                        flexDirection="row"
+                        flexWrap="wrap"
+                        gap="10px"
+                    >
+                        <Stack
+                            flexDirection="row"
+                            alignItems="center"
+                            flexWrap="wrap"
+                            gap="10px"
+                        >
+
+                            <Chip
+                                size="small"
+                                color="secondary"
+                                label={dayInput}
+                                icon={<CalendarTodayIcon />}
+                                sx={{
+                                    width: "120px",
+                                    fontWeight: 500,
+                                    padding: "5px",
+                                }}
+                            />
+
+                            <Chip
+                                size="small"
+                                color="info"
+                                label={dateInput}
+                                icon={<AccessTimeIcon />}
+                                sx={{
+                                    maxWidth: "90px",
+                                    fontWeight: 500,
+                                    padding: "5px",
+                                }}
+                            />
+
+                            <Chip
+                                size="small"
+                                color="info"
+                                label={time === 'a' ? '1 día' : `${time} días`}
+                                icon={<AccessTimeIcon />}
+                                sx={{
+                                    maxWidth: "200px",
+                                    fontWeight: 500,
+                                    padding: "5px",
+                                }}
+                            />
+
+                        </Stack>
+
+                        <Stack flexDirection='row' gap='10px'>
+                            <Button
+                                onClick={completeCheck}
+                                size="small"
+                                variant="contained"
+                                color="info"
+                            >
+                                completar
+                            </Button>
+
+                            <IconButton
+                                onClick={discardTank}
+                                size="small"
+                                color="error"
+                            >
+                                <DoDisturbIcon />
+                            </IconButton>
+                        </Stack>
+
+                    </Stack>
 
                     <Stack
-                        flexDirection={IsExtraSmall ? 'column' : 'row'}
-                        flexWrap={IsExtraSmall ? 'wrap' : 'nowrap'}
-                        gap='10px'
-                        width={IsExtraSmall ? '100%' : '400px'} >
-                        <TextGeneral label='Linea' text={linea} />
-                        <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
-                        <TextGeneral label='Tracto' text={tracto} />
-                        <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
-                        {!pipa && <TextGeneral label='N° Tanque' text={data.tank.tanque} />}
+                        flexDirection={IsExtraSmall ? "column" : "row"}
+                        width="100%"
+                        gap="20px"
+                    >
+
+                        <TextGeneral
+                            label="linea"
+                            text={linea}
+                        />
+
+                        <Stack flexDirection="row" gap="10px">
+                            <Divider
+                                orientation={IsSmall ? "horizontal" : "vertical"}
+                                flexItem
+                            />
+
+                            <TextGeneral
+                                label="tracto"
+                                text={tracto}
+                            />
+
+                            {carga === 'Tanque' &&
+                                <>
+                                    <Divider
+                                        orientation={IsSmall ? "horizontal" : "vertical"}
+                                        flexItem
+                                    />
+                                    <TextGeneral
+                                        label="N° tanque"
+                                        text={numero_tanque}
+                                    />
+                                </>
+
+                            }
+                        </Stack>
+
                     </Stack>
 
-                    <Stack flexDirection='row' gap='10px'>
-                        <IconButton
-                            color="primary"
-                            onClick={ToggleModal}>
-                            <InfoIcon />
-                        </IconButton>
+                </Stack>
 
-                        <Button
-                            disabled={complete? false:true}
-                            variant='contained'
-                            onClick={ShowModalWarning}
-                        >
-                            Check
-                        </Button>
-
-                        <IconButton
-                            variant="contained"
-                            color='error'
-                            onClick={ToggleAction}
-                        >
-                            <DoDisturbIcon />
-                        </IconButton>
-                    </Stack>
-
-                </Box>
             </Paper>
 
             <Modal
-                open={modal.modal1}
+                open={modal}
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -131,53 +170,7 @@ function DetailsCheckList({ state, data, action, submit, ChangueNextStep, nextSt
                 }}
             >
                 <Fade
-                    in={modal.modal1}
-                    timeout={500}
-                >
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '15px',
-                            alignItems: 'start',
-                            justifyContent: 'center',
-                            backgroundColor: 'white',
-                            width: 'auto',
-                            padding: '20px',
-                            borderRadius: '4px'
-                        }}
-                    >
-                        <Typography variant="h6">Informacion del operador</Typography>
-
-                        <TextGeneral label='Operador' text={operador.name} />
-                        <TextGeneral label='Contacto' text={operador.celular} />
-
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            color='error'
-                            onClick={ToggleModal}>
-                            cerrar
-                        </Button>
-
-
-                    </Box>
-                </Fade>
-            </Modal>
-
-            <Modal
-                open={modal.modal2}
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    position: 'absolute',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-
-                }}
-            >
-                <Fade
-                    in={modal.modal2}
+                    in={modal}
                     timeout={500}
                 >
                     <Box
@@ -234,51 +227,6 @@ function DetailsCheckList({ state, data, action, submit, ChangueNextStep, nextSt
                 </Fade>
             </Modal>
 
-            <Modal
-                open={modal.modal3}
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    position: 'absolute',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-
-                }}
-            >
-                <Fade
-                    in={modal.modal3}
-                    timeout={500}
-                >
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '15px',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            backgroundColor: 'white',
-                            width: 'auto',
-                            padding: '20px',
-                            borderRadius: '4px'
-                        }}
-                    >
-                        <Typography variant="h6">Información de ingreso</Typography>
-
-                        <TextGeneral label="Fecha de ingreso" text={dayInput} />
-                        <TextGeneral label="Hora de ingreso" text={dateInput} />
-
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            color='error'
-                            size="small"
-                            onClick={ToggleModalDetailsDate}>
-                            cerrar
-                        </Button>
-
-                    </Box>
-                </Fade>
-            </Modal>
         </>
     );
 }

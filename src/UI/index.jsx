@@ -9,8 +9,6 @@ function UI({ children }) {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
-          paddingBottom: '50px',
         }}
       >
         {children}

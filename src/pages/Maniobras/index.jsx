@@ -16,28 +16,25 @@ import { CheckListMaiobras } from "../../sections/CheckListManiobras";
 import { useGetRegisters } from "../../Hooks/registersManagment/useGetRegisters";
 import { useSearcher } from "../../Hooks/useSearcher";
 import { filterSearchVigilancia } from "../../Helpers/searcher";
+import { filterInputRegistersForManiobras } from "../../Helpers/transformRegisters";
+import { actionTypes } from "../../Reducers";
 
 function Maniobras() {
     const IsSmall = useMediaQuery('(max-width:900px)');
-    const isMovile = useMediaQuery("(max-width:640px)");
 
     const [state, dispatch] = useContext(DevelopmentContext);
+    const { selectItem } = state;
 
+    const selectItemState = !selectItem ? false : true;
+
+    //inicio del hook
     const { requestGetRegisters, errorGetRegisters, loadingGetRegisters } = useGetRegisters();
+    //filtro del request del hook de registros 
+    const filterRequest = requestGetRegisters.length >= 1 ? filterInputRegistersForManiobras(requestGetRegisters) : [];
+    //inicio del hook del buscador
     const { states: statesSearcher, functions } = useSearcher(filterSearchVigilancia, requestGetRegisters);
     const { search, results, loading, error } = statesSearcher;
-    console.log("🚀 ~ file: index.jsx:29 ~ Maniobras ~ results:", results)
     const { searching, onChangueSearch, searchingKey } = functions;
-
-    const filterRegisters = (arrayRegisters) => {
-
-        arrayRegisters.map((register) => {
-            const detalles = register.registros_detalles_entradas;
-
-            detalles.filter((detail) => detail.status === 'maniobras')
-        })
-
-    }
 
     //inicio del hook de checklist
     const mockListCheck = [
@@ -98,16 +95,8 @@ function Maniobras() {
     const { listCheck, nextStep } = states
     ///fin del hook
 
-    const [tank, setTank] = useState(null);
-
-    const selectTank = (idRegiser, numTank) => {
-        const selectRegister = filterHistory.find((item) => item.id === idRegiser);
-        const selectTank = selectRegister.tanques.find((tank) => tank.tanque === numTank);
-        setTank({ data: selectRegister, tank: selectTank })
-    }
-
     const discardTank = () => {
-        setTank(null)
+        dispatch({ type: actionTypes.setSelectItem, payload: false })
     }
 
     return (
@@ -116,52 +105,52 @@ function Maniobras() {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    marginTop: '20px',
                     padding: '0px',
                 }}>
 
 
-                {!tank &&
+                {!selectItemState &&
                     <Container
                         sx={{
                             display: 'flex',
+                            marginTop: '20px',
                             flexDirection: 'column',
                             gap: '10px',
                             justifyContent: 'center',
                             alignItems: !IsSmall ? 'center' : '',
                         }}>
 
-                        <Paper 
-                        elevation={4}
-                        sx={{
-                            width:'100%', 
-                            maxWidth:'660px',
-                            padding:'10px',
-                            backgroundColor:'whitesmoke'
-                        }}>
-                                
-                                <Stack width={"100%"} gap={'10px'}>
-                                    <Typography variant='caption'>Busca un registro</Typography>
-                                    <Searcher
-                                        placeholder={'linea oeste , 125 , tanque , angel martinez '}
-                                        onChangueSearch={onChangueSearch}
-                                        searchingKey={searchingKey}
-                                        searching={searching}
-                                        search={search}
-                                    />
-                                </Stack>
-                           
+                        <Paper
+                            elevation={2}
+                            sx={{
+                                width: '100%',
+                                maxWidth: '760px',
+                                padding: '10px',
+                                backgroundColor: 'whitesmoke'
+                            }}>
+
+                            <Stack width={"100%"} gap={'10px'}>
+                                <Typography variant='caption'>Busca un registro</Typography>
+                                <Searcher
+                                    placeholder={'linea oeste , 125 , tanque , angel martinez '}
+                                    onChangueSearch={onChangueSearch}
+                                    searchingKey={searchingKey}
+                                    searching={searching}
+                                    search={search}
+                                />
+                            </Stack>
+
                         </Paper>
 
                         <Box sx={{ maxWidth: '900px' }}>
-                            <ContainerScroll height='65vh'>
+                            <ContainerScroll height='70vh'>
                                 <Stack spacing='20px'>
                                     {
-                                        requestGetRegisters.map((item) => (
+                                        filterRequest.map((item) => (
                                             <HistoryItem
+                                                type='maniobras'
                                                 key={item.id}
                                                 data={item}
-                                                type='maniobras'
                                             />))
                                     }
                                 </Stack>
@@ -172,10 +161,10 @@ function Maniobras() {
                     </Container>}
 
 
-                {tank &&
+                {selectItemState &&
                     <Fade
                         timeout={500}
-                        in={tank}
+                        in={selectItemState}
                     >
                         <Container
                             sx={{
@@ -201,15 +190,16 @@ function Maniobras() {
                                     }}
                                 >
                                     <DetailsCheckList
-                                        state={state}
-                                        data={tank}
-                                        action={discardTank}
                                         ChangueNextStep={ChangueNextStep}
+                                        discardTank={discardTank}
                                         nextStep={nextStep}
                                         submit={() => { }}
                                     />
 
-                                    <CheckListMaiobras />
+                                    <p>Aqui va un checklist</p>
+
+                                    {/*
+                                    <CheckListMaiobras /> */}
 
                                 </Box>
                             </Paper>
