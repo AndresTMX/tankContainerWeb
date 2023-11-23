@@ -1,8 +1,10 @@
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(relativeTime);
 
 export const currentDate = new dayjs();
 
@@ -26,3 +28,6 @@ export const datetimeMXFormat = (date) => {
 }
 
 export const currenDateFormatTz = dateMX(currentDate);
+
+export const tiempoTranscurrido = (date) => dayjs(date).fromNow(true).split(" ")[0]
+

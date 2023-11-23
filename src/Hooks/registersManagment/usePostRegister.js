@@ -95,7 +95,7 @@ function usePostRegister() {
     const updateStatusRegisters = async (idInputRegister) => {
         const { data, error } = await supabase
             .from(tableInputsRegistersDetails)
-            .update({ status: 'full' })
+            .update({ status: 'maniobras' })
             .eq('id', idInputRegister)
             .select()
         if (!error) {

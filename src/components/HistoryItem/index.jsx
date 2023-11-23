@@ -23,6 +23,7 @@ import InfoIcon from "@mui/icons-material/Info";
 //helpers
 import { transformRegisters } from "../../Helpers/transformRegisters";
 import { FormCheckTank } from "../FormCheckTank";
+import { tiempoTranscurrido } from "../../Helpers/date";
 
 function HistoryItem({ data, type }) {
   const IsSmall = useMediaQuery("(max-width:900px)");
@@ -53,12 +54,15 @@ function HistoryItem({ data, type }) {
   };
 
   const ToggleModalExitRegister = () => {
-      setModal({ ...modal, modal2: !modal.modal2 });
-    
+    setModal({ ...modal, modal2: !modal.modal2 });
+
   };
 
   const checkRegister = (register) => {
+    console.log(register)
   };
+
+  const time = tiempoTranscurrido(data.checkIn)
 
   return (
     <>
@@ -83,23 +87,24 @@ function HistoryItem({ data, type }) {
               flexWrap="wrap"
               gap="10px"
             >
-              <Chip
-                size="small"
-                color={typeRegister === "entrada" ? "success" : "warning"}
-                label={typeRegister}
-                icon={
-                  typeRegister === "entrada" ? (
-                    <KeyboardDoubleArrowRightIcon />
-                  ) : (
-                    <KeyboardDoubleArrowLeftIcon />
-                  )
-                }
-                sx={{
-                  maxWidth: "100px",
-                  fontWeight: 500,
-                  padding: "5px",
-                }}
-              />
+              {(type === "vigilancia") &&
+                <Chip
+                  size="small"
+                  color={typeRegister === "entrada" ? "success" : "warning"}
+                  label={typeRegister}
+                  icon={
+                    typeRegister === "entrada" ? (
+                      <KeyboardDoubleArrowRightIcon />
+                    ) : (
+                      <KeyboardDoubleArrowLeftIcon />
+                    )
+                  }
+                  sx={{
+                    maxWidth: "100px",
+                    fontWeight: 500,
+                    padding: "5px",
+                  }}
+                />}
 
               <Chip
                 size="small"
@@ -124,6 +129,19 @@ function HistoryItem({ data, type }) {
                   padding: "5px",
                 }}
               />
+
+               { (type === "maniobras") && <Chip
+                size="small"
+                color="info"
+                label={time === 'a'? '1 día': `${time} días`}
+                icon={<AccessTimeIcon />}
+                sx={{
+                  maxWidth: "200px",
+                  fontWeight: 500,
+                  padding: "5px",
+                }}
+              />}
+
             </Stack>
 
             {type === "vigilancia" &&
@@ -140,7 +158,7 @@ function HistoryItem({ data, type }) {
                 </Button>
               )}
 
-            {type === "maniobras" && (
+            {(type === "maniobras" && typeChargue == "Pipa") && (
               <Button
                 onClick={() => checkRegister(data)}
                 size="small"
@@ -155,6 +173,7 @@ function HistoryItem({ data, type }) {
           <Box
             sx={{
               display: "flex",
+              width: '100%',
               flexDirection: IsSmall ? "column" : "row",
               gap: "10px",
               justifyContent: "space-between",
@@ -165,35 +184,42 @@ function HistoryItem({ data, type }) {
             }}
           >
             <Stack
-              sx={{ maxWidth: "700px" }}
-              width={IsSmall ? "100%" : "550px"}
+              width={'100%'}
               flexDirection={IsSmall ? "column" : "row"}
               justifyContent={IsSmall ? "flex-start" : "space-around"}
               alignItems={IsSmall ? "start" : "center"}
               gap="10px"
             >
-              <TextGeneral text={linea} label="Linea" />
+              <TextGeneral width={'200px'} text={linea} label="Linea" />
               <Divider
                 orientation={IsSmall ? "horizontal" : "vertical"}
                 flexItem
               />
-              <TextGeneral label="Tracto" text={tracto} />
+              <TextGeneral width={'50px'} label="Tracto" text={tracto} />
               <Divider
                 orientation={IsSmall ? "horizontal" : "vertical"}
                 flexItem
               />
-              <TextGeneral label="Tipo de carga" text={typeChargue} />
+              <TextGeneral width={'100px'} label="Tipo de carga" text={typeChargue} />
             </Stack>
 
+
+            <Divider
+              orientation={IsSmall ? "horizontal" : "vertical"}
+              flexItem
+            />
+
+
             <Stack
+              width={'100%'}
               flexDirection={"row"}
               alignItems={"center"}
               justifyContent="space-between"
               gap="10px"
             >
-              {!IsSmall && <Divider orientation="vertical" flexItem />}
-              <TextGeneral label="Operador" text={shortNameOperator} />
+
               <Stack flexDirection="row" gap="10px">
+                <TextGeneral width={'100px'} label="Operador" text={shortNameOperator} />
                 <IconButton color="info" onClick={ToggleModalInfoOperator}>
                   <InfoIcon />
                 </IconButton>
@@ -213,12 +239,14 @@ function HistoryItem({ data, type }) {
             >
               <strong>Tanques</strong>
               {tanques.map((tanque, index) => (
-                <>
+                <Box key={tanque.id}>
                   <Box
                     sx={{
                       display: "flex",
                       flexDirection: "row",
                       justifyContent: "space-between",
+                      alignItems: 'center',
+                      height: '50px'
                     }}
                   >
                     <TextGeneral
@@ -242,19 +270,20 @@ function HistoryItem({ data, type }) {
 
                     {type === "maniobras" && (
                       <Button
-                        onClick={() => {}}
+                        onClick={() => checkRegister(data)}
                         size="small"
-                        variant="contained"
                         color="info"
+                        variant="contained"
                       >
                         Check
                       </Button>
                     )}
+
                   </Box>
                   {numeroTanques != index + 1 && (
                     <Divider orientation={"horizontal"} flexItem />
                   )}
-                </>
+                </Box>
               ))}
             </Stack>
           )}

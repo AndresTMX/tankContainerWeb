@@ -1,24 +1,43 @@
 import { useState, useContext } from "react";
-import { Container, Box, Stack, Fade, Paper, Typography, Modal } from "@mui/material";
+import { Container, Box, Stack, Fade, Paper, Typography } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import { useCheckList } from "../../Hooks/useChecklist";
 import { DetailsCheckList } from "../../components/DetailsCheckList";
 import { HistoryItem } from "../../components/HistoryItem";
+import { Searcher } from "../../components/Searcher";
 //Notification
 import { Notification } from "../../components/Notification";
 //context
 import { DevelopmentContext } from "../../Context";
 //newCheckList
 import { CheckListMaiobras } from "../../sections/CheckListManiobras";
+//hooks
+import { useGetRegisters } from "../../Hooks/registersManagment/useGetRegisters";
+import { useSearcher } from "../../Hooks/useSearcher";
+import { filterSearchVigilancia } from "../../Helpers/searcher";
 
 function Maniobras() {
     const IsSmall = useMediaQuery('(max-width:900px)');
+    const isMovile = useMediaQuery("(max-width:640px)");
+
     const [state, dispatch] = useContext(DevelopmentContext);
 
-    const { registers } = state;
+    const { requestGetRegisters, errorGetRegisters, loadingGetRegisters } = useGetRegisters();
+    const { states: statesSearcher, functions } = useSearcher(filterSearchVigilancia, requestGetRegisters);
+    const { search, results, loading, error } = statesSearcher;
+    console.log("🚀 ~ file: index.jsx:29 ~ Maniobras ~ results:", results)
+    const { searching, onChangueSearch, searchingKey } = functions;
 
-    const filterHistory = registers.filter(item => item.checkOut === undefined)
+    const filterRegisters = (arrayRegisters) => {
+
+        arrayRegisters.map((register) => {
+            const detalles = register.registros_detalles_entradas;
+
+            detalles.filter((detail) => detail.status === 'maniobras')
+        })
+
+    }
 
     //inicio del hook de checklist
     const mockListCheck = [
@@ -97,9 +116,8 @@ function Maniobras() {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    minHeight: '80vh',
                     marginTop: '20px',
-                    padding:'0px',
+                    padding: '0px',
                 }}>
 
 
@@ -108,22 +126,42 @@ function Maniobras() {
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
-                            gap: '20px',
+                            gap: '10px',
                             justifyContent: 'center',
-                            alignItems: !IsSmall ? 'center' : ''
+                            alignItems: !IsSmall ? 'center' : '',
                         }}>
-                        <Typography variant="h6">Contenedores en cola de revisión</Typography>
+
+                        <Paper 
+                        elevation={4}
+                        sx={{
+                            width:'100%', 
+                            maxWidth:'660px',
+                            padding:'10px',
+                            backgroundColor:'whitesmoke'
+                        }}>
+                                
+                                <Stack width={"100%"} gap={'10px'}>
+                                    <Typography variant='caption'>Busca un registro</Typography>
+                                    <Searcher
+                                        placeholder={'linea oeste , 125 , tanque , angel martinez '}
+                                        onChangueSearch={onChangueSearch}
+                                        searchingKey={searchingKey}
+                                        searching={searching}
+                                        search={search}
+                                    />
+                                </Stack>
+                           
+                        </Paper>
+
                         <Box sx={{ maxWidth: '900px' }}>
-                            <ContainerScroll height='75vh'>
+                            <ContainerScroll height='65vh'>
                                 <Stack spacing='20px'>
                                     {
-                                        filterHistory.map((item, index) => (
+                                        requestGetRegisters.map((item) => (
                                             <HistoryItem
-                                                key={index}
-                                                id={item.id}
+                                                key={item.id}
                                                 data={item}
                                                 type='maniobras'
-                                                select={selectTank}
                                             />))
                                     }
                                 </Stack>
@@ -146,35 +184,35 @@ function Maniobras() {
                                 justifyContent: 'center',
                                 alignItems: 'center',
                             }}>
-                
-                                <Paper
-                                    elevation={4}
+
+                            <Paper
+                                elevation={4}
+                                sx={{
+                                    width: '100%',
+                                    maxWidth: '900px',
+                                    padding: '20px',
+                                }}
+                            >
+                                <Box
                                     sx={{
-                                        width: '100%',
-                                        maxWidth: '900px',
-                                        padding: '20px',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '10px',
                                     }}
                                 >
-                                    <Box
-                                        sx={{
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            gap: '10px',
-                                        }}
-                                    >
-                                        <DetailsCheckList
-                                            state={state}
-                                            data={tank}
-                                            action={discardTank}
-                                            ChangueNextStep={ChangueNextStep}
-                                            nextStep={nextStep}
-                                            submit={() => { }}
-                                        />
+                                    <DetailsCheckList
+                                        state={state}
+                                        data={tank}
+                                        action={discardTank}
+                                        ChangueNextStep={ChangueNextStep}
+                                        nextStep={nextStep}
+                                        submit={() => { }}
+                                    />
 
-                                        <CheckListMaiobras />
+                                    <CheckListMaiobras />
 
-                                    </Box>
-                                </Paper>
+                                </Box>
+                            </Paper>
                         </Container>
                     </Fade>
                 }

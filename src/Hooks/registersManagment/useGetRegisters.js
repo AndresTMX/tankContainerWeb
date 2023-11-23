@@ -1,6 +1,6 @@
 import supabase from "../../supabase";
 import { DevelopmentContext } from "../../Context";
-import { useState, useEffect, useContext} from "react";
+import { useState, useEffect, useContext } from "react";
 
 function useGetRegisters() {
 
@@ -9,6 +9,7 @@ function useGetRegisters() {
     const { typeRegister } = state;
 
     const tableRegisters = 'registros';
+    const tableRegistersInputDetails = 'registros_detalles_entradas';
     const [errorGetRegisters, setErrorGetReisters] = useState(null);
     const [requestGetRegisters, setRequestGetRegisters] = useState([]);
     const [loadingGetRegisters, setLoadingGetRegisters] = useState(null);
@@ -153,6 +154,7 @@ function useGetRegisters() {
                     localStorage.setItem(nameStorageCache, JSON.stringify(data))
                 }
             }
+            
 
         } catch (error) {
             setLoadingGetRegisters(false)

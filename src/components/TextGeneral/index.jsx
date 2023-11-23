@@ -1,11 +1,11 @@
 import { Box, Typography, Chip } from "@mui/material";
 import InfoIcon from '@mui/icons-material/Info';
 
-function TextGeneral({ text, label, variant, onClick }) {
+function TextGeneral({ width, text, label, variant, onClick }) {
     return (
         <>
             {!variant && (
-                <Box width={'100%'}>
+                <Box width={width? width: 'auto'}>
                     <Typography variant="subtitle2">{label}</Typography>
                     <Typography variant='body1'>{text}</Typography>
                 </Box>

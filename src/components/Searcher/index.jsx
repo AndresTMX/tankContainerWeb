@@ -1,7 +1,7 @@
 import { IconButton, Paper, InputBase} from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 
-function Searcher({onChangueSearch, searchingKey, search, searching}) {
+function Searcher({onChangueSearch, searchingKey, search, searching, placeholder}) {
 
     return ( 
         <>
@@ -19,7 +19,7 @@ function Searcher({onChangueSearch, searchingKey, search, searching}) {
             onKeyUp={searchingKey}
             value={search}
             sx={{ ml: 1, flex: 1 }}
-            placeholder="Busca registros"
+            placeholder={placeholder? placeholder : "Busca registros"}
             />
             <IconButton 
              onClick={searching}
