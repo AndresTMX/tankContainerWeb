@@ -38,3 +38,26 @@ export function filterSearchVigilancia(busqueda, array) {
     return filtered;
     
 }
+
+export function filterSearchManiobras(busqueda, array){
+
+    const busquedaMinuscula = busqueda.toLowerCase();
+
+    const results = []
+
+    array.map((register) => {
+        const linea = register.linea.toLowerCase();
+        const carga = register.carga.toLowerCase();
+        const tracto = register.tracto;
+        const operador = register.operador.nombre.toLowerCase();
+        const numero_tanque = register.numero_tanque;
+
+        if (carga.includes(busquedaMinuscula) || numero_tanque?.includes(busqueda) || tracto.includes(busquedaMinuscula) || operador.includes(busquedaMinuscula) || linea.includes(busquedaMinuscula) ) {
+            results.push(register)
+        }
+       
+    })
+
+    return results
+
+}

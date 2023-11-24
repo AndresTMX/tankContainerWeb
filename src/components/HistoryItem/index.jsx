@@ -10,6 +10,7 @@ import {
   Divider,
   Fade,
   Paper,
+  Skeleton,
 } from "@mui/material";
 import { TextGeneral } from "../TextGeneral";
 //hooks
@@ -29,6 +30,13 @@ import { actionTypes } from "../../Reducers";
 import { DevelopmentContext } from "../../Context";
 
 function HistoryItem({ data, type }) {
+
+  const dataOperador = type === 'vigilancia' ? 
+  data.type === 'entrada' ? 
+  data.registros_detalles_entradas[0].operadores :
+  data.registros_detalles_salidas[0].operadores: 
+  data.operador;
+
   const IsSmall = useMediaQuery("(max-width:900px)");
 
   const [modal, setModal] = useState({
@@ -45,6 +53,8 @@ function HistoryItem({ data, type }) {
     setModal({ ...modal, modal2: !modal.modal2 });
 
   };
+
+
 
   return (
     <>
@@ -102,9 +112,9 @@ function HistoryItem({ data, type }) {
           >
             <Typography variant="h6">Información del operador</Typography>
 
-            <TextGeneral text={data.operador.nombre} label="Nombre del operador" />
+            <TextGeneral text={dataOperador.nombre} label="Nombre del operador" />
             <TextGeneral
-              text={data.operador.contacto}
+              text={dataOperador.contacto}
               label="Contacto del operador"
             />
 
@@ -318,7 +328,7 @@ function HistoryItemVigilancia({ data, ToggleModalInfoOperator, ToggleModalExitR
                     text={tanque.tanque}
                   />
 
-                  {type === "vigilancia" &&
+                  {
                     typeRegister === "entrada" &&
                     tanque.status === "parked" && (
                       <Button
@@ -497,3 +507,46 @@ function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator }) {
 }
 
 export { HistoryItemManiobras };
+
+function HistoryItemLoading() {
+  const IsSmall = useMediaQuery("(max-width:900px)");
+  return (
+    <>
+      <Paper sx={{ display: "flex", flexDirection: "column", padding: "10px", gap: "10px", width: '80vw', maxWidth: '100%' }}>
+        <Stack sx={{ maxWidth: '700px' }}>
+          <Stack
+            justifyContent="space-between"
+            flexDirection="row"
+            flexWrap="wrap"
+            gap="10px"
+          >
+
+            <Stack
+              justifyContent="start"
+              flexDirection="row"
+              flexWrap="wrap"
+              gap="10px"
+            >
+              <Skeleton variant="rounded" width={120} height={20} />
+              <Skeleton variant="rounded" width={80} height={20} />
+              <Skeleton variant="rounded" width={80} height={20} />
+            </Stack>
+
+            <Stack>
+              <Skeleton variant="rounded" width={80} height={20} />
+            </Stack>
+
+          </Stack>
+        </Stack>
+        <Stack flexDirection="row" gap="10px" flexWrap="wrap" >
+          <Skeleton variant="rectangular" width={IsSmall ? '100%' : '20%'} height={40} />
+          <Skeleton variant="rectangular" width={IsSmall ? '100%' : '10%'} height={40} />
+          <Skeleton variant="rectangular" width={IsSmall ? '100%' : '10%'} height={40} />
+          <Skeleton variant="rectangular" width={IsSmall ? '100%' : '15%'} height={40} />
+        </Stack>
+      </Paper>
+    </>
+  );
+}
+
+export { HistoryItemLoading };

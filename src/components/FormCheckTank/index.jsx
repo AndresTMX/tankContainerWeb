@@ -10,6 +10,7 @@ import { DevelopmentContext } from "../../Context";
 import { actionTypes } from "../../Reducers";
 //helpers
 import { transformRegisters } from "../../Helpers/transformRegisters";
+import { InputText } from "../InputText";
 
 
 function FormCheckTank({ data, toggleModal }) {
@@ -29,6 +30,7 @@ function FormCheckTank({ data, toggleModal }) {
 
     const [selectTransporter, setSelectTransporter] = useState('');
     const [selectOperator, setSelectOperator] = useState('');
+    const [selectTracto, setSelectTracto] = useState('');
 
     //datos
     const {
@@ -214,6 +216,14 @@ function FormCheckTank({ data, toggleModal }) {
                         onChange={(e) => setSelectTransporter(e.target.value)}
                         width={'100%'}
                         required={true}
+                    />
+
+                    <InputText
+                    label='tracto'
+                    value={selectTracto}
+                    onChangue={(e) => setSelectTracto(e.target.value)}
+                    required={true}
+                    width={'100%'}
                     />
 
                     <SelectSimple

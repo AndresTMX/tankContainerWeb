@@ -92,7 +92,7 @@ function Vigilancia() {
                         timeout={500}
                         in={tab === 0 ? true : false}
                     >
-                        <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px', }}>
+                        <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom:'50px' }}>
                             <Paper
                                 elevation={2}
                                 sx={{
@@ -262,8 +262,8 @@ function Vigilancia() {
                                         fullWidth
                                         variant="contained"
                                         color="error" on
-                                        onClick={ToggleModalForm}>Can
-                                        celar</Button>
+                                        onClick={ToggleModalForm}>
+                                        Cancelar</Button>
                                 </Stack>
 
                             </Paper>

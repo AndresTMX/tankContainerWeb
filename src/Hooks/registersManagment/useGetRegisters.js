@@ -10,9 +10,9 @@ function useGetRegisters() {
 
     const tableRegisters = 'registros';
     const tableRegistersInputDetails = 'registros_detalles_entradas';
-    const [errorGetRegisters, setErrorGetReisters] = useState(null);
+    const [errorGetRegisters, setErrorGetReisters] = useState(false);
     const [requestGetRegisters, setRequestGetRegisters] = useState([]);
-    const [loadingGetRegisters, setLoadingGetRegisters] = useState(null);
+    const [loadingGetRegisters, setLoadingGetRegisters] = useState(true);
     const nameStorageCache = `registros_vigilancia_${typeRegister}`;
 
     useEffect(() => {
@@ -22,7 +22,7 @@ function useGetRegisters() {
     const getInputsRegisters = async () => {
         try {
             setLoadingGetRegisters(true)
-            setErrorGetReisters(null)
+            setErrorGetReisters(false)
 
             if (typeRegister === 'entrada') {
                 const { data, error } = await supabase
@@ -51,11 +51,11 @@ function useGetRegisters() {
                     .order('checkIn', { ascending: false })
                     .range(0, 19)
                 if (error) {
-                    console.log(error)
                     setErrorGetReisters(error)
                     const cache = localStorage.getItem(nameStorageCache);
                     if (cache) {
                         setRequestGetRegisters(JSON.parse(cache))
+                        setLoadingGetRegisters(false)
                     }
                 } else {
                     setRequestGetRegisters(data)
@@ -94,6 +94,7 @@ function useGetRegisters() {
                     const cache = localStorage.getItem(nameStorageCache);
                     if (cache) {
                         setRequestGetRegisters(JSON.parse(cache))
+                        setLoadingGetRegisters(false)
                     }
                 } else {
                     setRequestGetRegisters(data)
@@ -147,6 +148,7 @@ function useGetRegisters() {
                     const cache = localStorage.getItem(nameStorageCache);
                     if (cache) {
                         setRequestGetRegisters(JSON.parse(cache))
+                        setLoadingGetRegisters(false)
                     }
                 } else {
                     setRequestGetRegisters(data)

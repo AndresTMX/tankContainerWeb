@@ -34,7 +34,7 @@ function usePostRegister() {
 
     const addDetailsRegisterData = async (register, idRegister, type) => {
         try {
-            if (type === 'entrada') {
+            if (type === 'entrada' && register.numero_tanque != '') {
                 const { data, error } = await supabase
                     .from(tableInputsRegistersDetails)
                     .insert(
@@ -49,7 +49,7 @@ function usePostRegister() {
                     .select()
             }
 
-            if (type === 'salida') {
+            if (type === 'salida' && register.numero_tanque != '') {
                 const { data, error } = await supabase
                     .from(tableOutputsRegistersDetails)
                     .insert(
@@ -70,16 +70,19 @@ function usePostRegister() {
     }
 
     const sendRegisters = async (data, type) => {
+        console.log("🚀 ~ file: usePostRegister.js:73 ~ sendRegisters ~ data:", data)
+        
         dispatch({ type: actionTypes.setLoading, payload: true })
         const registerData = await addRegisterData(type);
-        const dataValues = Object.values(data);
-        const promises = dataValues.map(async (register) => {
+        const promises = data.map(async (register) => {
             try {
                 await addDetailsRegisterData(register, registerData[0].id, type);
             } catch (error) {
                 setError(error);
             }
         });
+
+        console.log(promises)
 
         try {
             await Promise.all(promises);
