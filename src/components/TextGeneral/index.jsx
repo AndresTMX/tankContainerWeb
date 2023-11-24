@@ -12,7 +12,7 @@ function TextGeneral({ width, text, label, variant, onClick }) {
             )}
 
             {variant === 'chip' && (
-                <Box sx={{display:'flex', alignItems:'center', flexDirection:'column'}}>
+                <Box sx={{display:'flex', alignItems:'center', flexDirection:'column', gap:'10px'}}>
                     <Typography variant="subtitle2">{label}</Typography>
                     <Chip size="small" color="info" onClick={onClick} label={text} />
                 </Box>

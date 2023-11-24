@@ -30,7 +30,7 @@ function DetailsCheckList({ submit, discardTank, ChangueNextStep, nextStep }) {
     }
 
     const completeCheck = () => {
-
+        console.log(selectItem)
     }
 
     return (

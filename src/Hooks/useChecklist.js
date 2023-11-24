@@ -3,86 +3,98 @@ import { useState, useContext } from "react";
 import { DevelopmentContext } from "../Context";
 
 function useCheckList(listInputs) {
+  const [state, dispatch] = useContext(DevelopmentContext);
+  const { maniobrasCheckList } = state;
+  const [listCheck, SetListCheck] = useState(listInputs);
+  const [indexQuestion, setIndexQuestion] = useState(0);
+  const [modalComent, setModalComent] = useState(false);
 
-    const [state, dispatch] = useContext(DevelopmentContext);
-    const [listCheck, SetListCheck] = useState(listInputs);
-    const [indexQuestion, setIndexQuestion] = useState(0);
-    const [modalComent, setModalComent] = useState(false);
+  const ValidateInputs = () => {
+    const validateInputs = listCheck.filter(
+      (question) => question.value === null
+    ).length;
 
-    const ValidateInputs = () => {
-
-        const validateInputs = listCheck.filter((question) => question.value === null).length
-
-        if (validateInputs > 0) {
-            dispatch({ type: actionTypes.setNotification, payload: 'Complete el checklist para continuar' })
-            return false
-        }
-
-        return true
+    if (validateInputs > 0) {
+      dispatch({
+        type: actionTypes.setNotification,
+        payload: "Complete el checklist para continuar",
+      });
+      return false;
     }
 
-    const ChangueInput = (indexInput, newValue) => {
+    return true;
+  };
 
-        const copyState = [...listCheck]
+  const ChangueInput = (indexInput, newValue) => {
+    const copyState = [...listCheck];
 
-        copyState[indexInput].value = newValue
+    copyState[indexInput].value = newValue;
 
-        SetListCheck(copyState)
-    }
-    //     const copyState = [...listCheck]
+    SetListCheck(copyState);
+  };
 
-    //     copyState[indexInput].no = !copyState[indexInput].no
+  const ChangueComent = (event) => {
+    const copyState = [...listCheck];
 
-    //     SetListCheck(copyState)
-    // } 
+    copyState[indexQuestion].coment = event.target.value;
 
-    const ChangueComent = (event) => {
-        const copyState = [...listCheck]
+    SetListCheck(copyState);
+  };
 
-        copyState[indexQuestion].coment = event.target.value
+  const OnChangueComent = (event) => {
+    setComent(event.target.value);
+  };
 
-        SetListCheck(copyState)
-    }
+  const ChangueImage = (indexInput, event) => {
+    const copyState = [...listCheck];
 
-    const ChangueImage = (indexInput, event) => {
-        const copyState = [...listCheck]
-
-        const file = event.target.files[0];
-        const urlImage = URL.createObjectURL(file);
-        if (file) {
-            copyState[indexInput].image = file
-            copyState[indexInput].preview = urlImage
-        }
-
-        SetListCheck(copyState)
+    const file = event.target.files[0];
+    const urlImage = URL.createObjectURL(file);
+    if (file) {
+      copyState[indexInput].image = file;
+      copyState[indexInput].preview = urlImage;
     }
 
-    const DiscardImage = (indexInput) => {
-        const copyState = [...listCheck]
+    SetListCheck(copyState);
+  };
 
-        copyState[indexInput].image = ''
-        copyState[indexInput].preview = ''
+  const DiscardImage = (indexInput) => {
+    const copyState = [...listCheck];
 
+    copyState[indexInput].image = "";
+    copyState[indexInput].preview = "";
 
-        SetListCheck(copyState)
-    }
+    SetListCheck(copyState);
+  };
 
-    const SelectQuestionComent = (index) => {
-        setIndexQuestion(index)
-        setModalComent(!modalComent)
+  const SelectQuestionComent = (index) => {
+    setIndexQuestion(index);
+    setModalComent(!modalComent);
+  };
 
-    }
+  const ToggleModalComent = () => {
+    setModalComent(!modalComent);
+  };
 
-    const ToggleModalComent = () => {
-        setModalComent(!modalComent)
-    }
+  const nextStep = (state) => {
+    dispatch({ type: actionTypes.setManiobrasCheck, payload: state });
+  };
 
+  const actions = {
+    ChangueInput,
+    OnChangueComent,
+    ChangueImage,
+    DiscardImage,
+    SelectQuestionComent,
+    ToggleModalComent,
+    ValidateInputs,
+    ChangueComent,
+    nextStep
+  };
 
-    const actions = { ChangueInput, ChangueComent, ChangueImage, DiscardImage, SelectQuestionComent, ToggleModalComent, ValidateInputs }
+  const states = { listCheck, indexQuestion, modalComent, maniobrasCheckList };
 
-    const states = { listCheck, indexQuestion, modalComent }
-
-    return { actions, states }
+  return { actions, states };
 }
 
 export { useCheckList };

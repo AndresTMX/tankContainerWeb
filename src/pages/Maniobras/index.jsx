@@ -52,10 +52,10 @@ function Maniobras() {
                 {!selectItemState &&
                     <Container
                         sx={{
+                            gap: '10px',
                             display: 'flex',
                             marginTop: '20px',
                             flexDirection: 'column',
-                            gap: '10px',
                             justifyContent: 'center',
                             alignItems: !IsSmall ? 'center' : '',
                         }}>
@@ -64,12 +64,12 @@ function Maniobras() {
                             elevation={2}
                             sx={{
                                 width: '100%',
-                                maxWidth: '760px',
                                 padding: '10px',
-                                backgroundColor: 'whitesmoke'
+                                maxWidth:'670px',
+                                backgroundColor: 'whitesmoke',
                             }}>
 
-                            <Stack width={"100%"} gap={'10px'}>
+                            <Stack gap={'10px'}>
                                 <Typography variant='caption'>Busca un registro</Typography>
                                 <Searcher
                                     placeholder={'linea oeste , 125 , tanque , angel martinez '}
@@ -82,7 +82,7 @@ function Maniobras() {
 
                         </Paper>
 
-                        <Box sx={{ maxWidth: '770px' }}>
+                        <Box>
                             <ContainerScroll height='70vh'>
 
                                 {(errorGetRegisters) && (
@@ -196,17 +196,18 @@ function Maniobras() {
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',
-                                justifyContent: 'center',
+                                alignItems:'center',
                                 marginTop: '20px',
+                                paddingBottom:'20px',
                                 overflow:'hidden',
-                                minHeight:'50vh'
-
+                                height:'100%',
                             }}>
 
                             <Paper
                                 elevation={4}
                                 sx={{
-                                    maxWidth: '900px',
+                                    width:'85vw',
+                                    maxWidth: '800px',
                                     padding: '20px',
                                 }}
                             >

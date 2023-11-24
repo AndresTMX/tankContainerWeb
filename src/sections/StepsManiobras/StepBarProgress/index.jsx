@@ -1,12 +1,12 @@
-import { MobileStepper, Box, Stepper } from "@mui/material";
+import { MobileStepper, Box, } from "@mui/material";
 
-function StepBarProgress({step}) {
+function StepBarProgress({step, numSteps}) {
     return (
         <Box sx={{ width:'100%', transform: 'translate(22.5%)', backgroundColor:'transparent'}}>
             <MobileStepper
                 variant="progress"
                 position='null'
-                steps={9}
+                steps={numSteps}
                 activeStep={step}
                 sx={{
                      width:'100%',
