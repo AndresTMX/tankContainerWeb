@@ -70,7 +70,6 @@ function usePostRegister() {
     }
 
     const sendRegisters = async (data, type) => {
-        console.log("🚀 ~ file: usePostRegister.js:73 ~ sendRegisters ~ data:", data)
         
         dispatch({ type: actionTypes.setLoading, payload: true })
         const registerData = await addRegisterData(type);

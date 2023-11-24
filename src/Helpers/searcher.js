@@ -13,13 +13,14 @@ export function filterSearchVigilancia(busqueda, array) {
 
         detalles.forEach(element => {
             const tracto = element.tracto
+            const status = element.status
             const carga = element.carga
             const operador = element.operadores.nombre
             const transportista = element.transportistas.name
             const numero_tanque = element.numero_tanque
             const id = element.id;
 
-            arrayFlat.push({ id, operador, carga, tracto, transportista, numero_tanque, checkIn, tipo })
+            arrayFlat.push({ id, operador, carga, tracto, transportista, numero_tanque, checkIn, tipo, status })
         });
     })
 

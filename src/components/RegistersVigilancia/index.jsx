@@ -136,7 +136,9 @@ function RegisterVigilancia() {
 
                         {(!loading && !error) && (
                             results.map((result) => (
+                            
                                 <ResultSearch key={result.id} typeItem="vigilancia" dataItem={result} />
+        
                             ))
                         )}
 

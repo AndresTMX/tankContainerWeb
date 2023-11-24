@@ -152,7 +152,7 @@ function HistoryItem({ data, type }) {
 
 export { HistoryItem };
 
-function HistoryItemVigilancia({ data, ToggleModalInfoOperator, ToggleModalExitRegister, IsSmall, }) {
+export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, ToggleModalExitRegister, IsSmall, }) {
 
   const {
     typeRegister,
@@ -354,9 +354,7 @@ function HistoryItemVigilancia({ data, ToggleModalInfoOperator, ToggleModalExitR
   );
 }
 
-export { HistoryItemVigilancia };
-
-function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator }) {
+export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator }) {
 
   const [state, dispatch] = useContext(DevelopmentContext)
 
@@ -506,9 +504,7 @@ function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator }) {
   );
 }
 
-export { HistoryItemManiobras };
-
-function HistoryItemLoading() {
+export function HistoryItemLoading() {
   const IsSmall = useMediaQuery("(max-width:900px)");
   return (
     <>
@@ -549,4 +545,3 @@ function HistoryItemLoading() {
   );
 }
 
-export { HistoryItemLoading };

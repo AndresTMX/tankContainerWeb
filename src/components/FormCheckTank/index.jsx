@@ -130,7 +130,7 @@ function FormCheckTank({ data, toggleModal }) {
             } else {
                 registers.push({
                     id: tanques[0].id,
-                    tracto: tracto,
+                    tracto: selectTracto,
                     carga: typeChargue,
                     operador: selectOperator,
                     transportista: selectTransporter,
