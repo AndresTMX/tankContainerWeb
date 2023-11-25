@@ -13,6 +13,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { NavLink } from 'react-router-dom';
 import { Button } from '@mui/material';
+import { TankContainerLogo } from '../../resourcesLinks';
 
 function NavBar() {
 
@@ -73,7 +74,7 @@ function NavBar() {
                        <img 
                        height='50px'
                        width='auto'
-                       src='src/assets/TankContainer.png'
+                       src={TankContainerLogo}
                        alt='logo'/>
                     </Box>
             
@@ -138,11 +139,6 @@ function NavBar() {
                         textDecoration: 'none',
                     }}
                     >
-                       {/* <img 
-                       height='50px'
-                       width='auto'
-                       src='src/assets/TankContainer.png'
-                       alt='logo'/> */}
                     </Box>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
