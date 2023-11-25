@@ -34,6 +34,9 @@ function usePostRegister() {
 
     const addDetailsRegisterData = async (register, idRegister, type) => {
         try {
+
+            const status = register.carga === 'Pipa'? 'prelavado' : 'parked';
+
             if (type === 'entrada' && register.numero_tanque != '') {
                 const { data, error } = await supabase
                     .from(tableInputsRegistersDetails)
@@ -45,6 +48,7 @@ function usePostRegister() {
                             numero_tanque: register.numero_tanque,
                             transportista_id: register.transportista,
                             operador_id: register.operador,
+                            status: status
                         })
                     .select()
             }
@@ -69,6 +73,19 @@ function usePostRegister() {
         }
     }
 
+    const updateStatusRegisters = async (idInputRegister, newStatus) => {
+        const { data, error } = await supabase
+            .from(tableInputsRegistersDetails)
+            .update({ status: 'maniobras' })
+            .eq('id', idInputRegister)
+            .select()
+        if (!error) {
+            console.log(data)
+        } else {
+            console.log(error)
+        }
+    }
+
     const sendRegisters = async (data, type) => {
         
         dispatch({ type: actionTypes.setLoading, payload: true })
@@ -81,8 +98,6 @@ function usePostRegister() {
             }
         });
 
-        console.log(promises)
-
         try {
             await Promise.all(promises);
         } catch (error) {
@@ -92,19 +107,6 @@ function usePostRegister() {
         }
         dispatch({ type: actionTypes.setLoading, payload: false })
 
-    }
-
-    const updateStatusRegisters = async (idInputRegister) => {
-        const { data, error } = await supabase
-            .from(tableInputsRegistersDetails)
-            .update({ status: 'maniobras' })
-            .eq('id', idInputRegister)
-            .select()
-        if (!error) {
-            console.log(data)
-        } else {
-            console.log(error)
-        }
     }
 
     const sendOutputRegisters = async (data) => {
@@ -154,6 +156,7 @@ function usePostRegister() {
         }
         
     };
+
 
     return { sendRegisters, sendOutputRegisters }
 
