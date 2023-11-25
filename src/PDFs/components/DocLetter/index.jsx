@@ -36,7 +36,7 @@ function DocLetter({ children }) {
             <Page style={styles.Page} size={"LETTER"}>
                 <View style={styles.Container}>
                     {children}
-                    <View style={styles.boxNumPage}><Text>Pag 1/1</Text></View>
+                    {/* <View style={styles.boxNumPage}><Text>Pag 1/1</Text></View> */}
                 </View>
             </Page>
         </Document>

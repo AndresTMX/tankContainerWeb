@@ -1,5 +1,5 @@
 import { useReducer, createContext, useContext } from "react";
-import { initialState, reducer } from "../Reducers";
+import { initialState, reducer } from "../../Reducers/";
 const DevelopmentContext = createContext();
 
 const DevelopmentProvider = ({children}) => {

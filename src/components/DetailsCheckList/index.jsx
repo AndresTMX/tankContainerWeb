@@ -8,7 +8,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { DevelopmentContext } from "../../Context";
+import { DevelopmentContext } from "../../Context/DevelopmentContext";
 //helpers
 import { tiempoTranscurrido } from "../../Helpers/date";
 

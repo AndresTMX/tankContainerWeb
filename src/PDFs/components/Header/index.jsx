@@ -18,9 +18,8 @@ export function HeaderEIR() {
         ContainerHeader: {
             display: 'flex',
             flexDirection: 'column',
-            padding: '10px',
             width: '100%',
-            height: '15%',
+            height: '10%',
             backgroundColor: 'whitesmoke',
             border:1,
 
@@ -38,18 +37,16 @@ export function HeaderEIR() {
             flexDirection: 'column',
             alignItems: 'start',
             justifyContent: 'center',
-            padding: '10px',
             height: '100%',
-            width: '30%',
+            width: '25%',
         },
         ContainerData: {
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'start',
+            alignItems: 'center',
             justifyContent: 'start',
             height: '100%',
             width: '50%',
-
         },
         BoxText: {
             display: 'flex',
@@ -85,20 +82,20 @@ export function HeaderEIR() {
 
                     <View style={styles.ContainerData}>
 
-                        <View style={styles.BoxText}>
-                            <Text style={styles.TextNormal}>
+                        <View style={{...styles.BoxText, margin:'0px',}}>
+                            <Text style={{...styles.TextNormal, width:'100%', textAlign:'start'}}>
                                 Calle Antonio Castillo Palafox S/N, Colonia Pozo 50
                             </Text>
                         </View>
 
-                        <View style={styles.BoxText}>
-                            <Text style={styles.TextNormal}>
+                        <View style={{...styles.BoxText, margin:'0px',}}>
+                            <Text style={{...styles.TextNormal, width:'100%', textAlign:'start'}}>
                                 Municipio Alamo Tempache, Veracruz, Mexico CP 92730
                             </Text>
                         </View>
 
-                        <View style={styles.BoxText}>
-                            <Text style={{...styles.TextNormal, width:'90%'}}>
+                        <View style={{...styles.BoxText, margin:'0px',}}>
+                            <Text style={{...styles.TextNormal, width:'100%', textAlign:'start'}}>
                               Tel. 22 92 64 97 29
                             </Text>
                         </View>

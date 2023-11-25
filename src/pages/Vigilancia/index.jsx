@@ -8,7 +8,7 @@ import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { SelectSimple } from "../../components/SelectSimple";
 import { InputText } from "../../components/InputText";
 //context
-import { DevelopmentContext } from "../../Context";
+import { DevelopmentContext } from "../../Context/DevelopmentContext";
 //hook
 import { useFormRegister } from "../../Hooks/useFormRegister";
 import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";

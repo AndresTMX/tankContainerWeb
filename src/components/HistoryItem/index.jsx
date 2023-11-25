@@ -27,8 +27,7 @@ import { tiempoTranscurrido } from "../../Helpers/date";
 import { FormCheckTank } from "../FormCheckTank";
 import { actionTypes } from "../../Reducers";
 //context
-import { DevelopmentContext } from "../../Context";
-
+import { DevelopmentContext } from "../../Context/DevelopmentContext";
 function HistoryItem({ data, type }) {
 
   const dataOperador = type === 'vigilancia' ? 

@@ -6,7 +6,7 @@ import { useGetTransporters } from "../../Hooks/transportersManagment/useGetTran
 import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";
 import { usePostRegister } from "../../Hooks/registersManagment/usePostRegister";
 import { useChangueType } from "../../Hooks/registersManagment/useChangueType";
-import { DevelopmentContext } from "../../Context";
+import { DevelopmentContext } from "../../Context/DevelopmentContext";
 import { actionTypes } from "../../Reducers";
 //helpers
 import { transformRegisters } from "../../Helpers/transformRegisters";

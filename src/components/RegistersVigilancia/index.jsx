@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { Searcher } from "../Searcher";
 import { HistoryItem } from "../HistoryItem";
 import { actionTypes } from "../../Reducers";
-import { DevelopmentContext } from "../../Context";
+import { DevelopmentContext } from "../../Context/DevelopmentContext";
 import { ContainerScroll } from "../ContainerScroll";
 import { Box, Stack, Chip, Typography, Paper } from "@mui/material";
 import { ResultSearch } from "../ResultsSearch";

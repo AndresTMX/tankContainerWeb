@@ -8,7 +8,8 @@ const initialState = {
     loading:false,
     maniobrasCheckList:{},
     typeRegister:'entrada',
-    selectItem:false
+    selectItem:false,
+    previewPDF: false,
 };
 
 //Use reducer que valida los objetos
@@ -28,7 +29,8 @@ const actionTypes = {
     setLoading: 'SET_LOADING',
     setManiobrasCheck: 'SET_MANIOBRAS_CHECK',
     setTypeRegister: 'SET_TYPE_REGISTER',
-    setSelectItem: 'SET_SELECT_ITEM'
+    setSelectItem: 'SET_SELECT_ITEM',
+    setPreviewPDF:'SET_PREVIEW_PDF'
   
 }
 
@@ -66,6 +68,10 @@ const reducerObject = (state, payload) => ({
     [actionTypes.setSelectItem]:{
         ...state,
         selectItem: payload
+    },
+    [actionTypes.setPreviewPDF]:{
+        ...state,
+        previewPDF:payload
     }
 
 });

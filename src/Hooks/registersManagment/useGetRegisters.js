@@ -1,5 +1,5 @@
 import supabase from "../../supabase";
-import { DevelopmentContext } from "../../Context";
+import { DevelopmentContext } from "../../Context/DevelopmentContext";
 import { useState, useEffect, useContext } from "react";
 
 function useGetRegisters() {

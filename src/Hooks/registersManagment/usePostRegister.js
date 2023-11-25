@@ -1,7 +1,7 @@
 import supabase from "../../supabase";
 import { useState, useContext } from "react";
-import { AuthContext } from "../../Context/AuthContext/"
-import { DevelopmentContext } from "../../Context";
+import { AuthContext } from "../../Context/AuthContext"
+import { DevelopmentContext } from "../../Context/DevelopmentContext";
 import { actionTypes } from "../../Reducers";
 
 function usePostRegister() {

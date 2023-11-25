@@ -8,7 +8,7 @@ import { Searcher } from "../../components/Searcher";
 //Notification
 import { Notification } from "../../components/Notification";
 //context
-import { DevelopmentContext } from "../../Context";
+import { DevelopmentContext } from "../../Context/DevelopmentContext";
 //newCheckList
 import { CheckListEIR } from "../../sections/CheckListEIR";
 //hooks
@@ -19,11 +19,14 @@ import { useSearcher } from "../../Hooks/useSearcher";
 import { filterInputRegistersForManiobras } from "../../Helpers/transformRegisters";
 import { filterSearchManiobras } from "../../Helpers/searcher";
 import { actionTypes } from "../../Reducers";
+//ViewerPDF
+import { ViewerDocument } from "../../PDFs/components/Viewer";
+import { EIR } from "../../PDFs/plantillas/EIR";
 
 function Maniobras() {
     const IsSmall = useMediaQuery('(max-width:900px)');
     const [state, dispatch] = useContext(DevelopmentContext);
-    const { selectItem } = state;
+    const { selectItem, previewPDF, maniobrasCheckList } = state;
     //estado del checklist 
     const selectItemState = !selectItem ? false : true;
     //inicio del hook de registros
@@ -232,6 +235,10 @@ function Maniobras() {
                 }
 
             </Container>
+
+            <ViewerDocument stateModal={previewPDF} dispatch={dispatch}>
+                <EIR checkList={maniobrasCheckList}/>
+            </ViewerDocument>
 
             <Notification />
         </>

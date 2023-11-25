@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { Box, Paper, Stack, Button, IconButton, Typography, Modal, Fade, Container } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { DevelopmentContext } from "../../Context";
+import { DevelopmentContext } from "../../Context/DevelopmentContext";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import { StepBarProgress } from "../StepsManiobras/StepBarProgress";
 import { useCheckList } from "../../Hooks/useChecklist";
@@ -12,6 +12,9 @@ import { AccordionSimple } from "../../components/Accordion";
 import ChatIcon from '@mui/icons-material/Chat';
 import { TextGeneral } from "../../components/TextGeneral";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+//button download pdf
+import { ButtonDowloand } from "../../PDFs/components/ButtonDowloand";
+import { actionTypes } from "../../Reducers";
 
 function CheckListEIR() {
 
@@ -637,7 +640,11 @@ export function StepThree({ nextStepBar }) {
 export function StepFinal() {
 
   const [state, dispatch] = useContext(DevelopmentContext);
-  const { maniobrasCheckList } = state;
+  const { maniobrasCheckList, previewPDF } = state;
+
+  const ToggleViewer = () => {
+    dispatch({type: actionTypes.setPreviewPDF, payload:!previewPDF})
+  }
 
   // ['Si', 'No', 'Cortado', 'Doblado', 'Faltante', 'Respaldo', 'Abollado']
 
@@ -717,7 +724,13 @@ export function StepFinal() {
         </Stack>
 
         <Stack flexDirection='row' justifyContent='space-between'>
-          <Button endIcon={<PictureAsPdfIcon/>} variant="contained">Exportar PDF</Button>
+          <Button 
+          size="small"
+          onClick={ToggleViewer}
+          variant="contained" 
+          color="info">
+          Previsualizar</Button>
+          <ButtonDowloand/>
         </Stack>
 
       </Paper>

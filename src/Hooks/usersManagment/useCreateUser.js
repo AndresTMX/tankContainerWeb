@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { DevelopmentContext } from "../../Context";
+import { DevelopmentContext } from "../../Context/DevelopmentContext";
 import { actionTypes } from "../../Reducers";
 import supabase from "../../supabase";
 

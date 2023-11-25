@@ -10,7 +10,7 @@ function TitleDocument({title}) {
             justifyContent:'center',
             textAlign:'center',
             backgroundColor:'whitesmoke',
-            height:'30px',
+            height:'28px',
             border:1
         },
 
@@ -23,7 +23,7 @@ function TitleDocument({title}) {
         },
         TextTitle:{
             fontFamily: 'Helvetica-Bold',
-            fontSize:'14px'
+            fontSize:'12px'
         }
     })
 
