@@ -8,13 +8,13 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { DevelopmentContext } from "../../Context/DevelopmentContext";
+import { ManiobrasContext } from "../../Context/ManiobrasContext";
 //helpers
 import { tiempoTranscurrido } from "../../Helpers/date";
 
 function DetailsCheckList({ submit, discardTank, ChangueNextStep, nextStep }) {
 
-    const [state, dispatch] = useContext(DevelopmentContext);
+    const [state, dispatch] = useContext(ManiobrasContext);
     const { selectItem } = state;
 
     const { carga, dayInput, dateInput, linea, numero_tanque, tracto, checkIn } = selectItem;

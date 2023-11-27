@@ -2,23 +2,22 @@ import { useContext } from "react";
 //components
 import { Searcher } from "../Searcher";
 import { HistoryItem } from "../HistoryItem";
-import { actionTypes } from "../../Reducers";
-import { DevelopmentContext } from "../../Context/DevelopmentContext";
+import { actionTypes } from "../../Reducers/ManiobrasReducer";
+import { ResultSearch } from "../ResultsSearch";
 import { ContainerScroll } from "../ContainerScroll";
 import { Box, Stack, Chip, Typography, Paper } from "@mui/material";
-import { ResultSearch } from "../ResultsSearch";
 //helpers
 import { filterSearchVigilancia } from "../../Helpers/searcher";
-
 //hooks
 import { useGetRegisters } from "../../Hooks/registersManagment/useGetRegisters";
+import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useSearcher } from "../../Hooks/useSearcher";
 
 function RegisterVigilancia() {
 
     const isMovile = useMediaQuery("(max-width:640px)");
-    const [state, dispatch] = useContext(DevelopmentContext)
+    const [state, dispatch] = useContext(ManiobrasContext)
     const { requestGetRegisters, errorGetRegisters, loadingGetRegisters } = useGetRegisters();
 
     const { states, functions } = useSearcher(filterSearchVigilancia, requestGetRegisters);

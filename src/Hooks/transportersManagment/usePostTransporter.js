@@ -1,11 +1,11 @@
 import supabase from "../../supabase";
 import { useState, useContext } from "react";
-import { DevelopmentContext } from "../../Context/DevelopmentContext";
-import { actionTypes } from "../../Reducers";
+import { actionTypes } from "../../Reducers/GlobalReducer";
+import { GlobalContext } from "../../Context/GlobalContext";
 
 function usePostTrasporter() {
 
-    const [state, dispatch] = useContext(DevelopmentContext);
+    const [state, dispatch] = useContext(GlobalContext);
     const tableTransporters = 'transportistas';
     const [errorTransporter, setErrorTransporter] = useState(null)
 

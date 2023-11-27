@@ -25,9 +25,9 @@ import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArro
 import { transformRegisters } from "../../Helpers/transformRegisters";
 import { tiempoTranscurrido } from "../../Helpers/date";
 import { FormCheckTank } from "../FormCheckTank";
-import { actionTypes } from "../../Reducers";
+import { actionTypes } from "../../Reducers/ManiobrasReducer";
 //context
-import { DevelopmentContext } from "../../Context/DevelopmentContext";
+import { ManiobrasContext } from "../../Context/ManiobrasContext";
 function HistoryItem({ data, type }) {
 
   const dataOperador = type === 'vigilancia' ? 
@@ -229,7 +229,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, ToggleMod
           {
             typeChargue == "Pipa" &&
             typeRegister === "entrada" &&
-            tanques[0].status === "parked" && (
+            tanques[0].status === "full" && (
               <Button
                 onClick={ToggleModalExitRegister}
                 size="small"
@@ -329,7 +329,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, ToggleMod
 
                   {
                     typeRegister === "entrada" &&
-                    tanque.status === "parked" && (
+                    tanque.status === "full" && (
                       <Button
                         onClick={ToggleModalExitRegister}
                         size="small"
@@ -355,7 +355,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, ToggleMod
 
 export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator }) {
 
-  const [state, dispatch] = useContext(DevelopmentContext)
+  const [state, dispatch] = useContext(ManiobrasContext)
 
   const { carga, tracto, numero_tanque, checkIn, linea, dayInput, dateInput, OperatorSliceName, shortNameOperator } = data;
 

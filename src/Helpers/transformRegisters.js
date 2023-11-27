@@ -90,7 +90,43 @@ export const filterInputRegistersForManiobras = (arrayRegisters) => {
       const dayInput = dateMXFormat(register.checkIn);
       const dateInput = datetimeMXFormat(register.checkIn);
 
-      const filteredDetails = arrayDetails.filter((detail) => detail.status === 'maniobras');
+      const filteredDetails = arrayDetails.filter((detail) => detail.status === 'maniobras' && detail.carga === 'Tanque');
+
+      filteredDetails.map((item) => {
+
+        const id = item.id
+        const carga = item.carga
+        const operador = item.operadores
+        const status = item.status
+        const tracto = item.tracto
+        const numero_tanque = item.numero_tanque
+        const OperatorSliceName = operador.nombre.split(" ").slice(0, 2);
+        const shortNameOperator = `${OperatorSliceName[0]} ${OperatorSliceName[1]}`;
+        
+          registersFiltered.push({id, carga, operador, status, tracto, numero_tanque, checkIn, linea, dayInput, dateInput, OperatorSliceName, shortNameOperator })
+      });
+
+  })
+
+  return registersFiltered
+}
+
+/* 
+funcion que filtra los registros de reparacion y devuelve solo los 
+registros que tienen el status 'reparación' para ser usados en la
+pagina de reparacion
+*/
+export const filterInputRegistersForRaparacion = (arrayRegisters) => {
+  const registersFiltered = []
+
+  arrayRegisters.map((register) => {
+      const arrayDetails = register.registros_detalles_entradas;
+      const checkIn = register.checkIn;
+      const linea = register.registros_detalles_entradas[0].transportistas.name;
+      const dayInput = dateMXFormat(register.checkIn);
+      const dateInput = datetimeMXFormat(register.checkIn);
+
+      const filteredDetails = arrayDetails.filter((detail) => detail.status === 'reparacion');
 
       filteredDetails.map((item) => {
 

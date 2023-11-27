@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { Box, Paper, Stack, Button, IconButton, Typography, Modal, Fade, Container } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { DevelopmentContext } from "../../Context/DevelopmentContext";
+import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import { StepBarProgress } from "../StepsManiobras/StepBarProgress";
 import { useCheckList } from "../../Hooks/useChecklist";
@@ -14,7 +14,7 @@ import { TextGeneral } from "../../components/TextGeneral";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 //button download pdf
 import { ButtonDowloand } from "../../PDFs/components/ButtonDowloand";
-import { actionTypes } from "../../Reducers";
+import { actionTypes } from "../../Reducers/GlobalReducer";
 
 function CheckListEIR() {
 
@@ -639,7 +639,7 @@ export function StepThree({ nextStepBar }) {
 
 export function StepFinal() {
 
-  const [state, dispatch] = useContext(DevelopmentContext);
+  const [state, dispatch] = useContext(ManiobrasContext);
   const { maniobrasCheckList, previewPDF } = state;
 
   const ToggleViewer = () => {

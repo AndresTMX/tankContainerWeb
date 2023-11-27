@@ -1,16 +1,18 @@
 import supabase from "../../supabase";
 import { useState, useContext } from "react";
 import { AuthContext } from "../../Context/AuthContext"
-import { DevelopmentContext } from "../../Context/DevelopmentContext";
-import { actionTypes } from "../../Reducers";
+import { GlobalContext } from "../../Context/GlobalContext";
+import { ManiobrasContext } from "../../Context/ManiobrasContext";
+import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
+import { actionTypes } from "../../Reducers/ManiobrasReducer";
 
 function usePostRegister() {
     
     const { key } = useContext(AuthContext);
-    const [state, dispatch] = useContext(DevelopmentContext);
+    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
+    
+    const [state, dispatch] = useContext(ManiobrasContext);
     const session = JSON.parse(sessionStorage.getItem(key));
-    const { loading , typeRegister} = state;
-
     const tableRegisters = 'registros';
     const tableInputsRegistersDetails = 'registros_detalles_entradas';
     const tableOutputsRegistersDetails = 'registros_detalles_salidas';
@@ -88,7 +90,7 @@ function usePostRegister() {
 
     const sendRegisters = async (data, type) => {
         
-        dispatch({ type: actionTypes.setLoading, payload: true })
+        dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true })
         const registerData = await addRegisterData(type);
         const promises = data.map(async (register) => {
             try {
@@ -101,29 +103,29 @@ function usePostRegister() {
         try {
             await Promise.all(promises);
         } catch (error) {
-            dispatch({ type: actionTypes.setLoading, payload: false })
+            dispatch({ type: actionTypesGlobal.setLoading, payload: false })
             console.error(error);
             setError(error);
         }
-        dispatch({ type: actionTypes.setLoading, payload: false })
+        dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false })
 
     }
 
     const sendOutputRegisters = async (data) => {
-        dispatch({ type: actionTypes.setLoading, payload: true });
+        dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
         const updateStatus = data.map(async (item) => {
             try {
                 await updateStatusRegisters(item.id)
             } catch (error) {
-                dispatch({ type: actionTypes.setLoading, payload: false });
+                dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
             }
         });
 
         try {
             await Promise.all(updateStatus);
         } catch (error) {
-            dispatch({ type: actionTypes.setLoading, payload: false });
+            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
             setError(error);
         }
 
@@ -135,7 +137,7 @@ function usePostRegister() {
                 try {
                     await addDetailsRegisterData(register, registerData[0].id, 'salida');
                 } catch (error) {
-                    dispatch({ type: actionTypes.setLoading, payload: false });
+                    dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
                     setError(error);
                 }
             });
@@ -143,16 +145,16 @@ function usePostRegister() {
             try {
                 await Promise.all(outputRegisters);
                 setTimeout( ()=> {
-                    dispatch({ type: actionTypes.setLoading, payload: false });
+                    dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
                     dispatch({type: actionTypes.setTypeRegister, payload: 'salida'})
                 },2000)
                 
             } catch (error) {
-                dispatch({ type: actionTypes.setLoading, payload: false });
+                dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
                 setError(error);
             }
         } catch (error) {
-            dispatch({ type: actionTypes.setLoading, payload: false });
+            dispatch({ type: actionTypesGlobal.setLoading, payload: false });
         }
         
     };

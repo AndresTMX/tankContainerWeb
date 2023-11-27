@@ -1,9 +1,12 @@
-import { actionTypes } from "../Reducers";
+import { actionTypes as actionTypesGlobal} from "../Reducers/GlobalReducer";
+import { actionTypes } from "../Reducers/ManiobrasReducer";
 import { useState, useContext } from "react";
-import { DevelopmentContext } from "../Context/DevelopmentContext";
+import { GlobalContext } from "../Context/GlobalContext";
+import { ManiobrasContext } from "../Context/ManiobrasContext";
 
 function useCheckList(listInputs) {
-  const [state, dispatch] = useContext(DevelopmentContext);
+  const [state, dispatch] = useContext(ManiobrasContext)
+  const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
   const { maniobrasCheckList } = state;
   const [listCheck, SetListCheck] = useState(listInputs);
   const [indexQuestion, setIndexQuestion] = useState(0);
@@ -15,8 +18,8 @@ function useCheckList(listInputs) {
     ).length;
 
     if (validateInputs > 0) {
-      dispatch({
-        type: actionTypes.setNotification,
+      dispatchGlobal({
+        type: actionTypesGlobal.setNotification,
         payload: "Complete el checklist para continuar",
       });
       return false;

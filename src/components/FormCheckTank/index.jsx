@@ -1,16 +1,17 @@
 import { useState, useContext } from "react";
 import { SelectSimple } from "../SelectSimple";
 import { Box, Stack, Paper, Typography, Button, IconButton } from "@mui/material";
-import CheckIcon from '@mui/icons-material/Check';
+//Hooks
 import { useGetTransporters } from "../../Hooks/transportersManagment/useGetTransporters";
 import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";
 import { usePostRegister } from "../../Hooks/registersManagment/usePostRegister";
-import { useChangueType } from "../../Hooks/registersManagment/useChangueType";
-import { DevelopmentContext } from "../../Context/DevelopmentContext";
-import { actionTypes } from "../../Reducers";
+import { GlobalContext } from "../../Context/GlobalContext";
+import { actionTypes } from "../../Reducers/GlobalReducer";
 //helpers
 import { transformRegisters } from "../../Helpers/transformRegisters";
 import { InputText } from "../InputText";
+//icons
+import CheckIcon from '@mui/icons-material/Check';
 
 
 function FormCheckTank({ data, toggleModal }) {
@@ -19,7 +20,7 @@ function FormCheckTank({ data, toggleModal }) {
     const { transporters } = useGetTransporters();
     const { states } = useGetOperators();
     const { operators } = states;
-    const [state, dispatch] = useContext(DevelopmentContext);
+    const [state, dispatch] = useContext(GlobalContext);
 
     const allTransporters = transporters.map((transporter) => ({
         id: transporter.id,

@@ -1,4 +1,4 @@
-import { DevelopmentContext } from "../../Context/DevelopmentContext";
+import { GlobalContext } from "../../Context/GlobalContext";
 import { useEffect, useContext, useState } from "react";
 import { Box, Typography, Modal, Fade, Container } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 
 function LoadingState({ duration }) {
 
-    const [state, dispatch] = useContext(DevelopmentContext);
+    const [state, dispatch] = useContext(GlobalContext);
     const [progres, setProgress] = useState(0)
     const { loading } = state;
 

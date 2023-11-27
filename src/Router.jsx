@@ -26,7 +26,8 @@ let theme = createTheme({
 });
 
 //context
-import { DevelopmentProvider } from "./Context/DevelopmentContext";
+import { GlobalProvider } from "./Context/GlobalContext";
+import { ManiobrasProvider } from "./Context/ManiobrasContext";
 import { AuthProvider } from "./Context/AuthContext";
 //route protect
 import { RouteProtect } from "./Context/AuthContext";
@@ -36,14 +37,14 @@ function Router() {
     <HashRouter>
       <ThemeProvider theme={theme}>
         <AuthProvider>
-          <DevelopmentProvider>
+          <GlobalProvider>
             <Routes>
 
-              <Route 
-              path="/" 
-              element={
+              <Route
+                path="/"
+                element={
                   <Login />
-              } />
+                } />
 
               <Route
                 path="/admin"
@@ -72,7 +73,9 @@ function Router() {
                 element={
                   <RouteProtect>
                     <UI>
-                      <Vigilancia />
+                      <ManiobrasProvider>
+                        <Vigilancia />
+                      </ManiobrasProvider>
                     </UI>
                   </RouteProtect>
                 }
@@ -83,7 +86,9 @@ function Router() {
                 element={
                   <RouteProtect>
                     <UI>
-                      <Maniobras />
+                      <ManiobrasProvider>
+                        <Maniobras />
+                      </ManiobrasProvider>
                     </UI>
                   </RouteProtect>
                 }
@@ -135,7 +140,7 @@ function Router() {
 
               <Route path="*" element={<ErrorPage />} />
             </Routes>
-          </DevelopmentProvider>
+          </GlobalProvider>
         </AuthProvider>
       </ThemeProvider>
     </HashRouter>

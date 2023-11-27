@@ -1,5 +1,5 @@
 //imports hooks
-import { useState, useContext } from "react";
+import { useState } from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //imports materialui
 import { Container, Box, Tabs, Tab, Button, Stack, Fade, Typography, Paper, Modal, IconButton } from "@mui/material";
@@ -8,7 +8,6 @@ import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { SelectSimple } from "../../components/SelectSimple";
 import { InputText } from "../../components/InputText";
 //context
-import { DevelopmentContext } from "../../Context/DevelopmentContext";
 //hook
 import { useFormRegister } from "../../Hooks/useFormRegister";
 import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";
@@ -24,32 +23,25 @@ import { RegisterVigilancia } from "../../components/RegistersVigilancia";
 
 function Vigilancia() {
 
+    const IsSmall = useMediaQuery('(max-width:900px)');
+    //hook de operadores
     const { states, functions } = useGetOperators();
-
     const { loadingOperators, operators } = states;
-
     const { updateOperators } = functions;
-
     const operatorsName = !loadingOperators ? operators.map((operator) => ({
         id: operator.id,
         nombre: operator.nombre
     })) : [];
-
-    const IsSmall = useMediaQuery('(max-width:900px)');
-    const [state, dispatch] = useContext(DevelopmentContext);
+    //hook de formulario
     const { statesFormRegister, functionsFormRegister } = useFormRegister();
-
     const { typeChargue, tracto, select, operator, numTank, dataTank } = statesFormRegister;
     const { handleChangeList, handleNumTank, handleChangeTracto, handleChangueTypeChargue, handleChangueOperator, addRegister, setDataTank } = functionsFormRegister;
-
-    const { registers, notification } = state
-
+    //hook de transportistas
     const { transporters, updateAllTransports } = useGetTransporters();
     const arrayTransporters = transporters.length >= 1 ? transporters.map((transporter) => ({
         id: transporter.id,
         nombre: transporter.name
     })) : [];
-
 
     const [modal, setModal] = useState(false)
     const [tab, setTab] = useState(0)

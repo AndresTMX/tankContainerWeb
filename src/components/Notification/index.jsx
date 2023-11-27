@@ -1,11 +1,11 @@
 import { useContext } from "react";
-import { actionTypes } from "../../Reducers";
-import { DevelopmentContext } from "../../Context/DevelopmentContext";
+import { actionTypes } from "../../Reducers/GlobalReducer";
+import { GlobalContext } from "../../Context/GlobalContext";
 import { Container, Box, Paper, Button, Fade, Modal, Typography } from "@mui/material";
 
 function Notification() {
 
-    const [state, dispatch] = useContext(DevelopmentContext);
+    const [state, dispatch] = useContext(GlobalContext);
     
     const {notification} = state;
 

@@ -1,10 +1,10 @@
 import supabase from "../../supabase";
-import { DevelopmentContext } from "../../Context/DevelopmentContext";
+import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { useState, useEffect, useContext } from "react";
 
 function useGetRegisters() {
 
-    const [state, dispatch] = useContext(DevelopmentContext);
+    const [state, dispatch] = useContext(ManiobrasContext);
 
     const { typeRegister } = state;
 

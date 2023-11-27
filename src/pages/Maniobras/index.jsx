@@ -8,7 +8,7 @@ import { Searcher } from "../../components/Searcher";
 //Notification
 import { Notification } from "../../components/Notification";
 //context
-import { DevelopmentContext } from "../../Context/DevelopmentContext";
+import { ManiobrasContext } from "../../Context/ManiobrasContext";
 //newCheckList
 import { CheckListEIR } from "../../sections/CheckListEIR";
 //hooks
@@ -18,14 +18,14 @@ import { useSearcher } from "../../Hooks/useSearcher";
 //helpers
 import { filterInputRegistersForManiobras } from "../../Helpers/transformRegisters";
 import { filterSearchManiobras } from "../../Helpers/searcher";
-import { actionTypes } from "../../Reducers";
+import { actionTypes } from "../../Reducers/ManiobrasReducer";
 //ViewerPDF
 import { ViewerDocument } from "../../PDFs/components/Viewer";
 import { EIR } from "../../PDFs/plantillas/EIR";
 
 function Maniobras() {
     const IsSmall = useMediaQuery('(max-width:900px)');
-    const [state, dispatch] = useContext(DevelopmentContext);
+    const [state, dispatch] = useContext(ManiobrasContext);
     const { selectItem, previewPDF, maniobrasCheckList } = state;
     //estado del checklist 
     const selectItemState = !selectItem ? false : true;
@@ -51,7 +51,6 @@ function Maniobras() {
                     padding: '0px',
                 }}>
 
-
                 {!selectItemState &&
                     <Container
                         sx={{
@@ -68,7 +67,7 @@ function Maniobras() {
                             sx={{
                                 width: '100%',
                                 padding: '10px',
-                                maxWidth:'670px',
+                                maxWidth: '670px',
                                 backgroundColor: 'whitesmoke',
                             }}>
 
@@ -199,17 +198,17 @@ function Maniobras() {
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',
-                                alignItems:'center',
+                                alignItems: 'center',
                                 marginTop: '20px',
-                                paddingBottom:'20px',
-                                overflow:'hidden',
-                                height:'100%',
+                                paddingBottom: '20px',
+                                overflow: 'hidden',
+                                height: '100%',
                             }}>
 
                             <Paper
                                 elevation={4}
                                 sx={{
-                                    width:'85vw',
+                                    width: '85vw',
                                     maxWidth: '800px',
                                     padding: '20px',
                                 }}
@@ -237,7 +236,7 @@ function Maniobras() {
             </Container>
 
             <ViewerDocument stateModal={previewPDF} dispatch={dispatch}>
-                <EIR checkList={maniobrasCheckList}/>
+                <EIR checkList={maniobrasCheckList} />
             </ViewerDocument>
 
             <Notification />

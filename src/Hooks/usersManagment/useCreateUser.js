@@ -1,11 +1,11 @@
 import { useContext, useState } from "react";
-import { DevelopmentContext } from "../../Context/DevelopmentContext";
-import { actionTypes } from "../../Reducers";
+import { GlobalContext } from "../../Context/GlobalContext";
+import { actionTypes as actionTypesGlobal} from "../../Reducers/GlobalReducer";
 import supabase from "../../supabase";
 
 function useCreateUser() {
     
-    const [state, dispatch] = useContext(DevelopmentContext);
+    const [state, dispatch] = useContext(GlobalContext);
     const roles = ['admin', 'developer', 'vigilante', 'Maniobrista', 'Reparador', 'Lavador', 'Gestor de calidad'];
     const [dataUser, setDataUser] = useState({ rol: "", first_name: "", last_name: "", position: "", phone: "", email: "", password: "" })
     const [modal, setModal] = useState({form: false})
@@ -22,7 +22,7 @@ function useCreateUser() {
         }
 
         if (!rol || !first_name || !last_name || !position || !phone || !password || !email) {
-            dispatch({ type: actionTypes.setNotification, payload: 'Llena todos los campos' })
+            dispatch({ type: actionTypesGlobal.setNotification, payload: 'Llena todos los campos' })
         } else {
             validateInputs = true
         }
@@ -36,7 +36,7 @@ function useCreateUser() {
         const validate = validateDataUser(dataUser)
 
         if (validate) {
-            dispatch({ type: actionTypes.setLoading, payload: true })
+            dispatch({ type: actionTypesGlobal.setLoading, payload: true })
             try {
                 const { data, error } = await supabase.auth.signUp(
                     {
@@ -65,8 +65,8 @@ function useCreateUser() {
                         phone: dataUser.phone
                     })
 
-                dispatch({ type: actionTypes.setNotification, payload: 'Usuario creado con exito' })
-                dispatch({ type: actionTypes.setLoading, payload: false })
+                dispatch({ type: actionTypesGlobal.setNotification, payload: 'Usuario creado con exito' })
+                dispatch({ type: actionTypesGlobal.setLoading, payload: false })
                 setDataUser({ rol: "", first_name: "", last_name: "", position: "", phone: "", email: "", password: "" })
             } catch (error) {
                 setError(error)
