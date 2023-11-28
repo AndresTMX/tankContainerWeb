@@ -1,12 +1,11 @@
 import { useContext } from "react";
 import { Container, Box, Stack, Fade, Paper, Typography, Chip, } from "@mui/material";
+import { ListManiobrasPending } from "../../components/ListManiobrasPending";
 import { DetailsCheckList } from "../../components/DetailsCheckList";
-import { ContainerScroll } from "../../components/ContainerScroll";
-import { HistoryItemLoading } from "../../components/HistoryItem";
-import { HistoryItem } from "../../components/HistoryItem";
 import { Searcher } from "../../components/Searcher";
 //Notification
 import { Notification } from "../../components/Notification";
+import { LoadingState } from "../../components/LoadingState";
 //context
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { AuthContext } from "../../Context/AuthContext";
@@ -14,11 +13,13 @@ import { AuthContext } from "../../Context/AuthContext";
 import { CheckListEIR } from "../../sections/CheckListEIR";
 //hooks
 import { useGetRegisters } from "../../Hooks/registersManagment/useGetRegisters";
+import { useGetLastFolio } from "../../Hooks/foliosManagment/useGetLastFolio";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useSearcher } from "../../Hooks/useSearcher";
+import { actionTypes } from "../../Reducers/ManiobrasReducer";
 //helpers
 import { filterInputRegistersForManiobras } from "../../Helpers/transformRegisters";
-import { filterSearchManiobras } from "../../Helpers/searcher";
+import { routerFilterSearch } from "../../Helpers/searcher";
 import { currenDateFormatTz, dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
 //ViewerPDF
 import { ViewerDocument } from "../../PDFs/components/Viewer";
@@ -26,7 +27,9 @@ import { EIR } from "../../PDFs/plantillas/EIR";
 
 function Maniobras() {
 
+    const { folio } = useGetLastFolio();
     const IsSmall = useMediaQuery('(max-width:900px)');
+    const isMovile = useMediaQuery("(max-width:640px)");
     const { key } = useContext(AuthContext);
 
     const session = JSON.parse(sessionStorage.getItem(key));
@@ -38,10 +41,9 @@ function Maniobras() {
     const selectItemState = !selectItem ? false : true;
     //inicio del hook de registros
     const { requestGetRegisters, errorGetRegisters, loadingGetRegisters } = useGetRegisters();
-    //filtro del request del hook de registros 
-    const filterRequest = requestGetRegisters.length >= 1 ? filterInputRegistersForManiobras(requestGetRegisters) : [];
+
     //inicio del hook del buscador
-    const { states: statesSearcher, functions } = useSearcher(filterSearchManiobras, filterRequest);
+    const { states: statesSearcher, functions } = useSearcher(routerFilterSearch, requestGetRegisters, state.typeRegister);
     const { search, results, loading, error } = statesSearcher;
     const { searching, onChangueSearch, searchingKey } = functions;
 
@@ -53,7 +55,7 @@ function Maniobras() {
         entrada: dayInput,
         numero_unidad: tracto,
         usuario_emisor: `${session.user_metadata.first_name} ${session.user_metadata.last_name} `,
-        folio: 'new folio',
+        folio: folio[0].folio,
         newStatus: status,
     }
 
@@ -87,119 +89,66 @@ function Maniobras() {
                                     backgroundColor: 'whitesmoke',
                                 }}>
 
-                                <Stack gap={'10px'}>
-                                    <Typography variant='caption'>Busca un registro</Typography>
-                                    <Searcher
-                                        placeholder={'linea oeste , 125 , tanque , angel martinez '}
-                                        onChangueSearch={onChangueSearch}
-                                        searchingKey={searchingKey}
-                                        searching={searching}
-                                        search={search}
-                                    />
+                                <Stack
+                                    sx={{
+                                        backgroundColor: 'whitesmoke',
+                                        padding: '20px',
+                                        borderRadius: '4px'
+                                    }}
+                                    flexDirection="row"
+                                    justifyContent={isMovile ? "center" : "space-between"}
+                                    alignItems="center"
+                                    flexWrap="wrap"
+                                    gap="20px"
+                                >
+                                    <Stack
+                                        flexDirection="row"
+                                        alignItems="center"
+                                        flexWrap="wrap"
+                                        gap="10px"
+                                        width={isMovile ? "100%" : "auto"}
+                                    >
+                                        <Chip
+                                            onClick={() => dispatch({ type: actionTypes.setTypeRegister, payload: "entrada" })}
+                                            color={state.typeRegister === "entrada" ? "warning" : "default"}
+                                            label="checklist pendientes"
+                                        />
+                                        <Chip
+                                            onClick={() => dispatch({ type: actionTypes.setTypeRegister, payload: "checklist_realizados" })}
+                                            color={state.typeRegister === "checklist_realizados" ? "success" : "default"}
+                                            label="checklist realizados"
+                                        />
+
+                                    </Stack>
+
+                                    <Stack>
+                                        <Searcher
+                                            search={search}
+                                            searching={searching}
+                                            placeholder={'Busca registros usando ....'}
+                                            searchingKey={searchingKey}
+                                            onChangueSearch={onChangueSearch}
+                                        />
+                                    </Stack>
+
                                 </Stack>
 
                             </Paper>
 
-                            <Box>
-                                <ContainerScroll height='70vh'>
+                            {(state.typeRegister === 'entrada') &&
+                                <ListManiobrasPending
+                                    requestGetRegisters={requestGetRegisters}
+                                    loadingGetRegisters={loadingGetRegisters}
+                                    errorGetRegisters={errorGetRegisters}
+                                    resultsSearch={results}
+                                    loadingSearch={loading}
+                                    errorSearch={error}
+                                    search={search}
+                                />}
 
-                                    {(errorGetRegisters) && (
-                                        <Paper sx={{ width: '100vw', maxWidth: '100%', marginBottom: '20px', padding: '20px' }}>
-                                            <Stack
-                                                sx={{
-                                                    backgroundColor: "white",
-                                                    padding: "10px",
-                                                    borderRadius: "4px",
-                                                    maxWidth: '100%'
-                                                }}
-                                                flexDirection="column"
-                                                gap="5px"
-                                                justifyContent="flex-start"
-                                            >
-                                                <Chip
-                                                    sx={{ width: "130px" }}
-                                                    color="warning"
-                                                    label="¡Error al cargar!"
-                                                />
-
-                                                <Typography variant="caption">
-                                                    probablemente no tienes internet, esta es la Información de la
-                                                    ultima consulta exitosa a la base de datos, suerte.
-                                                </Typography>
-                                            </Stack>
-                                        </Paper>
-                                    )}
-
-                                    {(error) && (
-                                        <Paper sx={{ width: '100vw', maxWidth: '100%', marginBottom: '20px', padding: '20px' }}>
-                                            <Stack
-                                                sx={{
-                                                    backgroundColor: "white",
-                                                    padding: "10px",
-                                                    borderRadius: "4px",
-                                                    maxWidth: '100%'
-                                                }}
-                                                flexDirection="column"
-                                                gap="5px"
-                                                justifyContent="flex-start"
-                                            >
-                                                <Chip
-                                                    sx={{ width: "200px" }}
-                                                    color="warning"
-                                                    label={`¡Sin resultados para ${search}!`}
-                                                />
-
-                                                <Typography variant="caption">
-                                                    probablemente no escribiste correctamente tu busqueda, intentalo de nuevo.
-                                                </Typography>
-                                            </Stack>
-                                        </Paper>
-                                    )}
-
-
-                                    {(loadingGetRegisters && !errorGetRegisters) && (
-                                        <Stack spacing="20px" sx={{ maxWidth: '700px' }}>
-                                            <HistoryItemLoading />
-                                            <HistoryItemLoading />
-                                            <HistoryItemLoading />
-                                        </Stack>
-                                    )}
-
-                                    {(loading && !error) && (
-                                        <Stack spacing="20px" sx={{ maxWidth: '700px' }}>
-                                            <HistoryItemLoading />
-                                            <HistoryItemLoading />
-                                            <HistoryItemLoading />
-                                        </Stack>
-                                    )}
-
-
-                                    {(!loadingGetRegisters && filterRequest.length >= 1 && !loading && !error && results.length === 0) &&
-                                        <Stack spacing='20px'>
-                                            {
-                                                filterRequest.map((item) => (
-                                                    <HistoryItem
-                                                        type='maniobras'
-                                                        key={item.id}
-                                                        data={item}
-                                                    />))
-                                            }
-                                        </Stack>}
-
-                                    {(!loading && !error && results.length >= 1) &&
-                                        <Stack spacing='20px'>
-                                            {
-                                                results.map((item) => (
-                                                    <HistoryItem
-                                                        type='maniobras'
-                                                        key={item.id}
-                                                        data={item}
-                                                    />))
-                                            }
-                                        </Stack>}
-
-                                </ContainerScroll>
-                            </Box>
+                            {(state.typeRegister === 'checklist_realizados' && !loadingGetRegisters) &&
+                                <p>Checklist realizados</p>
+                            }
 
 
                         </Container>
@@ -251,8 +200,10 @@ function Maniobras() {
             </Container>
 
             <ViewerDocument stateModal={previewPDF} dispatch={dispatch}>
-                <EIR maniobrasCheckList={maniobrasCheckList} data={data}/>
+                <EIR maniobrasCheckList={maniobrasCheckList} data={data} />
             </ViewerDocument>
+
+            <LoadingState duration={1000} />
 
             <Notification />
         </>

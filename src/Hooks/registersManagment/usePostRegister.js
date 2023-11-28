@@ -7,10 +7,10 @@ import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
 
 function usePostRegister() {
-    
+
     const { key } = useContext(AuthContext);
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-    
+
     const [state, dispatch] = useContext(ManiobrasContext);
     const session = JSON.parse(sessionStorage.getItem(key));
     const tableRegisters = 'registros';
@@ -37,7 +37,7 @@ function usePostRegister() {
     const addDetailsRegisterData = async (register, idRegister, type) => {
         try {
 
-            const status = register.carga === 'Pipa'? 'prelavado' : 'parked';
+            const status = register.carga === 'Pipa' ? 'prelavado' : 'parked';
 
             if (type === 'entrada' && register.numero_tanque != '') {
                 const { data, error } = await supabase
@@ -78,7 +78,7 @@ function usePostRegister() {
     const updateStatusRegisters = async (idInputRegister, newStatus) => {
         const { data, error } = await supabase
             .from(tableInputsRegistersDetails)
-            .update({ status: 'maniobras' })
+            .update({ status: newStatus })
             .eq('id', idInputRegister)
             .select()
         if (!error) {
@@ -89,7 +89,7 @@ function usePostRegister() {
     }
 
     const sendRegisters = async (data, type) => {
-        
+
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true })
         const registerData = await addRegisterData(type);
         const promises = data.map(async (register) => {
@@ -116,7 +116,7 @@ function usePostRegister() {
 
         const updateStatus = data.map(async (item) => {
             try {
-                await updateStatusRegisters(item.id)
+                await updateStatusRegisters(item.id, 'maniobras')
             } catch (error) {
                 dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
             }
@@ -144,11 +144,11 @@ function usePostRegister() {
 
             try {
                 await Promise.all(outputRegisters);
-                setTimeout( ()=> {
+                setTimeout(() => {
                     dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
-                    dispatch({type: actionTypes.setTypeRegister, payload: 'salida'})
-                },2000)
-                
+                    dispatch({ type: actionTypes.setTypeRegister, payload: 'salida' })
+                }, 2000)
+
             } catch (error) {
                 dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
                 setError(error);
@@ -156,11 +156,11 @@ function usePostRegister() {
         } catch (error) {
             dispatch({ type: actionTypesGlobal.setLoading, payload: false });
         }
-        
+
     };
 
 
-    return { sendRegisters, sendOutputRegisters }
+    return { sendRegisters, sendOutputRegisters, updateStatusRegisters }
 
 }
 

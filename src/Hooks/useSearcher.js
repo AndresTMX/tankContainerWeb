@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function useSearcher(functionSearch, arraySearching) {
+function useSearcher(functionSearch, arraySearching, typeRegister) {
 
     const [search, setSearch] = useState('');
     const [results, setResults] = useState([]);
@@ -20,13 +20,16 @@ function useSearcher(functionSearch, arraySearching) {
         try {
             setError(false)
             setLoading(true)
-            setTimeout( () => {
-            const resultsSearch = functionSearch(search, arraySearching);
-            setResults(resultsSearch)
-            setLoading(false)
-            if(resultsSearch.length === 0){
-                setError('No results')
-            }
+            setTimeout(() => {
+                const resultsSearch = functionSearch(typeRegister, search, arraySearching);
+                if (resultsSearch instanceof Error) {
+                    setError(resultsSearch)
+                    setLoading(false)
+                } else {
+                    setResults(resultsSearch)
+                    setLoading(false)
+                }
+
             }, 2000)
         } catch (error) {
             setError(error)
@@ -36,13 +39,13 @@ function useSearcher(functionSearch, arraySearching) {
 
     const searchingKey = (e) => {
 
-       if( e.key === "Enter"){
-        searching();
-       } 
+        if (e.key === "Enter") {
+            searching();
+        }
 
-       if(e.key === "Backspace" && search === ""){
-        clearResults();
-       }
+        if (e.key === "Backspace" && search === "") {
+            clearResults();
+        }
     }
 
     const states = { search, results, loading, error }

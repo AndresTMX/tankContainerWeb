@@ -79,6 +79,7 @@ function RegisterVigilancia() {
                                 search={search}
                             />
                         </Stack>
+                        
                     </Stack>
                 </Paper>
 

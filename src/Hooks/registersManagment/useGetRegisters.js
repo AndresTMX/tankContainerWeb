@@ -9,7 +9,7 @@ function useGetRegisters() {
     const { typeRegister } = state;
 
     const tableRegisters = 'registros';
-    const tableRegistersInputDetails = 'registros_detalles_entradas';
+    const tableManiobrasChecklist = 'maniobras_checklist';
     const [errorGetRegisters, setErrorGetReisters] = useState(false);
     const [requestGetRegisters, setRequestGetRegisters] = useState([]);
     const [loadingGetRegisters, setLoadingGetRegisters] = useState(true);
@@ -21,8 +21,6 @@ function useGetRegisters() {
 
     const getInputsRegisters = async () => {
         try {
-            setLoadingGetRegisters(true)
-            setErrorGetReisters(false)
 
             if (typeRegister === 'entrada') {
                 const { data, error } = await supabase
@@ -156,7 +154,30 @@ function useGetRegisters() {
                     localStorage.setItem(nameStorageCache, JSON.stringify(data))
                 }
             }
-            
+
+            if (typeRegister === 'checklist_realizados') {
+                const { data, error } = await supabase
+                    .from(tableManiobrasChecklist)
+                    .select(`
+                     *,
+                     users_data(*),
+                     registros_detalles_entradas(*)
+                     `)
+                    .order('created_at', { ascending: false })
+                    .range(0, 100)
+                if (error) {
+                    setErrorGetReisters(error)
+                    const cache = localStorage.getItem(nameStorageCache);
+                    if (cache) {
+                        setRequestGetRegisters(JSON.parse(cache))
+                        setLoadingGetRegisters(false)
+                    }
+                } else {
+                    setRequestGetRegisters(data)
+                    setLoadingGetRegisters(false)
+                    localStorage.setItem(nameStorageCache, JSON.stringify(data))
+                }
+            }
 
         } catch (error) {
             setLoadingGetRegisters(false)
