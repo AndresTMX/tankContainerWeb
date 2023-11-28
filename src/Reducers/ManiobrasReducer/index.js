@@ -1,6 +1,12 @@
 
 const initialState = {
-    maniobrasCheckList: {},
+    maniobrasCheckList: {
+        pageOne: [],
+        pageTwo: [],
+        pageThree: []
+    },
+    cliente:'',
+    status:'',
     typeRegister: 'entrada',
     selectItem: false,
     previewPDF: false,
@@ -19,7 +25,9 @@ const actionTypes = {
     setManiobrasCheck: 'SET_MANIOBRAS_CHECK',
     setTypeRegister: 'SET_TYPE_REGISTER',
     setSelectItem: 'SET_SELECT_ITEM',
-    setPreviewPDF: 'SET_PREVIEW_PDF'
+    setPreviewPDF: 'SET_PREVIEW_PDF',
+    setCliente:'SET_CLIENTE',
+    setStatus:'SET_STATUS',
 }
 
 //Use reducer con estrutura de objetos 
@@ -40,6 +48,14 @@ const reducerObject = (state, payload) => ({
     [actionTypes.setPreviewPDF]: {
         ...state,
         previewPDF: payload
+    },
+    [actionTypes.setStatus]:{
+        ...state,
+        status: payload
+    },
+    [actionTypes.setCliente]:{
+        ...state,
+        cliente:payload
     }
 
 });

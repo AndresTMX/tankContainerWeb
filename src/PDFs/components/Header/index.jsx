@@ -11,7 +11,7 @@ function Hedader() {
 
 export { Hedader };
 
-export function HeaderEIR() {
+export function HeaderEIR({folio}) {
 
     const styles = StyleSheet.create({
 
@@ -113,7 +113,7 @@ export function HeaderEIR() {
 
                             <View>
                                 <View style={styles.BoxText}>
-                                    <Text style={styles.TextNormal}>No° 458925</Text>
+                                    <Text style={styles.TextNormal}>{`N° ${folio}`}</Text>
                                 </View>
                             </View>
                         </View>

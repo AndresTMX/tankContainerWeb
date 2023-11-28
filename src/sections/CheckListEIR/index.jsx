@@ -11,10 +11,9 @@ import { AccordionSimple } from "../../components/Accordion";
 //icons
 import ChatIcon from '@mui/icons-material/Chat';
 import { TextGeneral } from "../../components/TextGeneral";
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 //button download pdf
 import { ButtonDowloand } from "../../PDFs/components/ButtonDowloand";
-import { actionTypes } from "../../Reducers/GlobalReducer";
+import { actionTypes } from "../../Reducers/ManiobrasReducer";
 
 function CheckListEIR() {
 
@@ -33,7 +32,7 @@ function CheckListEIR() {
           alignItems: 'center',
         }}>
 
-        <StepBarProgress step={step} numSteps={5} />
+        <StepBarProgress step={step} numSteps={6} />
 
         {step === 1 && (
           <StepOne nextStepBar={nextStepBar} />
@@ -49,6 +48,10 @@ function CheckListEIR() {
         )}
 
         {step === 4 && (
+          <StepFor nextStepBar={nextStepBar} />
+        )}
+
+        {step === 5 && (
           <StepFinal nextStepBar={nextStepBar} />
         )}
 
@@ -73,6 +76,7 @@ export function QuestionItem({ question, value, index, SelectQuestionComent, Cha
 
           <Stack flexDirection='row' alignItems='center' width={IsSmall ? '100%' : 'auto'} >
             <SelectSimple
+              required={true}
               width={IsSmall ? '100%' : null}
               onChange={(e) => ChangueInput(index, e.target.value)}
               title={'respuesta'}
@@ -102,6 +106,7 @@ export function QuestionItem({ question, value, index, SelectQuestionComent, Cha
 export function StepOne({ nextStepBar }) {
 
   const IsSmall = useMediaQuery('(max-width:850px)');
+  const [state, dispatch] = useContext(ManiobrasContext);
   //inicio del hook de checklist
   const mockListCheck = [
     {
@@ -185,13 +190,17 @@ export function StepOne({ nextStepBar }) {
       coment: ''
     },
   ]
-
-  const { actions, states } = useCheckList(mockListCheck)
+  const stateCheckList = state.maniobrasCheckList.pageOne.length >= 1 ? state.maniobrasCheckList.pageOne : mockListCheck;
+  const { actions, states } = useCheckList(stateCheckList)
   const { ChangueInput, ChangueComent, SelectQuestionComent, ToggleModalComent, nextStep } = actions
   const { listCheck, indexQuestion, modalComent, } = states
 
-  const next = () => {
-    nextStep(listCheck)
+
+
+  const next = (e) => {
+    e.preventDefault();
+    const newState = { ...state.maniobrasCheckList, pageOne: [...listCheck] }
+    nextStep(newState)
     nextStepBar(2)
   }
 
@@ -199,34 +208,37 @@ export function StepOne({ nextStepBar }) {
     <>
       <Paper sx={{ width: '100%' }}>
         <ContainerScroll>
-          <Stack width='100%' gap='10px'>
-            {listCheck.map((question, index) => (
-              <QuestionItem
-                key={index}
-                index={index}
-                question={question.question}
-                value={question.value}
-                coment={question.coment}
-                ChangueInput={ChangueInput}
-                SelectQuestionComent={SelectQuestionComent}
-              />
-            ))}
-          </Stack>
+          <form onSubmit={next}>
+            <Stack width='100%' gap='10px'>
+              {listCheck.map((question, index) => (
+                <QuestionItem
+                  key={index}
+                  index={index}
+                  question={question.question}
+                  value={question.value}
+                  coment={question.coment}
+                  ChangueInput={ChangueInput}
+                  SelectQuestionComent={SelectQuestionComent}
+                />
+              ))}
+            </Stack>
 
-          <Stack 
-          marginTop='20px'
-          flexDirection='row' 
-          alignItems='center' 
-          justifyContent='flex-end'
-          >
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={next}
+            <Stack
+              marginTop='20px'
+              flexDirection='row'
+              alignItems='center'
+              justifyContent='flex-end'
             >
-              Siguiente
-            </Button>
-          </Stack>
+              <Button
+                color="primary"
+                variant="contained"
+                type="submit"
+              >
+                Siguiente
+              </Button>
+            </Stack>
+          </form>
+
         </ContainerScroll>
       </Paper>
 
@@ -275,6 +287,7 @@ export function StepOne({ nextStepBar }) {
 
 export function StepTwo({ nextStepBar }) {
 
+  const [state, dispatch] = useContext(ManiobrasContext);
   const IsSmall = useMediaQuery('(max-width:850px)');
   //inicio del hook de checklist
   const mockListCheck = [
@@ -349,13 +362,14 @@ export function StepTwo({ nextStepBar }) {
       coment: ''
     },
   ]
-
-  const { actions, states } = useCheckList(mockListCheck)
+  const stateCheckList = state.maniobrasCheckList.pageTwo.length >= 1 ? state.maniobrasCheckList.pageTwo : mockListCheck;
+  const { actions, states } = useCheckList(stateCheckList)
   const { ChangueInput, ChangueComent, SelectQuestionComent, ToggleModalComent, nextStep } = actions
   const { listCheck, indexQuestion, modalComent, maniobrasCheckList } = states
 
-  const next = () => {
-    const newState = [...maniobrasCheckList, ...listCheck]
+  const next = (e) => {
+    e.preventDefault();
+    const newState = { ...state.maniobrasCheckList, pageTwo: [...listCheck] };
     nextStep(newState)
     nextStepBar(3)
   }
@@ -364,44 +378,46 @@ export function StepTwo({ nextStepBar }) {
     <>
       <Paper sx={{ width: '100%' }}>
         <ContainerScroll>
-          <Stack width='100%' gap='10px'>
-            {listCheck.map((question, index) => (
-              <QuestionItem
-                key={index}
-                index={index}
-                question={question.question}
-                value={question.value}
-                coment={question.coment}
-                ChangueInput={ChangueInput}
-                SelectQuestionComent={SelectQuestionComent}
-              />
-            ))}
-          </Stack>
+          <form onSubmit={next}>
+            <Stack width='100%' gap='10px'>
+              {listCheck.map((question, index) => (
+                <QuestionItem
+                  key={index}
+                  index={index}
+                  question={question.question}
+                  value={question.value}
+                  coment={question.coment}
+                  ChangueInput={ChangueInput}
+                  SelectQuestionComent={SelectQuestionComent}
+                />
+              ))}
+            </Stack>
 
-          <Stack
-            justifyContent='space-between'
-            marginTop='20px'
-            flexDirection='row'
-            alignItems='center'
-            width='100%'
-          >
-
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => nextStepBar(1)}
+            <Stack
+              justifyContent='space-between'
+              marginTop='20px'
+              flexDirection='row'
+              alignItems='center'
+              width='100%'
             >
-              anterior
-            </Button>
 
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={next}
-            >
-              Siguiente
-            </Button>
-          </Stack>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => nextStepBar(1)}
+              >
+                anterior
+              </Button>
+
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Siguiente
+              </Button>
+            </Stack>
+          </form>
         </ContainerScroll>
       </Paper>
 
@@ -450,6 +466,7 @@ export function StepTwo({ nextStepBar }) {
 
 export function StepThree({ nextStepBar }) {
 
+  const [state, dispatch] = useContext(ManiobrasContext);
   const IsSmall = useMediaQuery('(max-width:850px)');
   //inicio del hook de checklist
   const mockListCheck = [
@@ -538,13 +555,14 @@ export function StepThree({ nextStepBar }) {
       coment: ''
     }
   ]
-
-  const { actions, states } = useCheckList(mockListCheck)
+  const stateCheckList = state.maniobrasCheckList.pageThree.length >= 1 ? state.maniobrasCheckList.pageThree : mockListCheck;
+  const { actions, states } = useCheckList(stateCheckList)
   const { ChangueInput, ChangueComent, SelectQuestionComent, ToggleModalComent, nextStep } = actions
   const { listCheck, indexQuestion, modalComent, maniobrasCheckList } = states
 
-  const next = () => {
-    const newState = [...maniobrasCheckList, ...listCheck]
+  const next = (e) => {
+    e.preventDefault();
+    const newState = { ...state.maniobrasCheckList, pageThree: [...listCheck] };
     nextStep(newState)
     nextStepBar(4)
   }
@@ -553,44 +571,46 @@ export function StepThree({ nextStepBar }) {
     <>
       <Paper sx={{ width: '100%' }}>
         <ContainerScroll>
-          <Stack width='100%' gap='10px'>
-            {listCheck.map((question, index) => (
-              <QuestionItem
-                key={index}
-                index={index}
-                question={question.question}
-                value={question.value}
-                coment={question.coment}
-                ChangueInput={ChangueInput}
-                SelectQuestionComent={SelectQuestionComent}
-              />
-            ))}
-          </Stack>
+          <form onSubmit={next}>
+            <Stack width='100%' gap='10px'>
+              {listCheck.map((question, index) => (
+                <QuestionItem
+                  key={index}
+                  index={index}
+                  question={question.question}
+                  value={question.value}
+                  coment={question.coment}
+                  ChangueInput={ChangueInput}
+                  SelectQuestionComent={SelectQuestionComent}
+                />
+              ))}
+            </Stack>
 
-          <Stack
-            justifyContent='space-between'
-            marginTop='20px'
-            flexDirection='row'
-            alignItems='center'
-            width='100%'
-          >
-
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => nextStepBar(2)}
+            <Stack
+              justifyContent='space-between'
+              marginTop='20px'
+              flexDirection='row'
+              alignItems='center'
+              width='100%'
             >
-              anterior
-            </Button>
 
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={next}
-            >
-              Siguiente
-            </Button>
-          </Stack>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => nextStepBar(2)}
+              >
+                anterior
+              </Button>
+
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Siguiente
+              </Button>
+            </Stack>
+          </form>
         </ContainerScroll>
       </Paper>
 
@@ -637,13 +657,88 @@ export function StepThree({ nextStepBar }) {
   )
 }
 
-export function StepFinal() {
+export function StepFor({ nextStepBar }) {
 
   const [state, dispatch] = useContext(ManiobrasContext);
-  const { maniobrasCheckList, previewPDF } = state;
+
+  const [cliente, setCliente] = useState('');
+  const [status, setStatus] = useState('')
+
+  const onSumbit = (e) => {
+    e.preventDefault();
+    dispatch({ type: actionTypes.setCliente, payload: cliente })
+    dispatch({ type: actionTypes.setStatus, payload: status })
+    nextStepBar(5)
+  }
+
+  return (
+    <>
+      <Paper sx={{ width: '100%', padding: '20px' }}>
+
+        <form onSubmit={onSumbit}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} >
+            <InputText
+              label="Cliente"
+              width={'100%'}
+              value={cliente}
+              onChangue={(e) => setCliente(e.target.value)}
+              required={true}
+            />
+
+            <SelectSimple
+              title='Siguiente etapa'
+              width={'100%'}
+              value={status}
+              options={['prelavado', 'reparación interna', 'reparación externa']}
+              onChange={(e) => setStatus(e.target.value)}
+              helperText={'Selecciona a que etapa pasa este contedor'}
+            />
+
+            <Stack
+              width={'100%'}
+              gap='10px'
+              flexDirection={'row'}
+              justifyContent={'space-between'}
+            >
+
+              <Button
+                fullWidth
+                variant="contained"
+                color='error'
+                size="small"
+                onClick={() => nextStepBar(3)}>
+                atras
+              </Button>
+
+              <Button
+                fullWidth
+                variant="contained"
+                color='primary'
+                size="small"
+                type="submit"
+              >
+                siguiente
+              </Button>
+
+            </Stack>
+          </Box>
+
+        </form>
+
+      </Paper>
+    </>
+  )
+}
+
+export function StepFinal({ nextStepBar }) {
+
+  const [state, dispatch] = useContext(ManiobrasContext);
+  const { maniobrasCheckList, previewPDF, selectItem, cliente, status } = state;
+
+  const flatCheckList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
 
   const ToggleViewer = () => {
-    dispatch({type: actionTypes.setPreviewPDF, payload:!previewPDF})
+    dispatch({ type: actionTypes.setPreviewPDF, payload: !previewPDF })
   }
 
   // ['Si', 'No', 'Cortado', 'Doblado', 'Faltante', 'Respaldo', 'Abollado']
@@ -652,18 +747,18 @@ export function StepFinal() {
     return checklist.filter((item) => item.value === valueFilter)
   }
 
-  const cortados = filterChecklist(maniobrasCheckList, 'Cortado');
-  const doblados = filterChecklist(maniobrasCheckList, 'Doblado');
-  const faltantes = filterChecklist(maniobrasCheckList, 'Faltante');
-  const respaldo = filterChecklist(maniobrasCheckList, 'Respaldo');
-  const abollados = filterChecklist(maniobrasCheckList, 'Abollado');
+  const cortados = filterChecklist(flatCheckList, 'Cortado');
+  const doblados = filterChecklist(flatCheckList, 'Doblado');
+  const faltantes = filterChecklist(flatCheckList, 'Faltante');
+  const respaldo = filterChecklist(flatCheckList, 'Respaldo');
+  const abollados = filterChecklist(flatCheckList, 'Abollado');
 
   return (
     <>
       <Paper sx={{ display: 'flex', width: '100%', padding: '20px', flexDirection: 'column', gap: '15px', backgroundColor: 'whitesmoke' }}>
 
         <Stack alignItems='center' gap='10px'>
-          <Typography variant="h6">Recuento</Typography>
+          <Typography variant="h6">Recuento EIR</Typography>
 
           <Stack flexDirection='row' gap='20px' borderRadius='4px' padding='15px'  >
 
@@ -701,6 +796,22 @@ export function StepFinal() {
         </Stack>
 
         <Stack>
+          <Stack gap={'15px'}>
+            <TextGeneral
+              width={'100%'}
+              label={"Nombre del cliente"}
+              text={cliente}
+            />
+
+            <TextGeneral
+              width={'100%'}
+              label={"Status proximo"}
+              text={status}
+            />
+          </Stack>
+        </Stack>
+
+        <Stack>
 
           {cortados.length >= 1 && (
             <AccordionSimple arrayList={cortados} name={'Cortados'} />
@@ -724,13 +835,23 @@ export function StepFinal() {
         </Stack>
 
         <Stack flexDirection='row' justifyContent='space-between'>
-          <Button 
-          size="small"
-          onClick={ToggleViewer}
-          variant="contained" 
-          color="info">
-          Previsualizar</Button>
-          <ButtonDowloand/>
+          <Stack flexDirection='row' gap={'15px'} >
+            <Button
+              size="small"
+              onClick={() => nextStepBar(4)}
+              variant="contained"
+              color="warning">
+              Atras
+            </Button>
+            <Button
+              size="small"
+              onClick={ToggleViewer}
+              variant="contained"
+              color="info">
+              Previsualizar
+            </Button>
+          </Stack>
+          <ButtonDowloand />
         </Stack>
 
       </Paper>

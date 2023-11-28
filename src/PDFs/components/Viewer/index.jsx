@@ -1,6 +1,6 @@
 import { Container, Modal, Fade, Box, Paper, Button } from "@mui/material";
 import { PDFViewer } from "@react-pdf/renderer";
-import { actionTypes } from "../../../Reducers/GlobalReducer";
+import { actionTypes } from "../../../Reducers/ManiobrasReducer";
 
 function ViewerDocument({ children, stateModal,dispatch }) {
 

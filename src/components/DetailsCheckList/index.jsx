@@ -1,36 +1,71 @@
 import { useState, useContext } from "react";
-import { Box, Chip, Stack, Button, Typography, Modal, Paper, Divider, Fade, IconButton } from "@mui/material";
 import { TextGeneral } from "../TextGeneral";
-import { SelectSimple } from '../SelectSimple';
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { Box, Chip, Stack, Button, Typography, Modal, Paper, Divider, Fade, IconButton } from "@mui/material";
 //icons
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 //hooks
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
+import { AuthContext } from "../../Context/AuthContext";
+import { GlobalContext } from "../../Context/GlobalContext";
 //helpers
-import { tiempoTranscurrido } from "../../Helpers/date";
+import { tiempoTranscurrido, dateMXFormat, currentDate, datetimeMXFormat } from "../../Helpers/date";
+import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
+import { actionTypes } from "../../Reducers/ManiobrasReducer";
 
-function DetailsCheckList({ submit, discardTank, ChangueNextStep, nextStep }) {
-
-    const [state, dispatch] = useContext(ManiobrasContext);
-    const { selectItem } = state;
-
-    const { carga, dayInput, dateInput, linea, numero_tanque, tracto, checkIn } = selectItem;
-
-    const time = tiempoTranscurrido(checkIn);
+function DetailsCheckList() {
 
     const IsSmall = useMediaQuery('(max-width:900px)');
     const IsExtraSmall = useMediaQuery('(max-width:450px)');
+
+    const { key } = useContext(AuthContext);
+    const session = JSON.parse(sessionStorage.getItem(key));
+
+    const [state, dispatch] = useContext(ManiobrasContext);
+    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext)
+
+    const { selectItem, maniobrasCheckList } = state;
+
+    const { carga, dayInput, dateInput, linea, numero_tanque, tracto, checkIn } = selectItem;
+
+    const complete = maniobrasCheckList.pageThree.length >= 1 ? true : false;
+
+    const time = tiempoTranscurrido(checkIn);
     const [modal, setModal] = useState(false);
+
+    const clearSelect = () => {
+        dispatch({ type: actionTypes.setSelectItem, payload: false })
+    }
 
     const ShowModalWarning = () => {
         setModal(!modal)
     }
 
     const completeCheck = () => {
-        console.log(selectItem)
+
+        if (!complete) {
+            dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: '¡Complete el checklist primero!' })
+        } else {
+            const data = {
+                numero_tanque: numero_tanque,
+                fechaActual: dateMXFormat(currentDate),
+                horaActual: datetimeMXFormat(currentDate),
+                cliente: state.cliente,
+                entrada: dayInput,
+                numero_unidad: tracto,
+                usuario_emisor: `${session.user_metadata.first_name} ${session.user_metadata.last_name} `,
+                folio: 'new folio',
+                newStatus: state.status,
+            }
+
+            ShowModalWarning()
+
+            console.log(data)
+        }
+
+
     }
 
     return (
@@ -105,7 +140,7 @@ function DetailsCheckList({ submit, discardTank, ChangueNextStep, nextStep }) {
                             </Button>
 
                             <IconButton
-                                onClick={discardTank}
+                                onClick={clearSelect}
                                 size="small"
                                 color="error"
                             >
@@ -188,15 +223,6 @@ function DetailsCheckList({ submit, discardTank, ChangueNextStep, nextStep }) {
                     >
                         <Typography variant="h6">¿Desea completar el check list?</Typography>
 
-                        <SelectSimple
-                            width={'100%'}
-                            title='Siguiente etapa'
-                            value={nextStep}
-                            options={['prelavado', 'reparación interna', 'reparación externa']}
-                            onChange={ChangueNextStep}
-                            helperText={'Selecciona a que etapa pasa este contedor'}
-                        />
-
                         <Stack
                             width={'100%'}
                             gap='10px'
@@ -210,17 +236,9 @@ function DetailsCheckList({ submit, discardTank, ChangueNextStep, nextStep }) {
                                 color='primary'
                                 size="small"
                                 onClick={ShowModalWarning}>
-                                completar
+                                Completar
                             </Button>
 
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                color='error'
-                                size="small"
-                                onClick={ShowModalWarning}>
-                                cancelar
-                            </Button>
                         </Stack>
 
                     </Box>

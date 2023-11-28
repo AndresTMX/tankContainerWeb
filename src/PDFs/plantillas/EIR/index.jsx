@@ -8,13 +8,15 @@ import { Firma } from "../../components/Firma";
 import { ComentBox } from "../../components/ComentBox";
 import { ImageEIR1, ImageEIR2 } from "../../../resourcesLinks";
 
-function EIR({ checkList }) {
+function EIR({ maniobrasCheckList, data }) {
+
+    const checkList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
 
     return (
         <DocLetter>
-            <HeaderEIR />
+            <HeaderEIR folio={data.folio} />
             <TitleDocument title={'Reporte de Inspección de Equipos'} />
-            <DataHeader />
+            <DataHeader data={data} />
             <View style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between', }}>
                 <View style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '32%', }}>
                     <Image style={{ width: '100%', height: '180px' }} src={ImageEIR2} />

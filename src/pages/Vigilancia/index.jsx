@@ -84,7 +84,7 @@ function Vigilancia() {
                         timeout={500}
                         in={tab === 0 ? true : false}
                     >
-                        <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom:'50px' }}>
+                        <Container sx={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '50px' }}>
                             <Paper
                                 elevation={2}
                                 sx={{
