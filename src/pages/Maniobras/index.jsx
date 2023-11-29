@@ -1,5 +1,6 @@
 import { useContext } from "react";
-import { Container, Box, Stack, Fade, Paper, Typography, Chip, } from "@mui/material";
+import { Container, Box, Stack, Fade, Paper, Chip, } from "@mui/material";
+import { ListCheckList } from "../../components/ListCheckList";
 import { ListManiobrasPending } from "../../components/ListManiobrasPending";
 import { DetailsCheckList } from "../../components/DetailsCheckList";
 import { Searcher } from "../../components/Searcher";
@@ -18,9 +19,8 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useSearcher } from "../../Hooks/useSearcher";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
 //helpers
-import { filterInputRegistersForManiobras } from "../../Helpers/transformRegisters";
 import { routerFilterSearch } from "../../Helpers/searcher";
-import { currenDateFormatTz, dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
+import { dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
 //ViewerPDF
 import { ViewerDocument } from "../../PDFs/components/Viewer";
 import { EIR } from "../../PDFs/plantillas/EIR";
@@ -85,7 +85,7 @@ function Maniobras() {
                                 sx={{
                                     width: '100%',
                                     padding: '10px',
-                                    maxWidth: '670px',
+                                    maxWidth: '750px',
                                     backgroundColor: 'whitesmoke',
                                 }}>
 
@@ -93,7 +93,7 @@ function Maniobras() {
                                     sx={{
                                         backgroundColor: 'whitesmoke',
                                         padding: '20px',
-                                        borderRadius: '4px'
+                                        borderRadius: '4px',
                                     }}
                                     flexDirection="row"
                                     justifyContent={isMovile ? "center" : "space-between"}
@@ -147,7 +147,15 @@ function Maniobras() {
                                 />}
 
                             {(state.typeRegister === 'checklist_realizados' && !loadingGetRegisters) &&
-                                <p>Checklist realizados</p>
+                                <ListCheckList
+                                requestGetRegisters={requestGetRegisters}
+                                loadingGetRegisters={loadingGetRegisters}
+                                errorGetRegisters={errorGetRegisters}
+                                resultsSearch={results}
+                                loadingSearch={loading}
+                                errorSearch={error}
+                                search={search}
+                                />
                             }
 
 

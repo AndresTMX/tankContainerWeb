@@ -85,9 +85,22 @@ function ListManiobrasPending({ requestGetRegisters, loadingGetRegisters, errorG
                         </Stack>
                     )}
 
-                    {(!loadingGetRegisters && !loadingSearch && !errorGetRegisters &&  !errorSearch && filterRequest.length === 0) && (
-                        <Paper>
-                            <Typography>Sin checklist pendientes</Typography> 
+                    {(!loadingGetRegisters && !loadingSearch && !errorGetRegisters && !errorSearch && filterRequest.length === 0) && (
+                        <Paper
+                           elevation={2}
+                            >
+                            <Stack 
+                            flexDirection='row' 
+                            gap='20px'
+                            sx={{
+                                width:'100vw',
+                                maxWidth:'700px',
+                                padding: '20px',
+                            }}
+                            >
+                                <Typography >Sin checklist pendientes</Typography>
+                                <WarningIcon sx={{ color: 'orange', fontSize: '25px' }} />
+                            </Stack>
                         </Paper>
                     )}
 
