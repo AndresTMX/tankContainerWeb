@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Container, Box, Stack, Fade, Paper, Chip, } from "@mui/material";
 import { ListCheckList } from "../../components/ListCheckList";
 import { ListManiobrasPending } from "../../components/ListManiobrasPending";
@@ -27,6 +27,10 @@ import { EIR } from "../../PDFs/plantillas/EIR";
 
 function Maniobras() {
 
+    useEffect( () =>{
+        dispatch({type: actionTypes.setTypeRegister, payload:'entrada'})
+    }, [])
+
     const { folio } = useGetLastFolio();
     const IsSmall = useMediaQuery('(max-width:900px)');
     const isMovile = useMediaQuery("(max-width:640px)");
@@ -34,11 +38,10 @@ function Maniobras() {
 
     const session = JSON.parse(sessionStorage.getItem(key));
     const [state, dispatch] = useContext(ManiobrasContext);
-    const { selectItem, previewPDF, maniobrasCheckList, cliente, status } = state;
+    const { selectItem, previewPDF, maniobrasCheckList, cliente, status, select } = state;
+    const checkList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
     const { carga, dayInput, dateInput, linea, numero_tanque, tracto, checkIn } = selectItem;
 
-    //estado del checklist 
-    const selectItemState = !selectItem ? false : true;
     //inicio del hook de registros
     const { requestGetRegisters, errorGetRegisters, loadingGetRegisters } = useGetRegisters();
 
@@ -55,8 +58,14 @@ function Maniobras() {
         entrada: dayInput,
         numero_unidad: tracto,
         usuario_emisor: `${session.user_metadata.first_name} ${session.user_metadata.last_name} `,
-        folio: folio[0].folio,
+        folio: folio,
         newStatus: status,
+    }
+
+    const changueSection = (section) => {
+        dispatch({ type: actionTypes.setTypeRegister, payload: section})
+        dispatch({ type: actionTypes.setSelectItem, payload: false })
+        dispatch({ type: actionTypes.setManiobrasCheck, payload: {pageOne:[], pageTwo:[], pageThree:[]}})
     }
 
     return (
@@ -68,8 +77,8 @@ function Maniobras() {
                     padding: '0px',
                 }}>
 
-                {!selectItemState &&
-                    <Fade timeout={500} in={!selectItemState}>
+                {(!select) &&
+                    <Fade timeout={500} in={!select}>
                         <Container
                             sx={{
                                 gap: '10px',
@@ -100,6 +109,7 @@ function Maniobras() {
                                     alignItems="center"
                                     flexWrap="wrap"
                                     gap="20px"
+
                                 >
                                     <Stack
                                         flexDirection="row"
@@ -109,19 +119,19 @@ function Maniobras() {
                                         width={isMovile ? "100%" : "auto"}
                                     >
                                         <Chip
-                                            onClick={() => dispatch({ type: actionTypes.setTypeRegister, payload: "entrada" })}
+                                            onClick={() => changueSection("entrada") }
                                             color={state.typeRegister === "entrada" ? "warning" : "default"}
-                                            label="checklist pendientes"
+                                            label="pendientes"
                                         />
                                         <Chip
-                                            onClick={() => dispatch({ type: actionTypes.setTypeRegister, payload: "checklist_realizados" })}
+                                            onClick={() => changueSection("checklist_realizados") }
                                             color={state.typeRegister === "checklist_realizados" ? "success" : "default"}
-                                            label="checklist realizados"
+                                            label="realizados"
                                         />
 
                                     </Stack>
 
-                                    <Stack>
+                                    <Stack width={isMovile ? '100%' : 'auto'}>
                                         <Searcher
                                             search={search}
                                             searching={searching}
@@ -146,15 +156,15 @@ function Maniobras() {
                                     search={search}
                                 />}
 
-                            {(state.typeRegister === 'checklist_realizados' && !loadingGetRegisters) &&
+                            {(state.typeRegister === 'checklist_realizados' ) &&
                                 <ListCheckList
-                                requestGetRegisters={requestGetRegisters}
-                                loadingGetRegisters={loadingGetRegisters}
-                                errorGetRegisters={errorGetRegisters}
-                                resultsSearch={results}
-                                loadingSearch={loading}
-                                errorSearch={error}
-                                search={search}
+                                    requestGetRegisters={requestGetRegisters}
+                                    loadingGetRegisters={loadingGetRegisters}
+                                    errorGetRegisters={errorGetRegisters}
+                                    resultsSearch={results}
+                                    loadingSearch={loading}
+                                    errorSearch={error}
+                                    search={search}
                                 />
                             }
 
@@ -164,10 +174,10 @@ function Maniobras() {
                 }
 
 
-                {selectItemState &&
+                {(select ) &&
                     <Fade
                         timeout={500}
-                        in={selectItemState}
+                        in={select}
                     >
                         <Container
                             sx={{
@@ -208,7 +218,7 @@ function Maniobras() {
             </Container>
 
             <ViewerDocument stateModal={previewPDF} dispatch={dispatch}>
-                <EIR maniobrasCheckList={maniobrasCheckList} data={data} />
+                <EIR maniobrasCheckList={checkList} data={data} />
             </ViewerDocument>
 
             <LoadingState duration={1000} />

@@ -29,5 +29,5 @@ export const datetimeMXFormat = (date) => {
 
 export const currenDateFormatTz = dateMX(currentDate);
 
-export const tiempoTranscurrido = (date) => dayjs(date).fromNow(true).split(" ")[0]
+export const tiempoTranscurrido = (date) => dayjs(date).fromNow(true)
 

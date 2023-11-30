@@ -1,12 +1,13 @@
+import { filterInputRegistersForManiobras } from "./transformRegisters";
 
-export function filterSearchVigilancia(busqueda, array) {
+export function filterSearchVigilancia(typeRegister, busqueda, array) {
 
     try {
         const busquedaMinuscula = busqueda.toLowerCase();
         const arrayFlat = [];
         const filtered = []
 
-        array.map((register, index) => {
+        array.map((register) => {
             const type = register.type;
             const detalles = type === 'entrada' ? register.registros_detalles_entradas : register.registros_detalles_salidas;
             const checkIn = register.checkIn;
@@ -37,8 +38,10 @@ export function filterSearchVigilancia(busqueda, array) {
             }
 
         })
+        console.log(filtered)
         return filtered
     } catch (error) {
+        console.error(error)
         return error
     }
 
@@ -48,21 +51,21 @@ export function filterSearchManiobras(busqueda, array) {
     try {
         const busquedaMinuscula = busqueda.toLowerCase();
 
+        const data = filterInputRegistersForManiobras(array)
+
         const results = []
 
-        array.map((register) => {
+        data.map((register) => {
             const linea = register.linea.toLowerCase();
-            const carga = register.carga.toLowerCase();
             const tracto = register.tracto;
+            const numero_tanque = register.numero_tanque.toLowerCase();
             const operador = register.operador.nombre.toLowerCase();
-            const numero_tanque = register.numero_tanque;
 
-            if (carga.includes(busquedaMinuscula) || numero_tanque?.includes(busqueda) || tracto.includes(busquedaMinuscula) || operador.includes(busquedaMinuscula) || linea.includes(busquedaMinuscula)) {
+            if (numero_tanque.includes(busquedaMinuscula) || tracto.includes(busqueda) || operador.includes(busquedaMinuscula) || linea.includes(busquedaMinuscula)) {
                 results.push(register)
             }
 
         })
-
         return results
     } catch (error) {
         return error
@@ -70,17 +73,41 @@ export function filterSearchManiobras(busqueda, array) {
 
 }
 
+export function filterSearchCheckList(busqueda, array) {
+    try {
+        const results = []
+        const busquedaMinuscula = busqueda.toLowerCase();
+
+        array.map((register) => {
+            const folio = register.folio.toString();
+            const cliente = register.nombre_cliente.toLowerCase();
+            const tanque = register.registros_detalles_entradas.numero_tanque.toLowerCase();
+            const tracto = register.registros_detalles_entradas.tracto;
+            const status = register.registros_detalles_entradas.status.toLowerCase();
+
+            if (folio.includes(busqueda) || cliente.includes(busquedaMinuscula) || tanque.includes(busquedaMinuscula) || tracto.includes(busqueda) || status.includes(busquedaMinuscula)) {
+                return results.push(register)
+            }
+        })
+
+        if (results.length === 0) {
+            throw new Error('sin resultados')
+        }
+
+        return results;
+    } catch (error) {
+        return error
+    }
+}
+
 export function routerFilterSearch(typeRegister, busqueda, array) {
 
     if (typeRegister === 'entrada') {
-        console.log('route entrada')
         return filterSearchManiobras(busqueda, array)
     }
 
     if (typeRegister === 'checklist_realizados') {
-        console.log('route checklist_realizados')
-        console.log(array)
-        return array
+        return filterSearchCheckList(busqueda, array)
     }
 
 }

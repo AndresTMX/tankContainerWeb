@@ -17,7 +17,7 @@ function ListManiobrasPending({ requestGetRegisters, loadingGetRegisters, errorG
                 <ContainerScroll height='70vh'>
 
                     {(errorGetRegisters) && (
-                        <Paper sx={{ width: '100vw', maxWidth: '100%', marginBottom: '20px', padding: '20px' }}>
+                        <Paper sx={{ width: '100vw', maxWidth: '700px', marginBottom: '20px', padding: '20px' }}>
                             <Stack
                                 sx={{
                                     backgroundColor: "white",
@@ -44,7 +44,7 @@ function ListManiobrasPending({ requestGetRegisters, loadingGetRegisters, errorG
                     )}
 
                     {(errorSearch) && (
-                        <Paper sx={{ width: '100vw', maxWidth: '100%', marginBottom: '20px', padding: '20px' }}>
+                        <Paper sx={{ width: '100vw', maxWidth: '700px', marginBottom: '20px', padding: '20px' }}>
                             <Stack
                                 sx={{
                                     backgroundColor: "white",

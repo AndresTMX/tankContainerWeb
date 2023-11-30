@@ -35,6 +35,7 @@ function usePostCheckList() {
 
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false })
         dispatch({type: actionTypes.setSelectItem, payload: false})
+        dispatch({type: actionTypes.setTypeRegister, payload: 'checklist_realizados'})
     }
 
     return { sendCheckList, errorPost, request }

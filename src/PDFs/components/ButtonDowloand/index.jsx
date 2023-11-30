@@ -17,6 +17,8 @@ function ButtonDowloand() {
   const { maniobrasCheckList, selectItem, cliente, status } = state;
   const { carga, dayInput, dateInput, linea, numero_tanque, tracto, checkIn } = selectItem;
 
+  const checkList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
+
   const data = {
     numero_tanque: numero_tanque,
     fechaActual: dateMXFormat(currentDate),
@@ -25,14 +27,14 @@ function ButtonDowloand() {
     entrada: dayInput,
     numero_unidad: tracto,
     usuario_emisor: `${session.user_metadata.first_name} ${session.user_metadata.last_name} `,
-    folio: 'new folio',
+    folio: selectItem.folio,
     newStatus: status,
 }
 
   return (
     <PDFDownloadLink 
-      document={<EIR maniobrasCheckList={maniobrasCheckList} data={data}/>}
-      fileName={`EIR`}
+      document={<EIR maniobrasCheckList={checkList} data={data}/>}
+      fileName={`EIR_${selectItem.folio} `}
 
     >
       {({ blob, url, loading, error }) =>

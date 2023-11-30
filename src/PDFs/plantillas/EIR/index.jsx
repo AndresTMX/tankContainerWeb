@@ -10,8 +10,6 @@ import { ImageEIR1, ImageEIR2 } from "../../../resourcesLinks";
 
 function EIR({ maniobrasCheckList, data }) {
 
-    const checkList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
-
     return (
         <DocLetter>
             <HeaderEIR folio={data.folio} />
@@ -23,7 +21,7 @@ function EIR({ maniobrasCheckList, data }) {
                     <Image style={{ width: '100%', height: '180px' }} src={ImageEIR1} />
                     <ComentBox widht="100%" height="120px" coment="comentario random de prueba" />
                 </View>
-                <SimpleTable checkList={checkList} />
+                <SimpleTable checkList={maniobrasCheckList} />
             </View>
             <View style={{display:'flex', flexDirection:'row', alignItems:'flex-end', justifyContent:'space-between', gap:'10px', height:'10%'}}>
                 <Firma title={'Operador de Unidad'} width={'25%'}/>

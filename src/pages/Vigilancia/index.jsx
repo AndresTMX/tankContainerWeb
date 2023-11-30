@@ -1,5 +1,6 @@
 //imports hooks
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
+import { actionTypes } from "../../Reducers/ManiobrasReducer";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //imports materialui
 import { Container, Box, Tabs, Tab, Button, Stack, Fade, Typography, Paper, Modal, IconButton } from "@mui/material";
@@ -20,10 +21,16 @@ import { LoadingState } from "../../components/LoadingState";
 import UpdateIcon from '@mui/icons-material/Update';
 //TabsComponents
 import { RegisterVigilancia } from "../../components/RegistersVigilancia";
+import { ManiobrasContext } from "../../Context/ManiobrasContext";
 
 function Vigilancia() {
 
+    useEffect( () =>{
+        dispatch({type: actionTypes.setTypeRegister, payload:'entrada'})
+    }, [])
+
     const IsSmall = useMediaQuery('(max-width:900px)');
+    const [state, dispatch] = useContext(ManiobrasContext)
     //hook de operadores
     const { states, functions } = useGetOperators();
     const { loadingOperators, operators } = states;

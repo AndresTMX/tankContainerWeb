@@ -76,7 +76,7 @@ export function QuestionItem({ question, value, index, SelectQuestionComent, Cha
 
           <Stack flexDirection='row' alignItems='center' width={IsSmall ? '100%' : 'auto'} >
             <SelectSimple
-              // required={true}
+              required={true}
               width={IsSmall ? '100%' : null}
               onChange={(e) => ChangueInput(index, e.target.value)}
               title={'respuesta'}

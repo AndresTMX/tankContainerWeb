@@ -12,7 +12,7 @@ import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { AuthContext } from "../../Context/AuthContext";
 //helpers
-import { tiempoTranscurrido, dateMXFormat, currentDate, datetimeMXFormat } from "../../Helpers/date";
+import { tiempoTranscurrido } from "../../Helpers/date";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
 
@@ -37,67 +37,41 @@ function DetailsCheckList() {
 
     const clearSelect = () => {
         dispatch({ type: actionTypes.setSelectItem, payload: false })
+        dispatch({ type: actionTypes.setSelect, payload: false })
+
     }
 
     const ShowModalWarning = () => {
         setModal(!modal)
     }
 
-    const completeCheck = async () => {
+    const completeCheck = () => {
 
         if (!complete) {
             dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: '¡Complete el checklist primero!' })
         } else {
 
-            const flatCheckList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
+            ShowModalWarning()
+        }
+
+    }
+
+
+    const sendCheck = async() => {
+         const flatCheckList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
 
             const data = {
                 user_id: key,
-                nombre_cliente: state.cliente,
                 registro_detalle_entrada_id: selectItem.id,
-                panel_frontal: flatCheckList[0].value,
-                marco_frontal: flatCheckList[1].value,
-                panel_trasero: flatCheckList[2].value,
-                marco_trasero: flatCheckList[3].value,
-                panel_derecho: flatCheckList[4].value,
-                marco_derecho: flatCheckList[5].value,
-                panel_izquierdo: flatCheckList[6].value,
-                marco_izquierdo: flatCheckList[7].value,
-                panel_superior: flatCheckList[8].value,
-                marco_superior: flatCheckList[9].value,
-                panel_inferior: flatCheckList[10].value,
-                marco_inferior: flatCheckList[11].value,
-                nomenclatura: flatCheckList[12].value,
-                escaleras: flatCheckList[13].value,
-                pasarelas: flatCheckList[14].value,
-                entrada_hombre: flatCheckList[15].value,
-                mariposa_entrada_hombre: flatCheckList[16].value,
-                valvula_presion_alivio: flatCheckList[17].value,
-                tubo_desague: flatCheckList[18].value,
-                valvula_alivio: flatCheckList[19].value,
-                brida_ciega: flatCheckList[20].value,
-                nanometro: flatCheckList[21].value,
-                termometro: flatCheckList[22].value,
-                placa_datos: flatCheckList[23].value,
-                porta_documentos: flatCheckList[24].value,
-                tubo_vapor: flatCheckList[25].value,
-                tapones_tubo_vapor: flatCheckList[26].value,
-                sistema_calentamiento_electrico: flatCheckList[27].value,
-                valvula_pie_tanque: flatCheckList[27].value,
-                valvula_descarga: flatCheckList[28].value,
-                tapon_valvula_descarga: flatCheckList[29].value,
-                maneral_valvula_seguridad: flatCheckList[30].value,
-                cierre_emergencia_remoto: flatCheckList[31].value,
+                nombre_cliente: state.cliente,
+                ingreso: selectItem.checkIn,
                 data: JSON.stringify({ ...flatCheckList })
             }
 
-            // ShowModalWarning()
-
-            console.log(data)
             const result = await sendCheckList(data)
-        }
-
-
+            dispatch({ type: actionTypes.setSelectItem, payload: false })
+            dispatch({ type: actionTypes.setSelect, payload: false })
+            dispatch({ type: actionTypes.setTypeRegister, payload: "checklist_realizados"})
     }
 
     return (
@@ -150,7 +124,7 @@ function DetailsCheckList() {
                             <Chip
                                 size="small"
                                 color="info"
-                                label={time === 'a' ? '1 día' : `${time} días`}
+                                label={time}
                                 icon={<AccessTimeIcon />}
                                 sx={{
                                     maxWidth: "200px",
@@ -267,8 +241,17 @@ function DetailsCheckList() {
                                 variant="contained"
                                 color='primary'
                                 size="small"
-                                onClick={ShowModalWarning}>
+                                onClick={sendCheck}>
                                 Completar
+                            </Button>
+
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                color='error'
+                                size="small"
+                                onClick={ShowModalWarning}>
+                                Cancelar
                             </Button>
 
                         </Stack>

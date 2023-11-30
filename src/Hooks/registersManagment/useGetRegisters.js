@@ -22,6 +22,9 @@ function useGetRegisters() {
     const getInputsRegisters = async () => {
         try {
 
+            setLoadingGetRegisters(true)
+            setErrorGetReisters(false)
+
             if (typeRegister === 'entrada') {
                 const { data, error } = await supabase
                     .from(tableRegisters)
@@ -56,9 +59,11 @@ function useGetRegisters() {
                         setLoadingGetRegisters(false)
                     }
                 } else {
-                    setRequestGetRegisters(data)
-                    setLoadingGetRegisters(false)
-                    localStorage.setItem(nameStorageCache, JSON.stringify(data))
+                    setTimeout(() => {
+                        setRequestGetRegisters(data)
+                        setLoadingGetRegisters(false)
+                        localStorage.setItem(nameStorageCache, JSON.stringify(data))
+                    }, 1000)
                 }
             }
 
@@ -95,9 +100,11 @@ function useGetRegisters() {
                         setLoadingGetRegisters(false)
                     }
                 } else {
-                    setRequestGetRegisters(data)
-                    setLoadingGetRegisters(false)
-                    localStorage.setItem(nameStorageCache, JSON.stringify(data))
+                    setTimeout(() => {
+                        setRequestGetRegisters(data)
+                        setLoadingGetRegisters(false)
+                        localStorage.setItem(nameStorageCache, JSON.stringify(data))
+                    }, 1000)
                 }
             }
 
@@ -149,9 +156,11 @@ function useGetRegisters() {
                         setLoadingGetRegisters(false)
                     }
                 } else {
-                    setRequestGetRegisters(data)
-                    setLoadingGetRegisters(false)
-                    localStorage.setItem(nameStorageCache, JSON.stringify(data))
+                    setTimeout(() => {
+                        setRequestGetRegisters(data)
+                        setLoadingGetRegisters(false)
+                        localStorage.setItem(nameStorageCache, JSON.stringify(data))
+                    }, 1000)
                 }
             }
 
@@ -173,9 +182,11 @@ function useGetRegisters() {
                         setLoadingGetRegisters(false)
                     }
                 } else {
-                    setRequestGetRegisters(data)
-                    setLoadingGetRegisters(false)
-                    localStorage.setItem(nameStorageCache, JSON.stringify(data))
+                    setTimeout(() => {
+                        setRequestGetRegisters(data)
+                        setLoadingGetRegisters(false)
+                        localStorage.setItem(nameStorageCache, JSON.stringify(data))
+                    }, 1000)
                 }
             }
 

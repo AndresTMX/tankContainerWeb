@@ -21,7 +21,11 @@ function useGetLastFolio() {
         if (error) {
             setErrorFolio(error)
         } else {
-            setFolio(data)
+            if(data.length === 0 ){
+                setFolio(1)
+            }else{
+                setFolio(data[0].folio + 1)
+            }
         }
 
     }

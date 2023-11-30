@@ -28,6 +28,7 @@ import { FormCheckTank } from "../FormCheckTank";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
 //context
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
+
 function HistoryItem({ data, type }) {
 
   const dataOperador = type === 'vigilancia' ? 
@@ -363,10 +364,13 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
 
   const selectTank = () => {
     dispatch({ type: actionTypes.setSelectItem, payload: data })
+    dispatch({type: actionTypes.setSelect, payload: true})
   }
 
   const discardTank = () => {
     dispatch({ type: actionTypes.setSelectItem, payload: false })
+    dispatch({type: actionTypes.setSelect, payload: false})
+
   }
 
   return (
@@ -412,7 +416,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
             <Chip
               size="small"
               color="info"
-              label={time === 'a' ? '1 día' : `${time} días`}
+              label={time}
               icon={<AccessTimeIcon />}
               sx={{
                 maxWidth: "200px",

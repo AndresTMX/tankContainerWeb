@@ -37,7 +37,7 @@ function usePostRegister() {
     const addDetailsRegisterData = async (register, idRegister, type) => {
         try {
 
-            const status = register.carga === 'Pipa' ? 'prelavado' : 'parked';
+            const status = register.carga === 'Pipa' ? 'prelavado' : 'maniobras';
 
             if (type === 'entrada' && register.numero_tanque != '') {
                 const { data, error } = await supabase
