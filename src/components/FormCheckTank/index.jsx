@@ -6,21 +6,24 @@ import { useGetTransporters } from "../../Hooks/transportersManagment/useGetTran
 import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";
 import { usePostRegister } from "../../Hooks/registersManagment/usePostRegister";
 import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes } from "../../Reducers/GlobalReducer";
+import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
+import { actionTypes } from "../../Reducers/ManiobrasReducer";
 //helpers
 import { transformRegisters } from "../../Helpers/transformRegisters";
 import { InputText } from "../InputText";
 //icons
 import CheckIcon from '@mui/icons-material/Check';
+import { ManiobrasContext } from "../../Context/ManiobrasContext";
 
 
-function FormCheckTank({ data, toggleModal }) {
+function FormCheckTank() {
 
     const { sendOutputRegisters } = usePostRegister();
     const { transporters } = useGetTransporters();
     const { states } = useGetOperators();
     const { operators } = states;
-    const [state, dispatch] = useContext(GlobalContext);
+    const [stateGlobal, dispatchglobal] = useContext(GlobalContext);
+    const [state, dispatch] = useContext(ManiobrasContext)
 
     const allTransporters = transporters.map((transporter) => ({
         id: transporter.id,
@@ -34,20 +37,20 @@ function FormCheckTank({ data, toggleModal }) {
     const [selectTracto, setSelectTracto] = useState('');
 
     //datos
-    const {
-        typeRegister,
-        linea,
-        tanques,
-        tanquesParked,
-        operador,
-        tracto,
-        numeroTanques,
-        typeChargue,
-        dayInput,
-        dateInput,
-        OperatorSliceName,
-        shortNameOperator,
-    } = transformRegisters(data);
+    // const {
+    //     typeRegister,
+    //     linea,
+    //     tanques,
+    //     tanquesParked,
+    //     operador,
+    //     tracto,
+    //     numeroTanques,
+    //     typeChargue,
+    //     dayInput,
+    //     dateInput,
+    //     OperatorSliceName,
+    //     shortNameOperator,
+    // } = transformRegisters(data);
 
     const validateExist = (idItem) => {
         return selected.find((value) => value.id === idItem);
@@ -90,7 +93,7 @@ function FormCheckTank({ data, toggleModal }) {
         if (validate) {
             return true
         } else {
-            dispatch({ type: actionTypes.setNotification, payload: 'Agregue al menos una carga para confirmar su salida' })
+            dispatchglobal({ type: actionTypesGlobal.setNotification, payload: 'Agregue al menos una carga para confirmar su salida' })
         }
     }
 
@@ -98,7 +101,7 @@ function FormCheckTank({ data, toggleModal }) {
         if (selectTransporter != '') {
             return true
         } else {
-            dispatch({ type: actionTypes.setNotification, payload: 'Selecciona la linea transportista' })
+            dispatchglobal({ type: actionTypesGlobal.setNotification, payload: 'Selecciona la linea transportista' })
         }
     }
 
@@ -106,7 +109,7 @@ function FormCheckTank({ data, toggleModal }) {
         if (selectOperator != '') {
             return true
         } else {
-            dispatch({ type: actionTypes.setNotification, payload: 'Selecciona el operador' })
+            dispatchglobal({ type: actionTypesGlobal.setNotification, payload: 'Selecciona el operador' })
         }
     }
 
@@ -139,7 +142,9 @@ function FormCheckTank({ data, toggleModal }) {
                 });
             }
 
-            sendOutputRegisters(registers)
+            console.log(registers)
+
+            sendOutputRegisters(registers, 'complete')
             toggleModal()
             setSelectOperator('')
             setSelectTransporter('')
@@ -176,12 +181,13 @@ function FormCheckTank({ data, toggleModal }) {
                         width: '100%'
                     }}>
                     <Stack width='100%' spacing='10px'>
-                        <Typography variant='caption'>{`${selected.length} de ${tanques.length} agregados`}</Typography>
-                        {tanquesParked.map((tank) => (
+                        <Typography variant='caption'>{`${selected.length} de ${state.selectOutputRegisters.length} agregados`}</Typography>
+                        {state.selectOutputRegisters.map((tank) => (
                             <Stack
+                                key={tank.numero_tanque}
                                 flexDirection='row'
                                 gap='10px'
-                                key={tank.numero_tanque}>
+                                >
                                 <Paper
                                     onClick={() => toggleSelected(tank)}
                                     elevation={4}
@@ -193,7 +199,8 @@ function FormCheckTank({ data, toggleModal }) {
                                         backgroundColor: includeSelected(tank.id) ? '#0288d1' : 'white',
                                         color: includeSelected(tank.id) ? 'white' : 'black',
                                         width: '100%',
-                                        justifyContent: 'space-between'
+                                        justifyContent: 'space-between',
+                                        cursor:'pointer'
 
                                     }}
                                 >
@@ -251,7 +258,7 @@ function FormCheckTank({ data, toggleModal }) {
                     fullWidth
                     variant="contained"
                     color='error'
-                    onClick={toggleModal}>
+                    onClick={() => dispatch({type: actionTypes.setModalRegister, payload: false})}>
                     cerrar
                 </Button>
 

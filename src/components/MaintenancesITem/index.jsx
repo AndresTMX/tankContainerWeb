@@ -1,165 +1,95 @@
 import { useState } from "react";
 //imports materialui
 import { Box, Button, Stack, Fade, Chip, Divider, Modal, Paper, IconButton, Typography } from "@mui/material";
-import InfoIcon from '@mui/icons-material/Info';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import useMediaQuery from "@mui/material/useMediaQuery";
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import InfoIcon from '@mui/icons-material/Info';
+import RestoreIcon from '@mui/icons-material/Restore';
+import { TextGeneral } from "../TextGeneral";
+//helpers
+import { datetimeMXFormat, tiempoTranscurrido, dateMXFormat, dateMX } from "../../Helpers/date";
 
-function MaintenancesItem({maintance}) {
+function MaintenancesItem({ maintance }) {
 
-    const [modal, setModal] = useState({modal1:false, modal2: false})
+    const [modal, setModal] = useState({ modal1: false, modal2: false })
 
-    const { hora, linea, tracto, tanque, operador, celular, status, tipo, date_end } = maintance;
+    // const { hora, linea, tracto, tanque, operador, celular, status, tipo, date_end } = maintance;
 
-    const IsSmall = useMediaQuery('(max-width:940px)');
-    const IsExtraSmall = useMediaQuery('(max-width:450px)');
+    //new data maintance => checkIn, id_usuario, id_detalle_registro, numero_tanque, status, tipo_reparacion, data
 
+    const { checkIn, checkOut, id_usuario, id_detalle_registro, registros_detalles_entradas, status, tipo_reparacion, data } = maintance;
 
-    const dateTransform = `${hora.$H}:${hora.$m}`
+    const IsSmall = useMediaQuery('(max-width:950px)');
+    const IsExtraSmall = useMediaQuery('(max-width:500px)');
 
-    const dayTransform = `${hora.$D}/${hora.$H}/${hora.$y}`
+    const time = tiempoTranscurrido(checkIn)
+    const dayTransform = dateMXFormat(checkIn);
+    const dateTransform = datetimeMXFormat(checkIn);
+    const dayEndTransform = checkOut != null ? dateMXFormat(checkOut) : false;
 
-    const dayEndTransform = `${date_end.$D}/${date_end.$H}/${date_end.$y}`
+    const statusColor = status === 'completo' ? 'success' : status === 'proceso' ? 'primary' : 'warning'
 
-    const statusColor = status === 'complete'? 'success' : status === 'proces'? 'primary' : 'warning'
+    const { numero_tanque, tracto, carga } = registros_detalles_entradas;
 
     const ToggleInfo = () => {
-        setModal({...modal, modal1:!modal.modal1})
+        setModal({ ...modal, modal1: !modal.modal1 })
     }
 
     const ToggleFormRepair = () => {
-        setModal({...modal, modal2:!modal.modal2})
+        setModal({ ...modal, modal2: !modal.modal2 })
     }
 
-    return ( 
+    return (
         <>
-        <Box
-        sx={{
-            display:'flex',
-            gap:'15px',
-            alignItems:IsSmall? 'start' : 'center',
-            flexDirection:IsSmall? 'column' : 'row',
-            backgroundColor:'whitesmoke',
-            padding:'20px',
-            borderRadius:'4px',
-            width: IsSmall? '100%' : 'auto',
-        }}
-        >
-
-            <Stack flexDirection='row' gap='15px' alignItems='center'>
-                 <Chip label={date_end? dayEndTransform : dayTransform} icon={<CalendarMonthIcon/>} />
-                 <span>{tipo}</span>
-            </Stack>
-            
-            <Stack 
-            width={IsSmall? 'auto': '400px'}
-            flexDirection={IsExtraSmall? 'column':'row'} 
-            justifyContent={IsSmall? 'flex-start' : 'space-between'}
-            alignItems={IsSmall? 'start':'center'} 
-            gap='10px'>
-            <span>{linea}</span>
-            <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
-            <span>{tracto}</span>
-            <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
-            <span>{tanque}</span>
-            <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
-            </Stack>
-
-            <Stack flexDirection='row' alignItems='center' gap='10px'>
-            <Chip label={status} color={statusColor} />
-            {(status === 'pending' || status === 'proces' )&& 
-            <Button
-            size="small"
-            variant="contained"
-            onClick={ToggleFormRepair}
-            >
-                {status === 'pending'? 'reparar' : 'completar'}
-            </Button>}
-            <IconButton
-            color="primary"
-            onClick={ToggleInfo}
-            >
-                <InfoIcon/>
-            </IconButton>
-            </Stack>
-
-        </Box>
-
-            <Modal
-                open={modal.modal1}
+            <Stack
                 sx={{
                     display: 'flex',
-                    flexDirection: 'column',
-                    position: 'absolute',
-                    justifyContent: 'center',
-                    alignItems: 'center'
+                    gap: '15px',
+                    backgroundColor: 'white',
+                    padding: '20px',
+                    borderRadius: '4px',
                 }}
-
             >
-                <Fade in={modal.modal1} timeout={500} >
-                    <Box 
-                    sx={{
-                        display:'flex',
-                        placeItems:'center',
-                        height:'100vh'
-                    }} 
+
+                <Stack flexDirection='row' flexWrap='wrap' gap='15px' alignItems='center' justifyContent='flex-start'>
+                    <Chip label={status} color={statusColor} />
+                    <Chip label={dayEndTransform ? dayEndTransform : dayTransform} color="info" icon={<CalendarMonthIcon />} />
+                    <Chip label={dayEndTransform ? dayEndTransform : dateTransform} color="info" icon={<AccessTimeIcon />} />
+                    <Chip label={time} color="info" icon={<RestoreIcon />} />
+                    <Button
+                        fullWidth={IsExtraSmall}
+                        size="small"
+                        variant="contained"
+                        onClick={ToggleFormRepair}
                     >
-                        <Paper
-                            elevation={4}
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '15px',
-                                alignItems: 'start',
-                                justifyContent: 'center',
-                                backgroundColor: 'white',
-                                width: 'auto',
-                                padding: '20px',
-                                borderRadius: '4px'
-                            }}
-                        >
-                            <Typography variant="h6">Detalles de ingreso</Typography>
+                        {status === 'pendiente' ? 'reparar' : 'completar'}
+                    </Button>
+                </Stack>
 
-                            <Stack spacing='0px'>
-                                <strong>Hora de ingreso</strong>
-                                <p>{dateTransform}</p>
-                            </Stack>
+                <Stack
+                    justifyContent='space-around'
+                    flexDirection={IsExtraSmall? 'column':'row'}
+                    flexWrap='wrap'
+                    gap='10px'>
+                    <TextGeneral
+                        label='Tipo'
+                        text={tipo_reparacion}
+                    />
+                    <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
+                    <TextGeneral
+                        label='N° tracto'
+                        text={tracto}
+                    />
+                    <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
+                    <TextGeneral
+                        label='N° tanque'
+                        text={numero_tanque}
+                    />
+                    {status != 'pendiente' && <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />}
+                </Stack>
 
-                            <Stack spacing='0px'>
-                                <strong>Nombre del operador</strong>
-                                <p>{operador}</p>
-                            </Stack>
-
-                            <Stack spacing='0px'>
-                                <strong>Contacto</strong>
-                                <p>{celular}</p>
-                            </Stack>
-
-                            {status === 'proces' && 
-                            <Stack spacing='0px'>
-                                <strong>El mantenimiento se inicio</strong>
-                                <p>{dateTransform}</p>
-                            </Stack>}
-
-                            {status === 'complete' && 
-                            <Stack spacing='0px'>
-                                <strong>El mantenimiento finalizo</strong>
-                                <p>{dateTransform}</p>
-                            </Stack>}
-
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                color='error'
-                                onClick={ToggleInfo}>
-                                cerrar
-                            </Button>
-
-                        </Paper>
-                    </Box>
-                </Fade>
-
-            </Modal>
+            </Stack>
 
             <Modal
                 open={modal.modal2}
@@ -174,11 +104,11 @@ function MaintenancesItem({maintance}) {
             >
                 <Fade in={modal.modal2} timeout={500} >
                     <Box
-                    sx={{
-                        display:'flex',
-                        placeItems:'center',
-                        height:'100vh'
-                    }}
+                        sx={{
+                            display: 'flex',
+                            placeItems: 'center',
+                            height: '100vh'
+                        }}
                     >
                         <Paper
                             elevation={4}
@@ -196,23 +126,23 @@ function MaintenancesItem({maintance}) {
                         >
                             <Typography variant="h6">Formulario de reparación</Typography>
 
-                           <Stack flexDirection='row' alignItems='center' justifyContent='space-between' width='100%' gap='10px'>
-                           <Button
-                                fullWidth
-                                variant="contained"
-                                color='primary'
-                                onClick={ToggleFormRepair}>
-                                {status === 'pending'? 'reparar' : 'completar'}
-                            </Button>
+                            <Stack flexDirection='row' alignItems='center' justifyContent='space-between' width='100%' gap='10px'>
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    color='primary'
+                                    onClick={ToggleFormRepair}>
+                                    {status === 'pending' ? 'reparar' : 'completar'}
+                                </Button>
 
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                color='error'
-                                onClick={ToggleFormRepair}>
-                                cerrar
-                            </Button>
-                           </Stack>
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    color='error'
+                                    onClick={ToggleFormRepair}>
+                                    cerrar
+                                </Button>
+                            </Stack>
 
                         </Paper>
                     </Box>
@@ -221,7 +151,7 @@ function MaintenancesItem({maintance}) {
             </Modal>
 
         </>
-     );
+    );
 }
 
-export {MaintenancesItem};
+export { MaintenancesItem };

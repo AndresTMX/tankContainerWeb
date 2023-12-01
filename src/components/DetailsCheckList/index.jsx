@@ -27,7 +27,7 @@ function DetailsCheckList() {
     const [state, dispatch] = useContext(ManiobrasContext);
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext)
 
-    const { selectItem, maniobrasCheckList, } = state;
+    const { selectItem, maniobrasCheckList, status } = state;
     const { carga, dayInput, dateInput, linea, numero_tanque, tracto, checkIn } = selectItem;
 
     const complete = maniobrasCheckList.pageThree.length >= 1 ? true : false;

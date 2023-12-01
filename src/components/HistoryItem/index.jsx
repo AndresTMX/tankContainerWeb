@@ -31,6 +31,8 @@ import { ManiobrasContext } from "../../Context/ManiobrasContext";
 
 function HistoryItem({ data, type }) {
 
+  const [state, dispatch] = useContext(ManiobrasContext)
+
   const dataOperador = type === 'vigilancia' ? 
   data.type === 'entrada' ? 
   data.registros_detalles_entradas[0].operadores :
@@ -49,11 +51,13 @@ function HistoryItem({ data, type }) {
     setModal({ ...modal, modal1: !modal.modal1 });
   };
 
-  const ToggleModalExitRegister = () => {
-    setModal({ ...modal, modal2: !modal.modal2 });
 
-  };
+  const AddSelectOutputRegisters = (newItem) => {
+    const newState = [...state.selectOutputRegisters, {}]
+    console.log(newItem)
+    // dispatch({payload: actionTypes.setModalRegister, payload:!state.modalSendRegisters})
 
+  }
 
 
   return (
@@ -71,7 +75,7 @@ function HistoryItem({ data, type }) {
           <HistoryItemVigilancia
             data={data}
             IsSmall={IsSmall}
-            ToggleModalExitRegister={ToggleModalExitRegister}
+            ToggleModalExitRegister={AddSelectOutputRegisters}
             ToggleModalInfoOperator={ToggleModalInfoOperator}
 
           />
@@ -126,23 +130,6 @@ function HistoryItem({ data, type }) {
             >
               cerrar
             </Button>
-          </Box>
-        </Fade>
-      </Modal>
-
-      <Modal
-        open={modal.modal2}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          position: "absolute",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Fade timeout={500} in={modal.modal2}>
-          <Box>
-            <FormCheckTank data={data} toggleModal={ToggleModalExitRegister} />
           </Box>
         </Fade>
       </Modal>
@@ -232,7 +219,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, ToggleMod
             typeRegister === "entrada" &&
             tanques[0].status === "full" && (
               <Button
-                onClick={ToggleModalExitRegister}
+                onClick={() => ToggleModalExitRegister(tanques[0])}
                 size="small"
                 variant="contained"
                 color="info"
@@ -332,7 +319,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, ToggleMod
                     typeRegister === "entrada" &&
                     tanque.status === "full" && (
                       <Button
-                        onClick={ToggleModalExitRegister}
+                        onClick={() => ToggleModalExitRegister(tanque)}
                         size="small"
                         variant="contained"
                         color="info"

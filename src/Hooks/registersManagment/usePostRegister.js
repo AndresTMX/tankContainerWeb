@@ -111,12 +111,12 @@ function usePostRegister() {
 
     }
 
-    const sendOutputRegisters = async (data) => {
+    const sendOutputRegisters = async (data, newStatus) => {
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
         const updateStatus = data.map(async (item) => {
             try {
-                await updateStatusRegisters(item.id, 'maniobras')
+                await updateStatusRegisters(item.id, newStatus)
             } catch (error) {
                 dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
             }

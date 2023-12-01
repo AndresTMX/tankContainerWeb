@@ -26,9 +26,10 @@ let theme = createTheme({
 });
 
 //context
+import { AuthProvider } from "./Context/AuthContext";
 import { GlobalProvider } from "./Context/GlobalContext";
 import { ManiobrasProvider } from "./Context/ManiobrasContext";
-import { AuthProvider } from "./Context/AuthContext";
+import { ReparacionesProvider } from "./Context/ReparacionesContext";
 //route protect
 import { RouteProtect } from "./Context/AuthContext";
 
@@ -98,9 +99,11 @@ function Router() {
                 path="/reparaciones"
                 element={
                   <RouteProtect>
-                    <UI>
-                      <Reparaciones />
-                    </UI>
+                    <ReparacionesProvider>
+                      <UI>
+                        <Reparaciones />
+                      </UI>
+                    </ReparacionesProvider>
                   </RouteProtect>
                 }
               />

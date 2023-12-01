@@ -10,7 +10,9 @@ const initialState = {
     typeRegister: 'entrada',
     selectItem: false,
     previewPDF: false,
-    select: false
+    select: false,
+    selectOutputRegisters:[],
+    modalSendRegisters:false
 };
 
 //Use reducer que valida los objetos
@@ -30,6 +32,8 @@ const actionTypes = {
     setCliente:'SET_CLIENTE',
     setStatus:'SET_STATUS',
     setSelect:'SET_SELECT',
+    setSelectOutputRegister:'SET_SELECT_OUTPUTREGISTER',
+    setModalRegister:'SET_MODAL_REGISTER'
 }
 
 //Use reducer con estrutura de objetos 
@@ -62,6 +66,14 @@ const reducerObject = (state, payload) => ({
     [actionTypes.setSelect]:{
         ...state,
         select: payload
+    },
+    [actionTypes.setSelectOutputRegister]:{
+        ...state,
+        selectOutputRegisters:payload
+    },
+    [actionTypes.setModalRegister]:{
+        ...state,
+        modalSendRegisters: payload
     }
 
 });

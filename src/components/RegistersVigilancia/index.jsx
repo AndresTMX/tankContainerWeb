@@ -5,7 +5,7 @@ import { HistoryItem } from "../HistoryItem";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
 import { ResultSearch } from "../ResultsSearch";
 import { ContainerScroll } from "../ContainerScroll";
-import { Box, Stack, Chip, Typography, Paper } from "@mui/material";
+import { Box, Stack, Chip, Typography, Paper, Button } from "@mui/material";
 //helpers
 import { filterSearchVigilancia } from "../../Helpers/searcher";
 //hooks
@@ -18,6 +18,7 @@ function RegisterVigilancia() {
 
     const isMovile = useMediaQuery("(max-width:640px)");
     const [state, dispatch] = useContext(ManiobrasContext)
+    console.log("🚀 ~ file: index.jsx:21 ~ RegisterVigilancia ~ state:", state)
     const { requestGetRegisters, errorGetRegisters, loadingGetRegisters } = useGetRegisters();
 
     const { states, functions } = useSearcher(filterSearchVigilancia, requestGetRegisters);
@@ -32,14 +33,16 @@ function RegisterVigilancia() {
 
     return (
         <>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth:'700px' }}>
 
                 <Paper elevation={4}>
                     <Stack
                         sx={{
                             backgroundColor: 'whitesmoke',
                             padding: '20px',
-                            borderRadius: '4px'
+                            borderRadius: '4px',
+                            width:'90vw',
+                            maxWidth:'100%'
                         }}
                         flexDirection="row"
                         justifyContent={isMovile ? "center" : "space-between"}
@@ -52,7 +55,6 @@ function RegisterVigilancia() {
                             alignItems="center"
                             flexWrap="wrap"
                             gap="10px"
-                            width={isMovile ? "100%" : "auto"}
                         >
                             <Chip
                                 onClick={() => dispatch({ type: actionTypes.setTypeRegister, payload: "entrada" })}
@@ -69,6 +71,13 @@ function RegisterVigilancia() {
                                 color={state.typeRegister === "ambas" ? "warning" : "default"}
                                 label="ambas"
                             />
+
+                            <Button 
+                            onClick={()=> dispatch({type: actionTypes.setModalRegister, payload: !state.modalSendRegisters})}
+                            size="small"
+                            variant="contained">
+                            {`Enviar  ${state.selectOutputRegisters.length}`}
+                            </Button>
                         </Stack>
 
                         <Stack width={isMovile ? "100%" : "auto"}>

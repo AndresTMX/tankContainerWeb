@@ -1,5 +1,6 @@
 import { filterInputRegistersForManiobras } from "./transformRegisters";
 
+//funcion para buscar dentro de vigilancia
 export function filterSearchVigilancia(typeRegister, busqueda, array) {
 
     try {
@@ -46,7 +47,7 @@ export function filterSearchVigilancia(typeRegister, busqueda, array) {
     }
 
 }
-
+//funcion para buscar dentro de las maniobras
 export function filterSearchManiobras(busqueda, array) {
     try {
         const busquedaMinuscula = busqueda.toLowerCase();
@@ -72,7 +73,7 @@ export function filterSearchManiobras(busqueda, array) {
     }
 
 }
-
+//funcion para buscar dentro de los checklist realizados
 export function filterSearchCheckList(busqueda, array) {
     try {
         const results = []
@@ -100,6 +101,31 @@ export function filterSearchCheckList(busqueda, array) {
     }
 }
 
+//funcion para buscar reparaciones 
+export function filterSearchRepair( typeRegister, busqueda, array){
+    
+    try {
+        const results = []
+        const busquedaMinuscula = busqueda.toLowerCase();
+        
+        array.map((register) => {
+            const numTank = register.numero_tanque.toLowerCase();
+            const tracto = register.registros_detalles_entradas.tracto;
+            const type = register.tipo_reparacion.toLowerCase();
+
+            if(numTank.includes(busquedaMinuscula) || tracto.includes(busqueda) || type.includes(busquedaMinuscula)){
+                results.push(register)
+            }
+        })
+
+        return results;
+    } catch (error) {
+        console.error(error)
+        return error
+    }
+}
+
+//router filter de maniobras y vigilancia
 export function routerFilterSearch(typeRegister, busqueda, array) {
 
     if (typeRegister === 'entrada') {
@@ -111,3 +137,22 @@ export function routerFilterSearch(typeRegister, busqueda, array) {
     }
 
 }
+
+
+// //router filter de reparaciones
+// export function routerFilterSearchRepairs(typeRegister, busqueda, array){
+
+//     if(typeRegister === 'pendiente'){
+
+//     }
+
+//     if(typeRegister === 'proceso'){
+        
+//     }
+
+//     if(typeRegister === 'realizado'){
+        
+//     }
+
+// }
+

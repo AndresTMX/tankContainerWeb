@@ -109,7 +109,7 @@ function RouteProtect({ children }) {
     },
     {
       rol: "vigilante",
-      routes: ["/", "/vigilancia"],
+      routes: ["/", "/vigilancia", "/perfil"],
     },
   ];
 

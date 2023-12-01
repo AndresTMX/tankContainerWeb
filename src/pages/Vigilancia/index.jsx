@@ -8,6 +8,7 @@ import { Container, Box, Tabs, Tab, Button, Stack, Fade, Typography, Paper, Moda
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { SelectSimple } from "../../components/SelectSimple";
 import { InputText } from "../../components/InputText";
+import { FormCheckTank } from "../../components/FormCheckTank";
 //context
 //hook
 import { useFormRegister } from "../../Hooks/useFormRegister";
@@ -25,8 +26,8 @@ import { ManiobrasContext } from "../../Context/ManiobrasContext";
 
 function Vigilancia() {
 
-    useEffect( () =>{
-        dispatch({type: actionTypes.setTypeRegister, payload:'entrada'})
+    useEffect(() => {
+        dispatch({ type: actionTypes.setTypeRegister, payload: 'entrada' })
     }, [])
 
     const IsSmall = useMediaQuery('(max-width:900px)');
@@ -268,6 +269,23 @@ function Vigilancia() {
                             </Paper>
                         </Box>
                     </Container>
+                </Fade>
+            </Modal>
+
+            <Modal
+                open={state.modalSendRegisters}
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "absolute",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+            >
+                <Fade timeout={500} in={state.modalSendRegisters}>
+                    <Box>
+                        <FormCheckTank />
+                    </Box>
                 </Fade>
             </Modal>
 

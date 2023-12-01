@@ -671,6 +671,12 @@ export function StepFor({ nextStepBar }) {
     nextStepBar(5)
   }
 
+  const optionsStatus = [
+    {id: 'prelavado', nombre: 'prelavado'},
+    {id: 'interna', nombre: 'reparacion interna'},
+    {id: 'externa', nombre: 'reparacion externa'},
+  ]
+
   return (
     <>
       <Paper sx={{ width: '100%', padding: '20px' }}>
@@ -686,10 +692,11 @@ export function StepFor({ nextStepBar }) {
             />
 
             <SelectSimple
+              type={'obj'}
               title='Siguiente etapa'
               width={'100%'}
               value={status}
-              options={['prelavado', 'reparación interna', 'reparación externa']}
+              options={optionsStatus}
               onChange={(e) => setStatus(e.target.value)}
               helperText={'Selecciona a que etapa pasa este contedor'}
             />
