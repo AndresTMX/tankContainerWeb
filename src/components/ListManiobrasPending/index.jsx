@@ -9,7 +9,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 
 function ListManiobrasPending({ requestGetRegisters, loadingGetRegisters, errorGetRegisters, resultsSearch, errorSearch, loadingSearch, search }) {
 
-    const filterRequest = (requestGetRegisters.length >= 1 && requestGetRegisters[0].checkIn) ? filterInputRegistersForManiobras(requestGetRegisters) : [];
+    const filterRequest = (requestGetRegisters.length >= 1 && requestGetRegisters[0].type === 'entrada') ? filterInputRegistersForManiobras(requestGetRegisters) : [];
 
     return (
         <>

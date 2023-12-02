@@ -30,8 +30,10 @@ export const transformRegisters = (data) => {
       id: registro.id,
       tanque: registro.numero_tanque,
       status: registro.status,
+      tanque_status: registro.tanques?.status,
+      carga: typeChargue
     }));
-    tanquesParked = tanques.filter((tanque) => tanque.status === 'full')
+    tanquesParked = tanques.filter((tanque) => tanque.tanque_status === 'ready')
     //Datos de fecha y hora
     dayInput = dateMXFormat(data.checkIn);
     dateInput = datetimeMXFormat(data.checkIn);
@@ -50,8 +52,11 @@ export const transformRegisters = (data) => {
       id: registro.id,
       tanque: registro.numero_tanque,
       status: registro.status,
+      tanque_status: registro.tanques?.status,
+      carga: typeChargue
+
     }));
-    tanquesParked = tanques.filter((tanque) => tanque.status === 'full')
+    tanquesParked = tanques.filter((tanque) => tanque.tanque_status === 'onroute')
     //Datos de fecha y hora
     dayInput = dateMXFormat(data.checkIn);
     dateInput = datetimeMXFormat(data.checkIn);

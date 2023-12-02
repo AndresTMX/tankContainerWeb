@@ -20,7 +20,7 @@ function FormCheckTank() {
 
     const [stateGlobal, dispatchglobal] = useContext(GlobalContext);
     const [state, dispatch] = useContext(ManiobrasContext)
-    const { sendOutputRegisters } = usePostRegister();
+    const { sendOutputTankRegisters } = usePostRegister();
     const { updateTractoWhitId } = useGetTractos();
     const { transporters } = useGetTransporters();
     const { states } = useGetOperators();
@@ -28,6 +28,7 @@ function FormCheckTank() {
     const { operators } = states;
 
     const typeRegister = selectOutputRegisters.length >= 1 ? selectOutputRegisters[0].carga : null;
+    console.log("🚀 ~ file: index.jsx:31 ~ FormCheckTank ~ typeRegister:", typeRegister)
 
     const allTransporters = transporters.map((transporter) => ({
         id: transporter.id,
@@ -64,12 +65,23 @@ function FormCheckTank() {
         }
     }
 
+    const validateEmptyRegisterTracto = () => {
+        if (selectOutputRegisters.length <= 1) {
+            return true
+        } else {
+            dispatchglobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Solo puedes enviar un registro de tratocamión vacio a la vez'
+            })
+        }
+    }
+
     const toggleSelectRegisters = (item) => {
         const newState = ToggleItem(item, selectOutputRegisters)
         dispatch({ type: actionTypes.setSelectOutputRegister, payload: newState })
     }
 
-    const sendExitRegister = () => {
+    const sendOutputRegistersTank = async () => {
 
         if (validateSelected() && validateTransporter() && validateOperator()) {
 
@@ -77,28 +89,23 @@ function FormCheckTank() {
 
             selectOutputRegisters.map((value, index) => {
 
-                if (value.carga === 'Tanque') {
-                    registers.push({
-                        id: value.registro_id,
-                        tracto: selectTracto,
-                        carga: value.carga,
-                        operador: selectOperator,
-                        transportista: selectTransporter,
-                        numero_tanque: value.numero_tanque
-                    });
-                }
-
+                registers.push({
+                    id: value.registro_id,
+                    tracto: selectTracto,
+                    carga: value.carga,
+                    operador: selectOperator,
+                    transportista: selectTransporter,
+                    numero_tanque: value.numero_tanque
+                });
             })
 
-
-            // console.log(registers)
-            sendOutputRegisters(registers, 'complete')
+            console.log(registers)
+            const request = await sendOutputTankRegisters(registers)
+            dispatch({ type: actionTypes.setTypeRegister, payload: "salida" })
             dispatch({ type: actionTypes.setSelectOutputRegister, payload: [] })
             dispatch({ type: actionTypes.setModalRegister, payload: false })
-            toggleModal()
             setSelectOperator('')
             setSelectTransporter('')
-            setSelected([])
         }
 
     }
@@ -109,7 +116,7 @@ function FormCheckTank() {
 
             let registers = []
 
-            selectOutputRegisters.map(async(value, index) => {
+            selectOutputRegisters.map(async (value, index) => {
 
                 registers.push({
                     id: value.registro_id,
@@ -126,27 +133,39 @@ function FormCheckTank() {
 
     const sendOutputRegisterEmptyTracto = async () => {
 
-        if (validateOperator()) {
+        if (validateOperator() && validateEmptyRegisterTracto()) {
 
-            selectOutputRegisters.map(async(value, index) => {
-
-            let registers = []
-
-            registers.push({
-                id: value.registro_id,
-                tracto: value.tracto,
+            const data = {
+                id: selectOutputRegisters[0].registro_id,
+                tracto: selectOutputRegisters[0].tracto,
                 carga: 'vacio',
-                operador: selectOperator,
-            });
+                operador: selectOperator
+            }
 
-            const promises = registers.map(async (promise) => {
-                await updateTractoWhitId(promise.id, 'onroute')
-            });
+            console.log(data)
+        }
+    }
 
-            await Promise.all(promises)
-        })
-    }}
+    const sendRouterRegister = async () => {
 
+        const type = selectOutputRegisters[0].carga
+
+        const router = {
+            Tanque: sendOutputRegistersTank(),
+            Pipa: sendOutputRegisterPipa(),
+            Vacio: () => sendOutputRegisterEmptyTracto(),
+        }
+
+        if (router[typeRegister]) {
+            router[typeRegister()]
+        } else {
+            dispatchglobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Error en el router actions'
+            })
+        }
+
+    }
 
     return (
         <>
@@ -206,7 +225,7 @@ function FormCheckTank() {
 
                                     {typeRegister === 'Tanque' && <Typography>{`N° de tanque ${tank.numero_tanque}`}</Typography>}
 
-                                    {typeRegister === 'Pipa' && <Typography>{`N° de tracto ${tank.tracto}`}</Typography>}
+                                    {typeRegister === 'Pipa' && <Typography>{`Pipa N° ${tank.tracto}`}</Typography>}
 
                                     {typeRegister === 'Vacio' && <Typography>{`Tractocamion vacio # ${tank.tracto}`}</Typography>}
 
@@ -253,7 +272,7 @@ function FormCheckTank() {
                 </Box>
 
                 <Button
-                    onClick={sendExitRegister}
+                    onClick={sendRouterRegister}
                     fullWidth
                     color="primary"
                     variant="contained">

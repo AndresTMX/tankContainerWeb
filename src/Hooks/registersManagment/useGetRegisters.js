@@ -49,6 +49,9 @@ function useGetRegisters() {
                             tractos(
                                 tracto,
                                 status
+                            ),
+                            tanques(
+                                status
                             )
                         )
                     `)
@@ -90,6 +93,13 @@ function useGetRegisters() {
                                 nombre,
                                 correo,
                                 contacto
+                            ),
+                            tractos(
+                                tracto,
+                                status
+                            ),
+                            tanques(
+                                status
                             )
                         )
                     `)

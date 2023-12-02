@@ -260,11 +260,11 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, AddItem, 
           </Stack>
 
           {
-            typeChargue == "Pipa" &&
+            typeChargue === "Pipa" &&
             typeRegister === "entrada" &&
-            tanques[0].status === "full" && (
+            tracto_status === "ready" && (
               <Button
-                onClick={() => AddItem(tanques[0], 'Pipa', tracto)}
+                onClick={() => AddItem(tanques[0], typeChargue, tracto)}
                 variant={typeButton(tanques[0].id)}
                 color={colorButton(tanques[0].id)}
                 size="small"
@@ -274,8 +274,8 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, AddItem, 
             )}
 
           {
-            typeChargue == "Tanque" &&
             typeRegister === "entrada" &&
+            tanques[0].carga === "Tanque" &&
             tracto_status === "ready" && (
               <Button
                 onClick={() => AddItem(tanques[0], 'Vacio', tracto)}
@@ -375,7 +375,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, AddItem, 
 
                   {
                     typeRegister === "entrada" &&
-                    tanque.status === "full" && (
+                    tanque.tanque_status === "ready" && (
                       <Button
                         onClick={() => AddItem(tanque, 'Tanque')}
                         size="small"

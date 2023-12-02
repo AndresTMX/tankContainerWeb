@@ -20,6 +20,28 @@ function usePostRegister() {
     const [error, setError] = useState(null)
     const [request, setRequest] = useState([])
 
+    const updateTank = async (tanque, newStatus) => {
+        const { error } = await supabase.from('tanques').update({ status: newStatus }).eq('tanque', tanque);
+    }
+
+    const addOutputRegister = async (idRegister, register) => {
+
+        const { data, error } = await supabase
+            .from(tableOutputsRegistersDetails)
+            .insert(
+                {
+                    registro_id: idRegister,
+                    carga: register.carga,
+                    tracto: register.tracto,
+                    numero_tanque: register.numero_tanque,
+                    transportista_id: register.transportista,
+                    operador_id: register.operador,
+                })
+            .select()
+
+
+    }
+
     const addRegisterData = async (type) => {
         try {
             const { data, error } = await supabase
@@ -40,15 +62,6 @@ function usePostRegister() {
             const status = register.carga === 'Pipa' ? 'prelavado' : 'maniobras';
 
             if (type === 'entrada' && register.numero_tanque != '') {
-
-
-                const { errorTracto } = await supabase.from('tractos')
-                    .update({ status: newStatusTracto })
-                    .eq('tracto', idTracto)
-
-                if (errorTracto) {
-                    dispatchGlobal({ type: actionTypes.setNotification, payload: 'Error al actualizar el estatus del tractocamion' })
-                }
 
 
                 const { data, error } = await supabase
@@ -83,6 +96,21 @@ function usePostRegister() {
         } catch (error) {
             setError(error)
         }
+    }
+
+    const addOutputRegisterDetails = async (idRegister, register) => {
+        const { data, error } = await supabase
+            .from(tableOutputsRegistersDetails)
+            .insert(
+                {
+                    registro_id: idRegister,
+                    carga: register.carga,
+                    tracto: register.tracto,
+                    numero_tanque: register.numero_tanque,
+                    transportista_id: register.transportista,
+                    operador_id: register.operador,
+                })
+            .select()
     }
 
     const updateStatusRegisters = async (idInputRegister, newStatus) => {
@@ -132,7 +160,7 @@ function usePostRegister() {
             }
         });
 
-        const { error } = await supabase.from('tractos').update({status: 'onroute'}).eq('tracto', data[0].tracto)
+        const { error } = await supabase.from('tractos').update({ status: 'onroute' }).eq('tracto', data[0].tracto)
 
         try {
             await Promise.all(updateStatus);
@@ -171,8 +199,109 @@ function usePostRegister() {
 
     };
 
+    const sendOutputTankRegisters = async (data) => {
 
-    return { sendRegisters, sendOutputRegisters, updateStatusRegisters }
+        dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
+
+        const updatesStatusRegister = data.map(async (item) => {
+            try {
+                await updateStatusRegisters(item.id, 'finish')
+            } catch (error) {
+                setError(error);
+                dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+                dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Error al mapear actualizaciones de los registros de tanques' });
+            }
+        });
+
+        try {
+            await Promise.all(updatesStatusRegister);
+        } catch (error) {
+            setError(error);
+            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+            dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Error al enviar actualizaciones de los registros de tanques' });
+        }
+
+        try {
+            const tracto = data[0].tracto;
+            const { error } = await supabase.from('tractos').update({ status: 'onroute' }).eq('tracto', tracto);
+
+            if (error) {
+                dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+                dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Error al intentar actualizar el status del tranctocamion' });
+            }
+        } catch (error) {
+            setError(error)
+            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+        }
+
+        const updatesStatusTanques = data.map(async (item) => {
+            try {
+                await updateTank(item.numero_tanque, 'onroute')
+            } catch (error) {
+                setError(error);
+                dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+                dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Error al mapear actualizaciones de los status de tanques' });
+            }
+        })
+
+        try {
+            await Promise.all(updatesStatusTanques);
+        } catch (error) {
+            setError(error);
+            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+            dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Error al enviar actualizaciones de los status de tanques' });
+        }
+
+
+        const outpusRegister = await addRegisterData('salida');
+        const idOutputRegister = outpusRegister[0].id;
+
+        const addOutputDetails = data.map(async (item) => {
+            try {
+                const outputDetail = await addOutputRegisterDetails(idOutputRegister, item)
+            } catch (error) {
+                setError(error);
+                dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+                dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Error al enviar el registro de salida' });
+            }
+        })
+
+        try {
+            await Promise.all(addOutputDetails);
+        } catch (error) {
+            setError(error);
+            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+            dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Error al enviar el registro de salida' });
+        }
+
+        setTimeout(() => {
+            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+            dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Registros actualizados' });
+        }, 1000)
+
+    }
+
+    const sendOutputTankEmpty = async (data) => {
+        try {
+            const tracto = data[0].tracto;
+            const { error } = await supabase.from('tractos').update({ status: 'onroute' }).eq('tracto', tracto);
+
+            if (error) {
+                dispatchGlobal({ 
+                    type: actionTypesGlobal.setLoading, 
+                    payload: false });
+                dispatchGlobal({ 
+                    type: actionTypesGlobal.setNotification, 
+                    payload: 'Error al intentar actualizar el status del tranctocamion' });
+            }
+        } catch (error) {
+            setError(error)
+            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+        }
+    }
+
+
+    return { sendRegisters, sendOutputRegisters, updateStatusRegisters, sendOutputTankRegisters }
 
 }
 
