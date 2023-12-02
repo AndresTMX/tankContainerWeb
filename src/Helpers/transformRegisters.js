@@ -17,6 +17,7 @@ export const transformRegisters = (data) => {
   let OperatorSliceName;
   let shortNameOperator;
   let tanquesParked;
+  let tracto_status;
 
   if (typeRegister === "entrada") {
     typeChargue = data.registros_detalles_entradas[0].carga;
@@ -24,6 +25,7 @@ export const transformRegisters = (data) => {
     linea = data.registros_detalles_entradas[0].transportistas.name;
     tracto = data.registros_detalles_entradas[0].tracto;
     numeroTanques = data.registros_detalles_entradas.length;
+    tracto_status = data.registros_detalles_entradas[0].tractos.status
     tanques = data.registros_detalles_entradas.map((registro) => ({
       id: registro.id,
       tanque: registro.numero_tanque,
@@ -43,6 +45,7 @@ export const transformRegisters = (data) => {
     linea = data.registros_detalles_salidas[0].transportistas.name;
     tracto = data.registros_detalles_salidas[0].tracto;
     numeroTanques = data.registros_detalles_salidas?.length;
+    tracto_status = data.registros_detalles_salidas[0].tractos.status
     tanques = data.registros_detalles_salidas.map((registro) => ({
       id: registro.id,
       tanque: registro.numero_tanque,
@@ -71,6 +74,7 @@ export const transformRegisters = (data) => {
     dateInput,
     OperatorSliceName,
     shortNameOperator,
+    tracto_status
   };
 };
 

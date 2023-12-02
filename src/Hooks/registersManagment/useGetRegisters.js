@@ -45,6 +45,10 @@ function useGetRegisters() {
                                 nombre,
                                 correo,
                                 contacto
+                            ),
+                            tractos(
+                                tracto,
+                                status
                             )
                         )
                     `)

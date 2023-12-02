@@ -8,87 +8,38 @@ import { usePostRegister } from "../../Hooks/registersManagment/usePostRegister"
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
+import { useGetTractos } from "../../Hooks/tractosManagment/useGetTractos";
 //helpers
-import { transformRegisters } from "../../Helpers/transformRegisters";
 import { InputText } from "../InputText";
+import { ToggleItem } from "../../Helpers/crud";
 //icons
-import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
-
 
 function FormCheckTank() {
 
-    const { sendOutputRegisters } = usePostRegister();
-    const { transporters } = useGetTransporters();
-    const { states } = useGetOperators();
-    const { operators } = states;
     const [stateGlobal, dispatchglobal] = useContext(GlobalContext);
     const [state, dispatch] = useContext(ManiobrasContext)
+    const { sendOutputRegisters } = usePostRegister();
+    const { updateTractoWhitId } = useGetTractos();
+    const { transporters } = useGetTransporters();
+    const { states } = useGetOperators();
+    const { selectOutputRegisters } = state;
+    const { operators } = states;
+
+    const typeRegister = selectOutputRegisters.length >= 1 ? selectOutputRegisters[0].carga : null;
 
     const allTransporters = transporters.map((transporter) => ({
         id: transporter.id,
         nombre: transporter.name,
     }))
 
-    const [selected, setSelected] = useState([]);
-
     const [selectTransporter, setSelectTransporter] = useState('');
     const [selectOperator, setSelectOperator] = useState('');
     const [selectTracto, setSelectTracto] = useState('');
 
-    //datos
-    // const {
-    //     typeRegister,
-    //     linea,
-    //     tanques,
-    //     tanquesParked,
-    //     operador,
-    //     tracto,
-    //     numeroTanques,
-    //     typeChargue,
-    //     dayInput,
-    //     dateInput,
-    //     OperatorSliceName,
-    //     shortNameOperator,
-    // } = transformRegisters(data);
-
-    const validateExist = (idItem) => {
-        return selected.find((value) => value.id === idItem);
-    }
-
-    const addItemSelected = (item) => {
-        let newState
-        if (selected?.length >= 1) {
-            newState = [...selected, item]
-        } else {
-            newState = [item]
-        }
-        setSelected(newState);
-
-    }
-
-    const removeSelectItem = (item) => {
-        const index = selected.findIndex((element) => element.id === item.id)
-        const newState = selected.filter((element) => element.id != item.id);
-        setSelected(newState);
-    }
-
-    const toggleSelected = (item) => {
-
-        const validate = validateExist(item.id);
-
-        if (validate) {
-            removeSelectItem(item)
-        } else {
-            addItemSelected(item)
-        }
-
-    }
-
-    const includeSelected = (id) => selected.find((element) => element.id === id);
-
     const validateSelected = () => {
-        let validate = selected?.length >= 1 ? true : false;
+        let validate = selectOutputRegisters?.length >= 1 ? true : false;
 
         if (validate) {
             return true
@@ -113,46 +64,89 @@ function FormCheckTank() {
         }
     }
 
+    const toggleSelectRegisters = (item) => {
+        const newState = ToggleItem(item, selectOutputRegisters)
+        dispatch({ type: actionTypes.setSelectOutputRegister, payload: newState })
+    }
+
     const sendExitRegister = () => {
 
         if (validateSelected() && validateTransporter() && validateOperator()) {
 
             let registers = []
 
-            if (typeChargue === "Tanque") {
-                selected.map((value, index) => {
+            selectOutputRegisters.map((value, index) => {
+
+                if (value.carga === 'Tanque') {
                     registers.push({
-                        id: tanques[index].id,
-                        tracto: tracto,
-                        carga: typeChargue,
+                        id: value.registro_id,
+                        tracto: selectTracto,
+                        carga: value.carga,
                         operador: selectOperator,
                         transportista: selectTransporter,
-                        numero_tanque: value.tanque
+                        numero_tanque: value.numero_tanque
                     });
+                }
 
-                })
-            } else {
-                registers.push({
-                    id: tanques[0].id,
-                    tracto: selectTracto,
-                    carga: typeChargue,
-                    operador: selectOperator,
-                    transportista: selectTransporter,
-                    numero_tanque: null
-                });
-            }
+            })
 
-            console.log(registers)
 
+            // console.log(registers)
             sendOutputRegisters(registers, 'complete')
+            dispatch({ type: actionTypes.setSelectOutputRegister, payload: [] })
+            dispatch({ type: actionTypes.setModalRegister, payload: false })
             toggleModal()
             setSelectOperator('')
             setSelectTransporter('')
             setSelected([])
-
         }
 
     }
+
+    const sendOutputRegisterPipa = async () => {
+
+        if (validateSelected() && validateTransporter() && validateOperator()) {
+
+            let registers = []
+
+            selectOutputRegisters.map(async(value, index) => {
+
+                registers.push({
+                    id: value.registro_id,
+                    tracto: value.tracto,
+                    carga: value.carga,
+                    operador: selectOperator,
+                    transportista: selectTransporter,
+                });
+
+
+            })
+        }
+    }
+
+    const sendOutputRegisterEmptyTracto = async () => {
+
+        if (validateOperator()) {
+
+            selectOutputRegisters.map(async(value, index) => {
+
+            let registers = []
+
+            registers.push({
+                id: value.registro_id,
+                tracto: value.tracto,
+                carga: 'vacio',
+                operador: selectOperator,
+            });
+
+            const promises = registers.map(async (promise) => {
+                await updateTractoWhitId(promise.id, 'onroute')
+            });
+
+            await Promise.all(promises)
+        })
+    }}
+
 
     return (
         <>
@@ -181,34 +175,44 @@ function FormCheckTank() {
                         width: '100%'
                     }}>
                     <Stack width='100%' spacing='10px'>
-                        <Typography variant='caption'>{`${selected.length} de ${state.selectOutputRegisters.length} agregados`}</Typography>
+
+                        {(state.selectOutputRegisters.length === 0) &&
+                            <Typography variant='body1'>
+                                Sin salidas pendientes
+                            </Typography>}
+
                         {state.selectOutputRegisters.map((tank) => (
                             <Stack
-                                key={tank.numero_tanque}
+                                key={tank.registro_id}
                                 flexDirection='row'
                                 gap='10px'
-                                >
+                            >
                                 <Paper
-                                    onClick={() => toggleSelected(tank)}
+                                    onClick={() => toggleSelectRegisters(tank)}
                                     elevation={4}
                                     sx={{
                                         display: 'flex',
                                         flexDirection: 'row',
                                         alignItems: 'center',
                                         padding: '10px',
-                                        backgroundColor: includeSelected(tank.id) ? '#0288d1' : 'white',
-                                        color: includeSelected(tank.id) ? 'white' : 'black',
+                                        backgroundColor: '#0288d1',
+                                        color: 'white',
                                         width: '100%',
                                         justifyContent: 'space-between',
-                                        cursor:'pointer'
+                                        cursor: 'pointer'
 
                                     }}
                                 >
-                                    <Typography>{`${typeChargue} ${tank.tanque ? tank.tanque : ''}`}</Typography>
+
+                                    {typeRegister === 'Tanque' && <Typography>{`N° de tanque ${tank.numero_tanque}`}</Typography>}
+
+                                    {typeRegister === 'Pipa' && <Typography>{`N° de tracto ${tank.tracto}`}</Typography>}
+
+                                    {typeRegister === 'Vacio' && <Typography>{`Tractocamion vacio # ${tank.tracto}`}</Typography>}
 
                                     <IconButton
                                     >
-                                        <CheckIcon sx={{ color: includeSelected(tank.id) ? 'white' : 'black' }} />
+                                        <ClearIcon sx={{ color: 'white' }} />
                                     </IconButton>
                                 </Paper>
 
@@ -216,24 +220,26 @@ function FormCheckTank() {
                         ))}
                     </Stack>
 
-                    <SelectSimple
-                        type={'obj'}
-                        title="linea transportista"
-                        value={selectTransporter}
-                        options={allTransporters}
-                        onChange={(e) => setSelectTransporter(e.target.value)}
-                        width={'100%'}
-                        required={true}
-                    />
+                    {typeRegister != 'Vacio' &&
+                        <SelectSimple
+                            type={'obj'}
+                            title="linea transportista"
+                            value={selectTransporter}
+                            options={allTransporters}
+                            onChange={(e) => setSelectTransporter(e.target.value)}
+                            width={'100%'}
+                            required={true}
+                        />}
 
-                    <InputText
-                    label='tracto'
-                    value={selectTracto}
-                    onChangue={(e) => setSelectTracto(e.target.value)}
-                    required={true}
-                    width={'100%'}
-                    />
-
+                    {(typeRegister === 'Tanque') &&
+                        <InputText
+                            label='tracto'
+                            value={selectTracto}
+                            onChangue={(e) => setSelectTracto(e.target.value)}
+                            required={true}
+                            width={'100%'}
+                        />
+                    }
                     <SelectSimple
                         type='obj'
                         title="Operadores"
@@ -249,7 +255,7 @@ function FormCheckTank() {
                 <Button
                     onClick={sendExitRegister}
                     fullWidth
-                    color="success"
+                    color="primary"
                     variant="contained">
                     confirmar seleccionados
                 </Button>
@@ -258,7 +264,7 @@ function FormCheckTank() {
                     fullWidth
                     variant="contained"
                     color='error'
-                    onClick={() => dispatch({type: actionTypes.setModalRegister, payload: false})}>
+                    onClick={() => dispatch({ type: actionTypes.setModalRegister, payload: false })}>
                     cerrar
                 </Button>
 

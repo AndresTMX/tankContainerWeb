@@ -18,7 +18,6 @@ function RegisterVigilancia() {
 
     const isMovile = useMediaQuery("(max-width:640px)");
     const [state, dispatch] = useContext(ManiobrasContext)
-    console.log("🚀 ~ file: index.jsx:21 ~ RegisterVigilancia ~ state:", state)
     const { requestGetRegisters, errorGetRegisters, loadingGetRegisters } = useGetRegisters();
 
     const { states, functions } = useSearcher(filterSearchVigilancia, requestGetRegisters);
@@ -76,7 +75,7 @@ function RegisterVigilancia() {
                             onClick={()=> dispatch({type: actionTypes.setModalRegister, payload: !state.modalSendRegisters})}
                             size="small"
                             variant="contained">
-                            {`Enviar  ${state.selectOutputRegisters.length}`}
+                            {`Marcar salida ${state.selectOutputRegisters.length}`}
                             </Button>
                         </Stack>
 

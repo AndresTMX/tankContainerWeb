@@ -23,23 +23,26 @@ import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrow
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 //helpers
 import { transformRegisters } from "../../Helpers/transformRegisters";
-import { tiempoTranscurrido } from "../../Helpers/date";
-import { FormCheckTank } from "../FormCheckTank";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
+import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
+import { tiempoTranscurrido } from "../../Helpers/date";
+import { ToggleItem } from "../../Helpers/crud";
 //context
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
+import { GlobalContext } from "../../Context/GlobalContext";
 
 function HistoryItem({ data, type }) {
 
-  const [state, dispatch] = useContext(ManiobrasContext)
-
-  const dataOperador = type === 'vigilancia' ? 
-  data.type === 'entrada' ? 
-  data.registros_detalles_entradas[0].operadores :
-  data.registros_detalles_salidas[0].operadores: 
-  data.operador;
-
   const IsSmall = useMediaQuery("(max-width:900px)");
+  const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
+  const [state, dispatch] = useContext(ManiobrasContext);
+  const { selectOutputRegisters } = state;
+
+  const dataOperador = type === 'vigilancia' ?
+    data.type === 'entrada' ?
+      data.registros_detalles_entradas[0].operadores :
+      data.registros_detalles_salidas[0].operadores :
+    data.operador;
 
   const [modal, setModal] = useState({
     modal1: false,
@@ -51,14 +54,52 @@ function HistoryItem({ data, type }) {
     setModal({ ...modal, modal1: !modal.modal1 });
   };
 
+  const AddSelectOutputRegisters = (newItem, typeItem, tracto) => {
 
-  const AddSelectOutputRegisters = (newItem) => {
-    const newState = [...state.selectOutputRegisters, {}]
-    console.log(newItem)
-    // dispatch({payload: actionTypes.setModalRegister, payload:!state.modalSendRegisters})
+    let item
+
+    const lastIndex = selectOutputRegisters.length - 1;
+
+    if (selectOutputRegisters?.length >= 1 && selectOutputRegisters[lastIndex].carga != typeItem) {
+      dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Agrega solo un tipo de registro a la vez' })
+    } else {
+
+      if (typeItem === 'Tanque') {
+        item = {
+          registro_id: newItem.id,
+          numero_tanque: newItem.tanque,
+          carga: typeItem,
+        }
+      }
+
+      if (typeItem === 'Pipa') {
+        item = {
+          registro_id: newItem.id,
+          carga: typeItem,
+          tracto: tracto
+        }
+      }
+
+      if (typeItem === 'Vacio') {
+        item = {
+          registro_id: tracto,
+          carga: typeItem,
+          tracto: tracto
+        }
+      }
+
+      const newState = ToggleItem(item, selectOutputRegisters)
+      dispatch({ type: actionTypes.setSelectOutputRegister, payload: newState })
+
+    }
 
   }
 
+  const typeButton = (id) => selectOutputRegisters.filter((item) => item.registro_id === id).length >= 1 ? 'contained' : 'outlined';
+
+  const colorButton = (id) => selectOutputRegisters.filter((item) => item.registro_id === id).length >= 1 ? 'error' : 'primary';
+
+  const textButton = (id) => selectOutputRegisters.filter((item) => item.registro_id === id).length >= 1 ? 'eliminar' : 'agregar';
 
   return (
     <>
@@ -75,7 +116,10 @@ function HistoryItem({ data, type }) {
           <HistoryItemVigilancia
             data={data}
             IsSmall={IsSmall}
-            ToggleModalExitRegister={AddSelectOutputRegisters}
+            textButton={textButton}
+            typeButton={typeButton}
+            colorButton={colorButton}
+            AddItem={AddSelectOutputRegisters}
             ToggleModalInfoOperator={ToggleModalInfoOperator}
 
           />
@@ -139,7 +183,7 @@ function HistoryItem({ data, type }) {
 
 export { HistoryItem };
 
-export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, ToggleModalExitRegister, IsSmall, }) {
+export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, AddItem, IsSmall, typeButton, colorButton, textButton }) {
 
   const {
     typeRegister,
@@ -153,6 +197,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, ToggleMod
     dateInput,
     OperatorSliceName,
     shortNameOperator,
+    tracto_status
   } = transformRegisters(data);
 
   return (
@@ -219,12 +264,26 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, ToggleMod
             typeRegister === "entrada" &&
             tanques[0].status === "full" && (
               <Button
-                onClick={() => ToggleModalExitRegister(tanques[0])}
+                onClick={() => AddItem(tanques[0], 'Pipa', tracto)}
+                variant={typeButton(tanques[0].id)}
+                color={colorButton(tanques[0].id)}
                 size="small"
-                variant="contained"
-                color="info"
               >
-                marcar salida
+                {` ${textButton(tanques[0].id)} pipa`}
+              </Button>
+            )}
+
+          {
+            typeChargue == "Tanque" &&
+            typeRegister === "entrada" &&
+            tracto_status === "ready" && (
+              <Button
+                onClick={() => AddItem(tanques[0], 'Vacio', tracto)}
+                variant={typeButton(tracto)}
+                color={colorButton(tracto)}
+                size="small"
+              >
+                {` ${textButton(tracto)} tracto`}
               </Button>
             )}
 
@@ -268,7 +327,6 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, ToggleMod
             orientation={IsSmall ? "horizontal" : "vertical"}
             flexItem
           />
-
 
           <Stack
             width={'100%'}
@@ -319,12 +377,12 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, ToggleMod
                     typeRegister === "entrada" &&
                     tanque.status === "full" && (
                       <Button
-                        onClick={() => ToggleModalExitRegister(tanque)}
+                        onClick={() => AddItem(tanque, 'Tanque')}
                         size="small"
-                        variant="contained"
-                        color="info"
+                        variant={typeButton(tanque.id)}
+                        color={colorButton(tanque.id)}
                       >
-                        marcar salida
+                        {` ${textButton(tanque.id)} tanque`}
                       </Button>
                     )}
 
@@ -351,12 +409,12 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
 
   const selectTank = () => {
     dispatch({ type: actionTypes.setSelectItem, payload: data })
-    dispatch({type: actionTypes.setSelect, payload: true})
+    dispatch({ type: actionTypes.setSelect, payload: true })
   }
 
   const discardTank = () => {
     dispatch({ type: actionTypes.setSelectItem, payload: false })
-    dispatch({type: actionTypes.setSelect, payload: false})
+    dispatch({ type: actionTypes.setSelect, payload: false })
 
   }
 

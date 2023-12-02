@@ -10,8 +10,10 @@ import { SelectSimple } from "../../components/SelectSimple";
 import { InputText } from "../../components/InputText";
 import { FormCheckTank } from "../../components/FormCheckTank";
 //context
+import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 //hook
 import { useFormRegister } from "../../Hooks/useFormRegister";
+import { useGetTractos } from "../../Hooks/tractosManagment/useGetTractos";
 import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";
 import { useGetTransporters } from "../../Hooks/transportersManagment/useGetTransporters";
 //notification
@@ -23,6 +25,7 @@ import UpdateIcon from '@mui/icons-material/Update';
 //TabsComponents
 import { RegisterVigilancia } from "../../components/RegistersVigilancia";
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
+import { GlobalContext } from "../../Context/GlobalContext";
 
 function Vigilancia() {
 
@@ -30,16 +33,19 @@ function Vigilancia() {
         dispatch({ type: actionTypes.setTypeRegister, payload: 'entrada' })
     }, [])
 
-    const IsSmall = useMediaQuery('(max-width:900px)');
+    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
     const [state, dispatch] = useContext(ManiobrasContext)
+    const IsSmall = useMediaQuery('(max-width:900px)');
     //hook de operadores
     const { states, functions } = useGetOperators();
+    const { tractos, errorTractos, GetNumTractos } = useGetTractos();
     const { loadingOperators, operators } = states;
     const { updateOperators } = functions;
     const operatorsName = !loadingOperators ? operators.map((operator) => ({
         id: operator.id,
         nombre: operator.nombre
     })) : [];
+    const allTractos =  tractos.map((tracto) => tracto.tracto)
     //hook de formulario
     const { statesFormRegister, functionsFormRegister } = useFormRegister();
     const { typeChargue, tracto, select, operator, numTank, dataTank } = statesFormRegister;
@@ -63,8 +69,15 @@ function Vigilancia() {
     }
 
     const submitRegister = () => {
-        setModal(!modal)
-        addRegister()
+        if (!allTractos.includes(tracto.trim())){
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification, 
+                payload:'Este tracto no esta registrado, comuniquese con el administrador'})
+            setModal(!modal)
+        }else{
+            setModal(!modal)
+            addRegister()
+        }
     }
 
     return (
@@ -109,7 +122,7 @@ function Vigilancia() {
                                     </Typography>
                                     <IconButton
                                         color="primary"
-                                        onClick={() => { updateOperators(); updateAllTransports(); }}>
+                                        onClick={() => { updateOperators(); updateAllTransports(); GetNumTractos(); }}>
                                         <UpdateIcon />
                                     </IconButton>
                                 </Stack>

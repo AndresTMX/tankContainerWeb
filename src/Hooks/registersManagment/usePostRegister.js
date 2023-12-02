@@ -34,12 +34,23 @@ function usePostRegister() {
 
     }
 
-    const addDetailsRegisterData = async (register, idRegister, type) => {
+    const addDetailsRegisterData = async (register, idRegister, type, newStatusTracto, idTracto) => {
         try {
 
             const status = register.carga === 'Pipa' ? 'prelavado' : 'maniobras';
 
             if (type === 'entrada' && register.numero_tanque != '') {
+
+
+                const { errorTracto } = await supabase.from('tractos')
+                    .update({ status: newStatusTracto })
+                    .eq('tracto', idTracto)
+
+                if (errorTracto) {
+                    dispatchGlobal({ type: actionTypes.setNotification, payload: 'Error al actualizar el estatus del tractocamion' })
+                }
+
+
                 const { data, error } = await supabase
                     .from(tableInputsRegistersDetails)
                     .insert(
@@ -70,7 +81,6 @@ function usePostRegister() {
                     .select()
             }
         } catch (error) {
-            console.log(error)
             setError(error)
         }
     }
@@ -94,7 +104,7 @@ function usePostRegister() {
         const registerData = await addRegisterData(type);
         const promises = data.map(async (register) => {
             try {
-                await addDetailsRegisterData(register, registerData[0].id, type);
+                await addDetailsRegisterData(register, registerData[0].id, type, 'onroute', register.tracto);
             } catch (error) {
                 setError(error);
             }
@@ -121,6 +131,8 @@ function usePostRegister() {
                 dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
             }
         });
+
+        const { error } = await supabase.from('tractos').update({status: 'onroute'}).eq('tracto', data[0].tracto)
 
         try {
             await Promise.all(updateStatus);
