@@ -4,6 +4,7 @@ import { EIR } from "../../plantillas/EIR";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { ManiobrasContext } from "../../../Context/ManiobrasContext"
+import { useGetLastFolio } from "../../../Hooks/foliosManagment/useGetLastFolio";
 import { currentDate, dateMXFormat, datetimeMXFormat } from "../../../Helpers/date";
 import { AuthContext } from "../../../Context/AuthContext";
 
@@ -12,6 +13,7 @@ function ButtonDowloand() {
 
   const { key } = useContext(AuthContext);
   const [state, dispatch] = useContext(ManiobrasContext);
+  const { folio } = useGetLastFolio();
   
   const session = JSON.parse(sessionStorage.getItem(key));
   const { maniobrasCheckList, selectItem, cliente, status } = state;
@@ -27,7 +29,7 @@ function ButtonDowloand() {
     entrada: dayInput,
     numero_unidad: tracto,
     usuario_emisor: `${session.user_metadata.first_name} ${session.user_metadata.last_name} `,
-    folio: selectItem.folio,
+    folio: selectItem.folio? selectItem.folio: folio,
     newStatus: status,
 }
 

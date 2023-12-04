@@ -20,15 +20,13 @@ function FormCheckTank() {
 
     const [stateGlobal, dispatchglobal] = useContext(GlobalContext);
     const [state, dispatch] = useContext(ManiobrasContext)
-    const { sendOutputTankRegisters } = usePostRegister();
-    const { updateTractoWhitId } = useGetTractos();
+    const { sendOutputTankRegisters, sendOutputTractoEmpty, sendOutputPipaRegister } = usePostRegister();
     const { transporters } = useGetTransporters();
     const { states } = useGetOperators();
     const { selectOutputRegisters } = state;
     const { operators } = states;
 
     const typeRegister = selectOutputRegisters.length >= 1 ? selectOutputRegisters[0].carga : null;
-    console.log("🚀 ~ file: index.jsx:31 ~ FormCheckTank ~ typeRegister:", typeRegister)
 
     const allTransporters = transporters.map((transporter) => ({
         id: transporter.id,
@@ -99,7 +97,7 @@ function FormCheckTank() {
                 });
             })
 
-            console.log(registers)
+            // console.log(registers)
             const request = await sendOutputTankRegisters(registers)
             dispatch({ type: actionTypes.setTypeRegister, payload: "salida" })
             dispatch({ type: actionTypes.setSelectOutputRegister, payload: [] })
@@ -125,9 +123,14 @@ function FormCheckTank() {
                     operador: selectOperator,
                     transportista: selectTransporter,
                 });
-
-
             })
+
+            const request = await sendOutputPipaRegister(registers)
+            dispatch({ type: actionTypes.setTypeRegister, payload: "salida" })
+            dispatch({ type: actionTypes.setSelectOutputRegister, payload: [] })
+            dispatch({ type: actionTypes.setModalRegister, payload: false })
+            setSelectOperator('')
+            setSelectTransporter('')
         }
     }
 
@@ -143,28 +146,35 @@ function FormCheckTank() {
             }
 
             console.log(data)
+            const request = await sendOutputTractoEmpty(data)
         }
     }
 
     const sendRouterRegister = async () => {
 
-        const type = selectOutputRegisters[0].carga
+        try {
+            const type = selectOutputRegisters[0].carga
 
-        const router = {
-            Tanque: sendOutputRegistersTank(),
-            Pipa: sendOutputRegisterPipa(),
-            Vacio: () => sendOutputRegisterEmptyTracto(),
-        }
+            const router = {
+                Tanque: () => sendOutputRegistersTank(),
+                Pipa: () => sendOutputRegisterPipa(),
+                Vacio: () => sendOutputRegisterEmptyTracto(),
+            }
 
-        if (router[typeRegister]) {
-            router[typeRegister()]
-        } else {
+            if (router[typeRegister]) {
+                router[typeRegister]();
+            } else {
+                dispatchglobal({
+                    type: actionTypesGlobal.setNotification,
+                    payload: 'Error en el router actions'
+                })
+            }
+        } catch (error) {
             dispatchglobal({
                 type: actionTypesGlobal.setNotification,
-                payload: 'Error en el router actions'
+                payload: 'Sin registros seleccionados'
             })
         }
-
     }
 
     return (

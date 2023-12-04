@@ -16,6 +16,7 @@ function useGetTractos() {
     },[])
 
     const GetNumTractos = async() => {
+
         const { data, error } = await supabase.from(tableTractos)
         .select('tracto')
 

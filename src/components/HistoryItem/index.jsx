@@ -309,7 +309,8 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, AddItem, 
             alignItems={IsSmall ? "start" : "center"}
             gap="10px"
           >
-            <TextGeneral width={'200px'} text={linea} label="Linea" />
+           {(typeChargue != 'vacio') && <TextGeneral width={'200px'} text={linea} label="Linea" />}
+           {(typeChargue === 'vacio') && <TextGeneral width={'200px'} text={'Sin linea transportista'} label="Linea" />}
             <Divider
               orientation={IsSmall ? "horizontal" : "vertical"}
               flexItem

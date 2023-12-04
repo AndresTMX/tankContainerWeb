@@ -25,7 +25,7 @@ export const transformRegisters = (data) => {
     linea = data.registros_detalles_entradas[0].transportistas.name;
     tracto = data.registros_detalles_entradas[0].tracto;
     numeroTanques = data.registros_detalles_entradas.length;
-    tracto_status = data.registros_detalles_entradas[0].tractos.status
+    tracto_status = data.registros_detalles_entradas[0].tractos?.status
     tanques = data.registros_detalles_entradas.map((registro) => ({
       id: registro.id,
       tanque: registro.numero_tanque,
@@ -44,10 +44,10 @@ export const transformRegisters = (data) => {
   } else {
     typeChargue = data.registros_detalles_salidas[0]?.carga;
     operador = data.registros_detalles_salidas[0].operadores;
-    linea = data.registros_detalles_salidas[0].transportistas.name;
+    linea = data.registros_detalles_salidas[0]?.transportistas?.name;
     tracto = data.registros_detalles_salidas[0].tracto;
     numeroTanques = data.registros_detalles_salidas?.length;
-    tracto_status = data.registros_detalles_salidas[0].tractos.status
+    tracto_status = data.registros_detalles_salidas[0].tractos?.status
     tanques = data.registros_detalles_salidas.map((registro) => ({
       id: registro.id,
       tanque: registro.numero_tanque,
