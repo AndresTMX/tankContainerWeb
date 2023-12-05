@@ -39,7 +39,7 @@ export function filterSearchVigilancia(typeRegister, busqueda, array) {
             }
 
         })
-        console.log(filtered)
+        
         return filtered
     } catch (error) {
         console.error(error)
@@ -67,6 +67,11 @@ export function filterSearchManiobras(busqueda, array) {
             }
 
         })
+
+        if (results.length === 0) {
+            throw new Error('sin resultados')
+        }
+
         return results
     } catch (error) {
         return error

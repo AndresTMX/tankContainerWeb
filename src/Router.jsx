@@ -30,6 +30,7 @@ import { AuthProvider } from "./Context/AuthContext";
 import { GlobalProvider } from "./Context/GlobalContext";
 import { ManiobrasProvider } from "./Context/ManiobrasContext";
 import { ReparacionesProvider } from "./Context/ReparacionesContext";
+import { PrelavadoProvider } from "./Context/PrelavadoContext";
 //route protect
 import { RouteProtect } from "./Context/AuthContext";
 
@@ -112,9 +113,11 @@ function Router() {
                 path="/prelavado"
                 element={
                   <RouteProtect>
-                    <UI>
-                      <Prelavado />
-                    </UI>
+                    <PrelavadoProvider>
+                      <UI>
+                        <Prelavado />
+                      </UI>
+                    </PrelavadoProvider>
                   </RouteProtect>
                 }
               />

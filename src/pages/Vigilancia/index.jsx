@@ -49,7 +49,7 @@ function Vigilancia() {
     //hook de formulario
     const { statesFormRegister, functionsFormRegister } = useFormRegister();
     const { typeChargue, tracto, select, operator, numTank, dataTank } = statesFormRegister;
-    const { handleChangeList, handleNumTank, handleChangeTracto, handleChangueTypeChargue, handleChangueOperator, addRegister, setDataTank } = functionsFormRegister;
+    const { handleChangeList, handleNumTank, handleChangeTracto, handleChangueTypeChargue, handleChangueOperator, routerRegisters, setDataTank } = functionsFormRegister;
     //hook de transportistas
     const { transporters, updateAllTransports } = useGetTransporters();
     const arrayTransporters = transporters.length >= 1 ? transporters.map((transporter) => ({
@@ -59,6 +59,12 @@ function Vigilancia() {
 
     const [modal, setModal] = useState(false)
     const [tab, setTab] = useState(0)
+
+    const optionSelect = [
+        {id:'Tanque', nombre:'Tanque'},
+        {id:'Pipa', nombre:'Pipa'},
+        {id:'Vacio', nombre:'Sin carga'},
+    ]
 
     const ToggleModalForm = (event) => {
         setModal(!modal)
@@ -75,8 +81,8 @@ function Vigilancia() {
                 payload:'Este tracto no esta registrado, comuniquese con el administrador'})
             setModal(!modal)
         }else{
+            routerRegisters()
             setModal(!modal)
-            addRegister()
         }
     }
 
@@ -143,11 +149,12 @@ function Vigilancia() {
                                     }}
                                 >
                                     <SelectSimple
+                                        type={'obj'}
                                         required={true}
                                         width={'100%'}
                                         title={'Tipo de carga'}
                                         value={typeChargue}
-                                        options={['Tanque', 'Pipa']}
+                                        options={optionSelect}
                                         onChange={handleChangueTypeChargue}
                                     />
 

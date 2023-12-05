@@ -9,9 +9,7 @@ function CustomTabPanel({children, value, index}) {
         >
             {value === index && (
                 <Box 
-                sx={{
-                    paddingTop:'10px', 
-                    }}>
+                >
                    {children}
                 </Box>
             )}

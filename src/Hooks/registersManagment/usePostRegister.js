@@ -24,24 +24,6 @@ function usePostRegister() {
         const { error } = await supabase.from('tanques').update({ status: newStatus }).eq('tanque', tanque);
     }
 
-    const addOutputRegister = async (idRegister, register) => {
-
-        const { data, error } = await supabase
-            .from(tableOutputsRegistersDetails)
-            .insert(
-                {
-                    registro_id: idRegister,
-                    carga: register.carga,
-                    tracto: register.tracto,
-                    numero_tanque: register.numero_tanque,
-                    transportista_id: register.transportista,
-                    operador_id: register.operador,
-                })
-            .select()
-
-
-    }
-
     const addRegisterData = async (type) => {
         try {
             const { data, error } = await supabase
@@ -95,6 +77,45 @@ function usePostRegister() {
 
             if (type === 'vacio') {
                 const { data, error } = await supabase
+                    .from(tableInputsRegistersDetails)
+                    .insert(
+                        {
+                            registro_id: idRegister,
+                            carga: register.carga,
+                            tracto: register.tracto,
+                            numero_tanque: null,
+                            transportista_id: register.transportista,
+                            operador_id: register.operador,
+                        })
+                    .select()
+            }
+        } catch (error) {
+            setError(error)
+        }
+    }
+
+    const addOutputRegisterDetails = async (register, idRegister, type) => {
+        try {
+
+            const status = register.carga === 'Pipa' ? 'prelavado' : 'maniobras';
+
+            if (type === 'salida' && register.numero_tanque != '') {
+                const { data, error } = await supabase
+                    .from(tableOutputsRegistersDetails)
+                    .insert(
+                        {
+                            registro_id: idRegister,
+                            carga: register.carga,
+                            tracto: register.tracto,
+                            numero_tanque: register.numero_tanque,
+                            transportista_id: register.transportista,
+                            operador_id: register.operador,
+                        })
+                    .select()
+            }
+
+            if (type === 'vacio') {
+                const { data, error } = await supabase
                     .from(tableOutputsRegistersDetails)
                     .insert(
                         {
@@ -112,21 +133,6 @@ function usePostRegister() {
         }
     }
 
-    const addOutputRegisterDetails = async (idRegister, register) => {
-        const { data, error } = await supabase
-            .from(tableOutputsRegistersDetails)
-            .insert(
-                {
-                    registro_id: idRegister,
-                    carga: register.carga,
-                    tracto: register.tracto,
-                    numero_tanque: register.numero_tanque,
-                    transportista_id: register.transportista,
-                    operador_id: register.operador,
-                })
-            .select()
-    }
-
     const updateStatusRegisters = async (idInputRegister, newStatus) => {
         const { data, error } = await supabase
             .from(tableInputsRegistersDetails)
@@ -140,27 +146,129 @@ function usePostRegister() {
         }
     }
 
-    const sendRegisters = async (data, type) => {
+    const sendInputRegistersTank = async (data) => {
 
-        dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true })
-        const registerData = await addRegisterData(type);
-        const promises = data.map(async (register) => {
+        dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
+
+        const tracto = data[0].tracto;
+        const { error } = supabase.from('tractos').update('status', 'parked').eq('tracto', tracto);
+
+        if (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Error al actualizar el estado del tractocamion'
+            })
+        }
+
+        const registerData = await addRegisterData('entrada');
+
+        const detailsRegisters = data.map(async (register) => {
             try {
-                await addDetailsRegisterData(register, registerData[0].id, type, 'onroute', register.tracto);
+                await addDetailsRegisterData(register, registerData[0].id, 'entrada');
             } catch (error) {
                 setError(error);
+                dispatchGlobal({
+                    type: actionTypesGlobal.setNotification,
+                    payload: 'Error al crear los detalles del registro'
+                })
             }
         });
 
         try {
-            await Promise.all(promises);
+            Promise.all(detailsRegisters)
         } catch (error) {
-            dispatch({ type: actionTypesGlobal.setLoading, payload: false })
-            console.error(error);
-            setError(error);
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            });
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Error al subir los detalles del registro'
+            })
         }
-        dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false })
 
+        const updatesStatusTanks = data.map(async (register) => {
+            try {
+                await updateTank(register.numero_tanque, 'parked');
+            } catch (error) {
+                setError(error);
+                dispatchGlobal({
+                    type: actionTypesGlobal.setNotification,
+                    payload: 'Error al crear los detalles del registro'
+                })
+            }
+        });
+
+        try {
+            Promise.all(updatesStatusTanks);
+        } catch (error) {
+            setError(error);
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Error al crear los detalles del registro'
+            })
+        }
+
+        dispatchGlobal({
+            type: actionTypesGlobal.setLoading,
+            payload: false
+        });
+        dispatchGlobal({
+            type: actionTypesGlobal.setNotification,
+            payload: 'Registro enviado'
+        })
+
+    }
+
+    const sendInputRegistersPipa = async (data) => {
+        dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
+
+        const { error } = supabase.from('tractos').update({status: 'parked'}).eq('tracto', data.tracto);
+
+        if (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Error al actualizar el estado del tractocamion'
+            })
+        }
+
+        const registerData = await addRegisterData('entrada');
+        const detailsRegister = await addDetailsRegisterData(data, registerData[0].id, 'entrada');
+
+        dispatchGlobal({
+            type: actionTypesGlobal.setLoading,
+            payload: false
+        });
+        dispatchGlobal({
+            type: actionTypesGlobal.setNotification,
+            payload: 'Registro enviado'
+        })
+    }
+
+    const sendInputRegisterEmptyTracto = async (data) => {
+
+        dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
+
+        const { error } = supabase.from('tractos').update('status', 'parked').eq('tracto', data.tracto);
+
+        if (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Error al actualizar el estado del tractocamion'
+            })
+        }
+
+        const registerData = await addRegisterData('entrada');
+        const detailsRegister = await addDetailsRegisterData(data, registerData[0].id, 'vacio');
+
+        dispatchGlobal({
+            type: actionTypesGlobal.setLoading,
+            payload: false
+        });
+        dispatchGlobal({
+            type: actionTypesGlobal.setNotification,
+            payload: 'Registro enviado'
+        })
     }
 
     const sendOutputRegisters = async (data, newStatus) => {
@@ -272,7 +380,7 @@ function usePostRegister() {
 
         const addOutputDetails = data.map(async (item) => {
             try {
-                const outputDetail = await addOutputRegisterDetails(idOutputRegister, item)
+                const outputDetail = await addOutputRegisterDetails(item, idOutputRegister, 'salida')
             } catch (error) {
                 setError(error);
                 dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
@@ -452,7 +560,16 @@ function usePostRegister() {
     }
 
 
-    return { sendRegisters, sendOutputRegisters, updateStatusRegisters, sendOutputTankRegisters, sendOutputTractoEmpty, sendOutputPipaRegister }
+    return {
+        sendInputRegisterEmptyTracto,
+        sendInputRegistersTank,
+        sendInputRegistersPipa,
+        sendOutputRegisters,
+        updateStatusRegisters,
+        sendOutputTankRegisters,
+        sendOutputTractoEmpty,
+        sendOutputPipaRegister,
+    }
 
 }
 

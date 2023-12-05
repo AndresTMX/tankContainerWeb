@@ -2,7 +2,11 @@ import { useState } from "react";
 import { usePostRegister } from "./registersManagment/usePostRegister";
 
 function useFormRegister() {
-  const { sendRegisters } = usePostRegister();
+  const {
+    sendInputRegisterEmptyTracto,
+    sendInputRegistersTank,
+    sendInputRegistersPipa,
+  } = usePostRegister();
   const [typeChargue, setTypeChargue] = useState("");
   const [tracto, setTracto] = useState("");
   const [select, setSelet] = useState("");
@@ -39,15 +43,14 @@ function useFormRegister() {
     setNumTank(0);
   };
 
-  const addRegister = () => {
-
+  const routeTank = async() => {
     let registers = [];
 
     if (typeChargue === "Tanque") {
       const valuesObj = Object.values(dataTank);
 
       valuesObj.forEach((value, index) => {
-        if (value != " ") {
+        if (value != "") {
           registers.push({
             tracto: tracto.trim(),
             carga: typeChargue,
@@ -57,18 +60,53 @@ function useFormRegister() {
           });
         }
       });
-    } else {
-      registers.push({
-        tracto: tracto.trim(),
-        carga: typeChargue,
-        operador: operator,
-        transportista: select,
-        numero_tanque: null
-      });
     }
-    sendRegisters(registers, 'entrada')
+    console.log(registers)
+    const request = await sendInputRegistersTank(registers)
     clearInputs()
-  };
+  }
+
+  const routeEmptyTank = async() => {
+    const data = {
+      tracto: tracto.trim(),
+      carga: 'vacio',
+      operador: operator,
+      transportista: select,
+      numero_tanque: null
+    }
+    console.log(data)
+    const request = await sendInputRegisterEmptyTracto(data)
+    clearInputs()
+  }
+
+  const routePipa = async() => {
+
+    const register = {
+      tracto: tracto.trim(),
+      carga: typeChargue,
+      operador: operator,
+      transportista: select,
+      numero_tanque: null
+    }
+
+    console.log(register)
+    const request = await sendInputRegistersPipa(register)
+    clearInputs()
+  }
+
+  const routerRegisters = () => {
+
+    const actions = {
+      Tanque: () => routeTank(),
+      Pipa: () => routePipa(),
+      Vacio: () => routeEmptyTank(),
+    }
+
+    if (actions[typeChargue]) {
+      actions[typeChargue]();
+    }
+
+  }
 
   const statesFormRegister = {
     typeChargue,
@@ -86,7 +124,7 @@ function useFormRegister() {
     handleChangeTracto,
     handleChangueOperator,
     setDataTank,
-    addRegister,
+    routerRegisters,
   };
 
   return { statesFormRegister, functionsFormRegister };

@@ -1,244 +1,267 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 //imports materialui
-import { Container, Box, Tabs, Tab, Button, Stack, Fade, Paper, Divider } from "@mui/material";
-import { CustomTabPanel } from "../../components/CustomTabPanel";
+import { Container, Box, Tabs, Tab, Button, Stack, Fade, Paper, Divider, Chip } from "@mui/material";
 import { StoreMap } from "../../components/StoreMap";
 import { currentDate } from "../../Helpers/date";
+//components
+import { CustomTabPanel } from "../../components/CustomTabPanel";
+import { LoadingState } from "../../components/LoadingState";
+import { Notification } from "../../components/Notification"
+import { FormWashing } from "../../components/FormWashing";
+import { Searcher } from "../../components/Searcher";
 //calendar experimental
 import { WashingAgend } from "../../components/WashingAgend";
+//hooks
+import { useGetWashing } from "../../Hooks/lavadosManagment/useGetWashing";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useSearcher } from "../../Hooks/useSearcher";
+//context
+import { PrelavadoContext } from "../../Context/PrelavadoContext";
+import { actionTypes } from "../../Reducers/PrelavadoReducer";
+import { ListWashing } from "../../components/ListWashing";
+
 function Prelavado() {
+
+   const [state, dispatch] = useContext(PrelavadoContext);
+
+   const { washing, loadignWashing, errorWashing } = useGetWashing();
+
+   const IsSmall = useMediaQuery('(max-width:900px)');
+   const isMovile = useMediaQuery("(max-width:640px)");
+
+   // const { } = useSearcher()
 
    const mockDataContainers = [
       {
-         id:0,
-         checkIn:currentDate,
-         number:'C-2356',
-         line:'Linea random',
-         date_preWashing:currentDate,
-         repairs:{
-            intern:10,
-            extern:5
+         id: 0,
+         checkIn: currentDate,
+         number: 'C-2356',
+         line: 'Linea random',
+         date_preWashing: currentDate,
+         repairs: {
+            intern: 10,
+            extern: 5
          },
-         last_reparation:{
-            type:'inter',
-            description:'se reparo de las puertas'
+         last_reparation: {
+            type: 'inter',
+            description: 'se reparo de las puertas'
          },
-         location:{
-            block:'A',
-            position:1
+         location: {
+            block: 'A',
+            position: 1
          },
          status: true
       },
       {
-         id:1,
-         checkIn:currentDate,
-         number:'C-2356',
-         line:'Linea random',
-         date_preWashing:currentDate,
-         repairs:{
-            intern:10,
-            extern:5
+         id: 1,
+         checkIn: currentDate,
+         number: 'C-2356',
+         line: 'Linea random',
+         date_preWashing: currentDate,
+         repairs: {
+            intern: 10,
+            extern: 5
          },
-         last_reparation:{
-            type:'inter',
-            description:'se reparo de las puertas'
+         last_reparation: {
+            type: 'inter',
+            description: 'se reparo de las puertas'
          },
-         location:{
-            block:'B',
-            position:2
+         location: {
+            block: 'B',
+            position: 2
          }
       },
       {
-         id:2,
-         checkIn:currentDate,
-         number:'C-2356',
-         line:'Linea random',
-         date_preWashing:currentDate,
-         repairs:{
-            intern:10,
-            extern:5
+         id: 2,
+         checkIn: currentDate,
+         number: 'C-2356',
+         line: 'Linea random',
+         date_preWashing: currentDate,
+         repairs: {
+            intern: 10,
+            extern: 5
          },
-         last_reparation:{
-            type:'inter',
-            description:'se reparo de las puertas'
+         last_reparation: {
+            type: 'inter',
+            description: 'se reparo de las puertas'
          },
-         location:{
-            block:'C',
-            position:3
+         location: {
+            block: 'C',
+            position: 3
          }
       },
       {
-         id:3,
-         checkIn:currentDate,
-         number:'C-2356',
-         line:'Linea random',
-         date_preWashing:currentDate,
-         repairs:{
-            intern:10,
-            extern:5
+         id: 3,
+         checkIn: currentDate,
+         number: 'C-2356',
+         line: 'Linea random',
+         date_preWashing: currentDate,
+         repairs: {
+            intern: 10,
+            extern: 5
          },
-         last_reparation:{
-            type:'inter',
-            description:'se reparo de las puertas'
+         last_reparation: {
+            type: 'inter',
+            description: 'se reparo de las puertas'
          },
-         location:{
-            block:'C',
-            position:4
+         location: {
+            block: 'C',
+            position: 4
          }
       },
       {
-         id:4,
-         checkIn:currentDate,
-         number:'C-2356',
-         line:'Linea random',
-         date_preWashing:currentDate,
-         repairs:{
-            intern:10,
-            extern:5
+         id: 4,
+         checkIn: currentDate,
+         number: 'C-2356',
+         line: 'Linea random',
+         date_preWashing: currentDate,
+         repairs: {
+            intern: 10,
+            extern: 5
          },
-         last_reparation:{
-            type:'inter',
-            description:'se reparo de las puertas'
+         last_reparation: {
+            type: 'inter',
+            description: 'se reparo de las puertas'
          },
-         location:{
-            block:'A',
-            position:5
+         location: {
+            block: 'A',
+            position: 5
          }
       },
       {
-         id:5,
-         checkIn:currentDate,
-         number:'C-2356',
-         line:'Linea random',
-         date_preWashing:currentDate,
-         repairs:{
-            intern:10,
-            extern:5
+         id: 5,
+         checkIn: currentDate,
+         number: 'C-2356',
+         line: 'Linea random',
+         date_preWashing: currentDate,
+         repairs: {
+            intern: 10,
+            extern: 5
          },
-         last_reparation:{
-            type:'inter',
-            description:'se reparo de las puertas'
+         last_reparation: {
+            type: 'inter',
+            description: 'se reparo de las puertas'
          },
-         location:{
-            block:'B',
-            position:6
+         location: {
+            block: 'B',
+            position: 6
          }
       },
       {
-         id:6,
-         checkIn:currentDate,
-         number:'C-2356',
-         line:'Linea random',
-         date_preWashing:currentDate,
-         repairs:{
-            intern:10,
-            extern:5
+         id: 6,
+         checkIn: currentDate,
+         number: 'C-2356',
+         line: 'Linea random',
+         date_preWashing: currentDate,
+         repairs: {
+            intern: 10,
+            extern: 5
          },
-         last_reparation:{
-            type:'inter',
-            description:'se reparo de las puertas'
+         last_reparation: {
+            type: 'inter',
+            description: 'se reparo de las puertas'
          },
-         location:{
-            block:'C',
-            position:7
+         location: {
+            block: 'C',
+            position: 7
          }
       },
       {
-         id:7,
-         checkIn:currentDate,
-         number:'C-2356',
-         line:'Linea random',
-         date_preWashing:currentDate,
-         repairs:{
-            intern:10,
-            extern:5
+         id: 7,
+         checkIn: currentDate,
+         number: 'C-2356',
+         line: 'Linea random',
+         date_preWashing: currentDate,
+         repairs: {
+            intern: 10,
+            extern: 5
          },
-         last_reparation:{
-            type:'inter',
-            description:'se reparo de las puertas'
+         last_reparation: {
+            type: 'inter',
+            description: 'se reparo de las puertas'
          },
-         location:{
-            block:'A',
-            position:8
+         location: {
+            block: 'A',
+            position: 8
          }
       },
       {
-         id:8,
-         checkIn:currentDate,
-         number:'C-2356',
-         line:'Linea random',
-         date_preWashing:currentDate,
-         repairs:{
-            intern:10,
-            extern:5
+         id: 8,
+         checkIn: currentDate,
+         number: 'C-2356',
+         line: 'Linea random',
+         date_preWashing: currentDate,
+         repairs: {
+            intern: 10,
+            extern: 5
          },
-         last_reparation:{
-            type:'inter',
-            description:'se reparo de las puertas'
+         last_reparation: {
+            type: 'inter',
+            description: 'se reparo de las puertas'
          },
-         location:{
-            block:'B',
-            position:9
+         location: {
+            block: 'B',
+            position: 9
          }
       },
       {
-         id:9,
-         checkIn:currentDate,
-         number:'C-2356',
-         line:'Linea random',
-         date_preWashing:currentDate,
-         repairs:{
-            intern:10,
-            extern:5
+         id: 9,
+         checkIn: currentDate,
+         number: 'C-2356',
+         line: 'Linea random',
+         date_preWashing: currentDate,
+         repairs: {
+            intern: 10,
+            extern: 5
          },
-         last_reparation:{
-            type:'inter',
-            description:'se reparo de las puertas'
+         last_reparation: {
+            type: 'inter',
+            description: 'se reparo de las puertas'
          },
-         location:{
-            block:'C',
-            position:10
+         location: {
+            block: 'C',
+            position: 10
          }
       },
       {
-         id:10,
-         checkIn:currentDate,
-         number:'C-2356',
-         line:'Linea random',
-         date_preWashing:currentDate,
-         repairs:{
-            intern:10,
-            extern:5
+         id: 10,
+         checkIn: currentDate,
+         number: 'C-2356',
+         line: 'Linea random',
+         date_preWashing: currentDate,
+         repairs: {
+            intern: 10,
+            extern: 5
          },
-         last_reparation:{
-            type:'inter',
-            description:'se reparo de las puertas'
+         last_reparation: {
+            type: 'inter',
+            description: 'se reparo de las puertas'
          },
-         location:{
-            block:'B',
-            position:11
+         location: {
+            block: 'B',
+            position: 11
          }
       },
       {
-         id:11,
-         checkIn:currentDate,
-         number:'',
-         line:'Linea random',
-         date_preWashing:currentDate,
-         repairs:{
-            intern:10,
-            extern:5
+         id: 11,
+         checkIn: currentDate,
+         number: '',
+         line: 'Linea random',
+         date_preWashing: currentDate,
+         repairs: {
+            intern: 10,
+            extern: 5
          },
-         last_reparation:{
-            type:'inter',
-            description:'se reparo de las puertas'
+         last_reparation: {
+            type: 'inter',
+            description: 'se reparo de las puertas'
          },
-         location:{
-            block:'C',
-            position:12
+         location: {
+            block: 'C',
+            position: 12
          }
       },
-      
+
    ]
 
    const [tab, setTab] = useState(1)
@@ -247,70 +270,144 @@ function Prelavado() {
       setTab(newValue)
    }
 
-    return ( 
-        <>
-         <Container sx={{display:'flex', flexDirection:'column', gap:'20x', alignItems:'center'}}>
+   const changueSection = (newType) => {
+      dispatch({ type: actionTypes.setTypeWashing, payload: newType })
+   }
 
-            <Tabs value={tab} onChange={ToggleTab} >
-                <Tab label="Agenda de lavados"  />
-                <Tab label="Lavados pendientes" />
-                <Tab label="Mapa de almacen" />
+   return (
+      <>
+         <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+
+            <Tabs value={tab} onChange={ToggleTab}>
+               <Tab label="Agenda de lavados" />
+               <Tab label="Lavados pendientes" />
+               <Tab label="Mapa de almacen" />
             </Tabs>
 
-             <CustomTabPanel value={tab} index={0}>
-                <Container>
-                   <Fade in={tab === 0? true:false} timeout={500}>
-                      <Box
-                         sx={{
-                            display: 'flex',
-                            placeItems: 'center'
-                         }}
-                      >
-                         <Paper elevation={4} sx={{ padding: '10px' }}>
-                           <WashingAgend/>
-                         </Paper>
-                      </Box>
-                   </Fade>
-                </Container>
-             </CustomTabPanel>
+            <CustomTabPanel value={tab} index={0}>
+               <Container>
+                  <Fade in={tab === 0 ? true : false} timeout={500}>
+                     <Box
+                        sx={{
+                           display: 'flex',
+                           placeItems: 'center'
+                        }}
+                     >
+                        <Paper elevation={4} sx={{ padding: '10px' }}>
+                           <WashingAgend />
+                        </Paper>
+                     </Box>
+                  </Fade>
+               </Container>
+            </CustomTabPanel>
 
-             <CustomTabPanel value={tab} index={1}>
-                <Container>
-                   <Fade in={tab === 1? true:false} timeout={500}>
-                      <Box
-                         sx={{
-                            display: 'flex',
-                            placeItems: 'center'
-                         }}
-                      >
-                         <Paper elevation={4} sx={{ padding: '10px' }}>
-                          
-                         </Paper>
-                      </Box>
-                   </Fade>
-                </Container>
-             </CustomTabPanel>
+            <CustomTabPanel value={tab} index={1}>
+               <Container>
+                  <Fade in={tab === 1 ? true : false} timeout={500}>
+                     <Container
+                        sx={{
+                           gap: '10px',
+                           display: 'flex',
+                           marginTop: '20px',
+                           flexDirection: 'column',
+                           justifyContent: 'center',
+                           alignItems: !IsSmall ? 'center' : '',
+                        }}
+                     >
+                        <Paper
+                           elevation={2}
+                           sx={{
+                              width: '100%',
+                              padding: '10px',
+                              maxWidth: '750px',
+                              backgroundColor: 'whitesmoke',
+                           }}>
 
-             <CustomTabPanel value={tab} index={2}>
-                <Container>
-                   <Fade in={tab === 2? true:false} timeout={500}>
-                      <Box
-                         sx={{
-                            display: 'flex',
-                            placeItems: 'center'
-                         }}
-                      >
-                         <Paper elevation={4} sx={{ padding: '10px' }}>
-                            <StoreMap dataContainers={mockDataContainers} />
-                         </Paper>
-                      </Box>
-                   </Fade>
-                </Container>
-             </CustomTabPanel>
+                           <Stack
+                              sx={{
+                                 backgroundColor: 'whitesmoke',
+                                 padding: '20px',
+                                 borderRadius: '4px',
+                              }}
+                              flexDirection="row"
+                              justifyContent={isMovile ? "center" : "space-between"}
+                              alignItems="center"
+                              flexWrap="wrap"
+                              gap="20px"
+
+                           >
+                              <Stack
+                                 flexDirection="row"
+                                 alignItems="center"
+                                 flexWrap="wrap"
+                                 gap="10px"
+                                 width={isMovile ? "100%" : "auto"}
+                              >
+                                 <Chip
+                                    onClick={() => changueSection("prelavado")}
+                                    color={state.typeWashing === "prelavado" ? "warning" : "default"}
+                                    label="pendientes"
+                                 />
+                                 <Chip
+                                    onClick={() => changueSection("lavado")}
+                                    color={state.typeWashing === "lavado" ? "success" : "default"}
+                                    label="realizados"
+                                 />
+
+                              </Stack>
+
+                              <Stack width={isMovile ? '100%' : 'auto'}>
+                                 <Searcher
+                                 // search={search}
+                                 // searching={searching}
+                                 // placeholder={'Busca registros usando ....'}
+                                 // searchingKey={searchingKey}
+                                 // onChangueSearch={onChangueSearch}
+                                 />
+                              </Stack>
+
+                           </Stack>
+
+                        </Paper>
+
+                        <ListWashing
+                           washingList={washing}
+                           loadignWashing={loadignWashing}
+                           errorWashing={errorWashing}
+                        />
+
+                     </Container>
+                  </Fade>
+               </Container>
+            </CustomTabPanel>
+
+            <CustomTabPanel value={tab} index={2}>
+               <Container>
+                  <Fade in={tab === 2 ? true : false} timeout={500}>
+                     <Box
+                        sx={{
+                           display: 'flex',
+                           placeItems: 'center'
+                        }}
+                     >
+                        <Paper elevation={4} sx={{ padding: '10px' }}>
+                           <StoreMap dataContainers={mockDataContainers} />
+                        </Paper>
+                     </Box>
+                  </Fade>
+               </Container>
+            </CustomTabPanel>
+
+            <FormWashing />
 
          </Container>
-        </>
-     );
+
+         <LoadingState duration={1000} />
+
+         <Notification />
+
+      </>
+   );
 }
 
-export {Prelavado};
+export { Prelavado };

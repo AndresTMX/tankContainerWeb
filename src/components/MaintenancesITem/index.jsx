@@ -42,54 +42,56 @@ function MaintenancesItem({ maintance }) {
 
     return (
         <>
-            <Stack
-                sx={{
-                    display: 'flex',
-                    gap: '15px',
-                    backgroundColor: 'white',
-                    padding: '20px',
-                    borderRadius: '4px',
-                }}
-            >
-
-                <Stack flexDirection='row' flexWrap='wrap' gap='15px' alignItems='center' justifyContent='flex-start'>
-                    <Chip label={status} color={statusColor} />
-                    <Chip label={dayEndTransform ? dayEndTransform : dayTransform} color="info" icon={<CalendarMonthIcon />} />
-                    <Chip label={dayEndTransform ? dayEndTransform : dateTransform} color="info" icon={<AccessTimeIcon />} />
-                    <Chip label={time} color="info" icon={<RestoreIcon />} />
-                    <Button
-                        fullWidth={IsExtraSmall}
-                        size="small"
-                        variant="contained"
-                        onClick={ToggleFormRepair}
-                    >
-                        {status === 'pendiente' ? 'reparar' : 'completar'}
-                    </Button>
-                </Stack>
-
+            <Paper elevation={3}>
                 <Stack
-                    justifyContent='space-around'
-                    flexDirection={IsExtraSmall? 'column':'row'}
-                    flexWrap='wrap'
-                    gap='10px'>
-                    <TextGeneral
-                        label='Tipo'
-                        text={tipo_reparacion}
-                    />
-                    <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
-                    <TextGeneral
-                        label='N° tracto'
-                        text={tracto}
-                    />
-                    <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
-                    <TextGeneral
-                        label='N° tanque'
-                        text={numero_tanque}
-                    />
-                    {status != 'pendiente' && <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />}
-                </Stack>
+                    sx={{
+                        display: 'flex',
+                        gap: '15px',
+                        backgroundColor: 'white',
+                        padding: '20px',
+                        borderRadius: '4px',
+                    }}
+                >
 
-            </Stack>
+                    <Stack flexDirection='row' flexWrap='wrap' gap='15px' alignItems='center' justifyContent='flex-start'>
+                        <Chip label={status} color={statusColor} />
+                        <Chip label={dayEndTransform ? dayEndTransform : dayTransform} color="info" icon={<CalendarMonthIcon />} />
+                        <Chip label={dayEndTransform ? dayEndTransform : dateTransform} color="info" icon={<AccessTimeIcon />} />
+                        <Chip label={time} color="info" icon={<RestoreIcon />} />
+                        <Button
+                            fullWidth={IsExtraSmall}
+                            size="small"
+                            variant="contained"
+                            onClick={ToggleFormRepair}
+                        >
+                            {status === 'pendiente' ? 'reparar' : 'completar'}
+                        </Button>
+                    </Stack>
+
+                    <Stack
+                        justifyContent='space-around'
+                        flexDirection={IsExtraSmall ? 'column' : 'row'}
+                        flexWrap='wrap'
+                        gap='10px'>
+                        <TextGeneral
+                            label='Tipo'
+                            text={tipo_reparacion}
+                        />
+                        <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
+                        <TextGeneral
+                            label='N° tracto'
+                            text={tracto}
+                        />
+                        <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
+                        <TextGeneral
+                            label='N° tanque'
+                            text={numero_tanque}
+                        />
+                        {status != 'pendiente' && <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />}
+                    </Stack>
+
+                </Stack>
+            </Paper>
 
             <Modal
                 open={modal.modal2}

@@ -43,7 +43,7 @@ function ListManiobrasPending({ requestGetRegisters, loadingGetRegisters, errorG
                         </Paper>
                     )}
 
-                    {(errorSearch) && (
+                    {(errorSearch && resultsSearch.length === 0 && !loadingSearch) && (
                         <Paper sx={{ width: '100vw', maxWidth: '700px', marginBottom: '20px', padding: '20px' }}>
                             <Stack
                                 sx={{
@@ -87,16 +87,16 @@ function ListManiobrasPending({ requestGetRegisters, loadingGetRegisters, errorG
 
                     {(!loadingGetRegisters && !loadingSearch && !errorGetRegisters && !errorSearch && filterRequest.length === 0) && (
                         <Paper
-                           elevation={2}
-                            >
-                            <Stack 
-                            flexDirection='row' 
-                            gap='20px'
-                            sx={{
-                                width:'100vw',
-                                maxWidth:'700px',
-                                padding: '20px',
-                            }}
+                            elevation={2}
+                        >
+                            <Stack
+                                flexDirection='row'
+                                gap='20px'
+                                sx={{
+                                    width: '100vw',
+                                    maxWidth: '700px',
+                                    padding: '20px',
+                                }}
                             >
                                 <Typography >Sin checklist pendientes</Typography>
                                 <WarningIcon sx={{ color: 'orange', fontSize: '25px' }} />
