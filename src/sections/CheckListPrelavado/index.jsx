@@ -10,7 +10,7 @@ import { Step6 } from "../StepsManiobras/Step6";
 import { Step7 } from "../StepsManiobras/Step7";
 import { Step8 } from "../StepsManiobras/Step8";
 
-function CheckListMaiobras() {
+function CheckListPrelavado() {
 
     const [step, setStep] = useState(1);
 
@@ -28,10 +28,11 @@ function CheckListMaiobras() {
            sx={{
             display:'flex',
             flexDirection:'column',
-            alignItems:'center'
+            alignItems:'center',
+            maxWidth:'700px'
            }}>
 
-            <StepBarProgress step={step} />
+            <StepBarProgress step={step} numSteps={9} />
 
            {step === 1 && (
                <Slide 
@@ -146,10 +147,9 @@ function CheckListMaiobras() {
            )}
 
 
-
            </Box>
         </>
      );
 }
 
-export {CheckListMaiobras};
+export {CheckListPrelavado};

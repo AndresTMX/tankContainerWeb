@@ -9,6 +9,7 @@ import { LoadingState } from "../../components/LoadingState";
 import { Notification } from "../../components/Notification"
 import { FormWashing } from "../../components/FormWashing";
 import { Searcher } from "../../components/Searcher";
+import { ItemWashing } from "../../components/ItemWashing";
 //calendar experimental
 import { WashingAgend } from "../../components/WashingAgend";
 //hooks
@@ -19,15 +20,18 @@ import { useSearcher } from "../../Hooks/useSearcher";
 import { PrelavadoContext } from "../../Context/PrelavadoContext";
 import { actionTypes } from "../../Reducers/PrelavadoReducer";
 import { ListWashing } from "../../components/ListWashing";
+//checklist
+import { CheckListPrelavado } from "../../sections/CheckListPrelavado";
 
 function Prelavado() {
 
    const [state, dispatch] = useContext(PrelavadoContext);
-
    const { washing, loadignWashing, errorWashing } = useGetWashing();
 
    const IsSmall = useMediaQuery('(max-width:900px)');
    const isMovile = useMediaQuery("(max-width:640px)");
+
+   const { selectCheck } = state
 
    // const { } = useSearcher()
 
@@ -276,7 +280,7 @@ function Prelavado() {
 
    return (
       <>
-         <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+         <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0px', overflowX: 'hidden', minHeight:'100vh' }}>
 
             <Tabs value={tab} onChange={ToggleTab}>
                <Tab label="Agenda de lavados" />
@@ -302,83 +306,84 @@ function Prelavado() {
             </CustomTabPanel>
 
             <CustomTabPanel value={tab} index={1}>
-               <Container>
-                  <Fade in={tab === 1 ? true : false} timeout={500}>
-                     <Container
-                        sx={{
-                           gap: '10px',
-                           display: 'flex',
-                           marginTop: '20px',
-                           flexDirection: 'column',
-                           justifyContent: 'center',
-                           alignItems: !IsSmall ? 'center' : '',
-                        }}
-                     >
-                        <Paper
-                           elevation={2}
+               {!state.selectCheck &&
+                  <Box>
+                     <Fade in={tab === 1 ? true : false} timeout={500}>
+                        <Container
                            sx={{
-                              width: '100%',
-                              padding: '10px',
-                              maxWidth: '750px',
-                              backgroundColor: 'whitesmoke',
-                           }}>
+                              gap: '10px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              justifyContent: 'center',
+                              padding: '0px'
 
-                           <Stack
+                           }}
+                        >
+                           <Paper
+                              elevation={2}
                               sx={{
+                                 width: IsSmall ? '90vw' : ' 100%',
+                                 padding: IsSmall ? '0px' : '10px',
+                                 maxWidth: '750px',
                                  backgroundColor: 'whitesmoke',
-                                 padding: '20px',
-                                 borderRadius: '4px',
-                              }}
-                              flexDirection="row"
-                              justifyContent={isMovile ? "center" : "space-between"}
-                              alignItems="center"
-                              flexWrap="wrap"
-                              gap="20px"
+                              }}>
 
-                           >
                               <Stack
+                                 sx={{
+                                    backgroundColor: 'whitesmoke',
+                                    padding: '20px',
+                                    borderRadius: '4px',
+                                 }}
                                  flexDirection="row"
+                                 justifyContent={isMovile ? "center" : "space-between"}
                                  alignItems="center"
                                  flexWrap="wrap"
-                                 gap="10px"
-                                 width={isMovile ? "100%" : "auto"}
+                                 gap="20px"
+
                               >
-                                 <Chip
-                                    onClick={() => changueSection("prelavado")}
-                                    color={state.typeWashing === "prelavado" ? "warning" : "default"}
-                                    label="pendientes"
-                                 />
-                                 <Chip
-                                    onClick={() => changueSection("lavado")}
-                                    color={state.typeWashing === "lavado" ? "success" : "default"}
-                                    label="realizados"
-                                 />
+                                 <Stack
+                                    flexDirection="row"
+                                    alignItems="center"
+                                    flexWrap="wrap"
+                                    gap="10px"
+                                    width={isMovile ? "100%" : "auto"}
+                                 >
+                                    <Chip
+                                       onClick={() => changueSection("prelavado")}
+                                       color={state.typeWashing === "prelavado" ? "warning" : "default"}
+                                       label="pendientes"
+                                    />
+                                    <Chip
+                                       onClick={() => changueSection("lavado")}
+                                       color={state.typeWashing === "lavado" ? "success" : "default"}
+                                       label="realizados"
+                                    />
+
+                                 </Stack>
+
+                                 <Stack width={isMovile ? '100%' : 'auto'}>
+                                    <Searcher
+                                    // search={search}
+                                    // searching={searching}
+                                    // placeholder={'Busca registros usando ....'}
+                                    // searchingKey={searchingKey}
+                                    // onChangueSearch={onChangueSearch}
+                                    />
+                                 </Stack>
 
                               </Stack>
 
-                              <Stack width={isMovile ? '100%' : 'auto'}>
-                                 <Searcher
-                                 // search={search}
-                                 // searching={searching}
-                                 // placeholder={'Busca registros usando ....'}
-                                 // searchingKey={searchingKey}
-                                 // onChangueSearch={onChangueSearch}
-                                 />
-                              </Stack>
+                           </Paper>
 
-                           </Stack>
+                           <ListWashing
+                              washingList={washing}
+                              loadignWashing={loadignWashing}
+                              errorWashing={errorWashing}
+                           />
 
-                        </Paper>
-
-                        <ListWashing
-                           washingList={washing}
-                           loadignWashing={loadignWashing}
-                           errorWashing={errorWashing}
-                        />
-
-                     </Container>
-                  </Fade>
-               </Container>
+                        </Container>
+                     </Fade>
+                  </Box>}
             </CustomTabPanel>
 
             <CustomTabPanel value={tab} index={2}>
@@ -398,7 +403,24 @@ function Prelavado() {
                </Container>
             </CustomTabPanel>
 
-            <FormWashing />
+            {selectCheck && (
+               <Paper 
+               elevation={4} 
+               sx={{
+                   width: '100%', 
+                   display: 'flex', 
+                   justifyContent: 'center', 
+                   maxWidth: '740px', 
+                   padding:'10px',
+                   }}>
+                  <Box sx={{ padding: '15px', width:'100%' }}>
+                     <Stack>
+                        <ItemWashing data={selectCheck} />
+                        <CheckListPrelavado />
+                     </Stack>
+                  </Box>
+               </Paper>
+            )}
 
          </Container>
 

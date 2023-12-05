@@ -1,7 +1,13 @@
 
 const initialState = {
     typeWashing: 'prelavado',
-    modalForm: false
+    modalForm: false,
+    selectCheck: false,
+    checklist: {
+        cuviertaValvula:{
+            type:''
+        },
+    },
 };
 
 //Use reducer que valida los objetos
@@ -16,6 +22,8 @@ const reducer = (state, action) => {
 const actionTypes = {
     setTypeWashing: 'SET_TYPE_WASHING',
     setModalForm: 'SET_MODAL_FORM',
+    setSelectCheck: 'SET_SELECTCHECK',
+    setCheckList: 'SET_CHECKLIST',
 }
 
 //Use reducer con estrutura de objetos 
@@ -29,6 +37,14 @@ const reducerObject = (state, payload) => ({
         ...state,
         modalForm: payload
     },
+    [actionTypes.setSelectCheck]: {
+        ...state,
+        selectCheck: payload
+    },
+    [actionTypes.setCheckList]: {
+        ...state,
+        checklist: payload
+    }
 
 });
 

@@ -126,9 +126,9 @@ function FormCheckTank() {
             })
 
             const request = await sendOutputPipaRegister(registers)
+            dispatch({ type: actionTypes.setModalRegister, payload: false })
             dispatch({ type: actionTypes.setTypeRegister, payload: "salida" })
             dispatch({ type: actionTypes.setSelectOutputRegister, payload: [] })
-            dispatch({ type: actionTypes.setModalRegister, payload: false })
             setSelectOperator('')
             setSelectTransporter('')
         }
@@ -136,17 +136,18 @@ function FormCheckTank() {
 
     const sendOutputRegisterEmptyTracto = async () => {
 
-        if (validateOperator() && validateEmptyRegisterTracto()) {
+        if ( validateTransporter() && validateOperator() && validateEmptyRegisterTracto() ) {
 
             const data = {
                 id: selectOutputRegisters[0].registro_id,
                 tracto: selectOutputRegisters[0].tracto,
+                transportista: selectTransporter,
                 carga: 'vacio',
                 operador: selectOperator
-            }
+            } 
 
-            console.log(data)
-            const request = await sendOutputTractoEmpty(data)
+            const request = await sendOutputTractoEmpty(data);
+            return request
         }
     }
 
@@ -249,16 +250,15 @@ function FormCheckTank() {
                         ))}
                     </Stack>
 
-                    {typeRegister != 'Vacio' &&
-                        <SelectSimple
-                            type={'obj'}
-                            title="linea transportista"
-                            value={selectTransporter}
-                            options={allTransporters}
-                            onChange={(e) => setSelectTransporter(e.target.value)}
-                            width={'100%'}
-                            required={true}
-                        />}
+                    <SelectSimple
+                        type={'obj'}
+                        title="linea transportista"
+                        value={selectTransporter}
+                        options={allTransporters}
+                        onChange={(e) => setSelectTransporter(e.target.value)}
+                        width={'100%'}
+                        required={true}
+                    />
 
                     {(typeRegister === 'Tanque') &&
                         <InputText

@@ -86,45 +86,7 @@ function usePostRegister() {
                             numero_tanque: null,
                             transportista_id: register.transportista,
                             operador_id: register.operador,
-                        })
-                    .select()
-            }
-        } catch (error) {
-            setError(error)
-        }
-    }
-
-    const addOutputRegisterDetails = async (register, idRegister, type) => {
-        try {
-
-            const status = register.carga === 'Pipa' ? 'prelavado' : 'maniobras';
-
-            if (type === 'salida' && register.numero_tanque != '') {
-                const { data, error } = await supabase
-                    .from(tableOutputsRegistersDetails)
-                    .insert(
-                        {
-                            registro_id: idRegister,
-                            carga: register.carga,
-                            tracto: register.tracto,
-                            numero_tanque: register.numero_tanque,
-                            transportista_id: register.transportista,
-                            operador_id: register.operador,
-                        })
-                    .select()
-            }
-
-            if (type === 'vacio') {
-                const { data, error } = await supabase
-                    .from(tableOutputsRegistersDetails)
-                    .insert(
-                        {
-                            registro_id: idRegister,
-                            carga: register.carga,
-                            tracto: register.tracto,
-                            numero_tanque: null,
-                            transportista_id: register.transportista,
-                            operador_id: register.operador,
+                            status: 'empty'
                         })
                     .select()
             }
@@ -151,7 +113,7 @@ function usePostRegister() {
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
         const tracto = data[0].tracto;
-        const { error } = supabase.from('tractos').update('status', 'parked').eq('tracto', tracto);
+        const { error } = await supabase.from('tractos').update({ status: 'parked' }).eq('tracto', tracto);
 
         if (error) {
             dispatchGlobal({
@@ -189,7 +151,7 @@ function usePostRegister() {
 
         const updatesStatusTanks = data.map(async (register) => {
             try {
-                await updateTank(register.numero_tanque, 'parked');
+                await updateTank(register.numero_tanque, 'maniobras');
             } catch (error) {
                 setError(error);
                 dispatchGlobal({
@@ -223,7 +185,7 @@ function usePostRegister() {
     const sendInputRegistersPipa = async (data) => {
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
-        const { error } = supabase.from('tractos').update({status: 'parked'}).eq('tracto', data.tracto);
+        const { error } = await supabase.from('tractos').update({ status: 'parked' }).eq('tracto', data.tracto);
 
         if (error) {
             dispatchGlobal({
@@ -243,13 +205,15 @@ function usePostRegister() {
             type: actionTypesGlobal.setNotification,
             payload: 'Registro enviado'
         })
+
+
     }
 
     const sendInputRegisterEmptyTracto = async (data) => {
 
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
-        const { error } = supabase.from('tractos').update('status', 'parked').eq('tracto', data.tracto);
+        const { error } = await supabase.from('tractos').update({ status: 'parked' }).eq('tracto', data.tracto);
 
         if (error) {
             dispatchGlobal({
@@ -380,7 +344,7 @@ function usePostRegister() {
 
         const addOutputDetails = data.map(async (item) => {
             try {
-                const outputDetail = await addOutputRegisterDetails(item, idOutputRegister, 'salida')
+                const outputDetail = await addDetailsRegisterData(item, idOutputRegister, 'salida')
             } catch (error) {
                 setError(error);
                 dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
@@ -396,10 +360,10 @@ function usePostRegister() {
             dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Error al enviar el registro de salida' });
         }
 
-        setTimeout(() => {
+            dispatchGlobal({type: actionTypes.setTypeRegister,payload: 'salida'});
             dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
             dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Registros actualizados' });
-        }, 1000)
+      
 
     }
 
@@ -468,6 +432,28 @@ function usePostRegister() {
                 payload: false
             });
         }
+
+        dispatch({
+            type: actionTypes.setSelectOutputRegister,
+            payload: []
+        })
+
+        dispatchGlobal({
+            type: actionTypes.setTypeRegister,
+            payload: 'salida'
+        });
+
+        dispatchGlobal({
+            type: actionTypesGlobal.setLoading,
+            payload: false
+        });
+
+        dispatchGlobal({
+            type: actionTypesGlobal.setNotification,
+            payload: 'Registro enviado'
+        });
+
+
     }
 
     const sendOutputPipaRegister = async (data) => {
@@ -546,16 +532,14 @@ function usePostRegister() {
             });
         }
 
-        setTimeout(() => {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Registros actualizados'
-            });
-        }, 1000)
+        dispatchGlobal({
+            type: actionTypesGlobal.setLoading,
+            payload: false
+        });
+        dispatchGlobal({
+            type: actionTypesGlobal.setNotification,
+            payload: 'Registros actualizados'
+        });
 
     }
 

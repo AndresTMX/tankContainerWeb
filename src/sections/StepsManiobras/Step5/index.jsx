@@ -1,13 +1,16 @@
 import { useContext, useState } from "react";
-import { DevelopmentContext } from "../../../Context";
-import { actionTypes } from "../../../Reducers";
+//context
+import { PrelavadoContext } from "../../../Context/PrelavadoContext";
+import { actionTypes } from "../../../Reducers/PrelavadoReducer";
+//components
 import { Typography, Stack, Paper, FormGroup, Divider, IconButton, Button, Container, Modal, Fade, Box } from "@mui/material";
 import { ContainerScroll } from "../../../components/ContainerScroll";
-import { useCheckList } from "../../../Hooks/useChecklist";
 import { InputImage } from "../../../components/InputImage";
 import { InputText } from "../../../components/InputText";
 import { InputCheck } from "../../../components/InputCheck";
 import { ButtonsNavigationCheck } from "../../ButtonsNavigationCheck";
+//hooks
+import { useCheckList } from "../../../Hooks/useChecklistPrelavado";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //icons
 import ChatIcon from '@mui/icons-material/Chat';
@@ -15,17 +18,18 @@ import ChatIcon from '@mui/icons-material/Chat';
 function Step5({ step, nextStep, previusStep }) {
 
     const IsSmall = useMediaQuery('(max-width:850px)');
-    const [state, dispatch] = useContext(DevelopmentContext);
-    const { maniobrasCheckList } = state;
-    const stateBaseQuestion = maniobrasCheckList.cuviertaValvula?.type ? maniobrasCheckList.cuviertaValvula.type: '';
+    const [state, dispatch] = useContext(PrelavadoContext);
+    const { checklist } = state;
+
+    const stateBaseQuestion = checklist.cuviertaValvula?.type ? checklist.cuviertaValvula.type : '';
     const [baseQuestion, setBaseQuestion] = useState(stateBaseQuestion)
 
-    const { cuviertaValvula } = maniobrasCheckList;
+    const { cuviertaValvula } = checklist;
 
     const SaveChanguesOnGloablState = (newValue) => {
         setBaseQuestion(newValue)
-        const newState = { ...state.maniobrasCheckList, cuviertaValvula:{ type: newValue} }
-        dispatch({ type: actionTypes.setManiobrasCheck, payload: newState })
+        const newState = { ...state.checklist, cuviertaValvula: { type: newValue } }
+        dispatch({ type: actionTypes.setCheckList, payload: newState })
     }
 
     return (
@@ -43,45 +47,47 @@ function Step5({ step, nextStep, previusStep }) {
                     Revisión de cubierta de valvula de descarga
                 </Typography>
 
-                <FormGroup
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        borderRadius: '4px',
-                        gap: '5px'
-                    }}
-                >
-                    <Stack
-                        flexDirection={IsSmall ? 'column' : 'row'}
-                        gap='20px'
-                        spacing='10px'
-                        alignItems={IsSmall ? 'start' : 'center'}
-                        justifyContent='space-between'
+                <ContainerScroll>
+                    <FormGroup
                         sx={{
-                            width: '100%',
-                            backgroundColor: 'whitesmoke',
-                            padding: '20px'
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            borderRadius: '4px',
+                            gap: '10px',
+                            marginBottom:'10px'
                         }}
                     >
-                        <Stack width={IsSmall ? '100%' : '50%'}>
-                            <p>¿Que estilo de cubierta tiene la valvula de descarga?</p>
-                        </Stack>
-
-                        <Stack flexDirection='row' gap='20px' alignItems='center' justifyContent='center'>
-                            <Stack flexDirection='column' alignItems='center' >
-                                <strong>Cabinet</strong>
-                                <InputCheck value={baseQuestion === 'cabinet' ? true : false} onchangue={() => SaveChanguesOnGloablState('cabinet')} />
-
+                        <Stack
+                            flexDirection={IsSmall ? 'column' : 'row'}
+                            gap='20px'
+                            spacing='10px'
+                            alignItems={IsSmall ? 'start' : 'center'}
+                            justifyContent='space-between'
+                            sx={{
+                                width: '100%',
+                                backgroundColor: 'white',
+                                padding: '20px'
+                            }}
+                        >
+                            <Stack width={IsSmall ? '100%' : '50%'}>
+                                <p>¿Que estilo de cubierta tiene la valvula de descarga?</p>
                             </Stack>
-                            <Stack flexDirection='column' alignItems='center'>
-                                <strong>Bucket</strong>
-                                <InputCheck value={baseQuestion === 'bucket' ? true : false} onchangue={() => SaveChanguesOnGloablState('bucket')} />
-                            </Stack>
-                        </Stack>
 
-                    </Stack>
-                </FormGroup>
+                            <Stack flexDirection='row' gap='20px' alignItems='center' justifyContent='center'>
+                                <Stack flexDirection='column' alignItems='center' >
+                                    <strong>Cabinet</strong>
+                                    <InputCheck value={baseQuestion === 'cabinet' ? true : false} onchangue={() => SaveChanguesOnGloablState('cabinet')} />
+
+                                </Stack>
+                                <Stack flexDirection='column' alignItems='center'>
+                                    <strong>Bucket</strong>
+                                    <InputCheck value={baseQuestion === 'bucket' ? true : false} onchangue={() => SaveChanguesOnGloablState('bucket')} />
+                                </Stack>
+                            </Stack>
+
+                        </Stack>
+                    </FormGroup>
 
                     {cuviertaValvula?.type === 'cabinet' && (
                         <ChceckListCabinet step={step} nextStep={nextStep} previusStep={previusStep} />
@@ -90,8 +96,9 @@ function Step5({ step, nextStep, previusStep }) {
                     {cuviertaValvula?.type === 'bucket' && (
                         <ChceckListBucket step={step} nextStep={nextStep} previusStep={previusStep} />
                     )}
+                </ContainerScroll>
 
-               
+
 
 
             </Paper>
@@ -106,11 +113,11 @@ export function ChceckListCabinet({ step, nextStep, previusStep }) {
 
     const IsSmall = useMediaQuery('(max-width:850px)');
 
-    const [state, dispatch] = useContext(DevelopmentContext);
+    const [state, dispatch] = useContext(PrelavadoContext);
 
-    const { maniobrasCheckList } = state;
+    const { checklist } = state;
 
-    const openFade = maniobrasCheckList.cuviertaValvula.type === 'cabinet' ? true : false;
+    const openFade = checklist.cuviertaValvula.type === 'cabinet' ? true : false;
 
     const mockListCheck = [
         {
@@ -130,7 +137,7 @@ export function ChceckListCabinet({ step, nextStep, previusStep }) {
 
     ]
 
-    const stateCheckList = maniobrasCheckList.cuviertaValvula.checkList ? maniobrasCheckList.cuviertaValvula.checkList : mockListCheck;
+    const stateCheckList = checklist.cuviertaValvula.checkList ? checklist.cuviertaValvula.checkList : mockListCheck;
 
     const { actions, states } = useCheckList(stateCheckList)
     const { ChangueInput, ChangueComent, ChangueImage, DiscardImage, SelectQuestionComent, ToggleModalComent, ValidateInputs } = actions
@@ -138,15 +145,15 @@ export function ChceckListCabinet({ step, nextStep, previusStep }) {
 
     const SaveChanguesOnGloablState = () => {
         const newState = {
-            ...state.maniobrasCheckList,
+            ...state.checklist,
             cuviertaValvula: {
-                type:maniobrasCheckList.cuviertaValvula.type,
+                type: checklist.cuviertaValvula.type,
                 checkList: listCheck
             }
         }
         dispatch({ type: actionTypes.setManiobrasCheck, payload: newState })
         const inputsEmpty = ValidateInputs()
-        if(inputsEmpty){
+        if (inputsEmpty) {
             nextStep(6)
         }
     }
@@ -162,7 +169,7 @@ export function ChceckListCabinet({ step, nextStep, previusStep }) {
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 borderRadius: '4px',
-                                gap: '5px'
+                                gap: '10px'
                             }}
                         >
                             {listCheck.map((item, index) => (
@@ -175,7 +182,7 @@ export function ChceckListCabinet({ step, nextStep, previusStep }) {
                                     justifyContent='space-between'
                                     sx={{
                                         width: '100%',
-                                        backgroundColor: 'whitesmoke',
+                                        backgroundColor: 'white',
                                         padding: '20px'
                                     }}
                                 >
@@ -186,14 +193,14 @@ export function ChceckListCabinet({ step, nextStep, previusStep }) {
                                     <Stack flexDirection='row' gap='20px' alignItems='center' justifyContent='center'>
                                         <Stack flexDirection='column' alignItems='center' >
                                             <strong>Buen estado</strong>
-                                            <InputCheck value={item.value === 'buen estado'? true: false} 
-                                            onchangue={() => ChangueInput(index, 'buen estado')} />
+                                            <InputCheck value={item.value === 'buen estado' ? true : false}
+                                                onchangue={() => ChangueInput(index, 'buen estado')} />
 
                                         </Stack>
                                         <Stack flexDirection='column' alignItems='center'>
                                             <strong>Mal estado</strong>
-                                            <InputCheck value={item.value === 'mal estado'? true: false} 
-                                            onchangue={() => ChangueInput(index, 'mal estado')} />
+                                            <InputCheck value={item.value === 'mal estado' ? true : false}
+                                                onchangue={() => ChangueInput(index, 'mal estado')} />
                                         </Stack>
                                     </Stack>
 
@@ -235,7 +242,7 @@ export function ChceckListCabinet({ step, nextStep, previusStep }) {
                 >
                     <Fade in={modalComent} timeout={500}>
                         <Paper
-                           elevation={4}
+                            elevation={4}
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -271,11 +278,11 @@ export function ChceckListBucket({ step, nextStep, previusStep }) {
 
     const IsSmall = useMediaQuery('(max-width:850px)');
 
-    const [state, dispatch] = useContext(DevelopmentContext);
+    const [state, dispatch] = useContext(PrelavadoContext);
 
-    const { maniobrasCheckList } = state;
+    const { checklist } = state;
 
-    const openFade = maniobrasCheckList.cuviertaValvula.type === 'bucket' ? true : false;
+    const openFade = checklist.cuviertaValvula.type === 'bucket' ? true : false;
 
     const mockListCheck = [
         {
@@ -295,7 +302,7 @@ export function ChceckListBucket({ step, nextStep, previusStep }) {
 
     ]
 
-    const stateCheckList = maniobrasCheckList.cuviertaValvula.checkList ? maniobrasCheckList.cuviertaValvula.checkList : mockListCheck;
+    const stateCheckList = checklist.cuviertaValvula.checkList ? checklist.cuviertaValvula.checkList : mockListCheck;
 
     const { actions, states } = useCheckList(stateCheckList)
     const { ChangueInput, ChangueComent, ChangueImage, DiscardImage, SelectQuestionComent, ToggleModalComent, ValidateInputs } = actions
@@ -303,15 +310,15 @@ export function ChceckListBucket({ step, nextStep, previusStep }) {
 
     const SaveChanguesOnGloablState = () => {
         const newState = {
-            ...state.maniobrasCheckList,
+            ...state.checklist,
             cuviertaValvula: {
-                type:maniobrasCheckList.cuviertaValvula.type,
+                type: checklist.cuviertaValvula.type,
                 checkList: listCheck
             }
         }
         dispatch({ type: actionTypes.setManiobrasCheck, payload: newState })
         const inputsEmpty = ValidateInputs()
-        if(inputsEmpty){
+        if (inputsEmpty) {
             nextStep(6)
         }
     }
@@ -340,7 +347,7 @@ export function ChceckListBucket({ step, nextStep, previusStep }) {
                                     justifyContent='space-between'
                                     sx={{
                                         width: '100%',
-                                        backgroundColor: 'whitesmoke',
+                                        backgroundColor: 'white',
                                         padding: '20px'
                                     }}
                                 >
@@ -351,12 +358,12 @@ export function ChceckListBucket({ step, nextStep, previusStep }) {
                                     <Stack flexDirection='row' gap='20px' alignItems='center' justifyContent='center'>
                                         <Stack flexDirection='column' alignItems='center' >
                                             <strong>Buen estado</strong>
-                                            <InputCheck value={item.value === 'buen estado' ? true: false} onchangue={() => ChangueInput(index, 'buen estado')} />
+                                            <InputCheck value={item.value === 'buen estado' ? true : false} onchangue={() => ChangueInput(index, 'buen estado')} />
 
                                         </Stack>
                                         <Stack flexDirection='column' alignItems='center'>
                                             <strong>Mal estado</strong>
-                                            <InputCheck value={item.value === 'mal estado' ? true: false} onchangue={() => ChangueInput(index, 'mal estado')} />
+                                            <InputCheck value={item.value === 'mal estado' ? true : false} onchangue={() => ChangueInput(index, 'mal estado')} />
                                         </Stack>
                                     </Stack>
 
@@ -398,7 +405,7 @@ export function ChceckListBucket({ step, nextStep, previusStep }) {
                 >
                     <Fade in={modalComent} timeout={500}>
                         <Paper
-                           elevation={4}
+                            elevation={4}
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',

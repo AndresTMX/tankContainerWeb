@@ -38,11 +38,27 @@ function HistoryItem({ data, type }) {
   const [state, dispatch] = useContext(ManiobrasContext);
   const { selectOutputRegisters } = state;
 
-  const dataOperador = type === 'vigilancia' ?
-    data.type === 'entrada' ?
-      data.registros_detalles_entradas[0].operadores :
-      data.registros_detalles_salidas[0].operadores :
-    data.operador;
+  const dataOperador = extractDataOperator(type, data)
+
+  function extractDataOperator(type, data) {
+
+    let dataOperador
+
+    if (type === 'vigilancia') {
+
+      const typeItem = data.type;
+      dataOperador = typeItem === 'entrada' ?
+        data?.registros_detalles_entradas[0].operadores :
+        data?.registros_detalles_salidas[0].operadores;
+    }
+
+    if (type === 'maniobras') {
+      dataOperador = data.operador
+    }
+
+    return dataOperador
+
+  }
 
   const [modal, setModal] = useState({
     modal1: false,
@@ -160,9 +176,9 @@ function HistoryItem({ data, type }) {
           >
             <Typography variant="h6">Información del operador</Typography>
 
-            <TextGeneral text={dataOperador.nombre} label="Nombre del operador" />
+            <TextGeneral text={dataOperador?.nombre} label="Nombre del operador" />
             <TextGeneral
-              text={dataOperador.contacto}
+              text={dataOperador?.contacto}
               label="Contacto del operador"
             />
 
@@ -275,7 +291,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, AddItem, 
 
           {
             typeRegister === "entrada" &&
-            tanques[0].carga === "Tanque" &&
+            tanques[0].carga === "vacio" &&
             tracto_status === "ready" && (
               <Button
                 onClick={() => AddItem(tanques[0], 'Vacio', tracto)}
@@ -309,8 +325,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, AddItem, 
             alignItems={IsSmall ? "start" : "center"}
             gap="10px"
           >
-           {(typeChargue != 'vacio') && <TextGeneral width={'200px'} text={linea} label="Linea" />}
-           {(typeChargue === 'vacio') && <TextGeneral width={'200px'} text={'Sin linea transportista'} label="Linea" />}
+            <TextGeneral width={'200px'} text={linea} label="Linea" />
             <Divider
               orientation={IsSmall ? "horizontal" : "vertical"}
               flexItem

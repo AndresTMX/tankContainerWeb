@@ -1,12 +1,15 @@
 import { useContext, useState } from "react";
-import { DevelopmentContext } from "../../../Context";
-import { actionTypes } from "../../../Reducers";
+//context
+import { PrelavadoContext } from "../../../Context/PrelavadoContext";
+import { actionTypes } from "../../../Reducers/PrelavadoReducer";
+//components
 import { Typography, Stack, Paper, FormGroup, Divider, IconButton, Button, Container, Modal, Fade } from "@mui/material";
-import { useCheckList } from "../../../Hooks/useChecklist";
 import { InputImage } from "../../../components/InputImage";
 import { InputText } from "../../../components/InputText";
 import { InputCheck } from "../../../components/InputCheck";
 import { ButtonsNavigationCheck } from "../../ButtonsNavigationCheck";
+//hooks
+import { useCheckList } from "../../../Hooks/useChecklistPrelavado";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //icons
 import ChatIcon from '@mui/icons-material/Chat';
@@ -14,10 +17,10 @@ import ChatIcon from '@mui/icons-material/Chat';
 function Step4({ step, nextStep, previusStep }) {
 
     const IsSmall = useMediaQuery('(max-width:850px)');
-    const [state, dispatch] = useContext(DevelopmentContext);
+    const [state, dispatch] = useContext(PrelavadoContext);
     const [message, setMessage] = useState(0)
 
-    const { maniobrasCheckList } = state;
+    const { checklist } = state;
 
     const mockListCheck = [
         {
@@ -30,15 +33,15 @@ function Step4({ step, nextStep, previusStep }) {
 
     ]
 
-    const stateCheckList = maniobrasCheckList.valvulaCierre3 ? maniobrasCheckList.valvulaCierre3.checkList : mockListCheck;
+    const stateCheckList = checklist.valvulaCierre3 ? checklist.valvulaCierre3.checkList : mockListCheck;
 
     const { actions, states } = useCheckList(stateCheckList)
     const { ChangueInput, ChangueComent, ChangueImage, DiscardImage, SelectQuestionComent, ToggleModalComent } = actions
     const { listCheck, indexQuestion, modalComent } = states
 
     const SaveChanguesOnGloablState = () => {
-        const newState = { ...state.maniobrasCheckList, valvulaCierre3: { checkList: listCheck } }
-        dispatch({ type: actionTypes.setManiobrasCheck, payload: newState })
+        const newState = { ...state.checklist, valvulaCierre3: { checkList: listCheck } }
+        dispatch({ type: actionTypes.setCheckList, payload: newState })
 
         const inputQuestion = listCheck[0].value;
 
@@ -93,6 +96,7 @@ function Step4({ step, nextStep, previusStep }) {
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
+                            backgroundColor: 'whitesmoke',
                             gap: '20px',
                             padding: '20px',
                             width: '100%'
@@ -105,7 +109,7 @@ function Step4({ step, nextStep, previusStep }) {
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 borderRadius: '4px',
-                                gap: '5px'
+                                gap: '10px',
                             }}
                         >
                             {listCheck.map((item, index) => (
@@ -118,7 +122,7 @@ function Step4({ step, nextStep, previusStep }) {
                                     justifyContent='space-between'
                                     sx={{
                                         width: '100%',
-                                        backgroundColor: 'whitesmoke',
+                                        backgroundColor: 'white',
                                         padding: '20px'
                                     }}
                                 >

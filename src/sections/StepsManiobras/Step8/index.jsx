@@ -1,26 +1,28 @@
 import { useState, useContext } from "react";
-import { DevelopmentContext } from "../../../Context";
-import { Box, Stack, Button, Paper, Typography , Chip, Divider} from "@mui/material";
+//context
+import { PrelavadoContext } from "../../../Context/PrelavadoContext";
+//components
 import { TextGeneral } from "../../../components/TextGeneral";
+import { Box, Stack, Button, Paper, Typography , Chip, Divider} from "@mui/material";
+//icons
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 function Step8({previusStep}) {
 
-    const [state, dispatch] = useContext(DevelopmentContext)
-    console.log("🚀 ~ file: index.jsx:9 ~ Step8 ~ state:", state)
-    const { maniobrasCheckList } = state;
+    const [state, dispatch] = useContext(PrelavadoContext)
+    const { checklist } = state;
 
-    const TypeValvula3A = maniobrasCheckList.empaques?.checkList[3].value === 'si'? true: false;
-    const TypeValvulaCierre3 = maniobrasCheckList.empaques?.checkList[4].value === 'si'? true:false;
+    const TypeValvula3A = checklist.empaques?.checkList[3].value === 'si'? true: false;
+    const TypeValvulaCierre3 = checklist.empaques?.checkList[4].value === 'si'? true:false;
     const TypeValvula = TypeValvula3A? 'Valvula 3A': 'Valvula Cierre 3';
 
-    const TypeCubierataValvula = maniobrasCheckList.cuviertaValvula.type;
-    const ValvulasDescargaChecklist = maniobrasCheckList.valvulasDescarga?.checkList? maniobrasCheckList.valvulasDescarga.checkList:[];
-    const CheckListCubiertaValvula = maniobrasCheckList.cuviertaValvula?.checkList ? maniobrasCheckList.cuviertaValvula.checkList: [];
-    const TapaderaDomoCheckList = maniobrasCheckList.tapaderaDomo?.checkList ? maniobrasCheckList.tapaderaDomo.checkList:[];
-    const EmpaquesTapaderaSuperior = maniobrasCheckList.empaques?.checkList? maniobrasCheckList.empaques.checkList: [];
+    const TypeCubierataValvula = checklist.cuviertaValvula.type;
+    const ValvulasDescargaChecklist = checklist.valvulasDescarga?.checkList? checklist.valvulasDescarga.checkList:[];
+    const CheckListCubiertaValvula = checklist.cuviertaValvula?.checkList ? checklist.cuviertaValvula.checkList: [];
+    const TapaderaDomoCheckList = checklist.tapaderaDomo?.checkList ? checklist.tapaderaDomo.checkList:[];
+    const EmpaquesTapaderaSuperior = checklist.empaques?.checkList? checklist.empaques.checkList: [];
     //si es 3A
-    const cambiosValvula3A = maniobrasCheckList?.valvula3A? maniobrasCheckList.valvula3A.checkList.filter((question) => question.value != null):[]
+    const cambiosValvula3A = checklist?.valvula3A? checklist.valvula3A.checklist.filter((question) => question.value != null):[]
 
     //si es cierre 3
 

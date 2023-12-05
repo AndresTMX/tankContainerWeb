@@ -121,6 +121,7 @@ function Reparaciones() {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '10px',
+                                width:IsSmall? 'auto' : '800px'
                             }}
                         >
 
@@ -134,12 +135,12 @@ function Reparaciones() {
                                     padding='20px'
                                     spacing='20px'
                                 >
-                                    <Stack spacing='5px'>
+                                    <Stack spacing='5px' paddingRight='20px'>
                                         <Typography variant="h6">Reparaciones Pendientes</Typography>
                                         <Typography variant="subtitle2">{`${repairs.length} reparaciones pendientes`}</Typography>
                                     </Stack>
 
-                                    <Stack width={IsExtraSmall ? '100%' : '300px'}>
+                                    <Stack width={IsExtraSmall ? '100%' : '250px'}>
                                         <Searcher 
                                           onChangueSearch={onChangueSearch}
                                           searchingKey={searchingKey}
