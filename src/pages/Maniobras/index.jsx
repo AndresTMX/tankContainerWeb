@@ -1,5 +1,7 @@
-import { useContext, useEffect } from "react";
-import { Container, Box, Stack, Fade, Paper, Chip, } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
+//components
+import { CustomTabPanel } from "../../components/CustomTabPanel";
+import { Container, Box, Stack, Fade, Paper, Chip, Tabs, Tab } from "@mui/material";
 import { ListCheckList } from "../../components/ListCheckList";
 import { ListManiobrasPending } from "../../components/ListManiobrasPending";
 import { DetailsCheckList } from "../../components/DetailsCheckList";
@@ -27,8 +29,8 @@ import { EIR } from "../../PDFs/plantillas/EIR";
 
 function Maniobras() {
 
-    useEffect( () =>{
-        dispatch({type: actionTypes.setTypeRegister, payload:'entrada'})
+    useEffect(() => {
+        dispatch({ type: actionTypes.setTypeRegister, payload: 'entrada' })
     }, [])
 
     const { folio } = useGetLastFolio();
@@ -63,159 +65,187 @@ function Maniobras() {
     }
 
     const changueSection = (section) => {
-        dispatch({ type: actionTypes.setTypeRegister, payload: section})
+        dispatch({ type: actionTypes.setTypeRegister, payload: section })
         dispatch({ type: actionTypes.setSelectItem, payload: false })
-        dispatch({ type: actionTypes.setManiobrasCheck, payload: {pageOne:[], pageTwo:[], pageThree:[]}})
+        dispatch({ type: actionTypes.setManiobrasCheck, payload: { pageOne: [], pageTwo: [], pageThree: [] } })
+    }
+
+    const [tab, setTab] = useState(0);
+
+    const ToggleTab = (event, newValue) => {
+        setTab(newValue)
     }
 
     return (
         <>
-            <Container
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    padding: '0px',
-                }}>
 
-                {(!select) &&
-                    <Fade timeout={500} in={!select}>
-                        <Container
-                            sx={{
-                                gap: '10px',
-                                display: 'flex',
-                                marginTop: '20px',
-                                flexDirection: 'column',
-                                justifyContent: 'center',
-                                alignItems: !IsSmall ? 'center' : '',
-                            }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+                <Tabs
+                    value={tab}
+                    onChange={ToggleTab}
+                    variant={IsSmall ? "scrollable" : ''}
+                    scrollButtons="auto"
+                >
+                    <Tab label="EIR" />
+                    <Tab label="Registrar maniobra" />
+                </Tabs>
+            </Box>
 
-                            <Paper
-                                elevation={2}
+
+            <CustomTabPanel value={tab} index={0}>
+                <Container
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        padding: '0px',
+                    }}>
+
+                    {(!select) &&
+                        <Fade timeout={500} in={!select}>
+                            <Container
                                 sx={{
-                                    width: '100%',
-                                    padding: '10px',
-                                    maxWidth: '750px',
-                                    backgroundColor: 'whitesmoke',
+                                    gap: '10px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: !IsSmall ? 'center' : '',
                                 }}>
 
-                                <Stack
+                                <Paper
+                                    elevation={2}
                                     sx={{
+                                        width: '100%',
+                                        padding: '10px',
+                                        maxWidth: '750px',
                                         backgroundColor: 'whitesmoke',
-                                        padding: '20px',
-                                        borderRadius: '4px',
-                                    }}
-                                    flexDirection="row"
-                                    justifyContent={isMovile ? "center" : "space-between"}
-                                    alignItems="center"
-                                    flexWrap="wrap"
-                                    gap="20px"
+                                    }}>
 
-                                >
                                     <Stack
+                                        sx={{
+                                            backgroundColor: 'whitesmoke',
+                                            padding: '20px',
+                                            borderRadius: '4px',
+                                        }}
                                         flexDirection="row"
+                                        justifyContent={isMovile ? "center" : "space-between"}
                                         alignItems="center"
                                         flexWrap="wrap"
-                                        gap="10px"
-                                        width={isMovile ? "100%" : "auto"}
+                                        gap="20px"
+
                                     >
-                                        <Chip
-                                            onClick={() => changueSection("entrada") }
-                                            color={state.typeRegister === "entrada" ? "warning" : "default"}
-                                            label="pendientes"
-                                        />
-                                        <Chip
-                                            onClick={() => changueSection("checklist_realizados") }
-                                            color={state.typeRegister === "checklist_realizados" ? "success" : "default"}
-                                            label="realizados"
-                                        />
+                                        <Stack
+                                            flexDirection="row"
+                                            alignItems="center"
+                                            flexWrap="wrap"
+                                            gap="10px"
+                                            width={isMovile ? "100%" : "auto"}
+                                        >
+                                            <Chip
+                                                onClick={() => changueSection("entrada")}
+                                                color={state.typeRegister === "entrada" ? "warning" : "default"}
+                                                label="pendientes"
+                                            />
+                                            <Chip
+                                                onClick={() => changueSection("checklist_realizados")}
+                                                color={state.typeRegister === "checklist_realizados" ? "success" : "default"}
+                                                label="realizados"
+                                            />
+
+                                        </Stack>
+
+                                        <Stack width={isMovile ? '100%' : 'auto'}>
+                                            <Searcher
+                                                search={search}
+                                                searching={searching}
+                                                placeholder={'Busca registros usando ....'}
+                                                searchingKey={searchingKey}
+                                                onChangueSearch={onChangueSearch}
+                                            />
+                                        </Stack>
 
                                     </Stack>
 
-                                    <Stack width={isMovile ? '100%' : 'auto'}>
-                                        <Searcher
-                                            search={search}
-                                            searching={searching}
-                                            placeholder={'Busca registros usando ....'}
-                                            searchingKey={searchingKey}
-                                            onChangueSearch={onChangueSearch}
-                                        />
-                                    </Stack>
+                                </Paper>
 
-                                </Stack>
+                                {(state.typeRegister === 'entrada') &&
+                                    <ListManiobrasPending
+                                        requestGetRegisters={requestGetRegisters}
+                                        loadingGetRegisters={loadingGetRegisters}
+                                        errorGetRegisters={errorGetRegisters}
+                                        resultsSearch={results}
+                                        loadingSearch={loading}
+                                        errorSearch={error}
+                                        search={search}
+                                    />}
 
-                            </Paper>
+                                {(state.typeRegister === 'checklist_realizados') &&
+                                    <ListCheckList
+                                        requestGetRegisters={requestGetRegisters}
+                                        loadingGetRegisters={loadingGetRegisters}
+                                        errorGetRegisters={errorGetRegisters}
+                                        resultsSearch={results}
+                                        loadingSearch={loading}
+                                        errorSearch={error}
+                                        search={search}
+                                    />
+                                }
 
-                            {(state.typeRegister === 'entrada') &&
-                                <ListManiobrasPending
-                                    requestGetRegisters={requestGetRegisters}
-                                    loadingGetRegisters={loadingGetRegisters}
-                                    errorGetRegisters={errorGetRegisters}
-                                    resultsSearch={results}
-                                    loadingSearch={loading}
-                                    errorSearch={error}
-                                    search={search}
-                                />}
-
-                            {(state.typeRegister === 'checklist_realizados' ) &&
-                                <ListCheckList
-                                    requestGetRegisters={requestGetRegisters}
-                                    loadingGetRegisters={loadingGetRegisters}
-                                    errorGetRegisters={errorGetRegisters}
-                                    resultsSearch={results}
-                                    loadingSearch={loading}
-                                    errorSearch={error}
-                                    search={search}
-                                />
-                            }
+                            </Container>
+                        </Fade>
+                    }
 
 
-                        </Container>
-                    </Fade>
-                }
-
-
-                {(select ) &&
-                    <Fade
-                        timeout={500}
-                        in={select}
-                    >
-                        <Container
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                marginTop: '20px',
-                                paddingBottom: '20px',
-                                overflow: 'hidden',
-                                height: '100%',
-                            }}>
-
-                            <Paper
-                                elevation={4}
+                    {(select) &&
+                        <Fade
+                            timeout={500}
+                            in={select}
+                        >
+                            <Container
                                 sx={{
-                                    width: '85vw',
-                                    maxWidth: '800px',
-                                    padding: '20px',
-                                }}
-                            >
-                                <Box
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    marginTop: '20px',
+                                    paddingBottom: '20px',
+                                    overflow: 'hidden',
+                                    height: '100%',
+                                }}>
+
+                                <Paper
+                                    elevation={4}
                                     sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: '10px',
+                                        width: '85vw',
+                                        maxWidth: '800px',
+                                        padding: '20px',
                                     }}
                                 >
-                                    <DetailsCheckList />
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: '10px',
+                                        }}
+                                    >
+                                        <DetailsCheckList />
 
-                                    <CheckListEIR />
+                                        <CheckListEIR />
 
-                                </Box>
-                            </Paper>
-                        </Container>
-                    </Fade>
-                }
+                                    </Box>
+                                </Paper>
+                            </Container>
+                        </Fade>
+                    }
 
-            </Container>
+                </Container>
+            </CustomTabPanel>
+
+            <CustomTabPanel value={tab} index={1}>
+                <Container>
+                    <Paper>
+                        
+                    </Paper>
+                </Container>
+            </CustomTabPanel>
 
             <ViewerDocument stateModal={previewPDF} dispatch={dispatch}>
                 <EIR maniobrasCheckList={checkList} data={data} />

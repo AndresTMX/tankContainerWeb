@@ -58,7 +58,7 @@ function ListCheckList({ requestGetRegisters, loadingGetRegisters, errorGetRegis
     return (
         <>
             <Box>
-                <ContainerScroll height='70vh'>
+                <ContainerScroll height='67vh'>
 
                     {(errorGetRegisters) && (
                         <Paper sx={{ width: '90vw', maxWidth: '700px', marginBottom: '20px', padding: '20px' }}>

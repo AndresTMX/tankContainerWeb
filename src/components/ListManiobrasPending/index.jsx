@@ -14,7 +14,7 @@ function ListManiobrasPending({ requestGetRegisters, loadingGetRegisters, errorG
     return (
         <>
             <Box>
-                <ContainerScroll height='70vh'>
+                <ContainerScroll height='67vh'>
 
                     {(errorGetRegisters) && (
                         <Paper sx={{ width: '100vw', maxWidth: '700px', marginBottom: '20px', padding: '20px' }}>
