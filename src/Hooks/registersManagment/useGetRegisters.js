@@ -6,7 +6,7 @@ function useGetRegisters() {
 
     const [state, dispatch] = useContext(ManiobrasContext);
 
-    const { typeRegister } = state;
+    const { typeRegister , update} = state;
 
     const tableRegisters = 'registros';
     const tableManiobrasChecklist = 'maniobras_checklist';
@@ -17,7 +17,7 @@ function useGetRegisters() {
 
     useEffect(() => {
         getInputsRegisters()
-    }, [typeRegister])
+    }, [typeRegister, update])
 
     const getInputsRegisters = async () => {
         try {
@@ -56,7 +56,8 @@ function useGetRegisters() {
                         )
                     `)
                     .eq('type', typeRegister)
-                    .order('checkIn', { ascending: false })
+                    .is('checkIn', null)
+                    .order('create_at', { ascending: false })
                     .range(0, 19)
                 if (error) {
                     setErrorGetReisters(error)
@@ -104,7 +105,8 @@ function useGetRegisters() {
                         )
                     `)
                     .eq('type', typeRegister)
-                    .order('checkIn', { ascending: false })
+                    .not('checkIn', 'is', null) 
+                    .order('create_at', { ascending: false })
                     .range(0, 19)
                 if (error) {
                     setErrorGetReisters(error)
@@ -122,7 +124,7 @@ function useGetRegisters() {
                 }
             }
 
-            if (typeRegister === 'ambas') {
+            if (typeRegister === 'checklist_pendientes') {
                 const { data, error } = await supabase
                     .from(tableRegisters)
                     .select(`
@@ -132,6 +134,7 @@ function useGetRegisters() {
                             carga,
                             tracto,
                             numero_tanque,
+                            status,
                             transportistas (
                                 id,
                                 name
@@ -141,27 +144,20 @@ function useGetRegisters() {
                                 nombre,
                                 correo,
                                 contacto
-                            )
-                        ),
-                        registros_detalles_salidas (
-                            id,
-                            carga,
-                            tracto,
-                            numero_tanque,
-                            transportistas (
-                                id,
-                                name
                             ),
-                            operadores (
-                                id,
-                                nombre,
-                                correo,
-                                contacto
+                            tractos(
+                                tracto,
+                                status
+                            ),
+                            tanques(
+                                status
                             )
                         )
                     `)
-                    .order('checkIn', { ascending: false })
-                    .range(0, 39)
+                    .eq('type', typeRegister)
+                    .not('checkIn', 'is', null)
+                    .order('create_at', { ascending: false })
+                    .range(0, 19)
                 if (error) {
                     setErrorGetReisters(error)
                     const cache = localStorage.getItem(nameStorageCache);
@@ -188,6 +184,106 @@ function useGetRegisters() {
                      `)
                     .order('created_at', { ascending: false })
                     .range(0, 100)
+                if (error) {
+                    setErrorGetReisters(error)
+                    const cache = localStorage.getItem(nameStorageCache);
+                    if (cache) {
+                        setRequestGetRegisters(JSON.parse(cache))
+                        setLoadingGetRegisters(false)
+                    }
+                } else {
+                    setTimeout(() => {
+                        setRequestGetRegisters(data)
+                        setLoadingGetRegisters(false)
+                        localStorage.setItem(nameStorageCache, JSON.stringify(data))
+                    }, 1000)
+                }
+            }
+
+            if (typeRegister === 'confirmado') {
+                const { data, error } = await supabase
+                    .from(tableRegisters)
+                    .select(`
+                        *,
+                        registros_detalles_entradas (
+                            id,
+                            carga,
+                            tracto,
+                            numero_tanque,
+                            status,
+                            transportistas (
+                                id,
+                                name
+                            ),
+                            operadores (
+                                id,
+                                nombre,
+                                correo,
+                                contacto
+                            ),
+                            tractos(
+                                tracto,
+                                status
+                            ),
+                            tanques(
+                                status
+                            )
+                        )
+                    `)
+                    .eq('type', 'entrada')
+                    .not('checkIn', 'is', null)
+                    .order('create_at', { ascending: false })
+                    .range(0, 19)
+                if (error) {
+                    setErrorGetReisters(error)
+                    const cache = localStorage.getItem(nameStorageCache);
+                    if (cache) {
+                        setRequestGetRegisters(JSON.parse(cache))
+                        setLoadingGetRegisters(false)
+                    }
+                } else {
+                    setTimeout(() => {
+                        setRequestGetRegisters(data)
+                        setLoadingGetRegisters(false)
+                        localStorage.setItem(nameStorageCache, JSON.stringify(data))
+                    }, 1000)
+                }
+            }
+            
+            if (typeRegister === 'pendiente') {
+                const { data, error } = await supabase
+                    .from(tableRegisters)
+                    .select(`
+                        *,
+                        registros_detalles_entradas (
+                            id,
+                            carga,
+                            tracto,
+                            numero_tanque,
+                            status,
+                            transportistas (
+                                id,
+                                name
+                            ),
+                            operadores (
+                                id,
+                                nombre,
+                                correo,
+                                contacto
+                            ),
+                            tractos(
+                                tracto,
+                                status
+                            ),
+                            tanques(
+                                status
+                            )
+                        )
+                    `)
+                    .eq('type', 'entrada')
+                    .is('checkIn', null)
+                    .order('create_at', { ascending: false })
+                    .range(0, 19)
                 if (error) {
                     setErrorGetReisters(error)
                     const cache = localStorage.getItem(nameStorageCache);

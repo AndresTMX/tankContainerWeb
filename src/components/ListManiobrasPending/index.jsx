@@ -9,7 +9,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 
 function ListManiobrasPending({ requestGetRegisters, loadingGetRegisters, errorGetRegisters, resultsSearch, errorSearch, loadingSearch, search }) {
 
-    const filterRequest = (requestGetRegisters.length >= 1 && requestGetRegisters[0].type === 'entrada') ? filterInputRegistersForManiobras(requestGetRegisters) : [];
+    const filterRequest = (requestGetRegisters.length >= 1 && requestGetRegisters[0].type === 'entrada' && !loadingGetRegisters) ? filterInputRegistersForManiobras(requestGetRegisters) : [];
 
     return (
         <>
@@ -109,7 +109,7 @@ function ListManiobrasPending({ requestGetRegisters, loadingGetRegisters, errorG
                             {
                                 filterRequest.map((item) => (
                                     <HistoryItem
-                                        type='maniobras'
+                                        type='eir'
                                         key={item.id}
                                         data={item}
                                     />))
@@ -121,7 +121,7 @@ function ListManiobrasPending({ requestGetRegisters, loadingGetRegisters, errorG
                             {
                                 resultsSearch.map((item) => (
                                     <HistoryItem
-                                        type='maniobras'
+                                        type='eir'
                                         key={item.id}
                                         data={item}
                                     />))

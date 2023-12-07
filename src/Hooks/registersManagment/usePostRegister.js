@@ -41,8 +41,6 @@ function usePostRegister() {
     const addDetailsRegisterData = async (register, idRegister, type) => {
         try {
 
-            const status = register.carga === 'Pipa' ? 'prelavado' : 'maniobras';
-
             if (type === 'entrada' && register.numero_tanque != '') {
 
                 const { data, error } = await supabase
@@ -55,7 +53,7 @@ function usePostRegister() {
                             numero_tanque: register.numero_tanque,
                             transportista_id: register.transportista,
                             operador_id: register.operador,
-                            status: status
+                            status: 'forconfirm'
                         })
                     .select()
             }
@@ -112,8 +110,8 @@ function usePostRegister() {
 
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
-        const tracto = data[0].tracto;
-        const { error } = await supabase.from('tractos').update({ status: 'parked' }).eq('tracto', tracto);
+        const tracto = data[0].numero_tanque;
+        const { error } = await supabase.from('tractos').update({ status: 'forconfirm' }).eq('tracto', tracto);
 
         if (error) {
             dispatchGlobal({
@@ -151,7 +149,7 @@ function usePostRegister() {
 
         const updatesStatusTanks = data.map(async (register) => {
             try {
-                await updateTank(register.numero_tanque, 'maniobras');
+                await updateTank(register.numero_tanque, 'forconfirm');
             } catch (error) {
                 setError(error);
                 dispatchGlobal({
@@ -185,7 +183,7 @@ function usePostRegister() {
     const sendInputRegistersPipa = async (data) => {
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
-        const { error } = await supabase.from('tractos').update({ status: 'parked' }).eq('tracto', data.tracto);
+        const { error } = await supabase.from('tractos').update({ status: 'forconfirm' }).eq('tracto', data.tracto);
 
         if (error) {
             dispatchGlobal({
@@ -213,7 +211,7 @@ function usePostRegister() {
 
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
-        const { error } = await supabase.from('tractos').update({ status: 'parked' }).eq('tracto', data.tracto);
+        const { error } = await supabase.from('tractos').update({ status: 'forconfirm' }).eq('tracto', data.tracto);
 
         if (error) {
             dispatchGlobal({
@@ -360,10 +358,10 @@ function usePostRegister() {
             dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Error al enviar el registro de salida' });
         }
 
-            dispatchGlobal({type: actionTypes.setTypeRegister,payload: 'salida'});
-            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
-            dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Registros actualizados' });
-      
+        dispatchGlobal({ type: actionTypes.setTypeRegister, payload: 'salida' });
+        dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+        dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Registros actualizados' });
+
 
     }
 

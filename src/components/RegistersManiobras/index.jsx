@@ -1,9 +1,9 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 //components
 import { Searcher } from "../Searcher";
 import { HistoryItem } from "../HistoryItem";
-import { actionTypes } from "../../Reducers/ManiobrasReducer";
 import { HistoryItemLoading } from "../HistoryItem";
+import { actionTypes } from "../../Reducers/ManiobrasReducer";
 import { ResultSearch } from "../ResultsSearch";
 import { ContainerScroll } from "../ContainerScroll";
 import { Box, Stack, Chip, Typography, Paper, Button } from "@mui/material";
@@ -12,10 +12,17 @@ import { filterSearchVigilancia } from "../../Helpers/searcher";
 //hooks
 import { useGetRegisters } from "../../Hooks/registersManagment/useGetRegisters";
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { useSearcher } from "../../Hooks/useSearcher";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
-function RegisterVigilancia() {
+function RegistersManiobras() {
+
+    useEffect(() => {
+        dispatch({
+            type: actionTypes.setTypeRegister,
+            payload: 'confirmado'
+        });
+    }, [])
 
     const isMovile = useMediaQuery("(max-width:640px)");
     const [state, dispatch] = useContext(ManiobrasContext)
@@ -26,7 +33,7 @@ function RegisterVigilancia() {
 
     const { searching, onChangueSearch, searchingKey } = functions;
 
-    const renderComponent = requestGetRegisters?.length >= 1 && !loadingGetRegisters && !error && !loading && results.length === 0 && state.typeRegister === 'entrada' ? true : false;
+    const renderComponent = requestGetRegisters?.length >= 1 && !loadingGetRegisters && !error && !loading && results.length === 0 ? true : false;
     const renderErrorState = errorGetRegisters && !loadingGetRegisters ? true : false;
     const renderLoadingState = !errorGetRegisters && loadingGetRegisters ? true : false;
     const renderAdvertainsmentCache = errorGetRegisters && requestGetRegisters?.length >= 1;
@@ -56,14 +63,14 @@ function RegisterVigilancia() {
                             gap="10px"
                         >
                             <Chip
-                                onClick={() => dispatch({ type: actionTypes.setTypeRegister, payload: "entrada" })}
-                                color={state.typeRegister === "entrada" ? "success" : "default"}
-                                label="entradas"
+                                onClick={() => dispatch({ type: actionTypes.setTypeRegister, payload: "confirmado" })}
+                                color={state.typeRegister === "confirmado" ? "success" : "default"}
+                                label="confirmadas"
                             />
                             <Chip
-                                onClick={() => dispatch({ type: actionTypes.setTypeRegister, payload: "salida" })}
-                                color={state.typeRegister === "salida" ? "info" : "default"}
-                                label="salidas"
+                                onClick={() => dispatch({ type: actionTypes.setTypeRegister, payload: "pendiente" })}
+                                color={state.typeRegister === "pendiente" ? "info" : "default"}
+                                label="pendientes"
                             />
 
                         </Stack>
@@ -111,7 +118,7 @@ function RegisterVigilancia() {
                             <Stack gap="20px">
                                 {requestGetRegisters.map((item) => (
                                     <HistoryItem
-                                        type="vigilancia"
+                                        type="maniobras"
                                         key={item.id}
                                         data={item}
                                     />
@@ -119,9 +126,7 @@ function RegisterVigilancia() {
                             </Stack>
                         )}
 
-                        {renderErrorState &&
-                            <Typography variant='caption'>Error</Typography>
-                        }
+                        {renderErrorState && <Typography variant="subtitle">Error, recarga la pagina</Typography>}
 
                         {(renderLoadingState) &&
                             <Stack spacing={1}>
@@ -160,4 +165,4 @@ function RegisterVigilancia() {
     );
 }
 
-export { RegisterVigilancia };
+export { RegistersManiobras };

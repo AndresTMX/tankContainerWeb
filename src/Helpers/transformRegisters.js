@@ -14,6 +14,8 @@ export const transformRegisters = (data) => {
   let typeChargue;
   let dayInput;
   let dateInput;
+  let dayCreat;
+  let dateCreate;
   let OperatorSliceName;
   let shortNameOperator;
   let tanquesParked;
@@ -35,8 +37,10 @@ export const transformRegisters = (data) => {
     }));
     tanquesParked = tanques.filter((tanque) => tanque.tanque_status === 'ready')
     //Datos de fecha y hora
-    dayInput = dateMXFormat(data.checkIn);
-    dateInput = datetimeMXFormat(data.checkIn);
+    dayInput = data.checkIn ? dateMXFormat(data.checkIn) : 'por confirmar';
+    dateInput = data.checkIn ? datetimeMXFormat(data.checkIn) : 'por confirmar';
+    dayCreat = dateMXFormat(data.create_at);
+    dateCreate = datetimeMXFormat(data.create_at);
 
     //Nmbre corto del operador
     OperatorSliceName = operador.nombre.split(" ").slice(0, 2);
@@ -58,8 +62,10 @@ export const transformRegisters = (data) => {
     }));
     tanquesParked = tanques.filter((tanque) => tanque.tanque_status === 'onroute')
     //Datos de fecha y hora
-    dayInput = dateMXFormat(data.checkIn);
-    dateInput = datetimeMXFormat(data.checkIn);
+    dayInput = data.checkIn ? dateMXFormat(data.checkIn) : 'por confirmar';
+    dateInput = data.checkIn ? datetimeMXFormat(data.checkIn) : 'por confirmar';
+    dayCreat = dateMXFormat(data.create_at);
+    dateCreate = datetimeMXFormat(data.create_at);
 
     //Nmbre corto del operador
     OperatorSliceName = operador.nombre.split(" ").slice(0, 2);
@@ -79,7 +85,9 @@ export const transformRegisters = (data) => {
     dateInput,
     OperatorSliceName,
     shortNameOperator,
-    tracto_status
+    tracto_status,
+    dayCreat,
+    dateCreate
   };
 };
 
@@ -93,27 +101,27 @@ export const filterInputRegistersForManiobras = (arrayRegisters) => {
   const registersFiltered = []
 
   arrayRegisters.map((register) => {
-      const arrayDetails = register.registros_detalles_entradas;
-      const checkIn = register.checkIn;
-      const linea = register.registros_detalles_entradas[0].transportistas.name;
-      const dayInput = dateMXFormat(register.checkIn);
-      const dateInput = datetimeMXFormat(register.checkIn);
+    const arrayDetails = register.registros_detalles_entradas;
+    const checkIn = register.checkIn;
+    const linea = register.registros_detalles_entradas[0].transportistas.name;
+    const dayInput = dateMXFormat(register.checkIn);
+    const dateInput = datetimeMXFormat(register.checkIn);
 
-      const filteredDetails = arrayDetails.filter((detail) => detail.status === 'maniobras' && detail.carga === 'Tanque');
+    const filteredDetails = arrayDetails.filter((detail) => detail.status === 'maniobras' && detail.carga === 'Tanque');
 
-      filteredDetails.map((item) => {
+    filteredDetails.map((item) => {
 
-        const id = item.id
-        const carga = item.carga
-        const operador = item.operadores
-        const status = item.status
-        const tracto = item.tracto
-        const numero_tanque = item.numero_tanque
-        const OperatorSliceName = operador.nombre.split(" ").slice(0, 2);
-        const shortNameOperator = `${OperatorSliceName[0]} ${OperatorSliceName[1]}`;
-        
-          registersFiltered.push({id, carga, operador, status, tracto, numero_tanque, checkIn, linea, dayInput, dateInput, OperatorSliceName, shortNameOperator })
-      });
+      const id = item.id
+      const carga = item.carga
+      const operador = item.operadores
+      const status = item.status
+      const tracto = item.tracto
+      const numero_tanque = item.numero_tanque
+      const OperatorSliceName = operador.nombre.split(" ").slice(0, 2);
+      const shortNameOperator = `${OperatorSliceName[0]} ${OperatorSliceName[1]}`;
+
+      registersFiltered.push({ id, carga, operador, status, tracto, numero_tanque, checkIn, linea, dayInput, dateInput, OperatorSliceName, shortNameOperator })
+    });
 
   })
 
@@ -129,27 +137,27 @@ export const filterInputRegistersForRaparacion = (arrayRegisters) => {
   const registersFiltered = []
 
   arrayRegisters.map((register) => {
-      const arrayDetails = register.registros_detalles_entradas;
-      const checkIn = register.checkIn;
-      const linea = register.registros_detalles_entradas[0].transportistas.name;
-      const dayInput = dateMXFormat(register.checkIn);
-      const dateInput = datetimeMXFormat(register.checkIn);
+    const arrayDetails = register.registros_detalles_entradas;
+    const checkIn = register.checkIn;
+    const linea = register.registros_detalles_entradas[0].transportistas.name;
+    const dayInput = dateMXFormat(register.checkIn);
+    const dateInput = datetimeMXFormat(register.checkIn);
 
-      const filteredDetails = arrayDetails.filter((detail) => detail.status === 'reparacion');
+    const filteredDetails = arrayDetails.filter((detail) => detail.status === 'reparacion');
 
-      filteredDetails.map((item) => {
+    filteredDetails.map((item) => {
 
-        const id = item.id
-        const carga = item.carga
-        const operador = item.operadores
-        const status = item.status
-        const tracto = item.tracto
-        const numero_tanque = item.numero_tanque
-        const OperatorSliceName = operador.nombre.split(" ").slice(0, 2);
-        const shortNameOperator = `${OperatorSliceName[0]} ${OperatorSliceName[1]}`;
-        
-          registersFiltered.push({id, carga, operador, status, tracto, numero_tanque, checkIn, linea, dayInput, dateInput, OperatorSliceName, shortNameOperator })
-      });
+      const id = item.id
+      const carga = item.carga
+      const operador = item.operadores
+      const status = item.status
+      const tracto = item.tracto
+      const numero_tanque = item.numero_tanque
+      const OperatorSliceName = operador.nombre.split(" ").slice(0, 2);
+      const shortNameOperator = `${OperatorSliceName[0]} ${OperatorSliceName[1]}`;
+
+      registersFiltered.push({ id, carga, operador, status, tracto, numero_tanque, checkIn, linea, dayInput, dateInput, OperatorSliceName, shortNameOperator })
+    });
 
   })
 

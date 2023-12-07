@@ -43,7 +43,7 @@ function useFormRegister() {
     setNumTank(0);
   };
 
-  const routeTank = async() => {
+  const routeTank = async () => {
     let registers = [];
 
     if (typeChargue === "Tanque") {
@@ -66,7 +66,7 @@ function useFormRegister() {
     clearInputs()
   }
 
-  const routeEmptyTank = async() => {
+  const routeEmptyTank = async () => {
     const data = {
       tracto: tracto.trim(),
       carga: 'vacio',
@@ -79,7 +79,7 @@ function useFormRegister() {
     clearInputs()
   }
 
-  const routePipa = async() => {
+  const routePipa = async () => {
 
     const register = {
       tracto: tracto.trim(),

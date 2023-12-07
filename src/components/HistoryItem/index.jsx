@@ -11,10 +11,13 @@ import {
   Fade,
   Paper,
   Skeleton,
+  Container,
 } from "@mui/material";
 import { TextGeneral } from "../TextGeneral";
+import { ViewTanks } from "../ViewTanks";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { useUpdateRegister } from "../../Hooks/registersManagment/useUpdateRegister";
 //icons
 import InfoIcon from "@mui/icons-material/Info";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -22,11 +25,10 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 //helpers
+import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { transformRegisters } from "../../Helpers/transformRegisters";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { tiempoTranscurrido } from "../../Helpers/date";
-import { ToggleItem } from "../../Helpers/crud";
 //context
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { GlobalContext } from "../../Context/GlobalContext";
@@ -44,7 +46,7 @@ function HistoryItem({ data, type }) {
 
     let dataOperador
 
-    if (type === 'vigilancia') {
+    if (type === 'vigilancia' || type === 'maniobras') {
 
       const typeItem = data.type;
       dataOperador = typeItem === 'entrada' ?
@@ -52,7 +54,7 @@ function HistoryItem({ data, type }) {
         data?.registros_detalles_salidas[0].operadores;
     }
 
-    if (type === 'maniobras') {
+    if (type === 'eir') {
       dataOperador = data.operador
     }
 
@@ -70,52 +72,6 @@ function HistoryItem({ data, type }) {
     setModal({ ...modal, modal1: !modal.modal1 });
   };
 
-  const AddSelectOutputRegisters = (newItem, typeItem, tracto) => {
-
-    let item
-
-    const lastIndex = selectOutputRegisters.length - 1;
-
-    if (selectOutputRegisters?.length >= 1 && selectOutputRegisters[lastIndex].carga != typeItem) {
-      dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: 'Agrega solo un tipo de registro a la vez' })
-    } else {
-
-      if (typeItem === 'Tanque') {
-        item = {
-          registro_id: newItem.id,
-          numero_tanque: newItem.tanque,
-          carga: typeItem,
-        }
-      }
-
-      if (typeItem === 'Pipa') {
-        item = {
-          registro_id: newItem.id,
-          carga: typeItem,
-          tracto: tracto
-        }
-      }
-
-      if (typeItem === 'Vacio') {
-        item = {
-          registro_id: tracto,
-          carga: typeItem,
-          tracto: tracto
-        }
-      }
-
-      const newState = ToggleItem(item, selectOutputRegisters)
-      dispatch({ type: actionTypes.setSelectOutputRegister, payload: newState })
-
-    }
-
-  }
-
-  const typeButton = (id) => selectOutputRegisters.filter((item) => item.registro_id === id).length >= 1 ? 'contained' : 'outlined';
-
-  const colorButton = (id) => selectOutputRegisters.filter((item) => item.registro_id === id).length >= 1 ? 'error' : 'primary';
-
-  const textButton = (id) => selectOutputRegisters.filter((item) => item.registro_id === id).length >= 1 ? 'eliminar' : 'agregar';
 
   return (
     <>
@@ -132,13 +88,16 @@ function HistoryItem({ data, type }) {
           <HistoryItemVigilancia
             data={data}
             IsSmall={IsSmall}
-            textButton={textButton}
-            typeButton={typeButton}
-            colorButton={colorButton}
-            AddItem={AddSelectOutputRegisters}
             ToggleModalInfoOperator={ToggleModalInfoOperator}
 
           />
+        )}
+
+        {type === 'eir' && (
+          <HistoryItemEIR
+            data={data}
+            IsSmall={IsSmall}
+            ToggleModalInfoOperator={ToggleModalInfoOperator} />
         )}
 
         {type === 'maniobras' && (
@@ -199,7 +158,7 @@ function HistoryItem({ data, type }) {
 
 export { HistoryItem };
 
-export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, AddItem, IsSmall, typeButton, colorButton, textButton }) {
+export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, }) {
 
   const {
     typeRegister,
@@ -213,8 +172,14 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, AddItem, 
     dateInput,
     OperatorSliceName,
     shortNameOperator,
-    tracto_status
+    tracto_status,
+    dayCreat,
+    dateCreate,
   } = transformRegisters(data);
+
+  const [modalConfirm, setModalConfirm] = useState(false);
+
+  const { checkRegisterWhitId } = useUpdateRegister();
 
   return (
     <>
@@ -252,7 +217,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, AddItem, 
             <Chip
               size="small"
               color="secondary"
-              label={dayInput}
+              label={dayCreat}
               icon={<CalendarTodayIcon />}
               sx={{
                 width: "120px",
@@ -264,7 +229,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, AddItem, 
             <Chip
               size="small"
               color="info"
-              label={dateInput}
+              label={dateCreate}
               icon={<AccessTimeIcon />}
               sx={{
                 maxWidth: "90px",
@@ -273,35 +238,32 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, AddItem, 
               }}
             />
 
+
           </Stack>
 
-          {
-            typeChargue === "Pipa" &&
-            typeRegister === "entrada" &&
-            tracto_status === "ready" && (
-              <Button
-                onClick={() => AddItem(tanques[0], typeChargue, tracto)}
-                variant={typeButton(tanques[0].id)}
-                color={colorButton(tanques[0].id)}
-                size="small"
-              >
-                {` ${textButton(tanques[0].id)} pipa`}
-              </Button>
-            )}
+          <Stack>
 
-          {
-            typeRegister === "entrada" &&
-            tanques[0].carga === "vacio" &&
-            tracto_status === "ready" && (
+            {(typeRegister === 'entrada') &&
               <Button
-                onClick={() => AddItem(tanques[0], 'Vacio', tracto)}
-                variant={typeButton(tracto)}
-                color={colorButton(tracto)}
+                onClick={() => checkRegisterWhitId(data.id, 'maniobras')}
                 size="small"
+                variant="contained"
+                color="primary"
               >
-                {` ${textButton(tracto)} tracto`}
-              </Button>
-            )}
+                CheckIn
+              </Button>}
+
+
+            {(typeRegister === 'salida') &&
+              <Button
+                size="small"
+                variant="contained"
+                color="primary"
+              >
+                CheckOut
+              </Button>}
+
+          </Stack>
 
         </Stack>
 
@@ -389,19 +351,6 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, AddItem, 
                     text={tanque.tanque}
                   />
 
-                  {
-                    typeRegister === "entrada" &&
-                    tanque.tanque_status === "ready" && (
-                      <Button
-                        onClick={() => AddItem(tanque, 'Tanque')}
-                        size="small"
-                        variant={typeButton(tanque.id)}
-                        color={colorButton(tanque.id)}
-                      >
-                        {` ${textButton(tanque.id)} tanque`}
-                      </Button>
-                    )}
-
                 </Box>
                 {numeroTanques != index + 1 && (
                   <Divider orientation={"horizontal"} flexItem />
@@ -411,11 +360,34 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, AddItem, 
           </Stack>
         )}
       </Stack>
+
+      <Modal open={modalConfirm}>
+        <Container>
+          <Box>
+            <Paper>
+              <Typography>Desea confirmar la {typeRegister} de este registro</Typography>
+
+              <Stack>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => { }}
+                >Confirmar</Button>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={() => { }}
+                >cancelar</Button>
+              </Stack>
+            </Paper>
+          </Box>
+        </Container>
+      </Modal>
     </>
   );
 }
 
-export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator }) {
+export function HistoryItemEIR({ data, IsSmall, ToggleModalInfoOperator }) {
 
   const [state, dispatch] = useContext(ManiobrasContext)
 
@@ -566,6 +538,240 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
       </Stack>
     </>
   );
+}
+
+export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator }) {
+
+  const {
+    typeRegister,
+    linea,
+    tanques,
+    operador,
+    tracto,
+    numeroTanques,
+    typeChargue,
+    dayInput,
+    dateInput,
+    OperatorSliceName,
+    shortNameOperator,
+    tracto_status,
+    dayCreat,
+    dateCreate,
+  } = transformRegisters(data);
+
+  const [state, dispatch] = useContext(ManiobrasContext);
+  const [modalTanks, setModalTanks] = useState(false);
+
+  return (
+    <>
+      <Stack spacing="8px" flexDirection="column">
+        <Stack
+          flexDirection="row"
+          justifyContent="space-between"
+          flexWrap="wrap"
+          gap="10px"
+        >
+          <Stack
+            flexDirection="row"
+            alignItems="center"
+            flexWrap="wrap"
+            gap="10px"
+          >
+
+            <Chip
+              size="small"
+              color="secondary"
+              label={dayCreat}
+              icon={<CalendarTodayIcon />}
+              sx={{
+                width: "120px",
+                fontWeight: 500,
+                padding: "5px",
+              }}
+            />
+
+            <Chip
+              size="small"
+              color="info"
+              label={dateCreate}
+              icon={<AccessTimeIcon />}
+              sx={{
+                maxWidth: "90px",
+                fontWeight: 500,
+                padding: "5px",
+              }}
+            />
+
+          </Stack>
+
+          <Stack flexDirection='row' gap='10px'>
+
+            {(typeChargue === 'Pipa') &&
+              <Button
+                onClick={() => { console.log(data.id) }}
+                size="small"
+                variant="contained"
+                color="info"
+              >
+                pasar a lavado
+              </Button>}
+
+            {(typeChargue != 'Pipa' && state.typeRegister === 'confirmado') &&
+              <Button
+                onClick={() => setModalTanks(!modalTanks)}
+                size="small"
+                variant="contained"
+                color="warning"
+              >
+                Subir tanques
+              </Button>}
+
+            {(typeChargue != 'Pipa' && state.typeRegister === 'confirmado') &&
+              <Button
+                onClick={() => { console.log(data.id) }}
+                size="small"
+                variant="contained"
+                color="error"
+              >
+                retornar vacio
+              </Button>}
+
+              {(state.typeRegister === 'pendiente') &&
+              <Button
+                onClick={() => { console.log(data.id) }}
+                size="small"
+                variant="contained"
+                color="warning"
+              >
+                editar registro
+              </Button>}
+
+              {(state.typeRegister === 'pendiente') &&
+              <Button
+                onClick={() => { console.log(data.id) }}
+                size="small"
+                variant="contained"
+                color="error"
+              >
+                eliminar registro
+              </Button>}
+          </Stack>
+
+
+        </Stack>
+
+        <Box
+          sx={{
+            display: "flex",
+            width: '100%',
+            flexDirection: IsSmall ? "column" : "row",
+            gap: "10px",
+            justifyContent: "space-between",
+            alignItems: !IsSmall ? "center" : "start",
+            backgroundColor: "whitesmoke",
+            borderRadius: "4px",
+            padding: "15px",
+          }}
+        >
+          <Stack
+            width={'100%'}
+            flexDirection={IsSmall ? "column" : "row"}
+            justifyContent={IsSmall ? "flex-start" : "space-around"}
+            alignItems={IsSmall ? "start" : "center"}
+            gap="10px"
+          >
+            <TextGeneral width={'200px'} text={linea} label="Linea" />
+            <Divider
+              orientation={IsSmall ? "horizontal" : "vertical"}
+              flexItem
+            />
+            <TextGeneral width={'50px'} label="Tracto" text={tracto} />
+            <Divider
+              orientation={IsSmall ? "horizontal" : "vertical"}
+              flexItem
+            />
+            <TextGeneral width={'100px'} label="Tipo de carga" text={typeChargue} />
+
+          </Stack>
+
+
+          <Divider
+            orientation={IsSmall ? "horizontal" : "vertical"}
+            flexItem
+          />
+
+          <Stack
+            width={'100%'}
+            flexDirection={"row"}
+            alignItems={"center"}
+            justifyContent="space-between"
+            gap="10px"
+          >
+
+            <Stack flexDirection="row" gap="10px">
+              <TextGeneral width={'100px'} label="Operador" text={shortNameOperator} />
+              <IconButton color="info" onClick={ToggleModalInfoOperator}>
+                <InfoIcon />
+              </IconButton>
+            </Stack>
+          </Stack>
+        </Box>
+
+        {typeChargue === "Tanque" && (
+          <Stack
+            justifyContent="center"
+            spacing="10px"
+            sx={{
+              borderRadius: "4px",
+              backgroundColor: "whitesmoke",
+              padding: "15px",
+            }}
+          >
+            <strong>Tanques</strong>
+            {tanques.map((tanque, index) => (
+              <Box key={tanque.id}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: 'center',
+                    height: '50px'
+                  }}
+                >
+                  <TextGeneral
+                    variant="row"
+                    label={`# ${index + 1}`}
+                    text={tanque.tanque}
+                  />
+
+                </Box>
+                {numeroTanques != index + 1 && (
+                  <Divider orientation={"horizontal"} flexItem />
+                )}
+              </Box>
+            ))}
+          </Stack>
+        )}
+
+      </Stack>
+
+      {modalTanks &&
+        <Modal open={modalTanks}>
+          <Box 
+          sx={{
+            display:'flex', 
+            justifyContent:'center', 
+            alignItems:'center', 
+            minHeight:'100vh'
+            }}>
+            <ViewTanks toggle={setModalTanks}/>
+          </Box>
+        </Modal>
+      }
+
+    </>
+  )
 }
 
 export function HistoryItemLoading() {
