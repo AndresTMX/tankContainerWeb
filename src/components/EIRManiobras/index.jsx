@@ -30,6 +30,7 @@ function EIRManiobras() {
 
     useEffect(() => {
         dispatch({ type: actionTypes.setTypeRegister, payload: 'checklist_pendientes' })
+        dispatch({ type: actionTypes.setUpdate, payload: !state.update})
     }, [])
     
     const { folio } = useGetLastFolio();

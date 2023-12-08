@@ -12,6 +12,7 @@ import { useGetTractos } from "../../Hooks/tractosManagment/useGetTractos";
 import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";
 import { useGetTransporters } from "../../Hooks/transportersManagment/useGetTransporters";
 import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
+import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 //icons
 import UpdateIcon from '@mui/icons-material/Update';
 import AddIcon from '@mui/icons-material/Add';
@@ -27,7 +28,7 @@ function FormRegisterManiobras() {
     const IsMovile = useMediaQuery('(max-width:500px)');
 
     //hooks de tanques
-    const { tanks, tankError, tankLoading, getTanks } = useGetTanks();
+    const { tanks, tankError, tankLoading, tanksReady, getTanks } = useGetTanks();
 
     //hook de operadores
     const { states, functions } = useGetOperators();
@@ -43,8 +44,8 @@ function FormRegisterManiobras() {
     })) : [];
     //hook de formulario
     const { statesFormRegister, functionsFormRegister } = useFormRegister();
-    const { typeChargue, tracto, select, operator, numTank, dataTank } = statesFormRegister;
-    const { handleChangeList, handleNumTank, handleChangeTracto, handleChangueTypeChargue, handleChangueOperator, setDataTank, routerRegisters } = functionsFormRegister;
+    const { typeChargue, tracto, select, operator, dataTank, dataPipa, typePipa } = statesFormRegister;
+    const { handleChangeList, handleChangeTracto, handleChangueTypeChargue, handleChangueOperator, routerRegisters, setDataPipa, setTypePipa, toggleTank } = functionsFormRegister;
     //hook de transportistas
     const { transporters, updateAllTransports } = useGetTransporters();
     const arrayTransporters = transporters.length >= 1 ? transporters.map((transporter) => ({
@@ -74,6 +75,8 @@ function FormRegisterManiobras() {
             setModal(!modal)
         }
     }
+
+    const colorItemTank = (tanque) => dataTank.find((item) => item === tanque)? 'primary': 'default';
 
     const [modal, setModal] = useState(false)
 
@@ -167,72 +170,54 @@ function FormRegisterManiobras() {
                                             gap: '10px'
                                         }}
                                     >
-                                        {tanks.map((item) => (
+                                        {tanksReady.map((item) => (
                                             <Chip
                                                 label={item.tanque}
-                                                color='default'
                                                 deleteIcon={<AddIcon />}
-                                                onDelete={() => { console.log('tanque') }}
+                                                color={colorItemTank(item.tanque)}
+                                                onDelete={() => toggleTank(item.tanque)}
                                             />
                                         ))}
                                     </Paper>
-                                </Stack>
-
-                            }
+                                </Stack>}
 
 
-                            {/* {typeChargue === 'Tanque' &&
-                                <SelectSimple
-                                    required={true}
+                            {typeChargue === 'Pipa' &&
+                                <Stack
+                                    alignItems={'center'}
+                                    flexDirection={IsMovile ? 'column' : 'row'}
                                     width={'100%'}
-                                    title={'Numero de tanques'}
-                                    value={numTank}
-                                    options={[1, 2, 3, 4]}
-                                    onChange={handleNumTank}
-                                />} */}
+                                    gap={'10px'}
+                                >
 
-                            {/* {numTank >= 1 && typeChargue === 'Tanque' && (
-                                <InputText
-                                    required={true}
-                                    width='100%'
-                                    label={'Tanque/Pipa #1'}
-                                    value={dataTank.numTank1}
-                                    onChangue={(event) => setDataTank({ ...dataTank, numTank1: event.target.value })}
-                                />
-                            )}
+                                    <SelectSimple
+                                        required={true}
+                                        width={'50%'}
+                                        title={'Tipo de pipa'}
+                                        value={typePipa}
+                                        options={['sencilla', 'doble']}
+                                        onChange={(e) => setTypePipa(e.target.value)}
+                                    />
 
-                            {numTank >= 2 && typeChargue === 'Tanque' && (
-                                <InputText
-                                    required={true}
-                                    width='100%'
-                                    label={'Tanque/Pipa #2'}
-                                    value={dataTank.numTank2}
-                                    onChangue={(event) => setDataTank({ ...dataTank, numTank2: event.target.value })}
+                                    {typePipa != '' &&
+                                        <InputText
+                                            required={true}
+                                            width={'300px'}
+                                            label='Pipa 1'
+                                            value={dataPipa.pipa1}
+                                            onChangue={(e) => setDataPipa({ ...dataPipa, pipa1: e.target.value })}
+                                        />}
 
-                                />
-                            )}
+                                    {typePipa === 'doble' &&
+                                        <InputText
+                                            required={true}
+                                            width={'300px'}
+                                            label='Pipa 2'
+                                            value={dataPipa.pipa2}
+                                            onChangue={(e) => setDataPipa({ ...dataPipa, pipa2: e.target.value })}
+                                        />}
+                                </Stack>}
 
-                            {numTank >= 3 && typeChargue === 'Tanque' && (
-                                <InputText
-                                    required={true}
-                                    width='100%'
-                                    label={'Tanque #3'}
-                                    value={dataTank.numTank3}
-                                    onChangue={(event) => setDataTank({ ...dataTank, numTank3: event.target.value })}
-
-                                />
-                            )}
-
-                            {numTank >= 4 && typeChargue === 'Tanque' && (
-                                <InputText
-                                    required={true}
-                                    width='100%'
-                                    label={'Tanque #4'}
-                                    value={dataTank.numTank4}
-                                    onChangue={(event) => setDataTank({ ...dataTank, numTank4: event.target.value })}
-
-                                />
-                            )} */}
 
                             <Stack
                                 alignItems={'center'}
@@ -257,8 +242,6 @@ function FormRegisterManiobras() {
                                     onChange={(e) => handleChangueOperator(e.target.value)}
                                 />
                             </Stack>
-
-
 
                             <Button
                                 type="submit"

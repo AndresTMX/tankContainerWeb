@@ -51,6 +51,7 @@ function usePostRegister() {
                             carga: register.carga,
                             tracto: register.tracto,
                             numero_tanque: register.numero_tanque,
+                            numero_pipa: register.numero_pipa,
                             transportista_id: register.transportista,
                             operador_id: register.operador,
                             status: 'forconfirm'
@@ -107,10 +108,11 @@ function usePostRegister() {
     }
 
     const sendInputRegistersTank = async (data) => {
+    console.log("🚀 ~ file: usePostRegister.js:111 ~ sendInputRegistersTank ~ data:", data)
 
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
-        const tracto = data[0].numero_tanque;
+        const tracto = data[0].tracto;
         const { error } = await supabase.from('tractos').update({ status: 'forconfirm' }).eq('tracto', tracto);
 
         if (error) {
@@ -193,7 +195,27 @@ function usePostRegister() {
         }
 
         const registerData = await addRegisterData('entrada');
-        const detailsRegister = await addDetailsRegisterData(data, registerData[0].id, 'entrada');
+        const detailsRegisters = data.map(async (register) => {
+            try {
+                await addDetailsRegisterData(register, registerData[0].id, 'entrada');
+            } catch (error) {
+                dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+                dispatchGlobal({
+                    type: actionTypesGlobal.setNotification,
+                    payload: 'Error al actualizar el estado del tractocamion'
+                })
+            }
+        })
+
+        try {
+            Promise.all(detailsRegisters)
+        } catch (error) {
+            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Error al actualizar el estado del tractocamion'
+            })
+        }
 
         dispatchGlobal({
             type: actionTypesGlobal.setLoading,
@@ -540,7 +562,6 @@ function usePostRegister() {
         });
 
     }
-
 
     return {
         sendInputRegisterEmptyTracto,

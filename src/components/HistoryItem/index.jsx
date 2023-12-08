@@ -15,9 +15,11 @@ import {
 } from "@mui/material";
 import { TextGeneral } from "../TextGeneral";
 import { ViewTanks } from "../ViewTanks";
+import { FormEditManiobras } from "../FormEditManiobras";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useUpdateRegister } from "../../Hooks/registersManagment/useUpdateRegister";
+import { useDeletRegister } from "../../Hooks/registersManagment/useDeletRegister";
 //icons
 import InfoIcon from "@mui/icons-material/Info";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -28,7 +30,7 @@ import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArro
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { transformRegisters } from "../../Helpers/transformRegisters";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
-import { tiempoTranscurrido } from "../../Helpers/date";
+import { dateMXFormat, tiempoTranscurrido, dateMX } from "../../Helpers/date";
 //context
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { GlobalContext } from "../../Context/GlobalContext";
@@ -245,7 +247,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
 
             {(typeRegister === 'entrada') &&
               <Button
-                onClick={() => checkRegisterWhitId(data.id, 'maniobras')}
+                onClick={() => checkRegisterWhitId(data.id, 'maniobras', data)}
                 size="small"
                 variant="contained"
                 color="primary"
@@ -546,6 +548,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
     typeRegister,
     linea,
     tanques,
+    tanquesManiobras,
     operador,
     tracto,
     numeroTanques,
@@ -561,6 +564,9 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
 
   const [state, dispatch] = useContext(ManiobrasContext);
   const [modalTanks, setModalTanks] = useState(false);
+  const [editData, setEditData] = useState(false);
+
+  const { routerDelet } = useDeletRegister()
 
   return (
     <>
@@ -606,7 +612,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
 
           <Stack flexDirection='row' gap='10px'>
 
-            {(typeChargue === 'Pipa') &&
+            {(typeChargue === 'Pipa' && state.typeRegister === 'confirmado') &&
               <Button
                 onClick={() => { console.log(data.id) }}
                 size="small"
@@ -636,9 +642,9 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
                 retornar vacio
               </Button>}
 
-              {(state.typeRegister === 'pendiente') &&
+            {(state.typeRegister === 'pendiente') &&
               <Button
-                onClick={() => { console.log(data.id) }}
+                onClick={() => setEditData(true)}
                 size="small"
                 variant="contained"
                 color="warning"
@@ -646,9 +652,9 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
                 editar registro
               </Button>}
 
-              {(state.typeRegister === 'pendiente') &&
+            {(state.typeRegister === 'pendiente') &&
               <Button
-                onClick={() => { console.log(data.id) }}
+                onClick={() => routerDelet(typeChargue, data)}
                 size="small"
                 variant="contained"
                 color="error"
@@ -717,7 +723,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
           </Stack>
         </Box>
 
-        {typeChargue === "Tanque" && (
+        {(typeChargue === "Tanque") && (
           <Stack
             justifyContent="center"
             spacing="10px"
@@ -727,8 +733,8 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
               padding: "15px",
             }}
           >
-            <strong>Tanques</strong>
-            {tanques.map((tanque, index) => (
+            <strong>{`${typeChargue}s`}</strong>
+            {tanquesManiobras.map((tanque, index) => (
               <Box key={tanque.id}>
                 <Box
                   sx={{
@@ -742,7 +748,44 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
                   <TextGeneral
                     variant="row"
                     label={`# ${index + 1}`}
-                    text={tanque.tanque}
+                    text={typeChargue === 'Tanque' ? tanque.tanque : tanque.pipa}
+                  />
+
+                </Box>
+                {numeroTanques != index + 1 && (
+                  <Divider orientation={"horizontal"} flexItem />
+                )}
+              </Box>
+            ))}
+          </Stack>
+        )}
+
+        {(typeChargue === "Pipa") && (
+          <Stack
+            justifyContent="center"
+            spacing="10px"
+            sx={{
+              borderRadius: "4px",
+              backgroundColor: "whitesmoke",
+              padding: "15px",
+            }}
+          >
+            <strong>{`${typeChargue}s`}</strong>
+            {tanques.map((tanque, index) => (
+              <Box key={tanque.id}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: 'center',
+                    height: '50px'
+                  }}
+                >
+                  <TextGeneral
+                    variant="row"
+                    label={`N°`}
+                    text={typeChargue === 'Tanque' ? tanque.tanque : tanque.pipa}
                   />
 
                 </Box>
@@ -758,14 +801,28 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
 
       {modalTanks &&
         <Modal open={modalTanks}>
-          <Box 
-          sx={{
-            display:'flex', 
-            justifyContent:'center', 
-            alignItems:'center', 
-            minHeight:'100vh'
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: '100vh'
             }}>
-            <ViewTanks toggle={setModalTanks}/>
+            <ViewTanks toggle={setModalTanks} data={data} />
+          </Box>
+        </Modal>
+      }
+
+      {editData &&
+        <Modal open={editData}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: '100vh'
+            }}>
+            <FormEditManiobras data={data} toggleModal={setEditData} />
           </Box>
         </Modal>
       }

@@ -19,6 +19,7 @@ export const transformRegisters = (data) => {
   let OperatorSliceName;
   let shortNameOperator;
   let tanquesParked;
+  let tanquesManiobras;
   let tracto_status;
 
   if (typeRegister === "entrada") {
@@ -33,9 +34,11 @@ export const transformRegisters = (data) => {
       tanque: registro.numero_tanque,
       status: registro.status,
       tanque_status: registro.tanques?.status,
-      carga: typeChargue
+      carga: typeChargue,
+      pipa: registro.numero_pipa
     }));
     tanquesParked = tanques.filter((tanque) => tanque.tanque_status === 'ready')
+    tanquesManiobras = tanques.filter((tanque) => tanque.tanque_status === 'maniobras' || tanque.tanque_status === 'forconfirm' )
     //Datos de fecha y hora
     dayInput = data.checkIn ? dateMXFormat(data.checkIn) : 'por confirmar';
     dateInput = data.checkIn ? datetimeMXFormat(data.checkIn) : 'por confirmar';
@@ -57,7 +60,8 @@ export const transformRegisters = (data) => {
       tanque: registro.numero_tanque,
       status: registro.status,
       tanque_status: registro.tanques?.status,
-      carga: typeChargue
+      carga: typeChargue,
+      pipa: registro.numero_pipa
 
     }));
     tanquesParked = tanques.filter((tanque) => tanque.tanque_status === 'onroute')
@@ -77,6 +81,7 @@ export const transformRegisters = (data) => {
     linea,
     tanques,
     tanquesParked,
+    tanquesManiobras,
     operador,
     tracto,
     numeroTanques,

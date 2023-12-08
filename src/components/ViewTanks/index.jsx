@@ -1,18 +1,57 @@
-import { useEffect } from "react";
-import { Box, Paper, Button, Stack, Typography, IconButton } from "@mui/material";
+import { useEffect, useState, useContext } from "react";
+import { Box, Paper, Button, Stack, Typography, IconButton, Skeleton } from "@mui/material";
 import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
 import { ContainerScroll } from "../ContainerScroll";
+import { GlobalContext } from "../../Context/GlobalContext";
+import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 //icons
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
 
-function ViewTanks({ typeView , toggle}) {
-
-    const { tanks, tankLoading, tankError, getTanks } = useGetTanks()
+function ViewTanks({ typeView, toggle, data }) {
 
     useEffect(() => {
         getTanks()
     }, [])
+
+    const [dataTank, setDataTank] = useState([])
+    const dataTanques = data.registros_detalles_entradas;
+    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
+    const { tanks, tanksReady, tankLoading, tankError, getTanks } = useGetTanks();
+
+    const toggleTank = (tank) => {
+
+        const newState = dataTank.length >= 1 ? [...dataTank] : [];
+        const index = dataTank.findIndex((item) => item === tank);
+        const repeat = dataTank.find((item) => item === tank)
+
+        if (index < 1 && repeat === undefined && validateNumTank()) {
+            newState.push(tank);
+        }
+
+        if (index >= 0 && repeat) {
+            newState.splice(index, 1);
+        }
+
+        setDataTank(newState)
+
+    }
+
+    const validateNumTank = () => {
+        if ((dataTank.length + dataTanques.length) >= 4) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'No puedes agregar más de 4 tanques'
+            })
+
+            return false
+        } else {
+            return true
+        }
+    }
+
+    const colorItemTank = (tanque) => dataTank.find((item) => item === tanque) ? '#0288d1' : 'default';
+    const colorItemText = (tanque) => dataTank.find((item) => item === tanque) ? 'white' : 'default';
 
     return (
         <>
@@ -21,18 +60,34 @@ function ViewTanks({ typeView , toggle}) {
 
                     <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
                         <Typography variant='subtitle2'>Tanques disponibles</Typography>
+                        <Typography variant='caption'>{`${(dataTank.length + dataTanques.length)}/4`}</Typography>
                         <IconButton onClick={() => toggle(false)}>
                             <ClearIcon color="error" />
                         </IconButton>
                     </Stack>
 
-                    <ContainerScroll height='300px'>
+                    <ContainerScroll height='240px'>
                         <Stack spacing={1}>
-                            {tanks.map((item) => (
-                                <ItemTank key={item.tanque} tanque={item.tanque} />
+                            {tanksReady.map((item) => (
+                                <ItemTank
+                                    key={item.tanque}
+                                    onClick={toggleTank}
+                                    tanque={item.tanque}
+                                    colorTank={colorItemTank}
+                                    colorItemText={colorItemText}
+                                />
                             ))}
+
+                            {tankLoading && (
+                                <Stack spacing={1}>
+                                    <Skeleton variant="rounded" width={'200px'} height={'60px'} />
+                                    <Skeleton variant="rounded" width={'200px'} height={'60px'} />
+                                    <Skeleton variant="rounded" width={'200px'} height={'60px'} />
+                                </Stack>
+                            )}
                         </Stack>
                     </ContainerScroll>
+                    <Button color="primary" variant="contained">Agregar</Button>
                 </Stack>
             </Paper>
         </>
@@ -41,15 +96,15 @@ function ViewTanks({ typeView , toggle}) {
 
 export { ViewTanks };
 
-export function ItemTank({ tanque }) {
+export function ItemTank({ tanque, onClick, colorTank, colorItemText }) {
     return (
-        <Paper sx={{ width: '200px' }}>
+        <Paper sx={{ width: '200px', bgcolor: colorTank(tanque) }}>
             <Stack flexDirection='row' justifyContent='space-between' alignItems='center' padding='10px' gap='20px'>
-                <Typography>
+                <Typography sx={{ color: colorItemText(tanque) }}>
                     {tanque}
                 </Typography>
-                <IconButton>
-                    <AddIcon color='info'/>
+                <IconButton onClick={() => onClick(tanque)}>
+                    <AddIcon sx={{ color: colorItemText(tanque) }} />
                 </IconButton>
             </Stack>
         </Paper>

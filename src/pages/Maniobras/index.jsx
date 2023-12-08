@@ -14,7 +14,6 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 
 function Maniobras() {
 
-
     const IsSmall = useMediaQuery('(max-width:900px)');
 
     const [tab, setTab] = useState(0);

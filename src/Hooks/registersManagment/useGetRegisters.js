@@ -36,6 +36,7 @@ function useGetRegisters() {
                             tracto,
                             numero_tanque,
                             status,
+                            numero_pipa,
                             transportistas (
                                 id,
                                 name
@@ -85,6 +86,7 @@ function useGetRegisters() {
                             carga,
                             tracto,
                             numero_tanque,
+                            numero_pipa,
                             transportistas (
                                 id,
                                 name
@@ -135,6 +137,7 @@ function useGetRegisters() {
                             tracto,
                             numero_tanque,
                             status,
+                            numero_pipa,
                             transportistas (
                                 id,
                                 name
@@ -154,7 +157,7 @@ function useGetRegisters() {
                             )
                         )
                     `)
-                    .eq('type', typeRegister)
+                    .eq('type', 'entrada')
                     .not('checkIn', 'is', null)
                     .order('create_at', { ascending: false })
                     .range(0, 19)
@@ -211,6 +214,7 @@ function useGetRegisters() {
                             tracto,
                             numero_tanque,
                             status,
+                            numero_pipa,
                             transportistas (
                                 id,
                                 name
@@ -261,6 +265,7 @@ function useGetRegisters() {
                             tracto,
                             numero_tanque,
                             status,
+                            numero_pipa,
                             transportistas (
                                 id,
                                 name

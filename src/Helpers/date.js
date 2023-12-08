@@ -6,7 +6,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(relativeTime);
 
-export const currentDate = new dayjs();
+export const currentDate = new dayjs(new Date());
 
 export const transformDate = (date) =>  dayjs(date);
 
