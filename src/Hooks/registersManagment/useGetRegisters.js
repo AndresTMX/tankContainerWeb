@@ -6,7 +6,7 @@ function useGetRegisters() {
 
     const [state, dispatch] = useContext(ManiobrasContext);
 
-    const { typeRegister , update} = state;
+    const { typeRegister, update } = state;
 
     const tableRegisters = 'registros';
     const tableManiobrasChecklist = 'maniobras_checklist';
@@ -107,11 +107,12 @@ function useGetRegisters() {
                         )
                     `)
                     .eq('type', typeRegister)
-                    .not('checkIn', 'is', null) 
+                    .is('checkIn', null)
                     .order('create_at', { ascending: false })
                     .range(0, 19)
                 if (error) {
                     setErrorGetReisters(error)
+                    console.log(error)
                     const cache = localStorage.getItem(nameStorageCache);
                     if (cache) {
                         setRequestGetRegisters(JSON.parse(cache))
@@ -246,19 +247,46 @@ function useGetRegisters() {
                         setLoadingGetRegisters(false)
                     }
                 } else {
+                    const filterRequest = data.length >= 1 ?
+                        data.filter((request) => request.registros_detalles_entradas[0].tractos.status === 'parked') : [];
                     setTimeout(() => {
-                        setRequestGetRegisters(data)
+                        setRequestGetRegisters(filterRequest)
                         setLoadingGetRegisters(false)
-                        localStorage.setItem(nameStorageCache, JSON.stringify(data))
+                        localStorage.setItem(nameStorageCache, JSON.stringify(filterRequest))
                     }, 1000)
                 }
             }
-            
+
             if (typeRegister === 'pendiente') {
+
                 const { data, error } = await supabase
                     .from(tableRegisters)
                     .select(`
                         *,
+                        registros_detalles_salidas (
+                            id,
+                            carga,
+                            tracto,
+                            numero_tanque,
+                            numero_pipa,
+                            transportistas (
+                                id,
+                                name
+                            ),
+                            operadores (
+                                id,
+                                nombre,
+                                correo,
+                                contacto
+                            ),
+                            tractos(
+                                tracto,
+                                status
+                            ),
+                            tanques(
+                                status
+                            )
+                        ),
                         registros_detalles_entradas (
                             id,
                             carga,
@@ -285,10 +313,11 @@ function useGetRegisters() {
                             )
                         )
                     `)
-                    .eq('type', 'entrada')
                     .is('checkIn', null)
                     .order('create_at', { ascending: false })
                     .range(0, 19)
+
+
                 if (error) {
                     setErrorGetReisters(error)
                     const cache = localStorage.getItem(nameStorageCache);
@@ -296,7 +325,9 @@ function useGetRegisters() {
                         setRequestGetRegisters(JSON.parse(cache))
                         setLoadingGetRegisters(false)
                     }
-                } else {
+                }
+
+                if (!error) {
                     setTimeout(() => {
                         setRequestGetRegisters(data)
                         setLoadingGetRegisters(false)

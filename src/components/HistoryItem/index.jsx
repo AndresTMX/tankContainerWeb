@@ -20,6 +20,8 @@ import { FormEditManiobras } from "../FormEditManiobras";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useUpdateRegister } from "../../Hooks/registersManagment/useUpdateRegister";
 import { useDeletRegister } from "../../Hooks/registersManagment/useDeletRegister";
+import { useUpdateTracto } from "../../Hooks/tractosManagment/useUpdateTracto";
+import { usePostRegister } from "../../Hooks/registersManagment/usePostRegister";
 //icons
 import InfoIcon from "@mui/icons-material/Info";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -52,8 +54,8 @@ function HistoryItem({ data, type }) {
 
       const typeItem = data.type;
       dataOperador = typeItem === 'entrada' ?
-        data?.registros_detalles_entradas[0].operadores :
-        data?.registros_detalles_salidas[0].operadores;
+        data?.registros_detalles_entradas[0]?.operadores :
+        data?.registros_detalles_salidas[0]?.operadores;
     }
 
     if (type === 'eir') {
@@ -566,7 +568,16 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
   const [modalTanks, setModalTanks] = useState(false);
   const [editData, setEditData] = useState(false);
 
-  const { routerDelet } = useDeletRegister()
+  const { routerDelet } = useDeletRegister();
+  const { sendOutputTractoEmpty } = usePostRegister();
+
+  const returnEmptyTracto = async(data) => {
+    await sendOutputTractoEmpty(data)
+    dispatch({
+      type:actionTypes.setUpdate,
+      payload: !state.update
+    })
+  }
 
   return (
     <>
@@ -608,6 +619,24 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
               }}
             />
 
+              <Chip
+              size="small"
+              color={typeRegister === "entrada" ? "success" : "warning"}
+              label={typeRegister}
+              icon={
+                typeRegister === "entrada" ? (
+                  <KeyboardDoubleArrowRightIcon />
+                ) : (
+                  <KeyboardDoubleArrowLeftIcon />
+                )
+              }
+              sx={{
+                maxWidth: "100px",
+                fontWeight: 500,
+                padding: "5px",
+              }}
+            />
+
           </Stack>
 
           <Stack flexDirection='row' gap='10px'>
@@ -634,7 +663,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
 
             {(typeChargue != 'Pipa' && state.typeRegister === 'confirmado') &&
               <Button
-                onClick={() => { console.log(data.id) }}
+                onClick={() => returnEmptyTracto(data)}
                 size="small"
                 variant="contained"
                 color="error"

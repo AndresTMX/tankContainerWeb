@@ -22,6 +22,10 @@ function RegistersManiobras() {
             type: actionTypes.setTypeRegister,
             payload: 'confirmado'
         });
+        dispatch({
+            type: actionTypes.setUpdate,
+            payload: !state.update
+        })
     }, [])
 
     const isMovile = useMediaQuery("(max-width:640px)");
@@ -114,7 +118,7 @@ function RegistersManiobras() {
                             </Stack>
                         )}
 
-                        {renderComponent && (
+                         {(renderComponent ) && (
                             <Stack gap="20px">
                                 {requestGetRegisters.map((item) => (
                                     <HistoryItem
@@ -125,8 +129,6 @@ function RegistersManiobras() {
                                 ))}
                             </Stack>
                         )}
-
-                        {renderErrorState && <Typography variant="subtitle">Error, recarga la pagina</Typography>}
 
                         {(renderLoadingState) &&
                             <Stack spacing={1}>

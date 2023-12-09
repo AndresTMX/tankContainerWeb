@@ -1,22 +1,25 @@
-//imports hooks
-import { useEffect, useContext } from "react";
-import { actionTypes } from "../../Reducers/ManiobrasReducer";
+import { useState } from "react";
 //imports materialui
-import { Container, Box, } from "@mui/material";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { Container, Box, Paper, Chip, Stack, } from "@mui/material";
 //components
-import { RegisterVigilancia } from "../../components/RegistersVigilancia";
-import { ManiobrasContext } from "../../Context/ManiobrasContext";
+import { Searcher } from "../../components/Searcher";
 import { Notification } from "../../components/Notification";
+import { InputRegistersVigilancia } from "../../components/InputRegistersVigilancia";
+//hooks
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useGetRegisters } from "../../Hooks/Vigilancia/useGetRegisters";
+import { useSearcherVigilancia } from "../../Hooks/Vigilancia/useSaearcherVigilancia";
 
 function Vigilancia() {
 
-    const [state, dispatch] = useContext(ManiobrasContext)
     const IsSmall = useMediaQuery('(max-width:900px)');
+    const isMovile = useMediaQuery("(max-width:640px)");
 
-    useEffect(() => {
-        dispatch({ type: actionTypes.setTypeRegister, payload: 'entrada' })
-    }, [])
+    const [typeRegister, setTypeRegister] = useState("entrada")
+    const { data, loading, error } = useGetRegisters(typeRegister);
+
+    const { states, functions } = useSearcherVigilancia(data);
+    const { searching, onChangueSearch, searchingKey } = functions;
 
     return (
         <>
@@ -27,10 +30,63 @@ function Vigilancia() {
                     marginTop: '20px',
                     alignItems: IsSmall ? '' : 'center',
                     minHeight: '100%',
+                    gap: '20px'
                 }}
             >
+                <Paper sx={{ backgroundColor: 'whitesmoke' }} elevation={4}>
+                    <Stack sx={{ padding: '20px', borderRadius: '4px', width: '90vw', maxWidth: '100%' }}
+                        flexDirection="row"
+                        justifyContent={isMovile ? "center" : "space-between"}
+                        alignItems="center"
+                        flexWrap="wrap"
+                        gap="20px"
+                    >
+                        <Stack
+                            flexDirection="row"
+                            alignItems="center"
+                            flexWrap="wrap"
+                            gap="10px"
+                        >
+                            <Chip
+                                onClick={() => setTypeRegister("entrada")}
+                                color={typeRegister === "entrada" ? "success" : "default"}
+                                label="entradas"
+                            />
+                            <Chip
+                                onClick={() => setTypeRegister("salida")}
+                                color={typeRegister === "salida" ? "info" : "default"}
+                                label="salidas"
+                            />
+
+                        </Stack>
+
+                        <Stack width={isMovile ? "100%" : "auto"}>
+                            <Searcher
+                                search={states.search}
+                                onChangueSearch={onChangueSearch}
+                                searchingKey={searchingKey}
+                                searching={searching}
+                                placeholder={'Busca entre tus registros pendientes'}
+                            />
+                        </Stack>
+
+                    </Stack>
+                </Paper>
+
                 <Box>
-                    <RegisterVigilancia />
+                    {typeRegister === 'entrada' &&
+                        <InputRegistersVigilancia
+                            data={data}
+                            error={error}
+                            loading={loading}
+                            search={states.search}
+                            errorSearch={states.error}
+                            loadingSearch={states.loading}
+                            resultsSearch={states.results}
+                        />
+                    }
+
+                    {typeRegister === 'salida' && <p>Registros de salida</p>}
                 </Box>
 
             </Container>

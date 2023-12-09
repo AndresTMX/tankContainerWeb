@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 //componentes
 import { Box, Stack, Typography, Paper, IconButton, Button } from "@mui/material";
+import {InputText} from "../../components/InputText";
 import { SelectSimple } from "../SelectSimple";
 //icons
 import CloseIcon from '@mui/icons-material/Close';
@@ -31,6 +32,7 @@ function FormEditManiobras({ data, toggleModal }) {
     const { editRegister } = useEditRegisters();
 
     const [idTracto, setIdTracto] = useState('');
+    const [numeroPipa, setNumeroPipa] = useState('');
     const [nameOperador, setNameOperador] = useState('');
     const [nameTransporter, setNameTransporter] = useState('');
     const cacheOperadores = JSON.parse(localStorage.getItem('operadores'));
@@ -62,7 +64,8 @@ function FormEditManiobras({ data, toggleModal }) {
         const updates = {
             tracto: idTracto != '' ? idTracto : tracto,
             operador: nameOperador != '' ? nameOperador : operador.id,
-            transportista: nameTransporter != '' ? nameTransporter : data.registros_detalles_entradas[0].transportistas.id
+            transportista: nameTransporter != '' ? nameTransporter : data.registros_detalles_entradas[0].transportistas.id,
+            pipa: numeroPipa != ''? numeroPipa : data.registros_detalles_entradas[0].numero_pipa
         }
 
         editRegister(data.id, data, updates)
@@ -88,6 +91,15 @@ function FormEditManiobras({ data, toggleModal }) {
                     </Stack>
 
                     <Stack alignItems={'center'}>
+
+                        {typeChargue === 'Pipa' && (
+                            <InputText
+                            label={'Nueva pipa'}
+                            value={numeroPipa}
+                            onChangue={(e) => setNumeroPipa(e.target.value)}
+                            width={'100%'}
+                            />
+                        )}
 
                         <SelectSimple
                             title={'Nuevo operador'}

@@ -20,7 +20,8 @@ function useEditRegisters() {
                     .update({
                         tracto: updates.tracto,
                         operador_id: updates.operador,
-                        transportista_id: updates.transportista
+                        transportista_id: updates.transportista,
+                        numero_pipa: updates.pipa
                     })
                     .eq('registro_id', idRegister)
             } catch (error) {
@@ -49,7 +50,35 @@ function useEditRegisters() {
 
     }
 
-    return {editRegister}
+    const returnTractoEmpty = async (idRegister, data) => {
+
+        try {
+            const tracto = data.registros_detalles_entradas.tracto;
+            const { errorTracto } = await supabase.select('tractos')
+                .update({ status: 'forconfirm'})
+                .eq('tracto', tracto);
+
+            if (errorTracto) {
+                dispatchGlobal({
+                    type: actionTypesGlobal.setNotification,
+                    payload: 'Error al actualizar el estaus del tracto'
+                })
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+
+        try {
+            
+        } catch (error) {
+            
+        }
+
+
+    }
+
+    return { editRegister }
 }
 
 export { useEditRegisters };

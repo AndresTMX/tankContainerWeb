@@ -1,7 +1,7 @@
 import { filterInputRegistersForManiobras } from "./transformRegisters";
 
 //funcion para buscar dentro de vigilancia
-export function filterSearchVigilancia(typeRegister, busqueda, array) {
+export function filterSearchVigilancia( busqueda, array) {
 
     try {
         const busquedaMinuscula = busqueda.toLowerCase();
@@ -42,7 +42,6 @@ export function filterSearchVigilancia(typeRegister, busqueda, array) {
         
         return filtered
     } catch (error) {
-        console.error(error)
         return error
     }
 

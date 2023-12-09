@@ -108,7 +108,6 @@ function usePostRegister() {
     }
 
     const sendInputRegistersTank = async (data) => {
-    console.log("🚀 ~ file: usePostRegister.js:111 ~ sendInputRegistersTank ~ data:", data)
 
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
@@ -394,9 +393,17 @@ function usePostRegister() {
             payload: true
         });
 
+        const dataOutputRegister = {
+            carga: 'vacio',
+            tracto: data.registros_detalles_entradas[0].tracto,
+            numero_tanque: null,
+            transportista: data.registros_detalles_entradas[0].transportistas.id,
+            operador: data.registros_detalles_entradas[0].operadores.id
+        }
+
         try {
             const dataRegister = await addRegisterData('salida');
-            const detailsRegister = await addDetailsRegisterData(data, dataRegister[0].id, 'salida');
+            const detailsRegister = await addDetailsRegisterData(dataOutputRegister, dataRegister[0].id, 'salida');
         } catch (error) {
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
@@ -409,9 +416,9 @@ function usePostRegister() {
         }
 
         try {
-            const tracto = data.tracto;
+            const tracto = data.registros_detalles_entradas[0].tracto;
             const { error } = await supabase.from('tractos')
-                .update({ status: 'onroute' })
+                .update({ status: 'forconfirm' })
                 .eq('tracto', tracto);
 
             if (!error) {
@@ -421,14 +428,14 @@ function usePostRegister() {
                 });
 
                 dispatch({
-                    type: actionTypes.setTypeRegister,
-                    payload: 'salida'
-                })
-
-                dispatch({
                     type: actionTypes.setModalRegister,
                     payload: false
                 })
+
+                dispatchGlobal({
+                    type: actionTypesGlobal.setLoading,
+                    payload: false
+                });
             }
 
             if (error) {
@@ -458,10 +465,6 @@ function usePostRegister() {
             payload: []
         })
 
-        dispatchGlobal({
-            type: actionTypes.setTypeRegister,
-            payload: 'salida'
-        });
 
         dispatchGlobal({
             type: actionTypesGlobal.setLoading,
