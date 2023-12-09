@@ -207,7 +207,7 @@ export function StepOne({ nextStepBar }) {
   return (
     <>
       <Paper sx={{ width: '100%' }}>
-        <ContainerScroll>
+        <ContainerScroll height={'56vh'}>
           <form onSubmit={next}>
             <Stack width='100%' gap='10px'>
               {listCheck.map((question, index) => (

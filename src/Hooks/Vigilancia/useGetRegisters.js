@@ -48,8 +48,10 @@ function useGetRegisters(typeRegister) {
             setError(error);
             setLoading(false)
         } else {
-            setData(data);
-            setLoading(false);
+            setTimeout(() => {
+                setData(data);
+                setLoading(false);
+            }, 1000)
         }
     }
 
@@ -93,8 +95,10 @@ function useGetRegisters(typeRegister) {
             setError(error);
             setLoading(false)
         } else {
-            setData(data);
-            setLoading(false);
+            setTimeout(() => {
+                setData(data);
+                setLoading(false);
+            }, 1000)
         }
     }
 

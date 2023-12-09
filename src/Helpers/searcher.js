@@ -6,7 +6,7 @@ export function filterSearchVigilancia( busqueda, array) {
     try {
         const busquedaMinuscula = busqueda.toLowerCase();
         const arrayFlat = [];
-        const filtered = []
+        const filtered = [];
 
         array.map((register) => {
             const type = register.type;
@@ -39,6 +39,10 @@ export function filterSearchVigilancia( busqueda, array) {
             }
 
         })
+
+        if(filtered.length === 0 ){
+            throw new Error(`No hay coincidencias para la busqueda ${busqueda}`)
+        }
         
         return filtered
     } catch (error) {
@@ -51,11 +55,9 @@ export function filterSearchManiobras(busqueda, array) {
     try {
         const busquedaMinuscula = busqueda.toLowerCase();
 
-        const data = filterInputRegistersForManiobras(array)
-
         const results = []
 
-        data.map((register) => {
+        array.map((register) => {
             const linea = register.linea.toLowerCase();
             const tracto = register.tracto;
             const numero_tanque = register.numero_tanque.toLowerCase();
@@ -68,7 +70,7 @@ export function filterSearchManiobras(busqueda, array) {
         })
 
         if (results.length === 0) {
-            throw new Error('sin resultados')
+            throw new Error(`No hay coincidencias para la busqueda: ${busqueda} `)
         }
 
         return results
@@ -96,7 +98,7 @@ export function filterSearchCheckList(busqueda, array) {
         })
 
         if (results.length === 0) {
-            throw new Error('sin resultados')
+            throw new Error(`No hay coincidencias para la busqueda: ${busqueda} `)
         }
 
         return results;
@@ -122,6 +124,10 @@ export function filterSearchRepair( typeRegister, busqueda, array){
             }
         })
 
+        if (results.length === 0) {
+            throw new Error(`No hay coincidencias para la busqueda: ${busqueda} `)
+        }
+
         return results;
     } catch (error) {
         console.error(error)
@@ -132,12 +138,13 @@ export function filterSearchRepair( typeRegister, busqueda, array){
 //router filter de maniobras y vigilancia
 export function routerFilterSearch(typeRegister, busqueda, array) {
 
-    if (typeRegister === 'entrada') {
-        return filterSearchManiobras(busqueda, array)
+    const routes = {
+        pendientes: () => filterSearchManiobras(busqueda, array),
+        realizados: () => filterSearchCheckList(busqueda, array)
     }
 
-    if (typeRegister === 'checklist_realizados') {
-        return filterSearchCheckList(busqueda, array)
+    if(routes[typeRegister]){
+      return routes[typeRegister]()
     }
 
 }

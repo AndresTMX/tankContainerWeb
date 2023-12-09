@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 //components
 import { Searcher } from "../Searcher";
 import { HistoryItem } from "../HistoryItem";
@@ -6,7 +6,8 @@ import { HistoryItemLoading } from "../HistoryItem";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
 import { ResultSearch } from "../ResultsSearch";
 import { ContainerScroll } from "../ContainerScroll";
-import { Box, Stack, Chip, Typography, Paper, Button } from "@mui/material";
+import { FormRegisterManiobras } from "../FormRegisterManiobras";
+import { Box, Stack, Chip, Typography, Paper, Button, Modal, Fade } from "@mui/material";
 //helpers
 import { filterSearchVigilancia } from "../../Helpers/searcher";
 //hooks
@@ -14,6 +15,9 @@ import { useGetRegisters } from "../../Hooks/registersManagment/useGetRegisters"
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { useSearcher } from "../../Hooks/useSearcher";
 import useMediaQuery from "@mui/material/useMediaQuery";
+//icons
+import AddIcon from '@mui/icons-material/Add';
+
 
 function RegistersManiobras() {
 
@@ -41,6 +45,10 @@ function RegistersManiobras() {
     const renderErrorState = errorGetRegisters && !loadingGetRegisters ? true : false;
     const renderLoadingState = !errorGetRegisters && loadingGetRegisters ? true : false;
     const renderAdvertainsmentCache = errorGetRegisters && requestGetRegisters?.length >= 1;
+
+    const [maniobraModal, setManiobraModal] = useState(false);
+
+    const closeModalManiobras = () => setManiobraModal(!maniobraModal);
 
     return (
         <>
@@ -77,6 +85,13 @@ function RegistersManiobras() {
                                 label="pendientes"
                             />
 
+                            <Button size="small" variant="contained" color="primary"
+                                onClick={() => setManiobraModal(!maniobraModal)}
+                                endIcon={<AddIcon />}
+                            >
+                                Nueva maniobra
+                            </Button>
+
                         </Stack>
 
                         <Stack width={isMovile ? "100%" : "auto"}>
@@ -91,7 +106,7 @@ function RegistersManiobras() {
                     </Stack>
                 </Paper>
 
-                <ContainerScroll height="72vh">
+                <ContainerScroll height="70vh">
                     <Box sx={{ display: "flex", flexDirection: "column", gap: "20px", width: '100%' }}>
 
                         {renderAdvertainsmentCache && (
@@ -118,7 +133,7 @@ function RegistersManiobras() {
                             </Stack>
                         )}
 
-                         {(renderComponent ) && (
+                        {(renderComponent) && (
                             <Stack gap="20px">
                                 {requestGetRegisters.map((item) => (
                                     <HistoryItem
@@ -163,6 +178,17 @@ function RegistersManiobras() {
                     </Box>
                 </ContainerScroll>
             </Box>
+
+            {maniobraModal &&
+                <Modal open={maniobraModal}>
+                    <Fade in={maniobraModal} timeout={400}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '5%', width: '100%', height: 'auto' }}>
+                            <FormRegisterManiobras closeModal={closeModalManiobras} />
+                        </Box>
+                    </Fade>
+                </Modal>
+
+            }
         </>
     );
 }

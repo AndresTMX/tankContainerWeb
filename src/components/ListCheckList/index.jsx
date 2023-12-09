@@ -1,8 +1,9 @@
 //components
-import { Box, Stack, Paper, Typography, Chip, Button, } from "@mui/material";
+import { Box, Stack, Paper, Typography, Chip, Button, Alert, Fade } from "@mui/material";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import { HistoryItemLoading } from "../HistoryItem";
 import { TextGeneral } from "../TextGeneral";
+import { NotConexionState } from "../NotConectionState"
 //icons
 import WarningIcon from '@mui/icons-material/Warning';
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -22,6 +23,8 @@ function ListCheckList({ requestGetRegisters, loadingGetRegisters, errorGetRegis
     const IsSmall = useMediaQuery("(max-width:900px)");
 
     const [state, dispatch] = useContext(ManiobrasContext);
+
+    const folio = requestGetRegisters[0]?.folio ? true : false;
 
     const generateDocument = (item) => {
         const json = JSON.parse(item.data)
@@ -61,59 +64,20 @@ function ListCheckList({ requestGetRegisters, loadingGetRegisters, errorGetRegis
                 <ContainerScroll height='67vh'>
 
                     {(errorGetRegisters) && (
-                        <Paper sx={{ width: '90vw', maxWidth: '700px', marginBottom: '20px', padding: '20px' }}>
-                            <Stack
-                                sx={{
-                                    backgroundColor: "white",
-                                    padding: "10px",
-                                    borderRadius: "4px",
-                                    maxWidth: '100%'
-                                }}
-                                flexDirection="column"
-                                gap="5px"
-                                justifyContent="flex-start"
-                            >
-                                <Chip
-                                    sx={{ width: "130px" }}
-                                    color="warning"
-                                    label="¡Error al cargar!"
-                                />
-
-                                <Typography variant="caption">
-                                    probablemente no tienes internet, esta es la Información de la
-                                    ultima consulta exitosa a la base de datos, suerte.
-                                </Typography>
-                            </Stack>
-                        </Paper>
+                        <Fade in={errorGetRegisters}>
+                            <NotConexionState />
+                        </Fade>
                     )}
 
-                    {(errorSearch) && (
-                        <Paper sx={{ width: '90vw', maxWidth: '700px', marginBottom: '20px', padding: '20px' }}>
-                            <Stack
-                                sx={{
-                                    backgroundColor: "white",
-                                    padding: "10px",
-                                    borderRadius: "4px",
-                                    maxWidth: '100%'
-                                }}
-                                flexDirection="column"
-                                gap="5px"
-                                justifyContent="flex-start"
-                            >
-                                <Chip
-                                    sx={{ width: "200px" }}
-                                    color="warning"
-                                    label={`¡Sin resultados para ${search}!`}
-                                />
+                    {(!errorGetRegisters && errorSearch) &&
+                        <Fade in={errorSearch}>
+                            <Box sx={{ width: '90vw', maxWidth: '700px' }}  >
+                                <Alert sx={{ width: '100%' }} severity="warning">{errorSearch.toString()}</Alert>
+                            </Box>
+                        </Fade>
+                    }
 
-                                <Typography variant="caption">
-                                    probablemente no escribiste correctamente tu busqueda, intentalo de nuevo.
-                                </Typography>
-                            </Stack>
-                        </Paper>
-                    )}
-
-                    {(loadingGetRegisters && !errorGetRegisters) && (
+                    {(loadingGetRegisters || loadingSearch) && (
                         <Stack spacing="20px" sx={{ maxWidth: '700px' }}>
                             <HistoryItemLoading />
                             <HistoryItemLoading />
@@ -121,34 +85,29 @@ function ListCheckList({ requestGetRegisters, loadingGetRegisters, errorGetRegis
                         </Stack>
                     )}
 
-                    {(loadingSearch && !errorSearch) && (
-                        <Stack spacing="20px" sx={{ maxWidth: '700px' }}>
-                            <HistoryItemLoading />
-                            <HistoryItemLoading />
-                            <HistoryItemLoading />
-                        </Stack>
-                    )}
 
                     {(!loadingGetRegisters && !loadingSearch && !errorGetRegisters && !errorSearch && requestGetRegisters.length === 0) && (
-                        <Paper
-                            elevation={2}
-                        >
-                            <Stack
-                                flexDirection='row'
-                                gap='20px'
-                                sx={{
-                                    width: '100vw',
-                                    maxWidth: '700px',
-                                    padding: '20px',
-                                }}
+                        <Fade in={!errorGetRegisters} >
+                            <Paper
+                                elevation={2}
                             >
-                                <Typography>Sin checklist registrados</Typography>
-                                <WarningIcon sx={{ color: 'orange', fontSize: '25px' }} />
-                            </Stack>
-                        </Paper>
+                                <Stack
+                                    flexDirection='row'
+                                    gap='20px'
+                                    sx={{
+                                        width: '100vw',
+                                        maxWidth: '700px',
+                                        padding: '20px',
+                                    }}
+                                >
+                                    <Typography>Sin checklist registrados</Typography>
+                                    <WarningIcon sx={{ color: 'orange', fontSize: '25px' }} />
+                                </Stack>
+                            </Paper>
+                        </Fade>
                     )}
 
-                    {(!loadingGetRegisters && requestGetRegisters.length >= 1 && !loadingSearch && !errorSearch && resultsSearch.length === 0) &&
+                    {(!loadingGetRegisters && !loadingSearch && !errorSearch && resultsSearch.length === 0 && requestGetRegisters.length >= 1 && folio) &&
                         <Stack spacing='20px'>
                             {
                                 requestGetRegisters.map((item) => (
@@ -261,7 +220,7 @@ function ListCheckList({ requestGetRegisters, loadingGetRegisters, errorGetRegis
                         </Stack>
                     }
 
-                    {(!loadingSearch && resultsSearch.length >= 1 && !loadingGetRegisters && !errorSearch) &&
+                    {(!loadingSearch && !loadingGetRegisters && !errorSearch && resultsSearch.length >= 1) &&
                         <Stack spacing='20px'>
                             {
                                 resultsSearch.map((item) => (

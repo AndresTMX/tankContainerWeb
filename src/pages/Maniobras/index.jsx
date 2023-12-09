@@ -32,22 +32,17 @@ function Maniobras() {
                     variant={IsSmall ? "scrollable" : ''}
                     scrollButtons="auto"
                 >
-                    <Tab label="EIR" />
-                    <Tab label="Nueva maniobra" />
                     <Tab label="Maniobras" />
+                    <Tab label="EIR" />
                 </Tabs>
             </Box>
 
             <CustomTabPanel value={tab} index={0}>
-                <EIRManiobras />
+                <RegistersManiobras />
             </CustomTabPanel>
 
             <CustomTabPanel value={tab} index={1}>
-                <FormRegisterManiobras />
-            </CustomTabPanel>
-
-            <CustomTabPanel value={tab} index={2}>
-                <RegistersManiobras />
+                <EIRManiobras />
             </CustomTabPanel>
 
             <LoadingState duration={1000} />

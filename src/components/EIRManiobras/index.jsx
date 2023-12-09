@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useState } from "react";
 //components
 import { Container, Box, Stack, Fade, Paper, Chip, } from "@mui/material";
 import { ListManiobrasPending } from "../../components/ListManiobrasPending";
@@ -11,9 +11,8 @@ import { AuthContext } from "../../Context/AuthContext";
 //newCheckList
 import { CheckListEIR } from "../../sections/CheckListEIR";
 //hooks
-import { useGetRegisters } from "../../Hooks/registersManagment/useGetRegisters";
+import { useGetEIR } from "../../Hooks/Maniobras/useGetEIR";
 import { useGetLastFolio } from "../../Hooks/foliosManagment/useGetLastFolio";
-import { actionTypes } from "../../Reducers/ManiobrasReducer";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useSearcher } from "../../Hooks/useSearcher";
 //helpers
@@ -24,17 +23,15 @@ import { ViewerDocument } from "../../PDFs/components/Viewer";
 import { EIR } from "../../PDFs/plantillas/EIR";
 
 function EIRManiobras() {
-    
+
     const IsSmall = useMediaQuery('(max-width:900px)');
     const isMovile = useMediaQuery("(max-width:640px)");
 
-    useEffect(() => {
-        dispatch({ type: actionTypes.setTypeRegister, payload: 'checklist_pendientes' })
-        dispatch({ type: actionTypes.setUpdate, payload: !state.update})
-    }, [])
-    
     const { folio } = useGetLastFolio();
     const { key } = useContext(AuthContext);
+
+    const [typeRegister, setTypeRegister] = useState("pendientes")
+    const { loading: loadingEIR, error: errorEIR, data: dataEIR } = useGetEIR(typeRegister)
 
     const session = JSON.parse(sessionStorage.getItem(key));
     const [state, dispatch] = useContext(ManiobrasContext);
@@ -43,11 +40,8 @@ function EIRManiobras() {
     const checkList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
     const { dayInput, numero_tanque, tracto } = selectItem;
 
-    //inicio del hook de registros
-    const { requestGetRegisters, errorGetRegisters, loadingGetRegisters } = useGetRegisters();
-
     //inicio del hook del buscador
-    const { states: statesSearcher, functions } = useSearcher(routerFilterSearch, requestGetRegisters, state.typeRegister);
+    const { states: statesSearcher, functions } = useSearcher(routerFilterSearch, dataEIR, typeRegister);
     const { search, results, loading, error } = statesSearcher;
     const { searching, onChangueSearch, searchingKey } = functions;
 
@@ -61,12 +55,6 @@ function EIRManiobras() {
         usuario_emisor: `${session.user_metadata.first_name} ${session.user_metadata.last_name} `,
         folio: folio,
         newStatus: status,
-    }
-
-    const changueSection = (section) => {
-        dispatch({ type: actionTypes.setTypeRegister, payload: section })
-        dispatch({ type: actionTypes.setSelectItem, payload: false })
-        dispatch({ type: actionTypes.setManiobrasCheck, payload: { pageOne: [], pageTwo: [], pageThree: [] } })
     }
 
     return (
@@ -119,13 +107,13 @@ function EIRManiobras() {
                                         width={isMovile ? "100%" : "auto"}
                                     >
                                         <Chip
-                                            onClick={() => changueSection("checklist_pendientes")}
-                                            color={state.typeRegister === "checklist_pendientes" ? "warning" : "default"}
+                                            onClick={() => setTypeRegister("pendientes")}
+                                            color={typeRegister === "pendientes" ? "warning" : "default"}
                                             label="pendientes"
                                         />
                                         <Chip
-                                            onClick={() => changueSection("checklist_realizados")}
-                                            color={state.typeRegister === "checklist_realizados" ? "success" : "default"}
+                                            onClick={() => setTypeRegister("realizados")}
+                                            color={typeRegister === "realizados" ? "success" : "default"}
                                             label="realizados"
                                         />
 
@@ -145,22 +133,22 @@ function EIRManiobras() {
 
                             </Paper>
 
-                            {(state.typeRegister === 'checklist_pendientes') &&
+                            {(typeRegister === 'pendientes') &&
                                 <ListManiobrasPending
-                                    requestGetRegisters={requestGetRegisters}
-                                    loadingGetRegisters={loadingGetRegisters}
-                                    errorGetRegisters={errorGetRegisters}
+                                    requestGetRegisters={dataEIR}
+                                    loadingGetRegisters={loadingEIR}
+                                    errorGetRegisters={errorEIR}
                                     resultsSearch={results}
                                     loadingSearch={loading}
                                     errorSearch={error}
                                     search={search}
                                 />}
 
-                            {(state.typeRegister === 'checklist_realizados') &&
+                            {(typeRegister === 'realizados') &&
                                 <ListCheckList
-                                    requestGetRegisters={requestGetRegisters}
-                                    loadingGetRegisters={loadingGetRegisters}
-                                    errorGetRegisters={errorGetRegisters}
+                                    requestGetRegisters={dataEIR}
+                                    loadingGetRegisters={loadingEIR}
+                                    errorGetRegisters={errorEIR}
                                     resultsSearch={results}
                                     loadingSearch={loading}
                                     errorSearch={error}
@@ -178,12 +166,11 @@ function EIRManiobras() {
                         timeout={500}
                         in={select}
                     >
-                        <Container
+                        <Box
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
-                                marginTop: '20px',
                                 paddingBottom: '20px',
                                 overflow: 'hidden',
                                 height: '100%',
@@ -210,7 +197,7 @@ function EIRManiobras() {
 
                                 </Box>
                             </Paper>
-                        </Container>
+                        </Box>
                     </Fade>
                 }
 

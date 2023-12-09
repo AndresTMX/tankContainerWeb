@@ -22,7 +22,7 @@ function useGetTanks() {
         }
     }
 
-    const tanksReady = tanks.length >=1 ? tanks.filter((tanque) => tanque.status === 'ready'):[];
+    const tanksReady = tanks.length >= 1 ? tanks.filter((tanque) => tanque.status === 'ready'):[];
 
     return {getTanks, tanks, tanksReady, tankLoading, tankError}
 

@@ -4,7 +4,7 @@ import { Container, Box, Paper, Chip, Stack, } from "@mui/material";
 //components
 import { Searcher } from "../../components/Searcher";
 import { Notification } from "../../components/Notification";
-import { InputRegistersVigilancia } from "../../components/InputRegistersVigilancia";
+import { RegistersVigilancia } from "../../components/RegistersVigilancia";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useGetRegisters } from "../../Hooks/Vigilancia/useGetRegisters";
@@ -30,11 +30,11 @@ function Vigilancia() {
                     marginTop: '20px',
                     alignItems: IsSmall ? '' : 'center',
                     minHeight: '100%',
-                    gap: '20px'
+                    gap: '10px'
                 }}
             >
                 <Paper sx={{ backgroundColor: 'whitesmoke' }} elevation={4}>
-                    <Stack sx={{ padding: '20px', borderRadius: '4px', width: '90vw', maxWidth: '100%' }}
+                    <Stack sx={{ padding: '20px', borderRadius: '4px', width: '90vw', maxWidth: '700px' }}
                         flexDirection="row"
                         justifyContent={isMovile ? "center" : "space-between"}
                         alignItems="center"
@@ -74,19 +74,15 @@ function Vigilancia() {
                 </Paper>
 
                 <Box>
-                    {typeRegister === 'entrada' &&
-                        <InputRegistersVigilancia
-                            data={data}
-                            error={error}
-                            loading={loading}
-                            search={states.search}
-                            errorSearch={states.error}
-                            loadingSearch={states.loading}
-                            resultsSearch={states.results}
-                        />
-                    }
-
-                    {typeRegister === 'salida' && <p>Registros de salida</p>}
+                    <RegistersVigilancia
+                        data={data}
+                        error={error}
+                        loading={loading}
+                        search={states.search}
+                        errorSearch={states.error}
+                        loadingSearch={states.loading}
+                        resultsSearch={states.results}
+                    />
                 </Box>
 
             </Container>
