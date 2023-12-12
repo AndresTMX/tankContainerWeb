@@ -8,22 +8,24 @@ import { GlobalContext } from "../../Context/GlobalContext";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useFormRegister } from "../../Hooks/useFormRegister";
-import { useGetTractos } from "../../Hooks/tractosManagment/useGetTractos";
 import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";
 import { useGetTransporters } from "../../Hooks/transportersManagment/useGetTransporters";
 import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
+import { ManiobrasContext } from "../../Context/ManiobrasContext";
+import { actionTypes } from "../../Reducers/ManiobrasReducer";
 //icons
 import UpdateIcon from '@mui/icons-material/Update';
 import AddIcon from '@mui/icons-material/Add';
 
-function FormRegisterManiobras({ closeModal }) {
+function FormRegisterManiobras({ closeModal, forceUpdate, setTypeManiobra }) {
 
     useEffect(() => {
         getTanks();
     }, [])
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
+    const [state, dispatch] = useContext(ManiobrasContext);
     const IsSmall = useMediaQuery('(max-width:900px)');
     const IsMovile = useMediaQuery('(max-width:500px)');
 
@@ -38,9 +40,6 @@ function FormRegisterManiobras({ closeModal }) {
     //hook de operadores
     const { states, functions } = useGetOperators();
     const { updateOperators } = functions;
-    //hook de tractos
-    const { tractos, errorTractos, GetNumTractos } = useGetTractos();
-    const allTractos = tractos.map((tracto) => tracto.tracto)
     //hook de operadores
     const { loadingOperators, operators } = states;
     const operatorsName = !loadingOperators ? operators.map((operator) => ({
@@ -69,16 +68,12 @@ function FormRegisterManiobras({ closeModal }) {
     }
 
     const submitRegister = () => {
-        if (!allTractos.includes(tracto.trim())) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Este tracto no esta registrado, comuniquese con el administrador'
-            })
-            setModal(!modal)
-        } else {
-            routerRegisters()
-            setModal(!modal)
-        }
+        routerRegisters();
+        setModal(!modal);
+        closeModal();
+        forceUpdate();  
+        setTypeManiobra('pendiente')     
+
     }
 
     const colorItemTank = (tanque) => dataTank.find((item) => item === tanque) ? 'primary' : 'default';
@@ -117,7 +112,7 @@ function FormRegisterManiobras({ closeModal }) {
                             </Typography>
                             <IconButton
                                 color="primary"
-                                onClick={() => { updateOperators(); updateAllTransports(); GetNumTractos(); }}>
+                                onClick={() => { updateOperators(); updateAllTransports(); }}>
                                 <UpdateIcon />
                             </IconButton>
                         </Stack>

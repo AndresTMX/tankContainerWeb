@@ -16,10 +16,6 @@ function useUpdateRegister() {
         
         const registros = data.registros_detalles_entradas;
 
-        const {errorTracto} = await supabase.from('tractos')
-        .update({status:'parked'})
-        .eq('tracto', registros[0].tracto)
-
         const { errorUpdateRegister } = await supabase.from('registros')
             .update({ checkIn: currenDateFormatTz })
             .eq('id', idRegister)

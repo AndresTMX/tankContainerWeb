@@ -9,7 +9,6 @@ function useGetRegisters() {
     const { typeRegister, update } = state;
 
     const tableRegisters = 'registros';
-    const tableManiobrasChecklist = 'maniobras_checklist';
     const [errorGetRegisters, setErrorGetReisters] = useState(false);
     const [requestGetRegisters, setRequestGetRegisters] = useState([]);
     const [loadingGetRegisters, setLoadingGetRegisters] = useState(true);
@@ -47,10 +46,6 @@ function useGetRegisters() {
                                 correo,
                                 contacto
                             ),
-                            tractos(
-                                tracto,
-                                status
-                            ),
                             tanques(
                                 status
                             )
@@ -69,7 +64,7 @@ function useGetRegisters() {
                     }
                 } else {
                     const filterRequest = data.length >= 1 ?
-                        data.filter((request) => request.registros_detalles_entradas[0].tractos.status === 'parked') : [];
+                        data.filter((request, index) => request.registros_detalles_entradas[index] === 'maniobras') : [];
                     setTimeout(() => {
                         setRequestGetRegisters(filterRequest)
                         setLoadingGetRegisters(false)
@@ -100,10 +95,6 @@ function useGetRegisters() {
                                 correo,
                                 contacto
                             ),
-                            tractos(
-                                tracto,
-                                status
-                            ),
                             tanques(
                                 status
                             )
@@ -124,10 +115,6 @@ function useGetRegisters() {
                                 nombre,
                                 correo,
                                 contacto
-                            ),
-                            tractos(
-                                tracto,
-                                status
                             ),
                             tanques(
                                 status

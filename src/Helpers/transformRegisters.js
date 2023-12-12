@@ -20,7 +20,7 @@ export const transformRegisters = (data) => {
   let shortNameOperator;
   let tanquesParked;
   let tanquesManiobras;
-  let tracto_status;
+  let tanquesEIR;
 
   if (typeRegister === "entrada") {
     typeChargue = data.registros_detalles_entradas[0].carga;
@@ -28,7 +28,6 @@ export const transformRegisters = (data) => {
     linea = data.registros_detalles_entradas[0].transportistas.name;
     tracto = data.registros_detalles_entradas[0].tracto;
     numeroTanques = data.registros_detalles_entradas.length;
-    tracto_status = data.registros_detalles_entradas[0].tractos?.status
     tanques = data.registros_detalles_entradas.map((registro) => ({
       id: registro.id,
       tanque: registro.numero_tanque,
@@ -39,6 +38,7 @@ export const transformRegisters = (data) => {
     }));
     tanquesParked = tanques.filter((tanque) => tanque.tanque_status === 'ready')
     tanquesManiobras = tanques.filter((tanque) => tanque.tanque_status === 'maniobras' || tanque.tanque_status === 'forconfirm' )
+    tanquesEIR = tanques.filter((tanque) => tanque.tanque_status === 'eir')
     //Datos de fecha y hora
     dayInput = data.checkIn ? dateMXFormat(data.checkIn) : 'por confirmar';
     dateInput = data.checkIn ? datetimeMXFormat(data.checkIn) : 'por confirmar';
@@ -54,7 +54,6 @@ export const transformRegisters = (data) => {
     linea = data.registros_detalles_salidas[0]?.transportistas?.name;
     tracto = data.registros_detalles_salidas[0].tracto;
     numeroTanques = data.registros_detalles_salidas?.length;
-    tracto_status = data.registros_detalles_salidas[0].tractos?.status
     tanques = data.registros_detalles_salidas.map((registro) => ({
       id: registro.id,
       tanque: registro.numero_tanque,
@@ -90,9 +89,9 @@ export const transformRegisters = (data) => {
     dateInput,
     OperatorSliceName,
     shortNameOperator,
-    tracto_status,
     dayCreat,
-    dateCreate
+    dateCreate,
+    tanquesEIR
   };
 };
 
@@ -112,7 +111,7 @@ export const filterInputRegistersForManiobras = (arrayRegisters) => {
     const dayInput = dateMXFormat(register.checkIn);
     const dateInput = datetimeMXFormat(register.checkIn);
 
-    const filteredDetails = arrayDetails.filter((detail) => detail.status === 'maniobras' && detail.carga === 'Tanque');
+    const filteredDetails = arrayDetails.filter((detail) => detail.status === 'eir' && detail.carga === 'Tanque');
 
     filteredDetails.map((item) => {
 

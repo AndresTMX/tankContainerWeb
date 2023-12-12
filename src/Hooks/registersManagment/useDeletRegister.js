@@ -22,19 +22,6 @@ function useDeletRegister() {
 
     const deleteRegisterTank = async (data) => {
 
-        try {
-            const tracto = data.registros_detalles_entradas[0].tracto;
-            const { errorTracto } = await supabase.from('tractos')
-                .update({ status: 'onroute' })
-                .eq('tracto', tracto)
-        } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Error al intentar actualizar el estatus del tracto'
-            })
-        }
-
-
         const arrayDetails = data.registros_detalles_entradas;
 
         const updateTanques = arrayDetails.map(async (item) => {
@@ -84,18 +71,7 @@ function useDeletRegister() {
     }
 
     const deleteRegisterPipa = async (data) => {
-        try {
-            const tracto = data.registros_detalles_entradas[0].tracto;
-            const { errorTracto } = await supabase.from('tractos')
-                .update({ status: 'onroute' })
-                .eq('tracto', tracto)
-        } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Error al intentar actualizar el estatus del tracto'
-            })
-        }
-
+       
         try {
             deletRegister(data.id)
         } catch (error) {

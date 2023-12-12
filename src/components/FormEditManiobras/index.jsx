@@ -37,7 +37,6 @@ function FormEditManiobras({ data, toggleModal }) {
     const [nameTransporter, setNameTransporter] = useState('');
     const cacheOperadores = JSON.parse(localStorage.getItem('operadores'));
     const cacheTransportistas = JSON.parse(localStorage.getItem('transportistas'));
-    const cacheTractos = JSON.parse(localStorage.getItem('tractos_list'));
 
     const nameOperadores = cacheOperadores.map((operador) => ({
         nombre: operador.nombre,
@@ -49,15 +48,6 @@ function FormEditManiobras({ data, toggleModal }) {
         id: transporter.id
     }));
 
-    const tractosList = []
-
-    const extractTractos = () => {
-        cacheTractos.map((item) => {
-            tractosList.push(item.tracto)
-        });
-    }
-
-    extractTractos();
 
     const SendChangues = () => {
 
@@ -121,10 +111,9 @@ function FormEditManiobras({ data, toggleModal }) {
                             onChange={(e) => setNameTransporter(e.target.value)}
                         />
 
-                        <SelectSimple
+                        <InputText
                             title={'Nueva tractocamion'}
                             value={idTracto}
-                            options={tractosList}
                             width={'100%'}
                             required={true}
                             onChange={(e) => setIdTracto(e.target.value)}

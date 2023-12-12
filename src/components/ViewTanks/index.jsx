@@ -4,6 +4,7 @@ import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
 import { ContainerScroll } from "../ContainerScroll";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
+import { useAddContainer } from "../../Hooks/Maniobras/useAddContainer";
 //icons
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -16,8 +17,12 @@ function ViewTanks({ typeView, toggle, data }) {
 
     const [dataTank, setDataTank] = useState([])
     const dataTanques = data.registros_detalles_entradas;
+    const { addContainerToManiobra } = useAddContainer();
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
     const { tanks, tanksReady, tankLoading, tankError, getTanks } = useGetTanks();
+
+    const colorItemTank = (tanque) => dataTank.find((item) => item === tanque) ? '#0288d1' : 'default';
+    const colorItemText = (tanque) => dataTank.find((item) => item === tanque) ? 'white' : 'default';
 
     const toggleTank = (tank) => {
 
@@ -50,8 +55,25 @@ function ViewTanks({ typeView, toggle, data }) {
         }
     }
 
-    const colorItemTank = (tanque) => dataTank.find((item) => item === tanque) ? '#0288d1' : 'default';
-    const colorItemText = (tanque) => dataTank.find((item) => item === tanque) ? 'white' : 'default';
+    const addContainers = async() => {
+
+        const registers = []
+
+        dataTank.map((tanque) => {
+            registers.push({
+                carga: 'tanque',
+                tracto: dataTanques[0].tracto,
+                operador: dataTanques[0].operadores.id,
+                numero_tanque:tanque,
+                transportista: dataTanques[0].transportistas.id,
+                status: 'maniobras'
+            })
+        })
+
+        await addContainerToManiobra(data.id, registers);
+        toggle(false)
+    }
+
 
     return (
         <>
@@ -87,7 +109,12 @@ function ViewTanks({ typeView, toggle, data }) {
                             )}
                         </Stack>
                     </ContainerScroll>
-                    <Button color="primary" variant="contained">Agregar</Button>
+                    <Button 
+                    onClick={addContainers}
+                    color="primary" 
+                    variant="contained"
+                    >Agregar
+                    </Button>
                 </Stack>
             </Paper>
         </>

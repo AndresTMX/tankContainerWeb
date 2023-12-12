@@ -20,8 +20,8 @@ import { FormEditManiobras } from "../FormEditManiobras";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useUpdateRegister } from "../../Hooks/registersManagment/useUpdateRegister";
 import { useDeletRegister } from "../../Hooks/registersManagment/useDeletRegister";
-import { useUpdateTracto } from "../../Hooks/tractosManagment/useUpdateTracto";
 import { usePostRegister } from "../../Hooks/registersManagment/usePostRegister";
+import { useDownContainer } from "../../Hooks/Maniobras/useDownContainer";
 //icons
 import InfoIcon from "@mui/icons-material/Info";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -29,15 +29,14 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 //helpers
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { transformRegisters } from "../../Helpers/transformRegisters";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
-import { dateMXFormat, tiempoTranscurrido, dateMX } from "../../Helpers/date";
+import { tiempoTranscurrido, } from "../../Helpers/date";
 //context
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { GlobalContext } from "../../Context/GlobalContext";
 
-function HistoryItem({ data, type }) {
+function HistoryItem({ data, type, typeManiobra }) {
 
   const IsSmall = useMediaQuery("(max-width:900px)");
   const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
@@ -106,6 +105,7 @@ function HistoryItem({ data, type }) {
 
         {type === 'maniobras' && (
           <HistoryItemManiobras
+            typeManiobra={typeManiobra}
             data={data}
             IsSmall={IsSmall}
             ToggleModalInfoOperator={ToggleModalInfoOperator} />
@@ -176,7 +176,6 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
     dateInput,
     OperatorSliceName,
     shortNameOperator,
-    tracto_status,
     dayCreat,
     dateCreate,
   } = transformRegisters(data);
@@ -544,7 +543,7 @@ export function HistoryItemEIR({ data, IsSmall, ToggleModalInfoOperator }) {
   );
 }
 
-export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator }) {
+export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, typeManiobra }) {
 
   const {
     typeRegister,
@@ -559,7 +558,6 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
     dateInput,
     OperatorSliceName,
     shortNameOperator,
-    tracto_status,
     dayCreat,
     dateCreate,
   } = transformRegisters(data);
@@ -570,6 +568,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
 
   const { routerDelet } = useDeletRegister();
   const { sendOutputTractoEmpty } = usePostRegister();
+  const { downContainerToManiobra } = useDownContainer();
 
   const returnEmptyTracto = async(data) => {
     await sendOutputTractoEmpty(data)
@@ -641,7 +640,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
 
           <Stack flexDirection='row' gap='10px'>
 
-            {(typeChargue === 'Pipa' && state.typeRegister === 'confirmado') &&
+            {(typeChargue === 'Pipa' && typeManiobra === 'confirmado') &&
               <Button
                 onClick={() => { console.log(data.id) }}
                 size="small"
@@ -651,7 +650,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
                 pasar a lavado
               </Button>}
 
-            {(typeChargue != 'Pipa' && state.typeRegister === 'confirmado') &&
+            {(typeChargue != 'Pipa' && typeManiobra === 'confirmado') &&
               <Button
                 onClick={() => setModalTanks(!modalTanks)}
                 size="small"
@@ -661,7 +660,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
                 Subir tanques
               </Button>}
 
-            {(typeChargue != 'Pipa' && state.typeRegister === 'confirmado') &&
+            {(typeChargue != 'Pipa' && typeManiobra === 'confirmado') &&
               <Button
                 onClick={() => returnEmptyTracto(data)}
                 size="small"
@@ -671,7 +670,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
                 retornar vacio
               </Button>}
 
-            {(state.typeRegister === 'pendiente') &&
+            {(typeManiobra === 'pendiente') &&
               <Button
                 onClick={() => setEditData(true)}
                 size="small"
@@ -681,7 +680,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
                 editar registro
               </Button>}
 
-            {(state.typeRegister === 'pendiente') &&
+            {(typeManiobra === 'pendiente') &&
               <Button
                 onClick={() => routerDelet(typeChargue, data)}
                 size="small"
@@ -779,6 +778,16 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator })
                     label={`# ${index + 1}`}
                     text={typeChargue === 'Tanque' ? tanque.tanque : tanque.pipa}
                   />
+
+                 {typeManiobra === 'confirmado' && 
+                 <Button 
+                  onClick={()=> downContainerToManiobra(tanque.id, tanque.tanque)}
+                  size="small"
+                  variant="contained"
+                  color="warning"
+                  >
+                    Bajar tanque
+                  </Button>}
 
                 </Box>
                 {numeroTanques != index + 1 && (

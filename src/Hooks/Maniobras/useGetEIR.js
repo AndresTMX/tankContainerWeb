@@ -32,10 +32,6 @@ function useGetEIR(typeRegister) {
                                 correo,
                                 contacto
                             ),
-                            tractos(
-                                tracto,
-                                status
-                            ),
                             tanques(
                                 status
                             )

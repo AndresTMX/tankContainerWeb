@@ -50,33 +50,7 @@ function useEditRegisters() {
 
     }
 
-    const returnTractoEmpty = async (idRegister, data) => {
 
-        try {
-            const tracto = data.registros_detalles_entradas.tracto;
-            const { errorTracto } = await supabase.select('tractos')
-                .update({ status: 'forconfirm'})
-                .eq('tracto', tracto);
-
-            if (errorTracto) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: 'Error al actualizar el estaus del tracto'
-                })
-            }
-
-        } catch (error) {
-            console.error(error)
-        }
-
-        try {
-            
-        } catch (error) {
-            
-        }
-
-
-    }
 
     return { editRegister }
 }

@@ -30,10 +30,6 @@ function useGetRegisters(typeRegister) {
                                 correo,
                                 contacto
                             ),
-                            tractos(
-                                tracto,
-                                status
-                            ),
                             tanques(
                                 status
                             )
@@ -76,10 +72,6 @@ function useGetRegisters(typeRegister) {
                     nombre,
                     correo,
                     contacto
-                ),
-                tractos(
-                    tracto,
-                    status
                 ),
                 tanques(
                     status

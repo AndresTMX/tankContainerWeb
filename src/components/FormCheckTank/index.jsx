@@ -8,7 +8,6 @@ import { usePostRegister } from "../../Hooks/registersManagment/usePostRegister"
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
-import { useGetTractos } from "../../Hooks/tractosManagment/useGetTractos";
 //helpers
 import { InputText } from "../InputText";
 import { ToggleItem } from "../../Helpers/crud";
