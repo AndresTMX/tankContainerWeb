@@ -28,7 +28,7 @@ function usePostRegister() {
         try {
             const { data, error } = await supabase
                 .from(tableRegisters)
-                .insert({ user_id: session.id, type: type })
+                .insert({ user_id: session.id, type: type, status: 'maniobras' })
                 .select()
             return data
         } catch (error) {
@@ -168,14 +168,16 @@ function usePostRegister() {
             })
         }
 
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: false
-        });
-        dispatchGlobal({
-            type: actionTypesGlobal.setNotification,
-            payload: 'Registro enviado'
-        })
+        setTimeout(() => {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            });
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Registro enviado'
+            })
+        }, 1200)
 
     }
 
@@ -205,14 +207,16 @@ function usePostRegister() {
             })
         }
 
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: false
-        });
-        dispatchGlobal({
-            type: actionTypesGlobal.setNotification,
-            payload: 'Registro enviado'
-        })
+        setTimeout(() => {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            });
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Registro enviado'
+            })
+        }, 1200)
 
 
     }
@@ -225,61 +229,57 @@ function usePostRegister() {
         const registerData = await addRegisterData('entrada');
         const detailsRegister = await addDetailsRegisterData(data, registerData[0].id, 'vacio');
 
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: false
-        });
-        dispatchGlobal({
-            type: actionTypesGlobal.setNotification,
-            payload: 'Registro enviado'
-        })
+        setTimeout(() => {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            });
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Registro enviado'
+            })
+        }, 1200)
     }
 
-    const sendOutputRegisters = async (data, newStatus) => {
+    const sendOutputRegisters = async (idRegistro, data, newStatus) => {
+
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
-        const updateStatus = data.map(async (item) => {
-            try {
-                await updateStatusRegisters(item.id, newStatus)
-            } catch (error) {
-                dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
-            }
-        });
-
         try {
-            await Promise.all(updateStatus);
+            const { error } = await supabase.from('registros').update({ status: 'finish' }).eq('id', idRegistro)
+
+            if (error) {
+                throw new Error('Error al intentar actualizar el estatus del registro')
+            }
         } catch (error) {
-            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
-            setError(error);
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Error al intentar actualizar el estatus del registro'
+            })
         }
 
         const registerData = await addRegisterData('salida');
 
-        try {
-
-            const outputRegisters = data.map(async (register) => {
-                try {
-                    await addDetailsRegisterData(register, registerData[0].id, 'salida');
-                } catch (error) {
-                    dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
-                    setError(error);
-                }
-            });
-
+        const outputRegisters = data.map(async (register) => {
             try {
-                await Promise.all(outputRegisters);
-                setTimeout(() => {
-                    dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
-                    dispatch({ type: actionTypes.setTypeRegister, payload: 'salida' })
-                }, 2000)
-
+                await addDetailsRegisterData(register, registerData[0].id, 'salida');
             } catch (error) {
                 dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
                 setError(error);
             }
+        });
+
+        try {
+            await Promise.all(outputRegisters);
         } catch (error) {
-            dispatch({ type: actionTypesGlobal.setLoading, payload: false });
+            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+            setError(error);
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Error al intentar actualizar el estatus del registro'
+            })
         }
+
 
     };
 
@@ -358,6 +358,8 @@ function usePostRegister() {
             type: actionTypesGlobal.setLoading,
             payload: true
         });
+
+        const { errorRegiser } = await supabase.from('registros').update({ status: 'finish' }).eq('id', data.id)
 
         const dataOutputRegister = {
             carga: 'vacio',
@@ -466,6 +468,74 @@ function usePostRegister() {
 
     }
 
+    const returnEmpty = async (data) => {
+
+        dispatchGlobal({
+            type: actionTypesGlobal.setLoading,
+            payload: true
+        });
+
+        const { errorRegiser } = await supabase.from('registros').update({ status: 'finish' }).eq('id', data.id)
+
+        const dataOutputRegister = {
+            carga: 'vacio',
+            tracto: data.registros_detalles_entradas[0].tracto,
+            numero_tanque: null,
+            transportista: data.registros_detalles_entradas[0].transportistas.id,
+            operador: data.registros_detalles_entradas[0].operadores.id
+        }
+
+        try {
+            const dataRegister = await addRegisterData('salida');
+            const detailsRegister = await addDetailsRegisterData(dataOutputRegister, dataRegister[0].id, 'salida');
+        } catch (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Ocurrio un error al intentar subir registro de salida'
+            });
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            });
+        }
+
+
+        const tanksInManiobrasState = data.registros_detalles_entradas.length >= 1?
+        data.registros_detalles_entradas.filter((tanque) => tanque.status === 'maniobras'):[]
+
+
+        const tanquesUpdates =  tanksInManiobrasState.map(async(tanque) => {
+            const {error} = await supabase.from('tanques').update({status:'eir'}).eq('tanque', tanque.numero_tanque)
+        })
+
+        await Promise.all(tanquesUpdates);
+
+        const registersUpdates = tanksInManiobrasState.map(async(tanque) => {
+            const {error} = await supabase.from('registros_detalles_entradas').update({status:'eir'}).eq('registro_id', data.id)
+        })
+
+        await Promise.all(registersUpdates);
+
+
+        dispatch({
+            type: actionTypes.setSelectOutputRegister,
+            payload: []
+        })
+
+
+        dispatchGlobal({
+            type: actionTypesGlobal.setLoading,
+            payload: false
+        });
+
+        dispatchGlobal({
+            type: actionTypesGlobal.setNotification,
+            payload: 'Registro enviado'
+        });
+
+
+    }
+
     return {
         sendInputRegisterEmptyTracto,
         sendInputRegistersTank,
@@ -475,6 +545,7 @@ function usePostRegister() {
         sendOutputTankRegisters,
         sendOutputTractoEmpty,
         sendOutputPipaRegister,
+        returnEmpty,
     }
 
 }

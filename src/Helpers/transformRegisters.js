@@ -10,12 +10,12 @@ export const transformRegisters = (data) => {
   let tanques;
   let operador;
   let tracto;
-  let numeroTanques;
   let typeChargue;
   let dayInput;
   let dateInput;
   let dayCreat;
   let dateCreate;
+  let numeroTanques;
   let OperatorSliceName;
   let shortNameOperator;
   let tanquesParked;
@@ -37,7 +37,8 @@ export const transformRegisters = (data) => {
       pipa: registro.numero_pipa
     }));
     tanquesParked = tanques.filter((tanque) => tanque.tanque_status === 'ready')
-    tanquesManiobras = tanques.filter((tanque) => tanque.tanque_status === 'maniobras' || tanque.tanque_status === 'forconfirm' )
+    tanquesManiobras = tanques.length >= 1?
+    tanques.filter((tanque) => tanque.tanque_status === 'maniobras' || tanque.tanque_status === 'forconfirm'): [];
     tanquesEIR = tanques.filter((tanque) => tanque.tanque_status === 'eir')
     //Datos de fecha y hora
     dayInput = data.checkIn ? dateMXFormat(data.checkIn) : 'por confirmar';
@@ -50,7 +51,7 @@ export const transformRegisters = (data) => {
     shortNameOperator = `${OperatorSliceName[0]} ${OperatorSliceName[1]}`;
   } else {
     typeChargue = data.registros_detalles_salidas[0]?.carga;
-    operador = data.registros_detalles_salidas[0].operadores;
+    operador = data.registros_detalles_salidas[0]?.operadores;
     linea = data.registros_detalles_salidas[0]?.transportistas?.name;
     tracto = data.registros_detalles_salidas[0].tracto;
     numeroTanques = data.registros_detalles_salidas?.length;
@@ -63,6 +64,8 @@ export const transformRegisters = (data) => {
       pipa: registro.numero_pipa
 
     }));
+    tanquesManiobras = tanques.length >= 1?
+    tanques.filter((tanque) => tanque.tanque_status === 'maniobras' || tanque.tanque_status === 'forconfirm'): [];
     tanquesParked = tanques.filter((tanque) => tanque.tanque_status === 'onroute')
     //Datos de fecha y hora
     dayInput = data.checkIn ? dateMXFormat(data.checkIn) : 'por confirmar';
@@ -100,7 +103,7 @@ funcion que filtra los registros de entrada y devuelve solo los
 registros que tienen el status 'maniobras' para ser usados en la
 pagina de maniobras y posteriormente hacerles checklist
 */
-export const filterInputRegistersForManiobras = (arrayRegisters) => {
+export const filterInputRegistersForStatus = (arrayRegisters, status) => {
 
   const registersFiltered = []
 
@@ -111,7 +114,7 @@ export const filterInputRegistersForManiobras = (arrayRegisters) => {
     const dayInput = dateMXFormat(register.checkIn);
     const dateInput = datetimeMXFormat(register.checkIn);
 
-    const filteredDetails = arrayDetails.filter((detail) => detail.status === 'eir' && detail.carga === 'Tanque');
+    const filteredDetails = arrayDetails.filter((detail) => detail.status === status && detail.carga === 'tanque');
 
     filteredDetails.map((item) => {
 
@@ -166,4 +169,31 @@ export const filterInputRegistersForRaparacion = (arrayRegisters) => {
   })
 
   return registersFiltered
+}
+
+/*funcion que filtra los registros cuya carga sea del tipo y estatus 
+especifico y devuelve la misma estructura*/
+
+export const filterManiobrasForStatus = (data, status) => {
+
+  const dataFiltered = []
+
+  data.forEach(element => {
+
+    const type = element.type;
+    const arrayDetails = type === 'entrada' ?
+      element.registros_detalles_entradas : element.registros_detalles_entradas;
+
+    const detailsFiltered = arrayDetails.filter((detail) => {
+
+      if (detail.status === status) {
+        return detail
+      }
+    })
+
+   dataFiltered.push({...element, detailsFiltered})
+    
+  });
+  
+  return dataFiltered
 }

@@ -16,7 +16,7 @@ function Vigilancia() {
     const isMovile = useMediaQuery("(max-width:640px)");
 
     const [typeRegister, setTypeRegister] = useState("entrada")
-    const { data, loading, error } = useGetRegisters(typeRegister);
+    const { data, loading, error, updater } = useGetRegisters(typeRegister);
 
     const { states, functions } = useSearcherVigilancia(data);
     const { searching, onChangueSearch, searchingKey } = functions;
@@ -78,6 +78,7 @@ function Vigilancia() {
                         data={data}
                         error={error}
                         loading={loading}
+                        updater={updater}
                         search={states.search}
                         errorSearch={states.error}
                         loadingSearch={states.loading}

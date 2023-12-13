@@ -34,6 +34,8 @@ function RegistersManiobras() {
     const [maniobraModal, setManiobraModal] = useState(false);
     const closeModalManiobras = () => setManiobraModal(!maniobraModal);
 
+    const changueTypeManiobra = (newType) => setTypeManiobra(newType);
+
     return (
         <>
             <Box sx={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: '700px', margin: 'auto' }}>
@@ -107,10 +109,12 @@ function RegistersManiobras() {
                             <Stack gap="20px">
                                 {maniobras.map((item) => (
                                     <HistoryItem
-                                        typeManiobra={typeManiobra}
                                         type="maniobras"
-                                        key={item.id}
                                         data={item}
+                                        key={item.id}
+                                        updater={forceUpdate}
+                                        typeManiobra={typeManiobra}
+                                        changueTypeManiobra={changueTypeManiobra}
                                     />
                                 ))}
                             </Stack>

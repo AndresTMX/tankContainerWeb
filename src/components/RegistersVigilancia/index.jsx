@@ -6,7 +6,7 @@ import { HistoryItemLoading } from "../HistoryItem";
 import { HistoryItem } from "../HistoryItem"
 
 
-function RegistersVigilancia({ data, error, loading, search, resultsSearch, errorSearch, loadingSearch }) {
+function RegistersVigilancia({ data, error, loading, search, resultsSearch, errorSearch, loadingSearch, updater }) {
 
     return (
         <>
@@ -17,11 +17,12 @@ function RegistersVigilancia({ data, error, loading, search, resultsSearch, erro
                         <NotConexionState />
                     )}
 
-                    {(!error && !errorSearch && !loading && !loadingSearch && resultsSearch.length === 0 && resultsSearch.length === 0 && data.length >= 1) &&
+                    {(!error && !errorSearch && !loading && !loadingSearch && resultsSearch.length === 0 && data.length >= 1) &&
                         <Fade in={!loading} timeout={500}>
                             <Stack gap="20px">
                                 {data.map((item) => (
                                     <HistoryItem
+                                        updater={updater}
                                         type="vigilancia"
                                         key={item.id}
                                         data={item}
@@ -38,6 +39,7 @@ function RegistersVigilancia({ data, error, loading, search, resultsSearch, erro
                                 {data.map((item) => (
                                     <HistoryItem
                                         type="vigilancia"
+                                        updater={updater}
                                         key={item.id}
                                         data={item}
                                     />
@@ -63,7 +65,11 @@ function RegistersVigilancia({ data, error, loading, search, resultsSearch, erro
                         </Fade>
                     }
 
-
+                    {(!error && !errorSearch && !loading && !loadingSearch  && data.length === 0) &&
+                        <Box sx={{ width: '90vw', maxWidth: '700px' }} >
+                            <Alert sx={{ width: '100%' }} severity="warning">{'Sin maniobras pendientes'}</Alert>
+                        </Box>
+                    }
 
                 </ContainerScroll>
             </Box>

@@ -58,9 +58,9 @@ function FormRegisterManiobras({ closeModal, forceUpdate, setTypeManiobra }) {
     })) : [];
 
     const optionSelect = [
-        { id: 'Tanque', nombre: 'Tanque' },
-        { id: 'Pipa', nombre: 'Pipa' },
-        { id: 'Vacio', nombre: 'Sin carga' },
+        { id: 'tanque', nombre: 'Tanque' },
+        { id: 'pipa', nombre: 'Pipa' },
+        { id: 'vacio', nombre: 'Sin carga' },
     ]
 
     const ToggleModalForm = (event) => {
@@ -71,8 +71,10 @@ function FormRegisterManiobras({ closeModal, forceUpdate, setTypeManiobra }) {
         routerRegisters();
         setModal(!modal);
         closeModal();
-        forceUpdate();  
-        setTypeManiobra('pendiente')     
+        setTimeout(() => {
+            forceUpdate();
+            setTypeManiobra('pendiente')
+        }, 1200)
 
     }
 
@@ -87,10 +89,10 @@ function FormRegisterManiobras({ closeModal, forceUpdate, setTypeManiobra }) {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems:'center',
+                    alignItems: 'center',
                     width: '90%',
                     padding: '20px',
-                    maxWidth:'800px'
+                    maxWidth: '800px'
                 }}>
 
                 <Box width={'100%'} maxWidth={'900px'} display={'flex'} flexDirection={'column'} gap={'10px'}>
@@ -158,7 +160,7 @@ function FormRegisterManiobras({ closeModal, forceUpdate, setTypeManiobra }) {
                                 />
                             </Stack>
 
-                            {(typeChargue === 'Tanque') &&
+                            {(typeChargue === 'tanque') &&
                                 <Stack width={'100%'} gap='10px'>
                                     <Stack flexWrap={'wrap'} flexDirection={'row'} alignItems={'center'} gap={'20px'} justifyContent={'space-between'}>
                                         <Typography variant='caption'>Tanques disponibles</Typography>
@@ -192,7 +194,7 @@ function FormRegisterManiobras({ closeModal, forceUpdate, setTypeManiobra }) {
                                 </Stack>}
 
 
-                            {typeChargue === 'Pipa' &&
+                            {typeChargue === 'pipa' &&
                                 <Stack
                                     alignItems={'center'}
                                     flexDirection={IsMovile ? 'column' : 'row'}

@@ -6,8 +6,12 @@ function useGetRegisters(typeRegister) {
     const [data, setData] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(null);
+    const [updateForce, setUpdateForce] = useState(false)
+
+    const updater = () => setUpdateForce(!updateForce);
 
     const getInputRegisters = async () => {
+        setError(null)
         setLoading(true);
         const { data, error } = await supabase
             .from('registros')
@@ -52,6 +56,7 @@ function useGetRegisters(typeRegister) {
     }
 
     const getOutputRegisters = async () => {
+        setError(null)
         setLoading(true);
         const { data, error } = await supabase
             .from('registros')
@@ -108,11 +113,11 @@ function useGetRegisters(typeRegister) {
 
     useEffect(() => {
         routerFetch();
-    }, [typeRegister])
+    }, [typeRegister, updateForce])
 
 
 
-    return { getInputRegisters, getOutputRegisters, data, error, loading }
+    return { getInputRegisters, getOutputRegisters, updater, data, error, loading }
 }
 
 export { useGetRegisters };

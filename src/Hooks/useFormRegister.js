@@ -94,7 +94,7 @@ function useFormRegister() {
   const routeTank = async () => {
     let registers = [];
 
-    if (typeChargue === "Tanque" && validateTank()) {
+    if (typeChargue === "tanque" && validateTank()) {
 
       dataTank.map((value, index) => {
         if (value != "") {
@@ -107,7 +107,6 @@ function useFormRegister() {
           });
         }
       });
-      console.log(registers)
       const request = await sendInputRegistersTank(registers)
       clearInputs()
     }
@@ -143,7 +142,6 @@ function useFormRegister() {
       }
     })
 
-    console.log(registers)
     const request = await sendInputRegistersPipa(registers)
     clearInputs()
   }
@@ -151,9 +149,9 @@ function useFormRegister() {
   const routerRegisters = () => {
 
     const actions = {
-      Tanque: () => routeTank(),
-      Pipa: () => routePipa(),
-      Vacio: () => routeEmptyTank(),
+      tanque: () => routeTank(),
+      pipa: () => routePipa(),
+      vacio: () => routeEmptyTank(),
     }
 
     if (actions[typeChargue]) {

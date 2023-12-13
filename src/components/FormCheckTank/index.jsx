@@ -156,9 +156,9 @@ function FormCheckTank() {
             const type = selectOutputRegisters[0].carga
 
             const router = {
-                Tanque: () => sendOutputRegistersTank(),
-                Pipa: () => sendOutputRegisterPipa(),
-                Vacio: () => sendOutputRegisterEmptyTracto(),
+                tanque: () => sendOutputRegistersTank(),
+                pipa: () => sendOutputRegisterPipa(),
+                vacio: () => sendOutputRegisterEmptyTracto(),
             }
 
             if (router[typeRegister]) {
@@ -233,11 +233,11 @@ function FormCheckTank() {
                                     }}
                                 >
 
-                                    {typeRegister === 'Tanque' && <Typography>{`N° de tanque ${tank.numero_tanque}`}</Typography>}
+                                    {typeRegister === 'tanque' && <Typography>{`N° de tanque ${tank.numero_tanque}`}</Typography>}
 
-                                    {typeRegister === 'Pipa' && <Typography>{`Pipa N° ${tank.tracto}`}</Typography>}
+                                    {typeRegister === 'pipa' && <Typography>{`Pipa N° ${tank.tracto}`}</Typography>}
 
-                                    {typeRegister === 'Vacio' && <Typography>{`Tractocamion vacio # ${tank.tracto}`}</Typography>}
+                                    {typeRegister === 'vacio' && <Typography>{`Tractocamion vacio # ${tank.tracto}`}</Typography>}
 
                                     <IconButton
                                     >
@@ -259,7 +259,7 @@ function FormCheckTank() {
                         required={true}
                     />
 
-                    {(typeRegister === 'Tanque') &&
+                    {(typeRegister === 'tanque') &&
                         <InputText
                             label='tracto'
                             value={selectTracto}

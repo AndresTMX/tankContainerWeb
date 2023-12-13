@@ -18,7 +18,7 @@ function useDownContainer() {
         })
 
         try {
-            const { error } = await supabase.from('taques')
+            const { error } = await supabase.from('tanques')
                 .update({ status: 'eir' })
                 .eq('tanque', tanque)
 
@@ -46,20 +46,17 @@ function useDownContainer() {
                 payload: `Error eliminar el registro del tanque ${tanque}`
             })
         }
-        
-        dispatch({
-            type: actionTypes.setUpdate,
-            payload: !state.update
-        })
 
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: false
-        })
-        dispatchGlobal({
-            type: actionTypesGlobal.setNotification,
-            payload: `Tanque bajado a maniobras`
-        })
+        setTimeout(() => {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            })
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: `Tanque bajado a maniobras`
+            })
+        }, 1200)
 
     }
 

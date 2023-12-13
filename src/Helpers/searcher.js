@@ -1,4 +1,3 @@
-import { filterInputRegistersForManiobras } from "./transformRegisters";
 
 //funcion para buscar dentro de vigilancia
 export function filterSearchVigilancia( busqueda, array) {

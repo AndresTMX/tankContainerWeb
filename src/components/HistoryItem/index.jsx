@@ -12,6 +12,7 @@ import {
   Paper,
   Skeleton,
   Container,
+  Alert,
 } from "@mui/material";
 import { TextGeneral } from "../TextGeneral";
 import { ViewTanks } from "../ViewTanks";
@@ -36,7 +37,7 @@ import { tiempoTranscurrido, } from "../../Helpers/date";
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { GlobalContext } from "../../Context/GlobalContext";
 
-function HistoryItem({ data, type, typeManiobra }) {
+function HistoryItem({ data, type, typeManiobra, updater, changueTypeManiobra }) {
 
   const IsSmall = useMediaQuery("(max-width:900px)");
   const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
@@ -90,6 +91,7 @@ function HistoryItem({ data, type, typeManiobra }) {
         {type === 'vigilancia' && (
           <HistoryItemVigilancia
             data={data}
+            updater={updater}
             IsSmall={IsSmall}
             ToggleModalInfoOperator={ToggleModalInfoOperator}
 
@@ -105,9 +107,11 @@ function HistoryItem({ data, type, typeManiobra }) {
 
         {type === 'maniobras' && (
           <HistoryItemManiobras
-            typeManiobra={typeManiobra}
             data={data}
+            updater={updater}
             IsSmall={IsSmall}
+            typeManiobra={typeManiobra}
+            changueTypeManiobra={changueTypeManiobra}
             ToggleModalInfoOperator={ToggleModalInfoOperator} />
         )}
 
@@ -162,12 +166,13 @@ function HistoryItem({ data, type, typeManiobra }) {
 
 export { HistoryItem };
 
-export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, }) {
+export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, updater }) {
 
   const {
     typeRegister,
     linea,
     tanques,
+    tanquesManiobras,
     operador,
     tracto,
     numeroTanques,
@@ -182,7 +187,17 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
 
   const [modalConfirm, setModalConfirm] = useState(false);
 
-  const { checkRegisterWhitId } = useUpdateRegister();
+  const { checkRegisterWhitId, checkOutRegisterWhitId } = useUpdateRegister();
+
+  const checkIn = async() => {
+    await checkRegisterWhitId(data.id, 'maniobras', data)
+    updater()
+  }
+
+  const checkOut = async() => {
+    await checkOutRegisterWhitId(data.id, 'finish', data)
+    updater()
+  }
 
   return (
     <>
@@ -248,7 +263,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
 
             {(typeRegister === 'entrada') &&
               <Button
-                onClick={() => checkRegisterWhitId(data.id, 'maniobras', data)}
+                onClick={checkIn}
                 size="small"
                 variant="contained"
                 color="primary"
@@ -259,6 +274,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
 
             {(typeRegister === 'salida') &&
               <Button
+                onClick={checkOut}
                 size="small"
                 variant="contained"
                 color="primary"
@@ -326,7 +342,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
           </Stack>
         </Box>
 
-        {typeChargue === "Tanque" && (
+        {( typeChargue != 'vacio' && tanques.length >= 1) && (
           <Stack
             justifyContent="center"
             spacing="10px"
@@ -336,7 +352,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
               padding: "15px",
             }}
           >
-            <strong>Tanques</strong>
+            <strong>{`${typeChargue}s`}</strong>
             {tanques.map((tanque, index) => (
               <Box key={tanque.id}>
                 <Box
@@ -351,7 +367,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
                   <TextGeneral
                     variant="row"
                     label={`# ${index + 1}`}
-                    text={tanque.tanque}
+                    text={typeChargue === 'tanque' ? tanque.tanque : tanque.pipa}
                   />
 
                 </Box>
@@ -506,7 +522,7 @@ export function HistoryItemEIR({ data, IsSmall, ToggleModalInfoOperator }) {
               flexItem
             />
             <TextGeneral width={'100px'} label="Tipo de carga" text={carga} />
-            {(carga === 'Tanque') && <>
+            {(carga === 'tanque') && <>
               <Divider
                 orientation={IsSmall ? "horizontal" : "vertical"}
                 flexItem
@@ -543,7 +559,7 @@ export function HistoryItemEIR({ data, IsSmall, ToggleModalInfoOperator }) {
   );
 }
 
-export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, typeManiobra }) {
+export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, typeManiobra, updater, changueTypeManiobra }) {
 
   const {
     typeRegister,
@@ -567,20 +583,31 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
   const [editData, setEditData] = useState(false);
 
   const { routerDelet } = useDeletRegister();
-  const { sendOutputTractoEmpty } = usePostRegister();
+  const { returnEmpty } = usePostRegister();
   const { downContainerToManiobra } = useDownContainer();
 
-  const returnEmptyTracto = async(data) => {
-    await sendOutputTractoEmpty(data)
-    dispatch({
-      type:actionTypes.setUpdate,
-      payload: !state.update
-    })
+  const returnEmptyTracto = async () => {
+    await returnEmpty(data)
+    updater()
+  }
+
+  const dowTank = (tanque) => {
+    downContainerToManiobra(tanque.id, tanque.tanque)
+    setTimeout(() => {
+      updater()
+    }, 1200)
   }
 
   return (
     <>
       <Stack spacing="8px" flexDirection="column">
+
+        {(typeChargue === "tanque" && tanquesManiobras.length === 0) &&
+          <Alert sx={{ width: '100%' }} severity="info">
+            Puedes subir tanques a este tractocamion para generar una salida
+          </Alert>
+        }
+
         <Stack
           flexDirection="row"
           justifyContent="space-between"
@@ -618,7 +645,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
               }}
             />
 
-              <Chip
+            <Chip
               size="small"
               color={typeRegister === "entrada" ? "success" : "warning"}
               label={typeRegister}
@@ -640,7 +667,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
 
           <Stack flexDirection='row' gap='10px'>
 
-            {(typeChargue === 'Pipa' && typeManiobra === 'confirmado') &&
+            {(typeChargue === 'pipa' && typeManiobra === 'confirmado') &&
               <Button
                 onClick={() => { console.log(data.id) }}
                 size="small"
@@ -650,7 +677,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
                 pasar a lavado
               </Button>}
 
-            {(typeChargue != 'Pipa' && typeManiobra === 'confirmado') &&
+            {(typeChargue != 'pipa' && typeManiobra === 'confirmado' && tanquesManiobras.length === 0) &&
               <Button
                 onClick={() => setModalTanks(!modalTanks)}
                 size="small"
@@ -660,9 +687,9 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
                 Subir tanques
               </Button>}
 
-            {(typeChargue != 'Pipa' && typeManiobra === 'confirmado') &&
+            {(typeChargue != 'pipa' && typeManiobra === 'confirmado') &&
               <Button
-                onClick={() => returnEmptyTracto(data)}
+                onClick={returnEmptyTracto}
                 size="small"
                 variant="contained"
                 color="error"
@@ -707,6 +734,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
             padding: "15px",
           }}
         >
+
           <Stack
             width={'100%'}
             flexDirection={IsSmall ? "column" : "row"}
@@ -714,6 +742,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
             alignItems={IsSmall ? "start" : "center"}
             gap="10px"
           >
+
             <TextGeneral width={'200px'} text={linea} label="Linea" />
             <Divider
               orientation={IsSmall ? "horizontal" : "vertical"}
@@ -724,6 +753,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
               orientation={IsSmall ? "horizontal" : "vertical"}
               flexItem
             />
+
             <TextGeneral width={'100px'} label="Tipo de carga" text={typeChargue} />
 
           </Stack>
@@ -751,7 +781,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
           </Stack>
         </Box>
 
-        {(typeChargue === "Tanque") && (
+        {(typeChargue === "tanque" && tanquesManiobras.length >= 1) && (
           <Stack
             justifyContent="center"
             spacing="10px"
@@ -776,18 +806,18 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
                   <TextGeneral
                     variant="row"
                     label={`# ${index + 1}`}
-                    text={typeChargue === 'Tanque' ? tanque.tanque : tanque.pipa}
+                    text={typeChargue === 'tanque' ? tanque.tanque : tanque.pipa}
                   />
 
-                 {typeManiobra === 'confirmado' && 
-                 <Button 
-                  onClick={()=> downContainerToManiobra(tanque.id, tanque.tanque)}
-                  size="small"
-                  variant="contained"
-                  color="warning"
-                  >
-                    Bajar tanque
-                  </Button>}
+                  {typeManiobra === 'confirmado' &&
+                    <Button
+                      onClick={() => dowTank(tanque)}
+                      size="small"
+                      variant="contained"
+                      color="warning"
+                    >
+                      Bajar tanque
+                    </Button>}
 
                 </Box>
                 {numeroTanques != index + 1 && (
@@ -798,7 +828,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
           </Stack>
         )}
 
-        {(typeChargue === "Pipa") && (
+        {(typeChargue === "pipa") && (
           <Stack
             justifyContent="center"
             spacing="10px"
@@ -823,7 +853,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
                   <TextGeneral
                     variant="row"
                     label={`N°`}
-                    text={typeChargue === 'Tanque' ? tanque.tanque : tanque.pipa}
+                    text={typeChargue === 'tanque' ? tanque.tanque : tanque.pipa}
                   />
 
                 </Box>
@@ -846,7 +876,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
               alignItems: 'center',
               minHeight: '100vh'
             }}>
-            <ViewTanks toggle={setModalTanks} data={data} />
+            <ViewTanks toggle={setModalTanks} data={data} changueTypeManiobra={changueTypeManiobra} />
           </Box>
         </Modal>
       }

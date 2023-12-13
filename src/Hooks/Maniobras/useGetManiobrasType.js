@@ -1,5 +1,6 @@
 import supabase from "../../supabase";
 import { useEffect, useState } from "react";
+import { filterManiobrasForStatus } from "../../Helpers/transformRegisters";
 
 function useGetManiobrasType(typeManiobra) {
 
@@ -39,6 +40,7 @@ function useGetManiobrasType(typeManiobra) {
                 )
             `)
             .eq('type', 'entrada')
+            .eq('status', 'maniobras')
             .not('checkIn', 'is', null)
             .order('create_at', { ascending: false })
             .range(0, 19)
@@ -50,12 +52,13 @@ function useGetManiobrasType(typeManiobra) {
                 setLoadingManiobra(false)
             }
         } else {
-            const filterRequest = data.length >= 1 ?
-                data.filter((request, index) => request.registros_detalles_entradas[index] === 'maniobras') : [];
+            // const filterRequest = data.length >= 1 ?
+            // filterManiobrasForStatus(data, 'maniobras'): [];
+            // console.log(filterRequest)
             setTimeout(() => {
-                setManiobras(filterRequest)
+                setManiobras(data)
                 setLoadingManiobra(false)
-                localStorage.setItem('maniobras_realizadas', JSON.stringify(filterRequest))
+                localStorage.setItem('maniobras_realizadas', JSON.stringify(data))
             }, 1000)
         }
 
@@ -136,6 +139,7 @@ function useGetManiobrasType(typeManiobra) {
     const forceUpdate = () => setUpdate(!update);
 
     const routerFetch = () => {
+        setManiobras([])
         const routes = {
             confirmado: () => getManiobrasConfirm(),
             pendiente: () => getManiobrasPending(),

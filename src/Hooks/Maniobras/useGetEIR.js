@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { filterInputRegistersForManiobras } from "../../Helpers/transformRegisters";
+import { filterInputRegistersForStatus } from "../../Helpers/transformRegisters";
 import supabase from "../../supabase";
 
 function useGetEIR(typeRegister) {
@@ -50,8 +50,9 @@ function useGetEIR(typeRegister) {
                 setLoading(false)
             }
         } else {
+            console.log(data)
             setTimeout(() => {
-                const newData = filterInputRegistersForManiobras(data);
+                const newData = filterInputRegistersForStatus(data, 'eir');
                 setData(newData)
                 setLoading(false)
                 localStorage.setItem('checklist_EIR_pendientes', JSON.stringify(newData))
