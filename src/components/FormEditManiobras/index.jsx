@@ -1,40 +1,49 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 //componentes
-import { Box, Stack, Typography, Paper, IconButton, Button } from "@mui/material";
-import {InputText} from "../../components/InputText";
+import { Box, Stack, Typography, Paper, IconButton, Button, } from "@mui/material";
+import { ViewAndDeletTanks, ViewAndSelectTanks } from "../ViewAndSelectTanks";
+import { InputText } from "../../components/InputText";
 import { SelectSimple } from "../SelectSimple";
 //icons
 import CloseIcon from '@mui/icons-material/Close';
 //helpers
 import { transformRegisters } from "../../Helpers/transformRegisters";
 //hooks
-import { useEditRegisters } from "../../Hooks/registersManagment/useEditRegisters";
+import { useEditManiobra } from "../../Hooks/Maniobras/useEditManiobra";
+import { useSelectManiobras } from "../../Hooks/Maniobras/useSelectManiobras";
+import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
-function FormEditManiobras({ data, toggleModal }) {
+function FormEditManiobras({ data, toggleModal, updater }) {
+
+    useEffect(() => {
+        getTanks()
+    }, [data])
+
+    const { tanks, tanksReady, tankLoading, tankError, getTanks } = useGetTanks();
 
     const {
         typeRegister,
         linea,
         tanques,
         operador,
+        transportista,
+        tanquesManiobras,
         tracto,
         numeroTanques,
         typeChargue,
-        dayInput,
-        dateInput,
-        OperatorSliceName,
-        shortNameOperator,
-        tracto_status,
-        dayCreat,
-        dateCreate,
     } = transformRegisters(data);
 
-    const { editRegister } = useEditRegisters();
+    const IsMovile = useMediaQuery("(max-width:700px)")
+
+    const { routerFetch } = useEditManiobra();
+    const { colorItemTank, toggleTank, deletTanksChargue, dataTank, copyTanksFree, copyTanksManiobras } = useSelectManiobras(tanquesManiobras, tanksReady, tankLoading)
 
     const [idTracto, setIdTracto] = useState('');
-    const [numeroPipa, setNumeroPipa] = useState('');
+    const [typePipa, setTypePipa] = useState('');
     const [nameOperador, setNameOperador] = useState('');
     const [nameTransporter, setNameTransporter] = useState('');
+    const [dataPipa, setDataPipa] = useState({ pipa1: "", pipa2: "" });
     const cacheOperadores = JSON.parse(localStorage.getItem('operadores'));
     const cacheTransportistas = JSON.parse(localStorage.getItem('transportistas'));
 
@@ -48,24 +57,45 @@ function FormEditManiobras({ data, toggleModal }) {
         id: transporter.id
     }));
 
-
-    const SendChangues = () => {
+    const SendChangues = async () => {
 
         const updates = {
             tracto: idTracto != '' ? idTracto : tracto,
             operador: nameOperador != '' ? nameOperador : operador.id,
-            transportista: nameTransporter != '' ? nameTransporter : data.registros_detalles_entradas[0].transportistas.id,
-            pipa: numeroPipa != ''? numeroPipa : data.registros_detalles_entradas[0].numero_pipa
+            transportista: nameTransporter != '' ? nameTransporter : transportista.id,
         }
+        // typeRegister, oldDataTanks, newDataTanks, updates, idRegister
+        routerFetch( typeChargue, typeRegister, copyTanksFree, copyTanksManiobras, dataPipa, updates, data.id)
+        setTimeout(() => {
+            toggleModal(false)
+            updater()
+        }, 1500)
 
-        editRegister(data.id, data, updates)
-        toggleModal(false)
+        // FUNCION PARA EDITAR TODOS LOS ASPECTOS DEL REGISTRO TIPO PIPA
+        // Recibe => typeRegister, dataPipa, updates, data.id
+        // await editManiobraTypePipa(typeRegister, dataPipa, updates, data.id)
+        // setTimeout(() => {
+        //     toggleModal(false)
+        //     updater()
+        // }, 1500)
+
+
+        /* 
+        FUNCION PARA EDITAR TODOS LOS ASPECTOS DEL REGISTRO TIPO TANQUE 
+        Recibe => typeRegister, oldDataTanks, newDataTanks, updates, idRegister 
+        await editManiobraTypeTank(typeRegister, copyTanksFree, copyTanksManiobras, updates, data.id)
+        setTimeout(() => {
+            toggleModal(false)
+            updater()
+        }, 1500)
+        */
+
     }
 
     return (
         <>
             <Paper elevation={3}>
-                <Box display={'flex'} flexDirection={'column'} minWidth={'300px'} padding={'20px'} gap={'10px'}>
+                <Box display={'flex'} flexDirection={'column'} width={'90vw'} maxWidth={'700px'} padding={'20px'} gap={'8px'}>
 
                     <Stack
                         flexDirection={'row'}
@@ -80,16 +110,7 @@ function FormEditManiobras({ data, toggleModal }) {
                         </IconButton>
                     </Stack>
 
-                    <Stack alignItems={'center'}>
-
-                        {typeChargue === 'Pipa' && (
-                            <InputText
-                            label={'Nueva pipa'}
-                            value={numeroPipa}
-                            onChangue={(e) => setNumeroPipa(e.target.value)}
-                            width={'100%'}
-                            />
-                        )}
+                    <Stack alignItems={'center'} flexDirection={IsMovile ? 'column' : 'row'} >
 
                         <SelectSimple
                             title={'Nuevo operador'}
@@ -112,29 +133,87 @@ function FormEditManiobras({ data, toggleModal }) {
                         />
 
                         <InputText
-                            title={'Nueva tractocamion'}
+                            label={'Nuevo numero de tracto'}
                             value={idTracto}
                             width={'100%'}
                             required={true}
-                            onChange={(e) => setIdTracto(e.target.value)}
+                            onChangue={(e) => setIdTracto(e.target.value)}
                         />
 
                     </Stack>
 
-                    <Stack gap={'10px'}>
-                        <Button
-                            onClick={() => toggleModal(false)}
-                            size='small'
-                            variant='contained'
-                            color='error'
-                        >descartar
-                        </Button>
+                    {(typeChargue === 'tanque') &&
+                        <ViewAndDeletTanks
+                            dataTank={copyTanksManiobras}
+                            deleteTank={deletTanksChargue}
+                        />}
+
+                    {(typeChargue === 'tanque') &&
+                        <ViewAndSelectTanks
+                            tankChargue={copyTanksManiobras}
+                            colorItemTank={colorItemTank}
+                            tanksReady={copyTanksFree}
+                            tankLoading={tankLoading}
+                            toggleTank={toggleTank}
+                            tankError={tankError}
+                            dataTank={dataTank}
+                        />}
+
+                    {(typeChargue === 'pipa') &&
+                        <Stack
+                            alignItems={'center'}
+                            flexDirection={IsMovile ? 'column' : 'row'}
+                            width={'100%'}
+                            gap={'10px'}
+                        >
+
+                            <SelectSimple
+                                required={true}
+                                width={'100%'}
+                                title={'Tipo de pipa'}
+                                value={typePipa}
+                                options={['sencilla', 'doble']}
+                                onChange={(e) => setTypePipa(e.target.value)}
+                            />
+
+                            {typePipa != '' &&
+                                <InputText
+                                    required={true}
+                                    width={'100%'}
+                                    label='Pipa 1'
+                                    value={dataPipa.pipa1}
+                                    onChangue={(e) => setDataPipa({ ...dataPipa, pipa1: e.target.value })}
+                                />}
+
+                            {typePipa === 'doble' &&
+                                <InputText
+                                    required={true}
+                                    width={'100%'}
+                                    label='Pipa 2'
+                                    value={dataPipa.pipa2}
+                                    onChangue={(e) => setDataPipa({ ...dataPipa, pipa2: e.target.value })}
+                                />}
+                        </Stack>}
+
+                    <Stack
+                        flexDirection={'row'}
+                        justifyContent={'space-between'}
+                        gap={'10px'}>
+
                         <Button
                             onClick={SendChangues}
                             size='small'
                             variant='contained'
                             color='primary'
                         >Guardar
+                        </Button>
+
+                        <Button
+                            onClick={() => toggleModal(false)}
+                            size='small'
+                            variant='contained'
+                            color='error'
+                        >descartar
                         </Button>
                     </Stack>
 

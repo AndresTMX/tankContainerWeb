@@ -1,6 +1,5 @@
 import supabase from "../../supabase";
 import { useEffect, useState } from "react";
-import { filterManiobrasForStatus } from "../../Helpers/transformRegisters";
 
 function useGetManiobrasType(typeManiobra) {
 
@@ -10,7 +9,7 @@ function useGetManiobrasType(typeManiobra) {
     const [update, setUpdate] = useState(false);
 
     const getManiobrasConfirm = async () => {
-
+        setErrorManiobra(null)
         setLoadingManiobra(true);
 
         const { data, error } = await supabase
@@ -52,9 +51,6 @@ function useGetManiobrasType(typeManiobra) {
                 setLoadingManiobra(false)
             }
         } else {
-            // const filterRequest = data.length >= 1 ?
-            // filterManiobrasForStatus(data, 'maniobras'): [];
-            // console.log(filterRequest)
             setTimeout(() => {
                 setManiobras(data)
                 setLoadingManiobra(false)
@@ -65,6 +61,7 @@ function useGetManiobrasType(typeManiobra) {
     }
 
     const getManiobrasPending = async () => {
+        setErrorManiobra(null)
         setLoadingManiobra(true)
 
         const { data, error } = await supabase

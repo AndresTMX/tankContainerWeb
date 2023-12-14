@@ -890,7 +890,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
               alignItems: 'center',
               minHeight: '100vh'
             }}>
-            <FormEditManiobras data={data} toggleModal={setEditData} />
+            <FormEditManiobras data={data} toggleModal={setEditData} updater={updater} />
           </Box>
         </Modal>
       }

@@ -37,7 +37,6 @@ function useAddOutputManiobra() {
             throw new Error('Error al crear el registro de salida')
         }
 
-        console.log(data)
         const dataId = data[0].id
 
         try {

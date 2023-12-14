@@ -1,34 +1,27 @@
-import { useEffect, useState, useContext } from "react";
-import { Box, Paper, Button, Stack, Typography, IconButton, Skeleton, Chip, Divider, Fade } from "@mui/material";
+import { Paper, Button, Stack, Typography, IconButton, Divider, Fade } from "@mui/material";
 import { TextGeneral } from "../TextGeneral";
-import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
 import { ContainerScroll } from "../ContainerScroll";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
-import { useAddOutputManiobra } from "../../Hooks/Maniobras/useAddOutputManiobra";
+import { ViewAndSelectTanks } from "../ViewAndSelectTanks";
 //icons
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { usePostRegister } from "../../Hooks/registersManagment/usePostRegister";
+import { useAddOutputManiobra } from "../../Hooks/Maniobras/useAddOutputManiobra";
+import { useViewAndSelectTanks } from "../../Hooks/Maniobras/useSelectManiobras";
 //helpers
 import { transformRegisters } from "../../Helpers/transformRegisters";
 
 function ViewTanks({ typeView, toggle, data, changueTypeManiobra }) {
 
-    useEffect(() => {
-        getTanks()
-    }, [])
-
-    const [dataTank, setDataTank] = useState([])
-    const dataTanques = data.registros_detalles_entradas;
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-    const { addOutputRegisterForManiobra } = useAddOutputManiobra();
-    const { tanks, tanksReady, tankLoading, tankError, getTanks } = useGetTanks();
-    const { sendOutputRegisters } = usePostRegister();
     const IsSmall = useMediaQuery("(max-width:900px)");
     const IsMovile = useMediaQuery("(max-width:500px)");
+
+    const dataTanques = data.registros_detalles_entradas;
+    const { addOutputRegisterForManiobra } = useAddOutputManiobra();
+    const { colorItemTank, toggleTank, dataTank } = useViewAndSelectTanks();
+    const { sendOutputRegisters } = usePostRegister();
 
     const {
         typeRegister,
@@ -46,39 +39,6 @@ function ViewTanks({ typeView, toggle, data, changueTypeManiobra }) {
         dayCreat,
         dateCreate,
     } = transformRegisters(data);
-
-    const colorItemTank = (tanque) => dataTank.find((item) => item === tanque) ? 'info' : 'default';
-
-    const toggleTank = (tank) => {
-
-        const newState = dataTank.length >= 1 ? [...dataTank] : [];
-        const index = dataTank.findIndex((item) => item === tank);
-        const repeat = dataTank.find((item) => item === tank)
-
-        if (index < 1 && repeat === undefined && validateNumTank()) {
-            newState.push(tank);
-        }
-
-        if (index >= 0 && repeat) {
-            newState.splice(index, 1);
-        }
-
-        setDataTank(newState)
-
-    }
-
-    const validateNumTank = () => {
-        if ((dataTank.length + dataTanques.length) >= 4) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'No puedes agregar más de 4 tanques'
-            })
-
-            return false
-        } else {
-            return true
-        }
-    }
 
     const addContainers = async () => {
 
@@ -101,7 +61,6 @@ function ViewTanks({ typeView, toggle, data, changueTypeManiobra }) {
         }, 1200)
     }
 
-
     return (
         <>
             <Paper sx={{ padding: '20px', width: '90vw', maxWidth: '700px' }}>
@@ -117,7 +76,7 @@ function ViewTanks({ typeView, toggle, data, changueTypeManiobra }) {
                         </IconButton>
                     </Stack>
 
-                    <ContainerScroll background={'white'} height={'40vh'}>
+                    <ContainerScroll background={'white'} height={'250px'}>
                         <Paper sx={{ bgcolor: 'whitesmoke' }}>
                             <Stack
                                 padding={'10px'}
@@ -162,42 +121,11 @@ function ViewTanks({ typeView, toggle, data, changueTypeManiobra }) {
                         </Stack>
                     </ContainerScroll>
 
-
-                    <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
-                        <Typography variant='subtitle2'>Tanques disponibles</Typography>
-                        <Typography variant='caption'>{`${(dataTank.length)}/4`}</Typography>
-                    </Stack>
-
-                    <ContainerScroll height='100px'>
-                        <Stack
-                            flexDirection={'row'}
-                            alignItems={'center'}
-                            flexWrap={'wrap'}
-                            gap={'10px'}
-                        >
-                            {tanksReady.map((item) => (
-                                <ItemTank
-                                    key={item.tanque}
-                                    onClick={toggleTank}
-                                    tanque={item.tanque}
-                                    colorTank={colorItemTank}
-                                />
-                            ))}
-
-                            {tankLoading && (
-                                <Stack
-                                    flexDirection={'row'}
-                                    alignItems={'center'}
-                                    flexWrap={'wrap'}
-                                    gap={'10px'}
-                                >
-                                    <Skeleton variant='rounded' width={'85px'} height={'32px'} />
-                                    <Skeleton variant="rounded" width={'85px'} height={'32px'} />
-                                    <Skeleton variant="rounded" width={'85px'} height={'32px'} />
-                                </Stack>
-                            )}
-                        </Stack>
-                    </ContainerScroll>
+                    <ViewAndSelectTanks
+                     dataTank={dataTank}
+                     toggleTank={toggleTank}
+                     colorItemTank={colorItemTank}
+                    />
 
                     <Stack flexDirection={IsMovile ? 'column' : 'row'} gap={'10px'} justifyContent={'space-between'}>
                         <Button
@@ -226,14 +154,4 @@ function ViewTanks({ typeView, toggle, data, changueTypeManiobra }) {
 
 export { ViewTanks };
 
-export function ItemTank({ tanque, onClick, colorTank, }) {
-    return (
-        <Chip
-            color={colorTank(tanque)}
-            label={tanque}
-            deleteIcon={<AddIcon />}
-            onDelete={() => onClick(tanque)}
-        />
-    );
-}
 

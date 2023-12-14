@@ -7,6 +7,7 @@ para ser usados de manera general en registros de entrada o salida
 export const transformRegisters = (data) => {
   let typeRegister = data.type;
   let linea;
+  let transportista;
   let tanques;
   let operador;
   let tracto;
@@ -25,13 +26,14 @@ export const transformRegisters = (data) => {
   if (typeRegister === "entrada") {
     typeChargue = data.registros_detalles_entradas[0].carga;
     operador = data.registros_detalles_entradas[0].operadores;
+    transportista = data.registros_detalles_entradas[0].transportistas;
     linea = data.registros_detalles_entradas[0].transportistas.name;
     tracto = data.registros_detalles_entradas[0].tracto;
     numeroTanques = data.registros_detalles_entradas.length;
     tanques = data.registros_detalles_entradas.map((registro) => ({
       id: registro.id,
       tanque: registro.numero_tanque,
-      status: registro.status,
+      status: data.status,
       tanque_status: registro.tanques?.status,
       carga: typeChargue,
       pipa: registro.numero_pipa
@@ -51,6 +53,7 @@ export const transformRegisters = (data) => {
     shortNameOperator = `${OperatorSliceName[0]} ${OperatorSliceName[1]}`;
   } else {
     typeChargue = data.registros_detalles_salidas[0]?.carga;
+    transportista = data.registros_detalles_salidas[0].transportistas;
     operador = data.registros_detalles_salidas[0]?.operadores;
     linea = data.registros_detalles_salidas[0]?.transportistas?.name;
     tracto = data.registros_detalles_salidas[0].tracto;
@@ -58,7 +61,7 @@ export const transformRegisters = (data) => {
     tanques = data.registros_detalles_salidas.map((registro) => ({
       id: registro.id,
       tanque: registro.numero_tanque,
-      status: registro.status,
+      status: data.status,
       tanque_status: registro.tanques?.status,
       carga: typeChargue,
       pipa: registro.numero_pipa
@@ -82,6 +85,7 @@ export const transformRegisters = (data) => {
     typeRegister,
     linea,
     tanques,
+    transportista,
     tanquesParked,
     tanquesManiobras,
     operador,

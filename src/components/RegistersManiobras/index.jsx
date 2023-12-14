@@ -105,7 +105,7 @@ function RegistersManiobras() {
                             </Typography>
                         )}
 
-                        {(!errorManiobra && !loadingManiobra && results.length === 0 && !error) && (
+                        {( !loadingManiobra && results.length === 0 && !error) && (
                             <Stack gap="20px">
                                 {maniobras.map((item) => (
                                     <HistoryItem

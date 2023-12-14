@@ -12,6 +12,11 @@ function useEditRegisters() {
 
     const editRegister = async (idRegister, data, updates) => {
 
+        dispatchGlobal({
+            type: actionTypesGlobal.setLoading,
+            payload: true
+        });
+
         const registros = data.registros_detalles_entradas;
 
         const updateDetailsRegisters = registros.map(async (item) => {
@@ -33,7 +38,7 @@ function useEditRegisters() {
         })
 
         try {
-            Promise.all(updateDetailsRegisters);
+           await Promise.all(updateDetailsRegisters);
         } catch (error) {
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
@@ -41,12 +46,10 @@ function useEditRegisters() {
             })
         }
 
-        setTimeout(() => {
-            dispatch({
-                type: actionTypes.setUpdate,
-                payload: !state.update
-            })
-        }, 1000)
+        dispatchGlobal({
+            type: actionTypesGlobal.setLoading,
+            payload: false
+        });
 
     }
 
