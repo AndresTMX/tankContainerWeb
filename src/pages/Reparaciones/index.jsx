@@ -205,9 +205,10 @@ function Reparaciones() {
                                 }}
                             >
                                 <Stack gap='10px'>
-                                    {maintenancesProces.map((item) => (
+                                <p>Pendiente</p>
+                                    {/* {maintenancesProces.map((item) => (
                                         <MaintenancesItem key={item.id} maintance={item} />
-                                    ))}
+                                    ))} */}
                                 </Stack>
                             </Paper>
                         </Box>
@@ -239,9 +240,11 @@ function Reparaciones() {
                                 }}
                             >
                                 <Stack gap='10px'>
-                                    {maintenancesComplete.map((item) => (
+
+                                    <p>Pendiente</p>
+                                    {/* {maintenancesComplete.map((item) => (
                                         <MaintenancesItem key={item.id} maintance={item} />
-                                    ))}
+                                    ))} */}
                                 </Stack>
                             </Paper>
                         </Box>

@@ -8,6 +8,67 @@ function useEditManiobra() {
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
+    const changueStatusToWashing = async (idRegister) => {
+
+        dispatchGlobal({
+            type: actionTypesGlobal.setLoading,
+            payload: true
+        })
+
+        //actualizar el registro
+        try {
+            const { error } = await supabase.from('registros')
+                .update({ status: 'lavado' })
+                .eq('id', idRegister)
+
+            if (error) {
+                throw new Error(`Error al intentar actualizar el registro`)
+            }
+        } catch (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            });
+
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: error.message
+            });
+        }
+
+        //actualizar los detalles del registro
+        try {
+            const { error } = await supabase.from('registros_detalles_entradas')
+                .update({ status: 'lavado' })
+                .eq('registro_id', idRegister)
+
+            if (error) {
+                throw new Error(`Error al intentar actualizar el registro`)
+            }
+        } catch (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            });
+
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: error.message
+            });
+        }
+
+        dispatchGlobal({
+            type: actionTypesGlobal.setLoading,
+            payload: false
+        });
+
+        dispatchGlobal({
+            type: actionTypesGlobal.setNotification,
+            payload: 'Estatus actualizado'
+        });
+
+    }
+
     const editManiobraTypeTank = async (typeRegister, oldDataTanks, newDataTanks, updates, idRegister) => {
 
         dispatchGlobal({
@@ -466,7 +527,7 @@ function useEditManiobra() {
 
     }
 
-    return { routerFetch }
+    return { routerFetch , changueStatusToWashing}
 
 }
 

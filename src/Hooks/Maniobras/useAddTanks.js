@@ -65,7 +65,7 @@ function useAddTanks() {
         });
 
         try {
-            const { error } = await supabase.from('tanques').update({}).eq('tanque', tanque)
+            const { error } = await supabase.from('tanques').update({status: updates.status}).eq('tanque', tanque)
             if (error) {
                 throw new Error(`Error al actualizar el tanque ${tanque}`)
             }

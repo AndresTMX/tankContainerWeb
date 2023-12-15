@@ -21,7 +21,7 @@ function ListWashing({ washingList, loadignWashing, errorWashing }) {
                     }
 
                     {(loadignWashing && !errorWashing) &&
-                        <Stack spacing='20px'>
+                        <Stack spacing='20px' maxWidth={'700px'}>
                             <HistoryItemLoading />
                             <HistoryItemLoading />
                             <HistoryItemLoading />

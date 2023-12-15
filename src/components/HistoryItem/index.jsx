@@ -36,6 +36,7 @@ import { tiempoTranscurrido, } from "../../Helpers/date";
 //context
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { GlobalContext } from "../../Context/GlobalContext";
+import { useEditManiobra } from "../../Hooks/Maniobras/useEditManiobra";
 
 function HistoryItem({ data, type, typeManiobra, updater, changueTypeManiobra }) {
 
@@ -584,6 +585,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
 
   const { routerDelet } = useDeletRegister();
   const { returnEmpty } = usePostRegister();
+  const { changueStatusToWashing } = useEditManiobra();
   const { downContainerToManiobra } = useDownContainer();
 
   const returnEmptyTracto = async () => {
@@ -600,6 +602,13 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
 
   const deleteRegister = (typeChargue, data) => {
     routerDelet(typeChargue, data)
+    setTimeout( ()=> {
+      updater()
+    }, 1200)
+  }
+
+  const changueToWashing = async() => {
+    await changueStatusToWashing(data.id);
     setTimeout( ()=> {
       updater()
     }, 1200)
@@ -682,7 +691,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
 
             {(typeChargue === 'pipa' && typeManiobra === 'confirmado') &&
               <Button
-                onClick={() => { console.log(data.id) }}
+                onClick={changueToWashing}
                 size="small"
                 variant="contained"
                 color="info"

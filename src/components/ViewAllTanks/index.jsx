@@ -18,12 +18,27 @@ function ViewAllTanks() {
         getTanks();
     }, [editTank])
 
-    const [newTank, setNewTank] = useState('');
     const [newStatusTank, setNewStatusTank] = useState('')
 
     const selected = (tank) => {
         setSelectTank(tank)
         setEditTank(!editTank)
+    }
+
+    const OnSubmit = async(e) => {
+        e.preventDefault();
+
+        const tanque = selectTank.tanque;
+
+        const updates = {
+            status: newStatusTank,
+        }
+
+        await updateTank(updates, tanque)
+        setTimeout( ()=> {
+            setEditTank(!editTank)
+        })
+
     }
 
 
@@ -89,66 +104,69 @@ function ViewAllTanks() {
                     }}
                 >
                     <Box>
-                        <Paper
-                            sx={{
-                                display:'flex',
-                                flexDirection:'column',
-                                padding: '20px',
-                                width: '400px',
-                                gap:'10px',
-                            }}
-                        >
-                            <Stack
-                                flexDirection={'row'}
-                                alignItems={'center'}
-                                justifyContent={'space-between'}
+                        <form onSubmit={OnSubmit}>
+                            <Paper
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    padding: '20px',
+                                    width: '400px',
+                                    gap: '10px',
+                                }}
                             >
-                                <Typography>
-                                    Editar tanque <strong>{selectTank.tanque}</strong>
-                                </Typography>
-                                <IconButton onClick={() => setEditTank(false)}>
-                                    <CloseIcon />
-                                </IconButton>
-                            </Stack>
+                                <Stack
+                                    flexDirection={'row'}
+                                    alignItems={'center'}
+                                    justifyContent={'space-between'}
+                                >
+                                    <Typography>
+                                        Editar tanque <strong>{selectTank.tanque}</strong>
+                                    </Typography>
+                                    <IconButton onClick={() => setEditTank(false)}>
+                                        <CloseIcon />
+                                    </IconButton>
+                                </Stack>
 
-                            <Stack
-                                gap={'10px'}
-                                alignItems={'center'}
-                            >
-                                <TextField
-                                    label={'Numero de tanque'}
+                                <Stack
+                                    gap={'10px'}
+                                    alignItems={'center'}
+                                >
+                                    <TextField
+                                        disabled
+                                        fullWidth
+                                        label={'Numero de tanque'}
+                                        value={selectTank.tanque}
+                                    />
+
+                                    <FormControl fullWidth>
+                                        <InputLabel>Status</InputLabel>
+                                        <Select
+                                            defaultValue={selectTank.status}
+                                            value={newStatusTank.length === 0 ? selectTank.status : newStatusTank}
+                                            label="Status"
+                                            onChange={(e) => setNewStatusTank(e.target.value)}
+                                        >
+                                            <MenuItem value={'ready'}>Ready</MenuItem>
+                                            <MenuItem value={'maniobras'}>Maniobras</MenuItem>
+                                            <MenuItem value={'eir'}>EIR</MenuItem>
+                                            <MenuItem value={'parked'}>Parked</MenuItem>
+
+                                        </Select>
+                                    </FormControl>
+
+                                </Stack>
+
+                                <Button
+                                    type="submit"
                                     fullWidth
-                                    defaultValue={selectTank.tanque}
-                                    value={newTank.length === 0 ? selectTank.tanque : newTank}
-                                />
+                                    color="primary"
+                                    variant="contained"
+                                >
+                                    Actualizar
+                                </Button>
 
-                                <FormControl fullWidth>
-                                    <InputLabel>Status</InputLabel>
-                                    <Select
-                                        defaultValue={selectTank.status}
-                                        value={newStatusTank.length === 0 ? selectTank.status : newStatusTank}
-                                        label="Status"
-                                        onChange={(e) => setNewStatusTank(e.target.value)}
-                                    >
-                                        <MenuItem value={'ready'}>Ready</MenuItem>
-                                        <MenuItem value={'maniobras'}>Maniobras</MenuItem>
-                                        <MenuItem value={'eir'}>EIR</MenuItem>
-                                        <MenuItem value={'parked'}>Parked</MenuItem>
-
-                                    </Select>
-                                </FormControl>
-
-                            </Stack>
-
-                            <Button
-                            fullWidth
-                            color="primary"
-                            variant="contained"
-                            >
-                                Actualizar
-                            </Button>
-
-                        </Paper>
+                            </Paper>
+                        </form>
                     </Box>
                 </Container>
             </Modal>

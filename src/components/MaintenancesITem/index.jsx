@@ -46,35 +46,39 @@ function MaintenancesItem({ maintance }) {
                 <Stack
                     sx={{
                         display: 'flex',
-                        gap: '15px',
+                        gap: '10px',
                         backgroundColor: 'white',
-                        padding: '20px',
+                        padding: '15px',
                         borderRadius: '4px',
                     }}
                 >
 
-                    <Stack flexDirection='row' flexWrap='wrap' gap='15px' alignItems='center' justifyContent='flex-start'>
-                        <Chip label={status} color={statusColor} />
-                        <Chip label={dayEndTransform ? dayEndTransform : dayTransform} color="info" icon={<CalendarMonthIcon />} />
-                        <Chip label={dayEndTransform ? dayEndTransform : dateTransform} color="info" icon={<AccessTimeIcon />} />
-                        <Chip label={time} color="info" icon={<RestoreIcon />} />
-                        <Button
-                            fullWidth={IsExtraSmall}
-                            size="small"
-                            variant="contained"
-                            onClick={ToggleFormRepair}
-                        >
-                            {status === 'pendiente' ? 'reparar' : 'completar'}
-                        </Button>
+                    <Stack flexDirection='row' flexWrap='wrap' gap='15px' alignItems='center' justifyContent={'space-between'} >
+                        <Stack flexDirection='row' flexWrap='wrap' alignItems='center' gap='15px'> 
+                            <Chip size="small" label={status} color={statusColor} />
+                            <Chip size="small" label={dayEndTransform ? dayEndTransform : dayTransform} color="info" icon={<CalendarMonthIcon />} />
+                            <Chip size="small" label={dayEndTransform ? dayEndTransform : dateTransform} color="info" icon={<AccessTimeIcon />} />
+                            <Chip size="small" label={time} color="info" icon={<RestoreIcon />} />
+                        </Stack>
+                        <Stack>
+                            <Button
+                                fullWidth={IsExtraSmall}
+                                size="small"
+                                variant="contained"
+                                onClick={ToggleFormRepair}
+                            >
+                                {status === 'pendiente' ? 'reparar' : 'completar'}
+                            </Button>
+                        </Stack>
                     </Stack>
 
                     <Stack
-                        justifyContent='space-around'
+                        width={'100%'}
                         flexDirection={IsExtraSmall ? 'column' : 'row'}
                         flexWrap='wrap'
-                        gap='10px'>
+                        gap='15px'>
                         <TextGeneral
-                            label='Tipo'
+                            label='Tipo de reparación'
                             text={tipo_reparacion}
                         />
                         <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
