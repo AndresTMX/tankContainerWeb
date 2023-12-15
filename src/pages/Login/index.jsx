@@ -53,7 +53,7 @@ function Login() {
                         <img 
                         height='120px'
                         width='auto'
-                        src="src/assets/TankContainer.png" 
+                        src="https://res.cloudinary.com/variablemk/image/upload/v1700866162/tankContainer/TankContainer_xn29s1.png" 
                         alt='logo' />
                         <Paper
                             sx={{
