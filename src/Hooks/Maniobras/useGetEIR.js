@@ -50,7 +50,6 @@ function useGetEIR(typeRegister) {
                 setLoading(false)
             }
         } else {
-            console.log(data)
             setTimeout(() => {
                 const newData = filterInputRegistersForStatus(data, 'eir');
                 setData(newData)

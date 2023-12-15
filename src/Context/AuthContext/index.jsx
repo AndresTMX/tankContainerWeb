@@ -44,7 +44,7 @@ function AuthProvider({ children }) {
     setLoading(true)
     const { data, error } = await supabase.auth.getSession();
 
-    if (!error) {
+    if (!error && data.session != null) {
       const newKey = data.session.user.id;
       const newSession = JSON.stringify(data.session.user);
       setKey(newKey);
@@ -52,9 +52,14 @@ function AuthProvider({ children }) {
       setLoading(false);
     }
 
-    if (data.session === null) {
+    if(error){
       navigate("/");
       setLoading(false);
+    }
+
+    if (data.session === null) {
+      setLoading(false);
+      navigate("/");
     }
   };
 

@@ -1,42 +1,27 @@
-import { useContext, useEffect, useState, } from "react";
+import { useEffect, useState, } from "react";
 //components
-import { Container, Paper, Box, Stack, Typography, Button, IconButton, Modal, Fade, Chip, } from "@mui/material";
+import { Container, Paper, Box, Stack, Typography, Button, IconButton, Modal, Fade, Chip, Skeleton, Alert } from "@mui/material";
 import { SelectSimple } from "../SelectSimple";
 import { InputText } from "../InputText";
-//context
-import { GlobalContext } from "../../Context/GlobalContext";
 //hooks
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { useFormRegister } from "../../Hooks/useFormRegister";
-import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";
 import { useGetTransporters } from "../../Hooks/transportersManagment/useGetTransporters";
+import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";
 import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
-import { ManiobrasContext } from "../../Context/ManiobrasContext";
-import { actionTypes } from "../../Reducers/ManiobrasReducer";
+import { useFormRegister } from "../../Hooks/useFormRegister";
+import useMediaQuery from "@mui/material/useMediaQuery";
 //icons
 import UpdateIcon from '@mui/icons-material/Update';
 import AddIcon from '@mui/icons-material/Add';
 
-function FormRegisterManiobras({ closeModal, forceUpdate, setTypeManiobra }) {
+function FormRegisterManiobras({ toggleModal, forceUpdate, setTypeManiobra, toggleModalAddTanks }) {
 
     useEffect(() => {
         getTanks();
     }, [])
 
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-    const [state, dispatch] = useContext(ManiobrasContext);
-    const IsSmall = useMediaQuery('(max-width:900px)');
     const IsMovile = useMediaQuery('(max-width:500px)');
-
     //hooks de tanques
     const { tanks, tankError, tankLoading, tanksReady, getTanks } = useGetTanks();
-
-    //modal de tanques
-    const [newTank, setNewTank] = useState('');
-    const [newTankStatus, setNewTankStatus] = useState('');
-    const [optionTanks, setOptionTanks] = useState('')
-
     //hook de operadores
     const { states, functions } = useGetOperators();
     const { updateOperators } = functions;
@@ -70,7 +55,7 @@ function FormRegisterManiobras({ closeModal, forceUpdate, setTypeManiobra }) {
     const submitRegister = () => {
         routerRegisters();
         setModal(!modal);
-        closeModal();
+        toggleModal();
         setTimeout(() => {
             forceUpdate();
             setTypeManiobra('pendiente')
@@ -79,9 +64,8 @@ function FormRegisterManiobras({ closeModal, forceUpdate, setTypeManiobra }) {
     }
 
     const colorItemTank = (tanque) => dataTank.find((item) => item === tanque) ? 'primary' : 'default';
-
     const [modal, setModal] = useState(false)
-    const [modalTank, setModalTank] = useState(false);
+
 
     return (
         <>
@@ -164,7 +148,7 @@ function FormRegisterManiobras({ closeModal, forceUpdate, setTypeManiobra }) {
                                 <Stack width={'100%'} gap='10px'>
                                     <Stack flexWrap={'wrap'} flexDirection={'row'} alignItems={'center'} gap={'20px'} justifyContent={'space-between'}>
                                         <Typography variant='caption'>Tanques disponibles</Typography>
-                                        <Button onClick={() => setModalTank(!modalTank)} size="small" variant="contained" >nuevo tanque</Button>
+                                        <Button onClick={toggleModalAddTanks} size="small" variant="contained">nuevo tanque</Button>
                                     </Stack>
                                     <Paper
                                         elevation={2}
@@ -187,9 +171,27 @@ function FormRegisterManiobras({ closeModal, forceUpdate, setTypeManiobra }) {
                                             />
                                         ))}
 
+                                        {tankLoading && (
+                                            <Stack
+                                                flexDirection={'row'}
+                                                alignItems={'center'}
+                                                flexWrap={'wrap'}
+                                                gap={'10px'}
+                                            >
+                                                <Skeleton variant='rounded' width={'85px'} height={'32px'} />
+                                                <Skeleton variant="rounded" width={'85px'} height={'32px'} />
+                                                <Skeleton variant="rounded" width={'85px'} height={'32px'} />
+                                            </Stack>
+                                        )}
+
+                                        {tankError &&
+                                            <Alert severity="error">Hubo un error al cargar los tanques, intenta de nuevo</Alert>
+                                        }
+
                                         {(tanksReady.length === 0) &&
                                             <Typography variant='caption'>Sin tanques disponibles</Typography>
                                         }
+
                                     </Paper>
                                 </Stack>}
 
@@ -267,7 +269,7 @@ function FormRegisterManiobras({ closeModal, forceUpdate, setTypeManiobra }) {
                                     fullWidth
                                     variant="contained"
                                     color="error"
-                                    onClick={closeModal}
+                                    onClick={toggleModal}
                                 >
                                     Cancelar
                                 </Button>
@@ -296,83 +298,6 @@ function FormRegisterManiobras({ closeModal, forceUpdate, setTypeManiobra }) {
                                         variant="contained"
                                         color="error" on
                                         onClick={ToggleModalForm}>
-                                        Cancelar</Button>
-                                </Stack>
-
-                            </Paper>
-                        </Box>
-                    </Container>
-                </Fade>
-            </Modal>
-
-            <Modal open={modalTank}>
-                <Fade in={modalTank} timeout={500}>
-                    <Container>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-                            <Paper sx={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                <Typography variant='button'>Agrega contedores a la base de datos</Typography>
-                                <Stack display={'flex'} gap={'10px'} alignItems={'center'}>
-
-                                    <SelectSimple
-                                        width={'100%'}
-                                        title={'Tipo de registro'}
-                                        value={optionTanks}
-                                        required={true}
-                                        options={['sencillo', 'multiple']}
-                                        onChange={(e) => setOptionTanks(e.target.value)}
-                                        helperText={'Sencillo para agregar solo un registro, multiple para agregar varios'}
-                                    />
-
-                                    {(optionTanks === 'sencillo') &&
-                                        <>
-                                            <Typography textAlign={'start'} width={'100%'} variant='caption'>Agrega un nuevo contedor a la base de datos</Typography>
-                                            <InputText
-                                                label={'Numero de contenedor'}
-                                                width={'100%'}
-                                                value={newTank}
-                                                required={true}
-                                                onChangue={(e) => setNewTank(e.target.value)}
-                                            />
-                                        </>
-                                    }
-
-                                    {(optionTanks === 'multiple') &&
-                                        <>
-                                            <Typography textAlign={'start'} width={'100%'} variant='caption'>Agrega varios contenedores a la base de datos</Typography>
-                                            <InputText
-                                                type={'textarea'}
-                                                label={'Numeros de contenedores separados por comas'}
-                                                width={'100%'}
-                                                value={newTank}
-                                                required={true}
-                                                onChangue={(e) => setNewTank(e.target.value)}
-                                            />
-                                        </>
-                                    }
-
-                                    <SelectSimple
-                                        width={'100%'}
-                                        title={'Estatus'}
-                                        value={newTankStatus}
-                                        required={true}
-                                        options={['ready', 'maniobras', 'parked', 'reparacion', 'prelavado',]}
-                                        onChange={(e) => setNewTankStatus(e.target.value)}
-                                        helperText={'Para usarlo inmediatamente despues de agregrarlo selecciona ready'}
-                                    />
-                                </Stack>
-
-                                <Stack flexDirection='row' justifyContent='space-between' gap='10px'>
-                                    <Button
-                                        fullWidth
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => setModalTank(!modalTank)}
-                                    >Agregar</Button>
-                                    <Button
-                                        fullWidth
-                                        variant="contained"
-                                        color="error" on
-                                        onClick={() => setModalTank(!modalTank)}>
                                         Cancelar</Button>
                                 </Stack>
 

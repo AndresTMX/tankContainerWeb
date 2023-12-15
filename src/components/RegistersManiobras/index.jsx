@@ -8,7 +8,7 @@ import { ResultSearch } from "../ResultsSearch";
 import { ContainerScroll } from "../ContainerScroll";
 import { FormRegisterManiobras } from "../FormRegisterManiobras";
 import { NotConexionState } from "../NotConectionState";
-import { Box, Stack, Chip, Typography, Paper, Button, Modal, Fade } from "@mui/material";
+import { Box, Stack, Chip, Typography, Paper, Button, Modal, Fade,Container } from "@mui/material";
 //helpers
 import { filterSearchVigilancia } from "../../Helpers/searcher";
 //hooks
@@ -18,6 +18,7 @@ import { useSearcher } from "../../Hooks/useSearcher";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //icons
 import AddIcon from '@mui/icons-material/Add';
+import { AddNewTanks } from "../AddNewTanks";
 
 
 function RegistersManiobras() {
@@ -32,9 +33,17 @@ function RegistersManiobras() {
     const { searching, onChangueSearch, searchingKey } = functions;
 
     const [maniobraModal, setManiobraModal] = useState(false);
-    const closeModalManiobras = () => setManiobraModal(!maniobraModal);
+    const toggleModalManiobras = () => setManiobraModal(!maniobraModal);
 
     const changueTypeManiobra = (newType) => setTypeManiobra(newType);
+
+    const [modalTank, setModalTank] = useState(false);
+
+
+    const toggleModalAddTanks = () => {
+        setManiobraModal(!maniobraModal)
+        setModalTank(!modalTank)
+    }
 
     return (
         <>
@@ -105,7 +114,7 @@ function RegistersManiobras() {
                             </Typography>
                         )}
 
-                        {( !loadingManiobra && results.length === 0 && !error) && (
+                        {(!loadingManiobra && results.length === 0 && !error) && (
                             <Stack gap="20px">
                                 {maniobras.map((item) => (
                                     <HistoryItem
@@ -133,16 +142,28 @@ function RegistersManiobras() {
                 </ContainerScroll>
             </Box>
 
-            {maniobraModal &&
-                <Modal open={maniobraModal}>
-                    <Fade in={maniobraModal} timeout={400}>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '5%', width: '100%', height: 'auto' }}>
-                            <FormRegisterManiobras closeModal={closeModalManiobras} forceUpdate={forceUpdate} setTypeManiobra={setTypeManiobra} />
-                        </Box>
-                    </Fade>
-                </Modal>
+            <Modal open={maniobraModal}>
+                <Fade in={maniobraModal}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '5%', width: '100%', height: 'auto' }}>
+                        <FormRegisterManiobras
+                        toggleModal={toggleModalManiobras}
+                        setTypeManiobra={setTypeManiobra}
+                        forceUpdate={forceUpdate}
+                        toggleModalAddTanks={toggleModalAddTanks}
+                        />
+                    </Box>
+                </Fade>
+            </Modal>
 
-            }
+
+
+            <Modal open={modalTank}>
+                <Fade in={modalTank}>
+                   <Container>
+                     <AddNewTanks toggleModal={toggleModalAddTanks} />
+                   </Container>
+                </Fade>
+            </Modal>
         </>
     );
 }

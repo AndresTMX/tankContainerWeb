@@ -52,15 +52,24 @@ function useSelectManiobras(tanquesManiobras, tanksReady, tankLoading) {
     }
 
     const deletTanksChargue = (tank) => {
-        const newStateTankReady = copyTanksFree.length >= 1? [...copyTanksFree]:[];
+        const newStateTankReady = copyTanksFree.length >= 1 ? [...copyTanksFree] : [];
         const newStateTanksManiobras = copyTanksManiobras.length >= 1 ? [...copyTanksManiobras] : [];
         const indexInTanksManiobras = copyTanksManiobras.findIndex((item) => item.tanque === tank.tanque);
 
-        newStateTanksManiobras.splice(indexInTanksManiobras, 1);
-        newStateTankReady.push(tank);
+        if (copyTanksManiobras.length === 1) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'No puedes eliminar todos los tanques'
+            })
+        } else {
+            newStateTanksManiobras.splice(indexInTanksManiobras, 1);
+            newStateTankReady.push(tank);
 
-        setCopyTanksManiobras(newStateTanksManiobras)
-        setCopyTanksFree(newStateTankReady)
+            setCopyTanksManiobras(newStateTanksManiobras)
+            setCopyTanksFree(newStateTankReady)
+        }
+
+
     }
 
     return { colorItemTank, toggleTank, deletTanksChargue, dataTank, copyTanksFree, copyTanksManiobras }

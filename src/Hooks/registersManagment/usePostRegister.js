@@ -482,7 +482,8 @@ function usePostRegister() {
             tracto: data.registros_detalles_entradas[0].tracto,
             numero_tanque: null,
             transportista: data.registros_detalles_entradas[0].transportistas.id,
-            operador: data.registros_detalles_entradas[0].operadores.id
+            operador: data.registros_detalles_entradas[0].operadores.id,
+            status:'forconfirm'
         }
 
         try {
@@ -499,12 +500,11 @@ function usePostRegister() {
             });
         }
 
-
         const tanksInManiobrasState = data.registros_detalles_entradas.length >= 1?
         data.registros_detalles_entradas.filter((tanque) => tanque.status === 'maniobras'):[]
 
 
-        const tanquesUpdates =  tanksInManiobrasState.map(async(tanque) => {
+        const tanquesUpdates = tanksInManiobrasState.map(async(tanque) => {
             const {error} = await supabase.from('tanques').update({status:'eir'}).eq('tanque', tanque.numero_tanque)
         })
 

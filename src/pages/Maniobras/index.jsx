@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 //components
 import { Box, Tabs, Tab } from "@mui/material";
 import { FormRegisterManiobras } from "../../components/FormRegisterManiobras";
+import { ViewAllTanks } from "../../components/ViewAllTanks";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { RegistersManiobras } from "../../components/RegistersManiobras";
 //Notification
@@ -34,6 +35,7 @@ function Maniobras() {
                 >
                     <Tab label="Maniobras" />
                     <Tab label="EIR" />
+                    <Tab label="Tanques" />
                 </Tabs>
             </Box>
 
@@ -43,6 +45,10 @@ function Maniobras() {
 
             <CustomTabPanel value={tab} index={1}>
                 <EIRManiobras />
+            </CustomTabPanel>
+
+            <CustomTabPanel value={tab} index={2}>
+                <ViewAllTanks/>
             </CustomTabPanel>
 
             <LoadingState duration={1000} />

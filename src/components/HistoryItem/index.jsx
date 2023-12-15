@@ -598,11 +598,24 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
     }, 1200)
   }
 
+  const deleteRegister = (typeChargue, data) => {
+    routerDelet(typeChargue, data)
+    setTimeout( ()=> {
+      updater()
+    }, 1200)
+  }
+
   return (
     <>
       <Stack spacing="8px" flexDirection="column">
 
         {(typeChargue === "tanque" && tanquesManiobras.length === 0) &&
+          <Alert sx={{ width: '100%' }} severity="info">
+            Puedes subir tanques a este tractocamion para generar una salida
+          </Alert>
+        }
+
+        {(typeChargue === "vacio") &&
           <Alert sx={{ width: '100%' }} severity="info">
             Puedes subir tanques a este tractocamion para generar una salida
           </Alert>
@@ -707,9 +720,9 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
                 editar registro
               </Button>}
 
-            {(typeManiobra === 'pendiente') &&
+            {(typeManiobra === 'pendiente' && typeRegister === 'entrada') &&
               <Button
-                onClick={() => routerDelet(typeChargue, data)}
+                onClick={() => deleteRegister(typeChargue, data)}
                 size="small"
                 variant="contained"
                 color="error"

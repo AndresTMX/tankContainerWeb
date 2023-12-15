@@ -9,48 +9,51 @@ import ClearIcon from '@mui/icons-material/Clear';
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { usePostRegister } from "../../Hooks/registersManagment/usePostRegister";
 import { useAddOutputManiobra } from "../../Hooks/Maniobras/useAddOutputManiobra";
-import { useViewAndSelectTanks } from "../../Hooks/Maniobras/useSelectManiobras";
+import { useSelectManiobras } from "../../Hooks/Maniobras/useSelectManiobras";
+import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
+import { ItemTank } from "../ViewAndSelectTanks";
 //helpers
 import { transformRegisters } from "../../Helpers/transformRegisters";
+import { useEffect } from "react";
 
 function ViewTanks({ typeView, toggle, data, changueTypeManiobra }) {
 
     const IsSmall = useMediaQuery("(max-width:900px)");
     const IsMovile = useMediaQuery("(max-width:500px)");
 
-    const dataTanques = data.registros_detalles_entradas;
-    const { addOutputRegisterForManiobra } = useAddOutputManiobra();
-    const { colorItemTank, toggleTank, dataTank } = useViewAndSelectTanks();
-    const { sendOutputRegisters } = usePostRegister();
+    useEffect(() => {
+        getTanks();
+    }, [data])
 
     const {
         typeRegister,
         linea,
         tanques,
         tanquesManiobras,
+        transportista,
         operador,
         tracto,
         numeroTanques,
         typeChargue,
-        dayInput,
-        dateInput,
-        OperatorSliceName,
         shortNameOperator,
-        dayCreat,
-        dateCreate,
     } = transformRegisters(data);
+
+    const { addOutputRegisterForManiobra } = useAddOutputManiobra();
+    const { sendOutputRegisters } = usePostRegister();
+    const { tanksReady, tankLoading, tankError, getTanks } = useGetTanks();
+    const { copyTanksFree, copyTanksManiobras, toggleTank, deletTanksChargue, dataTank, colorItemTank } = useSelectManiobras(tanquesManiobras, tanksReady, tankLoading);
 
     const addContainers = async () => {
 
         const registers = []
 
-        dataTank.map((tanque) => {
+        copyTanksManiobras.map((tanque) => {
             registers.push({
                 carga: 'tanque',
-                tracto: dataTanques[0].tracto,
-                operador: dataTanques[0].operadores.id,
-                numero_tanque: tanque,
-                transportista: dataTanques[0].transportistas.id,
+                tracto: tracto,
+                operador: operador.id,
+                numero_tanque: tanque.tanque,
+                transportista: transportista.id,
             })
         })
 
@@ -110,21 +113,41 @@ function ViewTanks({ typeView, toggle, data, changueTypeManiobra }) {
                             </Stack>
                         </Paper>
 
+                        <Stack
+                            flexDirection={'row'}
+                            justifyContent={'space-between'}
+                            paddingTop={'10px'}
+                        >
+                            <Typography
+                                variant='subtitle2'
+                            >{`Tanques cargados`}
+                            </Typography>
+                            <Typography
+                                variant='caption'
+                            >{`${copyTanksManiobras.length} / 4`}
+                            </Typography>
+                        </Stack>
+
                         <Stack spacing={'5px'} marginTop={'10px'}>
-                            {dataTank.map((tanque) => (
-                                <Fade in={tanque}>
-                                    <Paper elevation={1} sx={{ bgcolor: 'rgb(229 246 253)', padding: '5px' }}>
-                                        <Typography>{tanque}</Typography>
-                                    </Paper>
-                                </Fade>
+                            {copyTanksManiobras.map((tanque) => (
+                                <ItemTank
+                                    key={tanque.tanque}
+                                    tanque={tanque}
+                                    onClick={deletTanksChargue}
+                                    colorTank={colorItemTank}
+                                    typeItem={'delete'}
+                                />
                             ))}
                         </Stack>
                     </ContainerScroll>
 
                     <ViewAndSelectTanks
-                     dataTank={dataTank}
-                     toggleTank={toggleTank}
-                     colorItemTank={colorItemTank}
+                        dataTank={dataTank}
+                        tankError={tankError}
+                        toggleTank={toggleTank}
+                        tanksReady={copyTanksFree}
+                        tankLoading={tankLoading}
+                        colorItemTank={colorItemTank}
                     />
 
                     <Stack flexDirection={IsMovile ? 'column' : 'row'} gap={'10px'} justifyContent={'space-between'}>

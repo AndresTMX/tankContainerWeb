@@ -5,7 +5,7 @@ import { ContainerScroll } from "../ContainerScroll";
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
 
-function ViewAndSelectTanks({ colorItemTank, toggleTank, dataTank, tankChargue, tanksReady, tankLoading, tankError, }) {
+function ViewAndSelectTanks({ colorItemTank, toggleTank, dataTank, tankChargue, tanksReady, tankLoading, tankError }) {
 
     return (
         <Box>
@@ -48,6 +48,7 @@ function ViewAndSelectTanks({ colorItemTank, toggleTank, dataTank, tankChargue, 
                     }
                 </Stack>
             </ContainerScroll>
+
         </Box>
     );
 }

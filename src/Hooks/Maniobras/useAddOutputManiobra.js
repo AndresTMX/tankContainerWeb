@@ -23,6 +23,10 @@ function useAddOutputManiobra() {
             }
         } catch (error) {
             dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            })
+            dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
                 payload: error.message
             })
@@ -51,6 +55,7 @@ function useAddOutputManiobra() {
                         numero_tanque: tanque.numero_tanque,
                         transportista_id: tanque.transportista,
                         operador_id: tanque.operador,
+                        status:'forconfirm'
                     })
                 if (error) {
                     throw new Error(`Error al crear los detalles de la salida del tanque`)

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 //componentes
 import { Box, Stack, Typography, Paper, IconButton, Button, } from "@mui/material";
 import { ViewAndDeletTanks, ViewAndSelectTanks } from "../ViewAndSelectTanks";
@@ -13,6 +13,8 @@ import { useEditManiobra } from "../../Hooks/Maniobras/useEditManiobra";
 import { useSelectManiobras } from "../../Hooks/Maniobras/useSelectManiobras";
 import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { GlobalContext } from "../../Context/GlobalContext";
+import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 
 function FormEditManiobras({ data, toggleModal, updater }) {
 
@@ -20,6 +22,7 @@ function FormEditManiobras({ data, toggleModal, updater }) {
         getTanks()
     }, [data])
 
+    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
     const { tanks, tanksReady, tankLoading, tankError, getTanks } = useGetTanks();
 
     const {
@@ -39,6 +42,7 @@ function FormEditManiobras({ data, toggleModal, updater }) {
     const { routerFetch } = useEditManiobra();
     const { colorItemTank, toggleTank, deletTanksChargue, dataTank, copyTanksFree, copyTanksManiobras } = useSelectManiobras(tanquesManiobras, tanksReady, tankLoading)
 
+    const [newType, setNewType] = useState('');
     const [idTracto, setIdTracto] = useState('');
     const [typePipa, setTypePipa] = useState('');
     const [nameOperador, setNameOperador] = useState('');
@@ -58,37 +62,43 @@ function FormEditManiobras({ data, toggleModal, updater }) {
     }));
 
     const SendChangues = async () => {
+        try {
 
-        const updates = {
-            tracto: idTracto != '' ? idTracto : tracto,
-            operador: nameOperador != '' ? nameOperador : operador.id,
-            transportista: nameTransporter != '' ? nameTransporter : transportista.id,
+            if(newType === 'tanque' && copyTanksManiobras.length === 0){
+                throw new Error(`No puedes cambiar la maniobra al tipo tanque sin agregar tanques`)
+            }
+
+            if(newType === 'pipa' && typePipa === '' ){
+                throw new Error(`No puedes cambiar la maniobra al tipo pipa sin agregar pipas`)
+            }
+
+            if(newType === 'pipa' && typePipa === 'sencilla' && dataPipa.pipa1.trim() === ""){
+                throw new Error(`No puedes cambiar la maniobra al tipo pipa sin agregar pipas`)
+            }
+
+            if(newType === 'pipa' && typePipa === 'doble' && dataPipa.pipa1.trim() === "" && dataPipa.pipa2.trim() === ""){
+                throw new Error(`No puedes cambiar la maniobra al tipo pipa sin agregar pipas`)
+            }
+
+            const updates = {
+                tracto: idTracto != '' ? idTracto : tracto,
+                operador: nameOperador != '' ? nameOperador : operador.id,
+                transportista: nameTransporter != '' ? nameTransporter : transportista.id,
+            }
+
+            routerFetch(typeChargue, newType, typeRegister, copyTanksFree, copyTanksManiobras, dataPipa, updates, data.id)
+            setTimeout(() => {
+                toggleModal(false)
+                updater()
+            }, 1500)
+
+        } catch (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: error.message
+            })
         }
-        // typeRegister, oldDataTanks, newDataTanks, updates, idRegister
-        routerFetch( typeChargue, typeRegister, copyTanksFree, copyTanksManiobras, dataPipa, updates, data.id)
-        setTimeout(() => {
-            toggleModal(false)
-            updater()
-        }, 1500)
 
-        // FUNCION PARA EDITAR TODOS LOS ASPECTOS DEL REGISTRO TIPO PIPA
-        // Recibe => typeRegister, dataPipa, updates, data.id
-        // await editManiobraTypePipa(typeRegister, dataPipa, updates, data.id)
-        // setTimeout(() => {
-        //     toggleModal(false)
-        //     updater()
-        // }, 1500)
-
-
-        /* 
-        FUNCION PARA EDITAR TODOS LOS ASPECTOS DEL REGISTRO TIPO TANQUE 
-        Recibe => typeRegister, oldDataTanks, newDataTanks, updates, idRegister 
-        await editManiobraTypeTank(typeRegister, copyTanksFree, copyTanksManiobras, updates, data.id)
-        setTimeout(() => {
-            toggleModal(false)
-            updater()
-        }, 1500)
-        */
 
     }
 
@@ -132,6 +142,16 @@ function FormEditManiobras({ data, toggleModal, updater }) {
                             onChange={(e) => setNameTransporter(e.target.value)}
                         />
 
+                        {typeChargue === 'vacio' &&
+                            <SelectSimple
+                                title={'Nuevo tipo de registro'}
+                                value={newType}
+                                options={['tanque', 'pipa']}
+                                width={'100%'}
+                                onChange={(e) => setNewType(e.target.value)}
+                            />
+                        }
+
                         <InputText
                             label={'Nuevo numero de tracto'}
                             value={idTracto}
@@ -142,13 +162,13 @@ function FormEditManiobras({ data, toggleModal, updater }) {
 
                     </Stack>
 
-                    {(typeChargue === 'tanque') &&
+                    {(typeChargue === 'tanque' || newType === 'tanque') &&
                         <ViewAndDeletTanks
                             dataTank={copyTanksManiobras}
                             deleteTank={deletTanksChargue}
                         />}
 
-                    {(typeChargue === 'tanque') &&
+                    {(typeChargue === 'tanque' || newType === 'tanque') &&
                         <ViewAndSelectTanks
                             tankChargue={copyTanksManiobras}
                             colorItemTank={colorItemTank}
@@ -159,7 +179,7 @@ function FormEditManiobras({ data, toggleModal, updater }) {
                             dataTank={dataTank}
                         />}
 
-                    {(typeChargue === 'pipa') &&
+                    {(typeChargue === 'pipa' || newType === 'pipa') &&
                         <Stack
                             alignItems={'center'}
                             flexDirection={IsMovile ? 'column' : 'row'}

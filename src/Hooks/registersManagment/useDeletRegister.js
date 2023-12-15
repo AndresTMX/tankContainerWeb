@@ -27,7 +27,7 @@ function useDeletRegister() {
         const updateTanques = arrayDetails.map(async (item) => {
             try {
                 await supabase.from('tanques')
-                    .update({ status: 'parked' })
+                    .update({ status: 'ready' })
                     .eq('tanque', item.numero_tanque)
             } catch (error) {
                 dispatchGlobal({
