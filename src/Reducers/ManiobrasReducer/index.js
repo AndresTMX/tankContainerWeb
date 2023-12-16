@@ -5,14 +5,14 @@ const initialState = {
         pageTwo: [],
         pageThree: []
     },
-    cliente:'',
-    status:'',
+    cliente: '',
+    status: '',
     typeRegister: 'entrada',
     selectItem: false,
     previewPDF: false,
     select: false,
-    selectOutputRegisters:[],
-    modalSendRegisters:false,
+    selectOutputRegisters: [],
+    modalSendRegisters: false,
     update: false
 };
 
@@ -30,12 +30,12 @@ const actionTypes = {
     setTypeRegister: 'SET_TYPE_REGISTER',
     setSelectItem: 'SET_SELECT_ITEM',
     setPreviewPDF: 'SET_PREVIEW_PDF',
-    setCliente:'SET_CLIENTE',
-    setStatus:'SET_STATUS',
-    setSelect:'SET_SELECT',
-    setSelectOutputRegister:'SET_SELECT_OUTPUTREGISTER',
-    setModalRegister:'SET_MODAL_REGISTER',
-    setUpdate:'SET_UPDATE_REGISTERS',
+    setCliente: 'SET_CLIENTE',
+    setStatus: 'SET_STATUS',
+    setSelect: 'SET_SELECT',
+    setSelectOutputRegister: 'SET_SELECT_OUTPUTREGISTER',
+    setModalRegister: 'SET_MODAL_REGISTER',
+    setUpdate: 'SET_UPDATE_REGISTERS',
 }
 
 //Use reducer con estrutura de objetos 
@@ -57,31 +57,31 @@ const reducerObject = (state, payload) => ({
         ...state,
         previewPDF: payload
     },
-    [actionTypes.setStatus]:{
+    [actionTypes.setStatus]: {
         ...state,
         status: payload
     },
-    [actionTypes.setCliente]:{
+    [actionTypes.setCliente]: {
         ...state,
-        cliente:payload
+        cliente: payload
     },
-    [actionTypes.setSelect]:{
+    [actionTypes.setSelect]: {
         ...state,
         select: payload
     },
-    [actionTypes.setSelectOutputRegister]:{
+    [actionTypes.setSelectOutputRegister]: {
         ...state,
-        selectOutputRegisters:payload
+        selectOutputRegisters: payload
     },
-    [actionTypes.setModalRegister]:{
+    [actionTypes.setModalRegister]: {
         ...state,
         modalSendRegisters: payload
     },
-    [actionTypes.setUpdate]:{
+    [actionTypes.setUpdate]: {
         ...state,
-        update:payload
-    }
-
+        update: payload
+    },
+    
 });
 
 export { initialState, reducer, actionTypes }

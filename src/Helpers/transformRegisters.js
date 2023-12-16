@@ -121,7 +121,6 @@ export const filterInputRegistersForStatus = (arrayRegisters, status) => {
     const filteredDetails = arrayDetails.filter((detail) => detail.status === status && detail.carga === 'tanque');
 
     filteredDetails.map((item) => {
-
       const id = item.id
       const carga = item.carga
       const operador = item.operadores

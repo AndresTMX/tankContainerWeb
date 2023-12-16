@@ -31,13 +31,14 @@ function EIRManiobras() {
     const { key } = useContext(AuthContext);
 
     const [typeRegister, setTypeRegister] = useState("pendientes")
+    const changueTypeRegister = (newType) => setTypeRegister(newType)
     const { loading: loadingEIR, error: errorEIR, data: dataEIR } = useGetEIR(typeRegister)
 
     const session = JSON.parse(sessionStorage.getItem(key));
     const [state, dispatch] = useContext(ManiobrasContext);
 
     const { selectItem, previewPDF, maniobrasCheckList, cliente, status, select } = state;
-    const checkList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
+    const checkList = [...maniobrasCheckList?.pageOne, ...maniobrasCheckList?.pageTwo, ...maniobrasCheckList?.pageThree];
     const { dayInput, numero_tanque, tracto } = selectItem;
 
     //inicio del hook del buscador
@@ -191,7 +192,7 @@ function EIRManiobras() {
                                         gap: '10px',
                                     }}
                                 >
-                                    <DetailsCheckList />
+                                    <DetailsCheckList changueTypeRegister={changueTypeRegister}/>
 
                                     <CheckListEIR />
 

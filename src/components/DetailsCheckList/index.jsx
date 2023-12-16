@@ -16,18 +16,263 @@ import { tiempoTranscurrido } from "../../Helpers/date";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
 
-function DetailsCheckList() {
+function DetailsCheckList({changueTypeRegister}) {
 
     const IsSmall = useMediaQuery('(max-width:900px)');
     const IsExtraSmall = useMediaQuery('(max-width:450px)');
 
     const { sendCheckList, errorPost, request } = usePostCheckList();
 
+
+    const pageOne = [
+        {
+          question: 'PANEL FROTAL',
+          value: null,
+          preview: '',
+          image: '',
+          coment: '',
+        },
+        {
+          question: 'MARCO FRONTAL',
+          value: null,
+          preview: '',
+          image: '',
+          coment: '',
+    
+        },
+        {
+          question: 'PANEL TRASERO',
+          value: null,
+          preview: '',
+          image: '',
+          coment: '',
+    
+        },
+        {
+          question: 'MARCO TRASERO',
+          value: null,
+          preview: '',
+          image: '',
+          coment: '',
+    
+        },
+        {
+          question: 'PANEL DERECHO',
+          value: null,
+          preview: '',
+          image: '',
+          coment: '',
+        },
+        {
+          question: 'MARCO DERECHO',
+          value: null,
+          preview: '',
+          image: '',
+          coment: '',
+        },
+        {
+          question: 'PANEL IZQUIERDO',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'MARCO IZQUIERDO',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'PANEL SUPERIOR',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'MARCO SUPERIOR',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'PANEL INFERIOR',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+    ]
+
+    const pageTwo = [
+        {
+          question: 'MARCO INFERIOR',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'NOMENCLATURA',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'ESCALERAS',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'PASARELAS',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'ENTRADA DE HOMBRE',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'MARIPOSAS DE E. HOMBRE',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'VÁLVULA DE PRESIÓN Y ALIVIO',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'TUBO DE DESAGÜE',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'VÁLVULA DE ALIVIO',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'BRIDA CIEGA',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+    ]
+
+    const pageThree = [
+        {
+          question: 'MANÓMETRO',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'TERMÓMETRO',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'PLACA DE DATOS',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'PORTA DOCUMENTOS',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'TUBO DE VAPOR',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'TAPONES DE TUBO DE VAPOR',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'SISTEMA DE CALENTAMIENTO ELÉCTRICO',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'VÁLVULA DE PIE DE TANQUE',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'VÁLVULA DE DESCARGA',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'TAPÓN DE VÁLVULA DE DESCARGA',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'MANERAL DE VÁLVULA DE SEGURIDAD',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        },
+        {
+          question: 'CIERRE DE EMERGENCIA REMOTO',
+          value: null,
+          preview: '',
+          image: '',
+          coment: ''
+        }
+    ]
+
     const { key } = useContext(AuthContext);
     const [state, dispatch] = useContext(ManiobrasContext);
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext)
 
     const { selectItem, maniobrasCheckList, status } = state;
+    console.log("🚀 ~ file: index.jsx:275 ~ DetailsCheckList ~ selectItem:", selectItem)
     const { carga, dayInput, dateInput, linea, numero_tanque, tracto, checkIn } = selectItem;
 
     const complete = maniobrasCheckList.pageThree.length >= 1 ? true : false;
@@ -38,6 +283,7 @@ function DetailsCheckList() {
     const clearSelect = () => {
         dispatch({ type: actionTypes.setSelectItem, payload: false })
         dispatch({ type: actionTypes.setSelect, payload: false })
+        dispatch({ type: actionTypes.setManiobrasCheck , payload: {pageOne: pageOne, pageTwo:pageTwo, pageThree:pageThree}})
 
     }
 
@@ -64,15 +310,14 @@ function DetailsCheckList() {
                 registro_detalle_entrada_id: selectItem.id,
                 nombre_cliente: state.cliente,
                 ingreso: selectItem.checkIn,
-                data: JSON.stringify({ ...flatCheckList })
             }
+            console.log("🚀 ~ file: index.jsx:313 ~ sendCheck ~ data.selectItem:", data.selectItem)
 
-            // console.log(data)
-
-            const result = await sendCheckList(data, flatCheckList)
-            // dispatch({ type: actionTypes.setSelectItem, payload: false })
-            // dispatch({ type: actionTypes.setSelect, payload: false })
-            // dispatch({ type: actionTypes.setTypeRegister, payload: "checklist_realizados"})
+            await sendCheckList(data, flatCheckList)
+            dispatch({ type: actionTypes.setSelectItem, payload: false })
+            dispatch({ type: actionTypes.setSelect, payload: false })
+            changueTypeRegister("realizados")
+            dispatch({ type: actionTypes.setManiobrasCheck , payload: {pageOne: pageOne, pageTwo:pageTwo, pageThree:pageThree}})
     }
 
     return (
