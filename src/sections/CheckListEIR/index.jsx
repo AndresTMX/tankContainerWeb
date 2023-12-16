@@ -4,6 +4,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import { StepBarProgress } from "../StepsManiobras/StepBarProgress";
+import { InputImage } from "../../components/InputImage";
 import { useCheckList } from "../../Hooks/useChecklistManiobras";
 import { SelectSimple } from "../../components/SelectSimple";
 import { InputText } from "../../components/InputText";
@@ -63,7 +64,7 @@ function CheckListEIR() {
 
 export { CheckListEIR };
 
-export function QuestionItem({ question, value, index, SelectQuestionComent, ChangueInput }) {
+export function QuestionItem({ question, value, index, SelectQuestionComent, ChangueInput, ChangueImage, DiscardImage }) {
   const IsSmall = useMediaQuery('(max-width:700px)');
   return (
     <>
@@ -71,10 +72,11 @@ export function QuestionItem({ question, value, index, SelectQuestionComent, Cha
 
         <Stack flexDirection={IsSmall ? 'column' : 'row'} alignItems={IsSmall ? 'start' : 'center'} justifyContent='space-between'>
           <Typography variant="subtitle2" sx={{ maxWidth: IsSmall ? null : '270px' }}>
-            {question}
+            {question.question}
           </Typography>
 
           <Stack flexDirection='row' alignItems='center' width={IsSmall ? '100%' : 'auto'} >
+
             <SelectSimple
               required={true}
               width={IsSmall ? '100%' : null}
@@ -83,6 +85,13 @@ export function QuestionItem({ question, value, index, SelectQuestionComent, Cha
               value={value === null ? '' : value}
               defaultValue={''}
               options={['Si', 'No', 'Cortado', 'Doblado', 'Faltante', 'Respaldo', 'Abollado']}
+            />
+
+            <InputImage
+            index={index}
+            preview={question.preview}
+            onChangue={(e) => ChangueImage(index, e)}
+            discardImage={DiscardImage}
             />
 
             <IconButton
@@ -192,7 +201,7 @@ export function StepOne({ nextStepBar }) {
   ]
   const stateCheckList = state.maniobrasCheckList.pageOne.length >= 1 ? state.maniobrasCheckList.pageOne : mockListCheck;
   const { actions, states } = useCheckList(stateCheckList)
-  const { ChangueInput, ChangueComent, SelectQuestionComent, ToggleModalComent, nextStep } = actions
+  const { ChangueInput, ChangueImage, DiscardImage, ChangueComent, SelectQuestionComent, ToggleModalComent, nextStep } = actions
   const { listCheck, indexQuestion, modalComent, } = states
 
 
@@ -214,10 +223,12 @@ export function StepOne({ nextStepBar }) {
                 <QuestionItem
                   key={index}
                   index={index}
-                  question={question.question}
+                  question={question}
                   value={question.value}
                   coment={question.coment}
                   ChangueInput={ChangueInput}
+                  ChangueImage={ChangueImage}
+                  DiscardImage={DiscardImage}
                   SelectQuestionComent={SelectQuestionComent}
                 />
               ))}
@@ -364,7 +375,7 @@ export function StepTwo({ nextStepBar }) {
   ]
   const stateCheckList = state.maniobrasCheckList.pageTwo.length >= 1 ? state.maniobrasCheckList.pageTwo : mockListCheck;
   const { actions, states } = useCheckList(stateCheckList)
-  const { ChangueInput, ChangueComent, SelectQuestionComent, ToggleModalComent, nextStep } = actions
+  const { ChangueInput, ChangueComent,ChangueImage, DiscardImage, SelectQuestionComent, ToggleModalComent, nextStep } = actions
   const { listCheck, indexQuestion, modalComent, maniobrasCheckList } = states
 
   const next = (e) => {
@@ -384,9 +395,11 @@ export function StepTwo({ nextStepBar }) {
                 <QuestionItem
                   key={index}
                   index={index}
-                  question={question.question}
+                  question={question}
                   value={question.value}
                   coment={question.coment}
+                  ChangueImage={ChangueImage}
+                  DiscardImage={DiscardImage}
                   ChangueInput={ChangueInput}
                   SelectQuestionComent={SelectQuestionComent}
                 />
@@ -557,7 +570,7 @@ export function StepThree({ nextStepBar }) {
   ]
   const stateCheckList = state.maniobrasCheckList.pageThree.length >= 1 ? state.maniobrasCheckList.pageThree : mockListCheck;
   const { actions, states } = useCheckList(stateCheckList)
-  const { ChangueInput, ChangueComent, SelectQuestionComent, ToggleModalComent, nextStep } = actions
+  const { ChangueInput, ChangueComent, SelectQuestionComent, ChangueImage, DiscardImage, ToggleModalComent, nextStep } = actions
   const { listCheck, indexQuestion, modalComent, maniobrasCheckList } = states
 
   const next = (e) => {
@@ -577,9 +590,11 @@ export function StepThree({ nextStepBar }) {
                 <QuestionItem
                   key={index}
                   index={index}
-                  question={question.question}
+                  question={question}
                   value={question.value}
                   coment={question.coment}
+                  ChangueImage={ChangueImage}
+                  DiscardImage={DiscardImage}
                   ChangueInput={ChangueInput}
                   SelectQuestionComent={SelectQuestionComent}
                 />
@@ -672,9 +687,9 @@ export function StepFor({ nextStepBar }) {
   }
 
   const optionsStatus = [
-    {id: 'prelavado', nombre: 'prelavado'},
-    {id: 'interna', nombre: 'reparacion interna'},
-    {id: 'externa', nombre: 'reparacion externa'},
+    { id: 'prelavado', nombre: 'prelavado' },
+    { id: 'interna', nombre: 'reparacion interna' },
+    { id: 'externa', nombre: 'reparacion externa' },
   ]
 
   return (

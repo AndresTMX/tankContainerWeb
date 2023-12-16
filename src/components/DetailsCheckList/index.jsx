@@ -56,7 +56,6 @@ function DetailsCheckList() {
 
     }
 
-
     const sendCheck = async() => {
          const flatCheckList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
 
@@ -68,10 +67,12 @@ function DetailsCheckList() {
                 data: JSON.stringify({ ...flatCheckList })
             }
 
-            const result = await sendCheckList(data)
-            dispatch({ type: actionTypes.setSelectItem, payload: false })
-            dispatch({ type: actionTypes.setSelect, payload: false })
-            dispatch({ type: actionTypes.setTypeRegister, payload: "checklist_realizados"})
+            // console.log(data)
+
+            const result = await sendCheckList(data, flatCheckList)
+            // dispatch({ type: actionTypes.setSelectItem, payload: false })
+            // dispatch({ type: actionTypes.setSelect, payload: false })
+            // dispatch({ type: actionTypes.setTypeRegister, payload: "checklist_realizados"})
     }
 
     return (
