@@ -41,7 +41,8 @@ html:hover {
 
 /* Estilos generales para la barra de desplazamiento */
 ::-webkit-scrollbar {
-  width: 5px; /* Ancho de la barra de desplazamiento */
+  height: 6px;
+  width: 6px; /* Ancho de la barra de desplazamiento */
 }
 
 /* Estilo del riel de la barra de desplazamiento */

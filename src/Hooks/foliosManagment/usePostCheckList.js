@@ -31,6 +31,8 @@ function usePostCheckList() {
             setErrorPost(false)
             setRequest(false)
 
+            const idRegistro = dataCheck.registro_detalle_entrada_id;
+
             if (state.status === 'interna' || state.status === 'externa') {
 
                 const { dataRepair, errorRepair } = await supabase
@@ -49,6 +51,14 @@ function usePostCheckList() {
             }
 
             const updateStatus = state.status != 'prelavado' ? 'reparacion' : state.status;
+
+            const { errorUpdate } = await supabase.from('registros_detalles_entradas')
+            .update({status:updateStatus})
+            .eq('id', idRegistro )
+
+            if (errorUpdate) {
+                throw new Error(`Error: ${errorUpdate}`)
+            }
 
             const checklitContainImages = flatCheckList.filter((item) => item.image != '');
 

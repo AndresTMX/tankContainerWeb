@@ -15,7 +15,7 @@ function ContainerScroll({ children, height, background, colorBar }) {
           paddingTop:'20px',
           paddingBottom:'20px',
           "&::-webkit-scrollbar": {
-            width: "8px",
+            width: "4px",
           },
           "&::-webkit-scrollbar-thumb": {
             backgroundColor: colorBar? colorBar: "lightgray",

@@ -272,7 +272,6 @@ function DetailsCheckList({changueTypeRegister}) {
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext)
 
     const { selectItem, maniobrasCheckList, status } = state;
-    console.log("🚀 ~ file: index.jsx:275 ~ DetailsCheckList ~ selectItem:", selectItem)
     const { carga, dayInput, dateInput, linea, numero_tanque, tracto, checkIn } = selectItem;
 
     const complete = maniobrasCheckList.pageThree.length >= 1 ? true : false;
@@ -311,7 +310,6 @@ function DetailsCheckList({changueTypeRegister}) {
                 nombre_cliente: state.cliente,
                 ingreso: selectItem.checkIn,
             }
-            console.log("🚀 ~ file: index.jsx:313 ~ sendCheck ~ data.selectItem:", data.selectItem)
 
             await sendCheckList(data, flatCheckList)
             dispatch({ type: actionTypes.setSelectItem, payload: false })

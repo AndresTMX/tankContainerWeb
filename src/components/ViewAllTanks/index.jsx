@@ -1,45 +1,121 @@
-import { useEffect, useState } from "react";
-import { Container, Box, Paper, Chip, Button, Alert, Skeleton, Stack, Typography, Modal, IconButton, TextField, InputLabel, Select, MenuItem, FormControl } from "@mui/material";
+import { useEffect, useState, useContext } from "react";
+import { Container, Box, Paper, Chip, Button, Stack, Tab, Tabs, Typography, Modal, IconButton, TextField, InputLabel, Select, MenuItem, FormControl } from "@mui/material";
+import { CustomTabPanel } from "../CustomTabPanel";
 import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
 import { ContainerScroll } from "../ContainerScroll";
-import CloseIcon from '@mui/icons-material/Close';
-
+import { DataGrid } from "@mui/x-data-grid";
+import { GlobalContext } from "../../Context/GlobalContext";
+import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { useAddTanks } from "../../Hooks/Maniobras/useAddTanks";
 
 function ViewAllTanks() {
 
-    const { getTanks, tanks, tankError, tankLoading } = useGetTanks();
-    const { updateTank } = useAddTanks();
+    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
+    const { getTanks, tanks, rowTanks, tankError, tankLoading } = useGetTanks();
+    const { updateTankStatus, deleteTanks, updateTanksRepair } = useAddTanks();
 
+    const [tab, setTab] = useState(0);
     const [editTank, setEditTank] = useState(false);
-    const [selectTank, setSelectTank] = useState({});
+    const [deleteModal, setDeleteModal] = useState(false);
+    const [selectTank, setSelectTank] = useState([]);
+    const [tankStatus, setTankStatus] = useState({ status: '', tamaño: '', })
+    const tanksSelected = tanks.length >= 1 ? tanks.filter((tanque) => selectTank.includes(tanque.tanque)) : [];
+    const [tankEditing, setTankEditing] = useState(tanksSelected);
 
     useEffect(() => {
         getTanks();
+    }, [editTank, deleteModal])
+
+    useEffect(() => {
+        setTankEditing(tanksSelected)
     }, [editTank])
 
-    const [newStatusTank, setNewStatusTank] = useState('')
-
-    const selected = (tank) => {
-        setSelectTank(tank)
-        setEditTank(!editTank)
+    const ToggleTab = (event, newValue) => {
+        setTab(newValue)
     }
 
-    const OnSubmit = async(e) => {
+    const OnSubmit = async (e, type) => {
         e.preventDefault();
 
-        const tanque = selectTank.tanque;
-
-        const updates = {
-            status: newStatusTank,
+        const routerUpdates = {
+            status: async () => await updateTankStatus({ status: tankStatus.status }, selectTank),
+            size: async () => await updateTankStatus({ tamaño: tankStatus.tamaño }, selectTank),
+            repair: async () => await updateTanksRepair(tankEditing)
         }
 
-        await updateTank(updates, tanque)
-        setTimeout( ()=> {
+        if (routerUpdates[type]) {
+            try {
+                await routerUpdates[type]();
+            } catch (error) {
+                dispatchGlobal({
+                    type: actionTypesGlobal.setNotification,
+                    payload: `Error al ejecutar la acción para ${type}: ${error.message}`
+                })
+            }
+        } else {
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: `No se encontro una accion predeterminada para carga tipo ${type}`
+            })
+        }
+
+
+        setTimeout(() => {
             setEditTank(!editTank)
+        }, 1200)
+
+    }
+
+    const OnDelete = async () => {
+        await deleteTanks(selectTank)
+        setTimeout(() => {
+            setDeleteModal(!deleteModal)
         })
 
     }
+
+    const toggleEdit = () => {
+        if (selectTank.length >= 1) {
+            setEditTank(!editTank)
+        } else {
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Selecciona al menos un tanque primero'
+            })
+        }
+    }
+
+    const toggleDelet = () => {
+        if (selectTank.length >= 1) {
+            setDeleteModal(!deleteModal)
+        } else {
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Selecciona al menos un tanque primero'
+            })
+        }
+    }
+
+    const OnEditTank = (tanque, type, e) => {
+
+        const copyState = [...tankEditing]
+
+        const index = copyState.findIndex((item) => item.tanque === tanque);
+
+        type === 'internas' ?
+            copyState[index].reparaciones_internas = e.target.value
+            : copyState[index].reparaciones_externas = e.target.value
+
+        setTankEditing(copyState)
+    }
+
+    const columns = [
+        { field: 'col1', headerName: 'Tanque', width: 120 },
+        { field: 'col2', headerName: 'Status', renderCell: (params) => (<CustomChip status={params.value} />), width: 120 },
+        { field: 'col3', headerName: 'Tamaño', width: 100 },
+        { field: 'col4', headerName: 'Reparaciones internas', width: 200 },
+        { field: 'col5', headerName: 'Reparaciones externas', width: 200 },
+    ];
 
 
     return (
@@ -47,54 +123,30 @@ function ViewAllTanks() {
 
             <Container>
                 <Box>
-                    <Stack>
-                        <Typography variant='button'>
-                            Todos los tanques registrados
-                        </Typography>
-                    </Stack>
+
                     <Paper>
-                        <ContainerScroll height={'75vh'}>
-                            <Stack spacing={1}>
+                        <ContainerScroll background={'white'} height={'75vh'}>
 
-
-                                {(!tankError && !tankLoading) &&
-                                    tanks.map((tanque) => (
-                                        <ItemViewTank
-                                            key={tanque.tanque}
-                                            tanque={tanque}
-                                            onClick={selected}
-                                        />
-                                    ))}
-
-                                {(tankLoading) &&
-                                    <>
-                                        <Skeleton variant='rounded' width={'100%'} height={'40px'} />
-                                        <Skeleton variant='rounded' width={'100%'} height={'40px'} />
-                                        <Skeleton variant='rounded' width={'100%'} height={'40px'} />
-                                        <Skeleton variant='rounded' width={'100%'} height={'40px'} />
-                                        <Skeleton variant='rounded' width={'100%'} height={'40px'} />
-                                        <Skeleton variant='rounded' width={'100%'} height={'40px'} />
-                                        <Skeleton variant='rounded' width={'100%'} height={'40px'} />
-                                        <Skeleton variant='rounded' width={'100%'} height={'40px'} />
-                                    </>
-                                }
-
-                                {(tankError) &&
-                                    <Alert severity="error">Error al cargar los tanques, intenta de nuevo.</Alert>
-                                }
-
-                                {(tanks.length === 0 && !tankError && !tankLoading) &&
-                                    <Alert severity="error">Error al cargar los tanques, intenta de nuevo.</Alert>
-
-                                }
-                            </Stack>
+                            <DataGrid
+                                rows={rowTanks}
+                                columns={columns}
+                                checkboxSelection
+                                disableSelectionOnClick
+                                onRowSelectionModelChange={(rowModesModel) => setSelectTank(rowModesModel)}
+                                slots={{
+                                    toolbar: HeaderTable
+                                }}
+                                slotProps={{
+                                    toolbar: { toggleEdit, toggleDelet }
+                                }}
+                            />
                         </ContainerScroll>
                     </Paper>
                 </Box>
             </Container>
 
             <Modal open={editTank}>
-                <Container
+                <Box
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -103,72 +155,307 @@ function ViewAllTanks() {
                         marginTop: '10%'
                     }}
                 >
-                    <Box>
-                        <form onSubmit={OnSubmit}>
-                            <Paper
+
+                    <Paper
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '10px',
+                            padding: '20px',
+                            width: '400px'
+                        }}
+                    >
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+                            <Tabs
+                                value={tab}
+                                onChange={ToggleTab}
+                                variant={"scrollable"}
+                                scrollButtons="auto"
+                            >
+                                <Tab label="status" />
+                                <Tab label="tamaño" />
+                                <Tab label="reparaciones" />
+                            </Tabs>
+                        </Box>
+
+                        <CustomTabPanel index={0} value={tab}>
+                            <Box
                                 sx={{
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    padding: '20px',
-                                    width: '400px',
                                     gap: '10px',
                                 }}
                             >
-                                <Stack
-                                    flexDirection={'row'}
-                                    alignItems={'center'}
-                                    justifyContent={'space-between'}
-                                >
-                                    <Typography>
-                                        Editar tanque <strong>{selectTank.tanque}</strong>
-                                    </Typography>
-                                    <IconButton onClick={() => setEditTank(false)}>
-                                        <CloseIcon />
-                                    </IconButton>
-                                </Stack>
-
-                                <Stack
-                                    gap={'10px'}
-                                    alignItems={'center'}
-                                >
-                                    <TextField
-                                        disabled
-                                        fullWidth
-                                        label={'Numero de tanque'}
-                                        value={selectTank.tanque}
-                                    />
-
-                                    <FormControl fullWidth>
-                                        <InputLabel>Status</InputLabel>
-                                        <Select
-                                            defaultValue={selectTank.status}
-                                            value={newStatusTank.length === 0 ? selectTank.status : newStatusTank}
-                                            label="Status"
-                                            onChange={(e) => setNewStatusTank(e.target.value)}
+                                <form onSubmit={(e) => OnSubmit(e, 'status')}>
+                                    <Stack gap={'15px'}>
+                                        <Stack
+                                            flexDirection={'row'}
+                                            alignItems={'center'}
+                                            justifyContent={'flex-start'}
                                         >
-                                            <MenuItem value={'ready'}>Ready</MenuItem>
-                                            <MenuItem value={'maniobras'}>Maniobras</MenuItem>
-                                            <MenuItem value={'eir'}>EIR</MenuItem>
-                                            <MenuItem value={'parked'}>Parked</MenuItem>
+                                            <Typography>
+                                                {`Tanques seleccionados :  `}
+                                                {selectTank?.length >= 1 ?
+                                                    selectTank.map((tanque) =>
+                                                        (<strong>{tanque}</strong>)) : []}
+                                            </Typography>
+                                        </Stack>
 
-                                        </Select>
-                                    </FormControl>
+                                        <Stack
+                                            gap={'10px'}
+                                            alignItems={'center'}
+                                        >
 
-                                </Stack>
+                                            <FormControl fullWidth>
+                                                <InputLabel>Nuevo status</InputLabel>
+                                                <Select
+                                                    required={true}
+                                                    defaultValue=""
+                                                    value={tankStatus.status}
+                                                    label="Nuevo status"
+                                                    onChange={(e) => setTankStatus({ ...tankStatus, status: e.target.value })}
+                                                >
+                                                    <MenuItem value={'ready'}>Ready</MenuItem>
+                                                    <MenuItem value={'maniobras'}>Maniobras</MenuItem>
+                                                    <MenuItem value={'eir'}>EIR</MenuItem>
+                                                    <MenuItem value={'parked'}>Parked</MenuItem>
 
+                                                </Select>
+                                            </FormControl>
+
+                                        </Stack>
+
+                                        <Stack
+                                            flexDirection={'column'}
+                                            gap={'5px'}
+                                        >
+                                            <Button
+                                                type="submit"
+                                                fullWidth
+                                                color="primary"
+                                                variant="contained"
+                                            >
+                                                Actualizar
+                                            </Button>
+
+                                            <Button
+                                                onClick={() => setEditTank(false)}
+                                                fullWidth
+                                                color="error"
+                                                variant="contained"
+                                            >
+                                                Cancelar
+                                            </Button>
+
+                                        </Stack>
+
+                                    </Stack>
+                                </form>
+                            </Box>
+                        </CustomTabPanel>
+
+                        <CustomTabPanel index={1} value={tab}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '10px',
+                                }}
+                            >
+                                <form onSubmit={(e) => OnSubmit(e, 'size')}>
+                                    <Stack gap='10px'>
+                                        <Stack
+                                            flexDirection={'row'}
+                                            alignItems={'center'}
+                                            justifyContent={'flex-start'}
+                                        >
+                                            <Typography>
+                                                {`Tanques seleccionados :  `}
+                                                {selectTank?.length >= 1 ?
+                                                    selectTank.map((tanque) =>
+                                                        (<strong>{tanque}</strong>)) : []}
+                                            </Typography>
+                                        </Stack>
+
+                                        <Stack
+                                            gap={'10px'}
+                                            alignItems={'center'}
+                                        >
+
+                                            <FormControl fullWidth>
+                                                <InputLabel>Nuevo tamaño</InputLabel>
+                                                <Select
+                                                    required={true}
+                                                    defaultValue=""
+                                                    value={tankStatus.tamaño}
+                                                    label="Nuevo status"
+                                                    onChange={(e) => setTankStatus({ ...tankStatus, tamaño: e.target.value })}
+                                                >
+                                                    <MenuItem value={'sencillo'}>sencillo</MenuItem>
+                                                    <MenuItem value={'doble'}>doble</MenuItem>
+
+                                                </Select>
+                                            </FormControl>
+
+                                        </Stack>
+
+                                        <Stack
+                                            flexDirection={'column'}
+                                            gap={'5px'}
+                                        >
+                                            <Button
+                                                type="submit"
+                                                fullWidth
+                                                color="primary"
+                                                variant="contained"
+                                            >
+                                                Actualizar
+                                            </Button>
+
+                                            <Button
+                                                onClick={() => setEditTank(false)}
+                                                fullWidth
+                                                color="error"
+                                                variant="contained"
+                                            >
+                                                Cancelar
+                                            </Button>
+
+                                        </Stack>
+                                    </Stack>
+                                </form>
+                            </Box>
+                        </CustomTabPanel>
+
+                        <CustomTabPanel index={2} value={tab}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '10px',
+                                }}
+                            >
+                                <form onSubmit={(e) => OnSubmit(e, 'repair')}>
+                                    <Stack gap='10px'>
+                                        <Stack
+                                            gap={'10px'}
+                                            alignItems={'center'}
+                                            flexDirection={'row'}
+                                            justifyContent={'flex-start'}
+                                        >
+                                            {`Tanques seleccionados :  `}
+                                            {tankEditing?.length >= 1 ?
+                                                tankEditing.map((tanque, index) =>
+                                                    (<strong key={index}>{`${tanque.tanque} , `}</strong>)) : []}
+                                        </Stack>
+
+                                        <ContainerScroll background={'white'} height={'250px'}>
+                                            <Stack
+                                                padding={'0px'}
+                                                spacing={'10px'}
+                                            >
+
+                                                {tankEditing.map((tanque) => (
+                                                    <ItemEditTank
+                                                        key={tanque.tanque}
+                                                        tanque={tanque.tanque}
+                                                        OnEditTank={OnEditTank}
+                                                        internas={tanque.reparaciones_internas}
+                                                        externas={tanque.reparaciones_externas}
+                                                    />
+                                                ))}
+
+                                            </Stack>
+                                        </ContainerScroll>
+
+                                        <Stack
+                                            flexDirection={'column'}
+                                            gap={'5px'}
+                                        >
+                                            <Button
+                                                type="submit"
+                                                fullWidth
+                                                color="primary"
+                                                variant="contained"
+                                            >
+                                                Actualizar
+                                            </Button>
+
+                                            <Button
+                                                onClick={() => setEditTank(false)}
+                                                fullWidth
+                                                color="error"
+                                                variant="contained"
+                                            >
+                                                Cancelar
+                                            </Button>
+
+                                        </Stack>
+                                    </Stack>
+                                </form>
+                            </Box>
+                        </CustomTabPanel>
+
+
+                    </Paper>
+
+                </Box>
+
+            </Modal >
+
+            <Modal open={deleteModal}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        height: '100vh',
+                        marginTop: '10%'
+                    }}
+                >
+                    <Paper
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '10px',
+                            padding: '20px',
+                            width: '400px'
+                        }}
+                    >
+                        <Stack gap='10px' >
+                            <Typography textAlign={'center'}>
+                                Estas a punto de eliminar {selectTank.length} tanques
+                            </Typography>
+
+                            <Stack flexDirection={'row'} gap={'5px'} flexWrap={'wrap'}>
+                                {selectTank.map((tanque) => (
+                                    <strong key={tanque.tanque}>{tanque}</strong>
+                                ))}
+                            </Stack>
+
+                            <Typography textAlign={'center'}>
+                                ¿quieres continuar?
+                            </Typography>
+
+                            <Stack
+                                gap={'10px'}
+                            >
                                 <Button
-                                    type="submit"
-                                    fullWidth
-                                    color="primary"
                                     variant="contained"
-                                >
-                                    Actualizar
-                                </Button>
+                                    color="primary"
+                                    onClick={() => setDeleteModal(false)}
+                                >cancelar</Button>
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    onClick={OnDelete}
+                                >eliminar</Button>
+                            </Stack>
 
-                            </Paper>
-                        </form>
-                    </Box>
-                </Container>
+                        </Stack>
+                    </Paper>
+
+                </Box>
             </Modal>
 
         </>
@@ -231,3 +518,79 @@ function ItemViewTank({ tanque, onClick }) {
 }
 
 export { ItemViewTank };
+
+
+export function CustomChip({ status }) {
+
+    const routerColors = {
+        forconfirm: "default",
+        reparacion: "error",
+        ready: "success",
+        eir: "warning",
+        finish: "info",
+    }
+
+    return (
+        <Chip size="small" label={status} color={routerColors[status]} />
+    );
+}
+
+export function HeaderTable({ toggleEdit, toggleDelet }) {
+
+    return (
+        <Box>
+            <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} padding={'15px'}>
+
+                <Typography variant='button'>
+                    Tanques registrados
+                </Typography>
+
+                <Stack flexDirection={'row'} gap={'10px'}>
+
+                    <Button
+                        onClick={toggleEdit}
+                        size="small"
+                        variant="contained"
+                        color="info"
+                    >Actualizar </Button>
+
+                    <Button
+                        onClick={toggleDelet}
+                        size="small"
+                        variant="contained"
+                        color="error"
+                    >Eliminar</Button>
+
+                </Stack>
+
+            </Stack>
+        </Box>
+    );
+}
+
+export function ItemEditTank({ tanque, internas, externas, OnEditTank }) {
+
+    return (
+        <Stack bgcolor={'whitesmoke'} padding={'15px'} gap={'10px'} borderRadius={'4px'}>
+
+            <Stack flexDirection={'flex-start'} >
+                <Chip sx={{ width: '80px' }} size="small" label={tanque} color="info" />
+            </Stack>
+
+            <Stack flexDirection={'row'} gap={'10px'}>
+                <TextField
+                    helperText={'internas'}
+                    size="small"
+                    value={internas === null ? "0" : internas}
+                    onChange={(e) => OnEditTank(tanque, 'internas', e)}
+                />
+                <TextField
+                    helperText={'externas'}
+                    size="small"
+                    value={externas === null ? "0" : externas}
+                    onChange={(e) => OnEditTank(tanque, 'externas', e)}
+                />
+            </Stack>
+        </Stack>
+    )
+}
