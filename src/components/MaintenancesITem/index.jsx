@@ -10,7 +10,7 @@ import { TextGeneral } from "../TextGeneral";
 //helpers
 import { datetimeMXFormat, tiempoTranscurrido, dateMXFormat, dateMX } from "../../Helpers/date";
 
-function MaintenancesItem({ maintance }) {
+function MaintenancesItem({ maintance, selectItem }) {
 
     const [modal, setModal] = useState({ modal1: false, modal2: false })
 
@@ -54,20 +54,20 @@ function MaintenancesItem({ maintance }) {
                 >
 
                     <Stack flexDirection='row' flexWrap='wrap' gap='15px' alignItems='center' justifyContent={'space-between'} >
-                        <Stack flexDirection='row' flexWrap='wrap' alignItems='center' gap='15px'> 
+                        <Stack flexDirection='row' flexWrap='wrap' alignItems='center' gap='15px'>
                             <Chip size="small" label={status} color={statusColor} />
                             <Chip size="small" label={dayEndTransform ? dayEndTransform : dayTransform} color="info" icon={<CalendarMonthIcon />} />
                             <Chip size="small" label={dayEndTransform ? dayEndTransform : dateTransform} color="info" icon={<AccessTimeIcon />} />
                             <Chip size="small" label={time} color="info" icon={<RestoreIcon />} />
                         </Stack>
-                        <Stack>
+                        <Stack flexDirection={'row'} gap={'10px'}>
                             <Button
                                 fullWidth={IsExtraSmall}
                                 size="small"
                                 variant="contained"
-                                onClick={ToggleFormRepair}
+                                onClick={()=> selectItem(maintance)}
                             >
-                                {status === 'pendiente' ? 'reparar' : 'completar'}
+                                iniciar reparación
                             </Button>
                         </Stack>
                     </Stack>

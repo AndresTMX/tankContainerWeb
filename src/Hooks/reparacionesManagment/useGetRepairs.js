@@ -13,6 +13,8 @@ function useGetRepairs(typeRegister) {
     }, [typeRegister])
 
     const getRepairs = async () => {
+        setRepairs([])
+        setErrorRepairs(null)
         setLoadingRepairs(true)
 
         const { data, error } = await supabase

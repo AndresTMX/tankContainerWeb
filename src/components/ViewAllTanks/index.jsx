@@ -59,10 +59,7 @@ function ViewAllTanks() {
             })
         }
 
-
-        setTimeout(() => {
-            setEditTank(!editTank)
-        }, 1200)
+        setEditTank(!editTank)
 
     }
 

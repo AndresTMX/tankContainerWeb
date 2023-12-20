@@ -4,7 +4,7 @@ import { useSearcher } from "../../Hooks/useSearcher"
 import { ReparacionesContext } from "../../Context/ReparacionesContext"
 import { useGetRepairs } from "../../Hooks/reparacionesManagment/useGetRepairs";
 //imports materialui
-import { Container, Box, Tabs, Tab, Stack, Fade, Paper, Typography } from "@mui/material";
+import { Container, Box, Tabs, Tab, Stack, Fade, Paper, Typography, Chip, Button } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //components
 import { MaintenancesItem } from "../../components/MaintenancesITem";
@@ -13,22 +13,24 @@ import { HistoryItemLoading } from "../../components/HistoryItem";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { Searcher } from "../../components/Searcher";
 import { currentDate } from "../../Helpers/date";
+import { ModalRepair } from "../../components/ModalRepair";
 //helpers
-import { filterSearchRepair} from "../../Helpers/searcher";
+import { filterSearchRepair } from "../../Helpers/searcher";
 
 function Reparaciones() {
 
     const IsSmall = useMediaQuery('(max-width:900px)')
     const IsExtraSmall = useMediaQuery('(max-width:700px)');
-    const [state, dispatch] = useContext(ReparacionesContext);
+    const [typeRepair, setTypeRepair] = useState('pendiente')
 
-    const { repairs, loadingRepairs, errorRepairs } = useGetRepairs(state.typeRegister);
-    const { states, functions } = useSearcher(filterSearchRepair, repairs, state.typeRegister);
-    
+    const { repairs, loadingRepairs, errorRepairs } = useGetRepairs(typeRepair);
+    const { states, functions } = useSearcher(filterSearchRepair, repairs, typeRepair);
+
     const { search, results, loading, error } = states;
     const { searching, onChangueSearch, clearResults, searchingKey } = functions;
 
-    const [tab, setTab] = useState(0);
+    const [itemRepair, setItemRepair] = useState(false);
+    const selectTedItemRepair = (item) => setItemRepair(item);
 
     const ToggleTab = (event, newValue) => {
         setTab(newValue)
@@ -85,8 +87,8 @@ function Reparaciones() {
         },
     ]
 
-    const maintenancesPending = mockMaintances.filter(item => item.status === 'pending')
     const maintenancesComplete = mockMaintances.filter(item => item.status === 'complete')
+    const maintenancesPending = mockMaintances.filter(item => item.status === 'pending')
     const maintenancesProces = mockMaintances.filter(item => item.status === 'proces')
 
     return (
@@ -99,69 +101,88 @@ function Reparaciones() {
                     justifyContent: 'center',
                     width: '100%',
                     overflow: 'hidden',
-                    minHeight: '90vh'
+                    minHeight: '90vh',
+                    gap: '15px'
                 }}
             >
-
-                <Tabs
-                    value={tab}
-                    onChange={ToggleTab}
-                    variant={IsSmall ? "scrollable" : ''}
-                    scrollButtons="auto"
-                >
-                    <Tab label="Reparaciones Pendientes" />
-                    <Tab label="Reparaciones En Proceso" />
-                    <Tab label="Reparaciones Realizadas" />
-                </Tabs>
-
-                <CustomTabPanel value={tab} index={0}>
-                    <Fade timeout={500} in={tab === 0 ? true : false}>
-                        <Box
+                {!itemRepair &&
+                    <Fade in={!itemRepair}>
+                        <Paper
                             sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '10px',
-                                width:IsSmall? 'auto' : '800px'
+                                width: '90vw',
+                                maxWidth: '700px'
                             }}
-                        >
-
-                            <Paper elevation={2}>
-                                <Stack
-                                    justifyContent='space-between'
-                                    bgcolor='whitesmoke'
-                                    alignItems='center'
-                                    flexDirection='row'
-                                    flexWrap='wrap'
-                                    padding='20px'
-                                    spacing='20px'
-                                >
-                                    <Stack spacing='5px' paddingRight='20px'>
-                                        <Typography variant="h6">Reparaciones Pendientes</Typography>
-                                        <Typography variant="subtitle2">{`${repairs.length} reparaciones pendientes`}</Typography>
-                                    </Stack>
-
-                                    <Stack width={IsExtraSmall ? '100%' : '250px'}>
-                                        <Searcher 
-                                          onChangueSearch={onChangueSearch}
-                                          searchingKey={searchingKey}
-                                          search={search}
-                                          searching={searching}
-                                          placeholder={'Busca reparaciones ....'}
+                            elevation={2}>
+                            <Stack
+                                justifyContent='space-between'
+                                bgcolor='whitesmoke'
+                                alignItems='center'
+                                flexDirection='row'
+                                flexWrap='wrap'
+                                padding='20px'
+                                spacing='20px'
+                            >
+                                <Stack spacing='10px' paddingRight='20px'>
+                                    <Typography variant="h6">Reparaciones Pendientes</Typography>
+                                    <Typography variant="subtitle2">{`${repairs.length} reparaciones pendientes`}</Typography>
+                                    <Stack flexDirection={'row'} gap={'10px'}>
+                                        <Chip
+                                            label={'pendientes'}
+                                            color={typeRepair === "pendiente" ? 'warning' : 'default'}
+                                            onClick={() => setTypeRepair('pendiente')}
+                                        />
+                                        <Chip
+                                            label={'proceso'}
+                                            color={typeRepair === "proceso" ? 'info' : 'default'}
+                                            onClick={() => setTypeRepair('proceso')}
+                                        />
+                                        <Chip
+                                            label={'completados'}
+                                            color={typeRepair === "completado" ? 'success' : 'default'}
+                                            onClick={() => setTypeRepair('completado')}
                                         />
                                     </Stack>
-
                                 </Stack>
-                            </Paper>
 
-                            <Paper
-                                elevation={4}
-                            >
+                                <Stack width={IsExtraSmall ? '100%' : '250px'}>
+                                    <Searcher
+                                        onChangueSearch={onChangueSearch}
+                                        searchingKey={searchingKey}
+                                        search={search}
+                                        searching={searching}
+                                        placeholder={'Busca reparaciones ....'}
+                                    />
+                                </Stack>
+
+                            </Stack>
+                        </Paper>
+                    </Fade>
+                }
+
+                {itemRepair &&
+                    <Fade in={itemRepair}>
+                        <Box>
+                            <ModalRepair 
+                            tanque={itemRepair}
+                            selectItem={selectTedItemRepair} 
+                            />
+                        </Box>
+                    </Fade>}
+
+                {!itemRepair &&
+                    <Fade in={!itemRepair}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: IsSmall ? 'auto' : '700px' }}>
+                            <Paper elevation={4}>
                                 <ContainerScroll height='60vh'>
 
                                     {(!loadingRepairs && !errorRepairs) &&
                                         <Stack gap='10px'>
                                             {repairs.map((item) => (
-                                                <MaintenancesItem key={item.id} maintance={item} />
+                                                <MaintenancesItem
+                                                    selectItem={selectTedItemRepair}
+                                                    key={item.id}
+                                                    maintance={item}
+                                                />
                                             ))}
                                         </Stack>}
 
@@ -171,85 +192,13 @@ function Reparaciones() {
                                             <HistoryItemLoading />
                                             <HistoryItemLoading />
                                         </Stack>}
-
-
                                 </ContainerScroll>
                             </Paper>
                         </Box>
                     </Fade>
-                </CustomTabPanel>
+                }
 
-                <CustomTabPanel value={tab} index={1}>
-                    <Fade timeout={500} in={tab === 1 ? true : false}>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '10px',
-                            }}
-                        >
 
-                            <Stack spacing='5px'>
-                                <Typography variant="h6">Reparaciones en proceso</Typography>
-                                <Typography variant="subtitle2">Todos las reparaciones en proceso</Typography>
-                            </Stack>
-
-                            <Stack alignItems='flex-end'>
-                                <Searcher />
-                            </Stack>
-
-                            <Paper
-                                elevation={4}
-                                sx={{
-                                    padding: '20px'
-                                }}
-                            >
-                                <Stack gap='10px'>
-                                <p>Pendiente</p>
-                                    {/* {maintenancesProces.map((item) => (
-                                        <MaintenancesItem key={item.id} maintance={item} />
-                                    ))} */}
-                                </Stack>
-                            </Paper>
-                        </Box>
-                    </Fade>
-                </CustomTabPanel>
-
-                <CustomTabPanel value={tab} index={2}>
-                    <Fade timeout={500} in={tab === 2 ? true : false}>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '10px',
-                            }}>
-
-                            <Stack spacing='5px'>
-                                <Typography variant="h6">Reparaciones realizadas</Typography>
-                                <Typography variant="subtitle2">Ultimas 20 reparaciones</Typography>
-                            </Stack>
-
-                            <Stack alignItems='flex-end'>
-                                <Searcher />
-                            </Stack>
-
-                            <Paper
-                                elevation={4}
-                                sx={{
-                                    padding: '20px'
-                                }}
-                            >
-                                <Stack gap='10px'>
-
-                                    <p>Pendiente</p>
-                                    {/* {maintenancesComplete.map((item) => (
-                                        <MaintenancesItem key={item.id} maintance={item} />
-                                    ))} */}
-                                </Stack>
-                            </Paper>
-                        </Box>
-                    </Fade>
-                </CustomTabPanel>
 
             </Container>
         </>
