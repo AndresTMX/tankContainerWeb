@@ -1,34 +1,31 @@
 import { useState } from "react";
 //imports materialui
-import { Box, Button, Stack, Fade, Chip, Divider, Modal, Paper, IconButton, Typography } from "@mui/material";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { TextGeneral } from "../TextGeneral";
+import { Box, Button, Stack, Fade, Chip, Divider, Modal, Paper, Typography } from "@mui/material";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import InfoIcon from '@mui/icons-material/Info';
 import RestoreIcon from '@mui/icons-material/Restore';
-import { TextGeneral } from "../TextGeneral";
+import useMediaQuery from "@mui/material/useMediaQuery";
 //helpers
-import { datetimeMXFormat, tiempoTranscurrido, dateMXFormat, dateMX } from "../../Helpers/date";
+import { datetimeMXFormat, tiempoTranscurrido, dateMXFormat, } from "../../Helpers/date";
 
-function MaintenancesItem({ maintance, selectItem, typeRepair }) {
+function MaintenancesItem({ maintance, selectItem, typeRepair, }) {
 
     const [modal, setModal] = useState({ modal1: false, modal2: false })
-
-    // const { hora, linea, tracto, tanque, operador, celular, status, tipo, date_end } = maintance;
-
-    //new data maintance => checkIn, id_usuario, id_detalle_registro, numero_tanque, status, tipo_reparacion, data
 
     const { checkIn, checkOut, id_usuario, id_detalle_registro, registros_detalles_entradas, status, tipo_reparacion, data } = maintance;
 
     const IsSmall = useMediaQuery('(max-width:950px)');
-    const IsExtraSmall = useMediaQuery('(max-width:500px)');
+    const IsExtraSmall = useMediaQuery('(max-width:680px)');
 
     const time = tiempoTranscurrido(checkIn)
     const dayTransform = dateMXFormat(checkIn);
     const dateTransform = datetimeMXFormat(checkIn);
     const dayEndTransform = checkOut != null ? dateMXFormat(checkOut) : false;
+    const dataInJson = typeRepair != 'pendiente' && data ? JSON.parse(data) : [];
+    const dataRepairsInJson = typeRepair != 'pendiente' && data ? JSON.parse(dataInJson.repairs) : [];
 
-    const statusColor = status === 'completo' ? 'success' : status === 'proceso' ? 'primary' : 'warning'
+    const statusColor = status === 'completado' ? 'success' : status === 'proceso' ? 'primary' : 'warning'
 
     const { numero_tanque, tracto, carga } = registros_detalles_entradas;
 
@@ -60,26 +57,37 @@ function MaintenancesItem({ maintance, selectItem, typeRepair }) {
                             <Chip size="small" label={dayEndTransform ? dayEndTransform : dateTransform} color="info" icon={<AccessTimeIcon />} />
                             <Chip size="small" label={time} color="info" icon={<RestoreIcon />} />
                         </Stack>
-                        <Stack flexDirection={'row'} gap={'10px'}>
-                           {(typeRepair === 'pendiente') &&
-                            <Button
-                                fullWidth={IsExtraSmall}
-                                size="small"
-                                variant="contained"
-                                onClick={()=> selectItem(maintance)}
-                            >
-                                iniciar reparación
-                            </Button>}
+                        <Stack flexDirection={'row'} gap={'10px'} width={IsExtraSmall? '100%' : 'auto'}>
+                            {(typeRepair === 'pendiente') &&
+                                <Button
+                                    fullWidth
+                                    size="small"
+                                    variant="contained"
+                                    onClick={() => selectItem(maintance)}
+                                >
+                                    iniciar reparación
+                                </Button>}
 
                             {(typeRepair === 'proceso') &&
-                            <Button
-                                fullWidth={IsExtraSmall}
-                                size="small"
-                                variant="contained"
-                                onClick={()=> selectItem(maintance)}
-                            >
-                                completar reparación
-                            </Button>}
+                                <Button
+                                    fullWidth
+                                    size="small"
+                                    variant="contained"
+                                    onClick={() => selectItem(maintance)}
+                                >
+                                    completar reparación
+                                </Button>}
+
+                            {(typeRepair === 'completado') &&
+                                <Button
+                                    fullWidth
+                                    size="small"
+                                    variant="contained"
+                                    onClick={() => selectItem(maintance)}
+                                >
+                                    ver detalles
+                                </Button>}
+
                         </Stack>
                     </Stack>
 
@@ -102,7 +110,7 @@ function MaintenancesItem({ maintance, selectItem, typeRepair }) {
                             label='N° tanque'
                             text={numero_tanque}
                         />
-                        {status != 'pendiente' && <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />}
+                        {/* {status != 'pendiente' && <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />} */}
                     </Stack>
 
                 </Stack>

@@ -2,13 +2,13 @@ import supabase from "../../supabase";
 import { useContext } from "react";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
+import { sendImageCloudinary } from "../../cloudinary";
 
 function useUpdateRepair() {
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
     //cloudinary data
-    const url = 'https://api.cloudinary.com/v1_1/dwiyxwcxj/image/upload';
     const preset = 'mvtjch9n';
     const folderName = 'evidencias_reparacion';
 
@@ -59,8 +59,18 @@ function useUpdateRepair() {
         });
 
         try {
-            const repairsWhitEvidences = await sendImagesReparation(updates.repairs)
-            console.log(repairsWhitEvidences)
+            const repairsWhitEvidences = await sendImagesReparation(updates.repairs);
+
+            const updatesRepairs = {
+                ...updates,
+                repairs: repairsWhitEvidences
+            }
+
+            const updatesInJson = JSON.stringify(updatesRepairs)
+
+            await updateRepair({status:'completado', data:updatesInJson}, idRepair)
+
+
         } catch (error) {
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
@@ -72,21 +82,29 @@ function useUpdateRepair() {
             });
         }
 
+
+        dispatchGlobal({
+            type: actionTypesGlobal.setLoading,
+            payload: false
+        });
+
+        dispatchGlobal({
+            type: actionTypesGlobal.setNotification,
+            payload: 'reparacion terminada, evidencias cargadas'
+        })
+
     }
 
     const sendImagesReparation = async (arrayQuestions) => {
-        console.log("🚀 ~ file: useUpdateRepair.js:78 ~ sendImagesReparation ~ arrayQuestions:", arrayQuestions)
         try {
             //recuperar imagenes con preguntas        
             const imagesWhitQuestion = arrayQuestions.filter((question) => question.imageEvidence != '');
-            console.log("🚀 ~ file: useUpdateRepair.js:82 ~ sendImagesReparation ~ imagesWhitQuestion:", imagesWhitQuestion)
 
             //extraer las imagenes y cambiarles el nombre
             const imagesWhitName = imagesWhitQuestion.map((question) => {
                 const oldFile = question.imageEvidence;
                 return new File([oldFile], question.question, { type: oldFile.type });
             });
-            console.log("🚀 ~ file: useUpdateRepair.js:89 ~ imagesWhitName ~ imagesWhitName:", imagesWhitName)
 
             //extraer los objetos para mapearlos
             const arrayFiles = Object.values(imagesWhitName)
@@ -120,7 +138,7 @@ function useUpdateRepair() {
                 if (newItem.imageEvidence != '') {
                     const indexImage = links.findIndex((link) => link.question === item.question)
                     newItem.imageEvidence = links[indexImage].url
-                    newItem.preview = ''
+                    newItem.previewEvidence = ''
                 }
                 return newItem
             })

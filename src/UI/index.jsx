@@ -1,18 +1,20 @@
-import { Container } from "@mui/material";
+import { Box } from "@mui/material";
 import { NavBar } from "../components/NavBar";
 
 function UI({ children }) {
   return (
     <>
       <NavBar />
-      <Container
+      <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
+          paddingLeft: '0px',
+          paddingRight: '0px',
         }}
       >
         {children}
-      </Container>
+      </Box>
     </>
   );
 }

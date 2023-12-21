@@ -1,5 +1,20 @@
-import {Cloudinary} from "@cloudinary/url-gen";
+import { Cloudinary } from "@cloudinary/url-gen";
+
+const url = 'https://api.cloudinary.com/v1_1/dwiyxwcxj/image/upload';
 
 const App = () => {
-  const cld = new Cloudinary({cloud: {cloudName: 'dwiyxwcxj'}});
+  const cld = new Cloudinary({ cloud: { cloudName: 'dwiyxwcxj' } });
 };
+
+export async function sendImageCloudinary(formData) {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      body: formData,
+
+    });
+    return response.json();
+  } catch (error) {
+    throw new Error(`Error al subir las imagenes del checklist`)
+  }
+}

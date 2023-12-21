@@ -6,6 +6,7 @@ import { usePostRegister } from "../registersManagment/usePostRegister";
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
 import { AuthContext } from "../../Context/AuthContext";
+import { sendImageCloudinary } from "../../cloudinary";
 
 
 function usePostCheckList() {
@@ -17,7 +18,6 @@ function usePostCheckList() {
     const tableManiobrasChecklist = 'maniobras_checklist'
     const tableReparaciones = 'reparaciones'
     //cloudinary data
-    const url = 'https://api.cloudinary.com/v1_1/dwiyxwcxj/image/upload';
     const preset = 'mvtjch9n';
     const folderName = 'maniobras_checklist';
 
@@ -157,19 +157,6 @@ function usePostCheckList() {
         } catch (error) {
             dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false })
             dispatchGlobal({ tyoe: actionTypesGlobal.setNotification, payload: error.message })
-        }
-    }
-
-    const sendImageCloudinary = async (formData) => {
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                body: formData,
-
-            });
-            return response.json();
-        } catch (error) {
-            throw new Error(`Error al subir las imagenes del checklist`)
         }
     }
 

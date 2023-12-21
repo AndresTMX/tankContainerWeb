@@ -9,7 +9,7 @@ import CancelIcon from '@mui/icons-material/Close';
 //dataGrid
 import { GridRowModes, DataGrid, GridToolbarContainer, GridActionsCellItem, GridRowEditStopReasons } from '@mui/x-data-grid';
 
-function DataGridRepairs({rows, rowModesModel, setRowModesModel, setRows}) {
+function DataGridRepairs({rows, rowModesModel, setRowModesModel, setRows , typeRepair}) {
     
     const columns = [
         { 
@@ -152,7 +152,7 @@ function DataGridRepairs({rows, rowModesModel, setRowModesModel, setRows}) {
                 toolbar: EditToolbar,
             }}
             slotProps={{
-                toolbar: { setRows, setRowModesModel, rows },
+                toolbar: { setRows, setRowModesModel, rows, typeRepair },
             }}
         />
     );
@@ -161,7 +161,7 @@ function DataGridRepairs({rows, rowModesModel, setRowModesModel, setRows}) {
 export { DataGridRepairs }
 
 export function EditToolbar(props) {
-    const { setRows, setRowModesModel, rows } = props;
+    const { setRows, setRowModesModel, rows, typeRepair } = props;
 
     const handleClick = () => {
         const id = rows.length + 1;
@@ -175,6 +175,7 @@ export function EditToolbar(props) {
     return (
         <GridToolbarContainer sx={{padding:'15px 15px 0px'}}>
             <Button
+                disabled={typeRepair != 'completado'? false: true}
                 color="primary"
                 size="small"
                 variant="contained"
