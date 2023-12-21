@@ -9,30 +9,23 @@ import CancelIcon from '@mui/icons-material/Close';
 //dataGrid
 import { GridRowModes, DataGrid, GridToolbarContainer, GridActionsCellItem, GridRowEditStopReasons } from '@mui/x-data-grid';
 
-function DataGridRepairs({rows, rowModesModel, setRowModesModel, setRows}) {
+function DataGridMaterials({rows, rowModesModel, setRowModesModel, setRows}) {
     
     const columns = [
         { 
             field: 'cantidad', 
             headerName: 'cantidad', 
             type: 'number', 
-            width: 80, 
+            width: 100, 
             editable: true, 
         },
         {
-            field: 'concepto',
-            headerName: 'concepto',
-            type: 'text',
-            width: 120,
-            align: 'left',
-            headerAlign: 'left',
-            editable: true,
-        },
-        {
-            field: 'descripción',
-            headerName: 'descripción',
+            field: 'material',
+            headerName: 'material',
             type: 'text',
             width: 250,
+            align: 'left',
+            headerAlign: 'left',
             editable: true,
         },
         {
@@ -53,7 +46,7 @@ function DataGridRepairs({rows, rowModesModel, setRowModesModel, setRows}) {
             field: 'actions',
             type: 'actions',
             headerName: 'admin',
-            width: 100,
+            width: 200,
             cellClassName: 'actions',
             getActions: ({ id }) => {
                 const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
@@ -149,7 +142,7 @@ function DataGridRepairs({rows, rowModesModel, setRowModesModel, setRows}) {
             onRowEditStop={handleRowEditStop}
             processRowUpdate={processRowUpdate}
             slots={{
-                toolbar: EditToolbar,
+                toolbar: EditMaterials,
             }}
             slotProps={{
                 toolbar: { setRows, setRowModesModel, rows },
@@ -158,14 +151,14 @@ function DataGridRepairs({rows, rowModesModel, setRowModesModel, setRows}) {
     );
 }
 
-export { DataGridRepairs }
+export { DataGridMaterials }
 
-export function EditToolbar(props) {
+export function EditMaterials(props) {
     const { setRows, setRowModesModel, rows } = props;
 
     const handleClick = () => {
         const id = rows.length + 1;
-        setRows((oldRows) => [...oldRows, { id, cantidad: '', concepto: '', descripcion: '', precio_unit: '', importe: '', isNew: true }]);
+        setRows((oldRows) => [...oldRows, { id, cantidad: '', material: '', precio_unit: '', importe: '', isNew: true }]);
         setRowModesModel((oldModel) => ({
             ...oldModel,
             [id]: { mode: GridRowModes.Edit, fieldToFocus: 'cantidad' },
@@ -180,7 +173,7 @@ export function EditToolbar(props) {
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={handleClick}>
-                nuevo concepto
+                nuevo material
             </Button>
         </GridToolbarContainer>
     );

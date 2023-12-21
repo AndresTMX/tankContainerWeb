@@ -14,6 +14,8 @@ import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { Searcher } from "../../components/Searcher";
 import { currentDate } from "../../Helpers/date";
 import { ModalRepair } from "../../components/ModalRepair";
+import { Notification } from "../../components/Notification";
+import { LoadingState } from "../../components/LoadingState"
 //helpers
 import { filterSearchRepair } from "../../Helpers/searcher";
 
@@ -23,7 +25,7 @@ function Reparaciones() {
     const IsExtraSmall = useMediaQuery('(max-width:700px)');
     const [typeRepair, setTypeRepair] = useState('pendiente')
 
-    const { repairs, loadingRepairs, errorRepairs } = useGetRepairs(typeRepair);
+    const { repairs, loadingRepairs, errorRepairs, updateRepairs } = useGetRepairs(typeRepair);
     const { states, functions } = useSearcher(filterSearchRepair, repairs, typeRepair);
 
     const { search, results, loading, error } = states;
@@ -123,8 +125,8 @@ function Reparaciones() {
                                 spacing='20px'
                             >
                                 <Stack spacing='10px' paddingRight='20px'>
-                                    <Typography variant="h6">Reparaciones Pendientes</Typography>
-                                    <Typography variant="subtitle2">{`${repairs.length} reparaciones pendientes`}</Typography>
+                                    <Typography variant="h6">Reparaciones {typeRepair}</Typography>
+                                    <Typography variant="subtitle2">{`${repairs.length} reparaciones ${typeRepair}s`}</Typography>
                                     <Stack flexDirection={'row'} gap={'10px'}>
                                         <Chip
                                             label={'pendientes'}
@@ -162,9 +164,11 @@ function Reparaciones() {
                 {itemRepair &&
                     <Fade in={itemRepair}>
                         <Box>
-                            <ModalRepair 
-                            tanque={itemRepair}
-                            selectItem={selectTedItemRepair} 
+                            <ModalRepair
+                                tanque={itemRepair}
+                                typeRepair={typeRepair}
+                                updateRepairs={updateRepairs}
+                                selectItem={selectTedItemRepair}
                             />
                         </Box>
                     </Fade>}
@@ -179,9 +183,10 @@ function Reparaciones() {
                                         <Stack gap='10px'>
                                             {repairs.map((item) => (
                                                 <MaintenancesItem
-                                                    selectItem={selectTedItemRepair}
                                                     key={item.id}
                                                     maintance={item}
+                                                    typeRepair={typeRepair}
+                                                    selectItem={selectTedItemRepair}
                                                 />
                                             ))}
                                         </Stack>}
@@ -198,7 +203,9 @@ function Reparaciones() {
                     </Fade>
                 }
 
+                <Notification />
 
+                <LoadingState duration={1000} />
 
             </Container>
         </>

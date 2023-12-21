@@ -10,7 +10,7 @@ import { TextGeneral } from "../TextGeneral";
 //helpers
 import { datetimeMXFormat, tiempoTranscurrido, dateMXFormat, dateMX } from "../../Helpers/date";
 
-function MaintenancesItem({ maintance, selectItem }) {
+function MaintenancesItem({ maintance, selectItem, typeRepair }) {
 
     const [modal, setModal] = useState({ modal1: false, modal2: false })
 
@@ -61,6 +61,7 @@ function MaintenancesItem({ maintance, selectItem }) {
                             <Chip size="small" label={time} color="info" icon={<RestoreIcon />} />
                         </Stack>
                         <Stack flexDirection={'row'} gap={'10px'}>
+                           {(typeRepair === 'pendiente') &&
                             <Button
                                 fullWidth={IsExtraSmall}
                                 size="small"
@@ -68,7 +69,17 @@ function MaintenancesItem({ maintance, selectItem }) {
                                 onClick={()=> selectItem(maintance)}
                             >
                                 iniciar reparación
-                            </Button>
+                            </Button>}
+
+                            {(typeRepair === 'proceso') &&
+                            <Button
+                                fullWidth={IsExtraSmall}
+                                size="small"
+                                variant="contained"
+                                onClick={()=> selectItem(maintance)}
+                            >
+                                completar reparación
+                            </Button>}
                         </Stack>
                     </Stack>
 

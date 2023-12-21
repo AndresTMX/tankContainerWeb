@@ -7,10 +7,11 @@ function useGetRepairs(typeRegister) {
     const [repairs, setRepairs] = useState([]);
     const [loadingRepairs, setLoadingRepairs] = useState(null);
     const [errorRepairs, setErrorRepairs] = useState(null);
+    const [updater, setUpdater] = useState(false)
 
     useEffect(() => {
         getRepairs();
-    }, [typeRegister])
+    }, [typeRegister, updater])
 
     const getRepairs = async () => {
         setRepairs([])
@@ -38,7 +39,9 @@ function useGetRepairs(typeRegister) {
         }, 1000)
     }
 
-    return { repairs, loadingRepairs, errorRepairs }
+    const updateRepairs = () => setUpdater(!updater)
+
+    return { repairs, loadingRepairs, errorRepairs, updateRepairs }
 
 
 }

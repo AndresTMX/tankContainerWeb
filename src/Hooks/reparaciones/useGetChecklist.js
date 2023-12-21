@@ -35,6 +35,7 @@ function useGetCheckList(idDetailRegister) {
             }
 
         } catch (error) {
+            setError(error)
             setLoading(false)
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
