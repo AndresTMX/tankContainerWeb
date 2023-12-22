@@ -3,6 +3,7 @@ import { useState, useEffect, useContext } from "react";
 import { AuthContext } from '../../Context/AuthContext';
 import { Container, Box, Paper, Button, Typography, Fade } from "@mui/material";
 import { InputText } from "../../components/InputText";
+import { TankContainerLogo, ImageContainersDecoration } from '../../resourcesLinks';
 
 function Login() {
     
@@ -28,7 +29,7 @@ function Login() {
             <Container
             maxWidth='xxl'
             sx={{
-                backgroundImage:'url(https://i.postimg.cc/xdTy9LHV/caja-contenedores-industriales-negocios-logisticos-importacion-exportacion.jpg)',
+                backgroundImage:`url(${ImageContainersDecoration})`,
                 backgroundColor:'#025E73',
                 backgroundSize: 'cover',
                 objectFit:'cover',
@@ -53,7 +54,7 @@ function Login() {
                         <img 
                         height='120px'
                         width='auto'
-                        src="https://res.cloudinary.com/variablemk/image/upload/v1700866162/tankContainer/TankContainer_xn29s1.png" 
+                        src={`${TankContainerLogo}`} 
                         alt='logo' />
                         <Paper
                             sx={{

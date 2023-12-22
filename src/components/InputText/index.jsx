@@ -7,7 +7,7 @@ function InputText({ label, variant, value, onChangue, width, type, required }) 
 
     const [pass, setPass] = useState(false);
 
-    const handleClickShowPassword = () => setPass((pass) => !pass);
+    const handleClickShowPassword = () => setPass(!pass);
 
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
@@ -49,7 +49,7 @@ function InputText({ label, variant, value, onChangue, width, type, required }) 
                         onChange={onChangue}
                         required={true}
                         id="outlined-adornment-password"
-                        type={'password'}
+                        type={ pass? 'password' : 'text'}
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton

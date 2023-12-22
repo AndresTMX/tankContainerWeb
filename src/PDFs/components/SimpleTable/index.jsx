@@ -23,7 +23,7 @@ function SimpleTable({ checkList }) {
 
             <View style={style.HeaderTable}>
 
-                <View style={{ display: 'flex', flexDirection: 'column', padding: '10px', width: '5%',  }}>
+                <View style={{ display: 'flex', flexDirection: 'column', padding: '10px', width: '5%', }}>
                     <Text style={{ fontSize: '10px', color: 'white' }}>
                         N°
                     </Text>
@@ -49,16 +49,16 @@ function SimpleTable({ checkList }) {
 
             </View>
 
-            {checkList.length >=1 && 
-             checkList.map((item, index) => (
-                <SimpleRow 
-                key={item.question}
-                index={index}
-                question={item.question}
-                value={item.value}
-                coment={item.coment}
-                />
-            ))}
+            {checkList.length >= 1 &&
+                checkList.map((item, index) => (
+                    <SimpleRow
+                        key={item.question}
+                        index={index}
+                        question={item.question}
+                        value={item.value}
+                        coment={item.coment}
+                    />
+                ))}
 
         </View>
     );
@@ -81,19 +81,19 @@ export function SimpleRow({ index, question, value, coment }) {
     return (
         <View style={style.Row}>
 
-            <View style={{ display: 'flex', flexDirection: 'column', padding: '2px', width: '5%',  borderRight:1, borderColor:'black' }}>
-                <Text style={{ fontSize: '8px', textAlign:'center', width:'100%' }}>
-                    {index + 1 }
+            <View style={{ display: 'flex', flexDirection: 'column', padding: '2px', width: '5%', borderRight: 1, borderColor: 'black' }}>
+                <Text style={{ fontSize: '8px', textAlign: 'center', width: '100%' }}>
+                    {index + 1}
                 </Text>
             </View>
 
-            <View style={{ display: 'flex', flexDirection: 'column', padding: '2px', width: '45%', borderRight:1, borderColor:'black' }}>
+            <View style={{ display: 'flex', flexDirection: 'column', padding: '2px', width: '45%', borderRight: 1, borderColor: 'black' }}>
                 <Text style={{ fontSize: '8px' }}>
                     {question}
                 </Text>
             </View>
 
-            <View style={{ display: 'flex', flexDirection: 'column', padding: '2px', width: '14%', borderRight:1, borderColor:'black' }}>
+            <View style={{ display: 'flex', flexDirection: 'column', padding: '2px', width: '14%', borderRight: 1, borderColor: 'black' }}>
                 <Text style={{ fontSize: '8px' }}>
                     {value}
                 </Text>
@@ -104,6 +104,63 @@ export function SimpleRow({ index, question, value, coment }) {
                     {coment}
                 </Text>
             </View>
+
+        </View>
+    )
+}
+
+export function CustomContainerTable({ children, widthContianer }) {
+    return (
+        <View
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: widthContianer,
+                border: 1,
+            }}
+        >
+            {children}
+        </View>
+    )
+}
+
+export function CustomHeaderTable({ widthHeader, backgroundColor, children }) {
+
+    return (
+        <View
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                borderBottom: 1,
+                width: widthHeader,
+                backgroundColor: backgroundColor
+            }}>
+            {children}
+        </View>
+    )
+}
+
+export function CustomItemTable({ children, text, fontSize, widthColumn, borderColor, textColor , heightItem}) {
+    return (
+        <View
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent:'center',
+                padding: '10px',
+                height: heightItem? heightItem : 'auto',
+                width: widthColumn,
+                borderRight: borderColor ? '1' : '0',
+                borderStyle: borderColor ? 'solid' : '',
+                borderColor: borderColor,
+            }}>
+            <Text style={{ fontSize: fontSize ? fontSize : '10px', color: textColor ? textColor : 'black' }}>
+                {text}
+            </Text>
+
+            {children &&
+                children
+            }
 
         </View>
     )
