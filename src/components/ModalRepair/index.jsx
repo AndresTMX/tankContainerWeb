@@ -4,6 +4,7 @@ import { DataGridRepairs } from "../DataGridRepairs";
 import { DataGridMaterials } from "../DataGridMaterials";
 import { Proforma } from "../../PDFs/plantillas/proforma";
 import { PDFViewer } from "@react-pdf/renderer";
+import { ButtonDowloandProforma } from "../../PDFs/components/ButtonDowloand";
 //hooks
 import { useGetCheckList } from "../../Hooks/reparaciones/useGetChecklist";
 import { useUpdateRepair } from "../../Hooks/reparacionesManagment/useUpdateRepair";
@@ -326,13 +327,14 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
 
                             <Stack flexDirection={'row'} justifyContent={'flex-end'} gap={'10px'}>
                                 <Button
-                                    onClick={() => setViewPDF(true)}
+                                    onClick={() => setViewPDF('sencillo')}
                                     variant="contained"
                                     color="primary"
                                 >
                                     forma sencilla
                                 </Button>
                                 <Button
+                                    onClick={() => setViewPDF('detallado')}
                                     variant="contained"
                                     color="secondary"
                                 >
@@ -357,13 +359,19 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                             padding={'15px'}
                             gap={'20px'}
                         >
-                            <Button variant="contained" color="success" onClick={() => setViewPDF(false)}>descargar</Button>
+                            <ButtonDowloandProforma 
+                            dataHeader={''} 
+                            typeProforma={viewPDF} 
+                            arrayEvidences={evidences} 
+                            arrayConcepts={rows}                                 
+                            tanque={tanque.numero_tanque}
+                            />
                             <Button variant="contained" color="error" onClick={() => setViewPDF(false)}>Close</Button>
                         </Stack>
                         <PDFViewer style={{ width: '100%', height: '90%', }}>
                             <Proforma
                                 dataHeader={''}
-                                typeProforma={'sencillo'}
+                                typeProforma={viewPDF}
                                 arrayEvidences={evidences}
                                 tanque={tanque.numero_tanque}
                                 arrayConcepts={rows}
