@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
 
-function TitleDocument({title}) {
+function TitleDocument({title, background, color, fontSize, height}) {
 
     const styles = StyleSheet.create({
         ContainerTitle:{
@@ -9,8 +9,8 @@ function TitleDocument({title}) {
             alignItems:'center',
             justifyContent:'center',
             textAlign:'center',
-            backgroundColor:'whitesmoke',
-            height:'28px',
+            backgroundColor: background? background :'whitesmoke',
+            height: height? height: '28px',
             border:1
         },
 
@@ -23,7 +23,8 @@ function TitleDocument({title}) {
         },
         TextTitle:{
             fontFamily: 'Helvetica-Bold',
-            fontSize:'12px'
+            fontSize: fontSize? fontSize :'12px',
+            color: color? color: 'black'
         }
     })
 

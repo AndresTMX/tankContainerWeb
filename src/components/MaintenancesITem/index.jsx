@@ -22,8 +22,6 @@ function MaintenancesItem({ maintance, selectItem, typeRepair, }) {
     const dayTransform = dateMXFormat(checkIn);
     const dateTransform = datetimeMXFormat(checkIn);
     const dayEndTransform = checkOut != null ? dateMXFormat(checkOut) : false;
-    const dataInJson = typeRepair != 'pendiente' && data ? JSON.parse(data) : [];
-    const dataRepairsInJson = typeRepair != 'pendiente' && data ? JSON.parse(dataInJson.repairs) : [];
 
     const statusColor = status === 'completado' ? 'success' : status === 'proceso' ? 'primary' : 'warning'
 

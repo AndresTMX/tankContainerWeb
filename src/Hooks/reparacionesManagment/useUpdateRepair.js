@@ -68,8 +68,7 @@ function useUpdateRepair() {
 
             const updatesInJson = JSON.stringify(updatesRepairs)
 
-            await updateRepair({status:'completado', data:updatesInJson}, idRepair)
-
+            await updateRepair({status:'completado', data:updatesInJson, checkOut:new Date() }, idRepair)
 
         } catch (error) {
             dispatchGlobal({

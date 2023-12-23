@@ -29,7 +29,7 @@ function DataGridRepairs({rows, rowModesModel, setRowModesModel, setRows , typeR
             editable: true,
         },
         {
-            field: 'descripción',
+            field: 'descripcion',
             headerName: 'descripción',
             type: 'text',
             width: 250,

@@ -44,7 +44,9 @@ function HeaderProforma({ typeHeader }) {
                             style={{
                                 fontSize:'12px',
                                 backgroundColor:'#ffcc01',
-                                padding:'5px'
+                                padding:'5px',
+                                fontFamily: 'Helvetica-Bold',
+
                             }}
                             >SERVI CONTAINER INTEGRAL SA DE CV
                             </Text>

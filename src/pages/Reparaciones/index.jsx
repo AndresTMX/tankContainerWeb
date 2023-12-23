@@ -4,20 +4,19 @@ import { useSearcher } from "../../Hooks/useSearcher"
 import { ReparacionesContext } from "../../Context/ReparacionesContext"
 import { useGetRepairs } from "../../Hooks/reparacionesManagment/useGetRepairs";
 //imports materialui
-import { Container, Box, Tabs, Tab, Stack, Fade, Paper, Typography, Chip, Button } from "@mui/material";
+import { Box, Tabs, Tab, Stack, Fade, Paper, Typography, Chip, } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //components
 import { MaintenancesItem } from "../../components/MaintenancesITem";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import { HistoryItemLoading } from "../../components/HistoryItem";
-import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { Searcher } from "../../components/Searcher";
-import { currentDate } from "../../Helpers/date";
 import { ModalRepair } from "../../components/ModalRepair";
 import { Notification } from "../../components/Notification";
 import { LoadingState } from "../../components/LoadingState"
 //helpers
 import { filterSearchRepair } from "../../Helpers/searcher";
+
 
 function Reparaciones() {
 

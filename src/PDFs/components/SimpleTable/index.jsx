@@ -140,19 +140,20 @@ export function CustomHeaderTable({ widthHeader, backgroundColor, children }) {
     )
 }
 
-export function CustomItemTable({ children, text, fontSize, widthColumn, borderColor, textColor , heightItem}) {
+export function CustomItemTable({ children, text, fontSize, widthColumn, borderColor, textColor , heightItem , background, padding}) {
     return (
         <View
             style={{
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent:'center',
-                padding: '10px',
+                padding: padding? padding: '10px',
                 height: heightItem? heightItem : 'auto',
                 width: widthColumn,
                 borderRight: borderColor ? '1' : '0',
                 borderStyle: borderColor ? 'solid' : '',
                 borderColor: borderColor,
+                backgroundColor: background? background: 'white',
             }}>
             <Text style={{ fontSize: fontSize ? fontSize : '10px', color: textColor ? textColor : 'black' }}>
                 {text}

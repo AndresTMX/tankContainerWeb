@@ -200,3 +200,15 @@ export const filterManiobrasForStatus = (data, status) => {
   
   return dataFiltered
 }
+
+/*funcion que divide un array en otros mas pequeños*/
+export function dividirArray(array, tamanoMaximo) {
+  const arraysDivididos = [];
+
+  for (let i = 0; i < array.length; i += tamanoMaximo) {
+    const subarray = array.slice(i, i + tamanoMaximo);
+    arraysDivididos.push(subarray);
+  }
+
+  return arraysDivididos;
+}

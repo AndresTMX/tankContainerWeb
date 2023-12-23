@@ -2,6 +2,8 @@ import { useState, useContext, useEffect } from "react";
 import { Box, Paper, Stack, Button, IconButton, Typography, Card, CardMedia, CardActionArea, CardContent, CardActions, Modal, Fade, Alert, Skeleton } from "@mui/material";
 import { DataGridRepairs } from "../DataGridRepairs";
 import { DataGridMaterials } from "../DataGridMaterials";
+import { Proforma } from "../../PDFs/plantillas/proforma";
+import { PDFViewer } from "@react-pdf/renderer";
 //hooks
 import { useGetCheckList } from "../../Hooks/reparaciones/useGetChecklist";
 import { useUpdateRepair } from "../../Hooks/reparacionesManagment/useUpdateRepair";
@@ -19,14 +21,21 @@ import { ContainerScroll } from "../ContainerScroll";
 
 function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTypeRepair }) {
 
+    const [viewPDF, setViewPDF] = useState(false);
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
     const { updateRepair, completeRepair } = useUpdateRepair();
     const { checklist, dataJson, loading, error } = useGetCheckList(tanque.id_detalle_registro)
 
     const dataReparationComplete = typeRepair === 'completado' && tanque ? JSON.parse(tanque.data) : [];
     const dataRepairs = typeRepair === 'completado' && tanque ? JSON.parse(dataReparationComplete.repairs) : [];
+    const dataEvidenceProces = typeRepair === 'proceso' && tanque ? JSON.parse(tanque.data) : [];
+    const questionWhitRepairsProcess = dataEvidenceProces.repairs.filter((question) => question.image != '').map((question) => ({
+        ...question,
+        previewEvidence: '',
+        imageEvidence: '',
+    }));
     const questionWhitEvidence = dataJson.filter((question) => question.image != '');
-    const questionWhitRepairsImages = dataJson.filter((question) => question.image != '').map((question) => ({
+    const questionWhitRepairsImages = dataRepairs.filter((question) => question.image != '').map((question) => ({
         ...question,
         previewEvidence: '',
         imageEvidence: '',
@@ -132,251 +141,278 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
     useEffect(() => {
         if (typeRepair === 'proceso') {
             const dataJson = JSON.parse(tanque.data)
-            setEvidences(questionWhitRepairsImages)
+            setEvidences(questionWhitRepairsProcess)
             setRows([...dataJson.proforma])
         }
+
+        if (typeRepair === 'completado') {
+            const dataJson = JSON.parse(tanque.data)
+            setEvidences(dataRepairs)
+            setRows([...dataJson.proforma])
+            setRowMaterials([...dataJson.materiales])
+        }
+
     }, [typeRepair, loading])
 
-
     return (
-        <Box sx={{ bgcolor: 'whitesmoke', display: 'flex', flexDirection: 'column', width: '100vw', alignItems: 'center' }}>
-            <Stack
-                width={'100%'}
-                position={'fixed'}
-                maxWidth={'900px'}
-                flexDirection={'row'}
-                alignItems={'center'}
-                justifyContent={'space-between'}
-                bgcolor={'whitesmoke'}
-                padding={'20px'}
-                zIndex={4}
-                sx={{
-                    top: '50px'
-                }}
-            >
-                <Typography variant='h6'>
-                    Reparación del tanque {tanque.numero_tanque}
-                </Typography>
-
-                <IconButton
-                    onClick={() => selectItem(false)}
+        <>
+            <Box sx={{ bgcolor: 'whitesmoke', display: 'flex', flexDirection: 'column', width: '100vw', alignItems: 'center' }}>
+                <Stack
+                    width={'100%'}
+                    position={'fixed'}
+                    maxWidth={'900px'}
+                    flexDirection={'row'}
+                    alignItems={'center'}
+                    justifyContent={'space-between'}
+                    bgcolor={'whitesmoke'}
+                    padding={'20px'}
+                    zIndex={4}
+                    sx={{
+                        top: '50px'
+                    }}
                 >
-                    <ArrowBackIcon />
-                </IconButton>
-            </Stack>
-            <Box sx={{ padding: '15px', }} elevation={4}>
+                    <Typography variant='h6'>
+                        Reparación del tanque {tanque.numero_tanque}
+                    </Typography>
 
-                {(typeRepair === 'pendiente') &&
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '90vw', marginTop: '50px' }}>
+                    <IconButton
+                        onClick={() => selectItem(false)}
+                    >
+                        <ArrowBackIcon />
+                    </IconButton>
+                </Stack>
+                <Box sx={{ padding: '15px', }} elevation={4}>
 
-                        <Stack gap={'5px'}>
-                            <Typography variant='caption'>Evidencias recopiladas en EIR</Typography>
-                            <Paper>
-                                <Stack padding={'15px'} gap={'15px'} flexDirection={'row'} alignItems={'center'}>
-                                    {questionWhitEvidence.map((question) => (
+                    {(typeRepair === 'pendiente') &&
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '90vw', marginTop: '50px' }}>
+
+                            <Stack gap={'5px'}>
+                                <Typography variant='caption'>Evidencias recopiladas en EIR</Typography>
+                                <Paper>
+                                    <Stack padding={'15px'} gap={'15px'} flexDirection={'row'} alignItems={'center'}>
+                                        {questionWhitEvidence.map((question) => (
+                                            <ImageDinamic
+                                                key={question.question}
+                                                toggleItem={toggleImage}
+                                                typeRepair={typeRepair}
+                                                question={question}
+                                                state={evidence}
+                                            />
+                                        ))}
+
+                                        {(loading && !error) &&
+                                            <Fade in={loading}>
+                                                <Stack padding={'15px'} gap={'15px'} flexDirection={'row'} alignItems={'center'}>
+                                                    <Skeleton variant='rounded' width={'150px'} height={'150px'} />
+                                                    <Skeleton variant='rounded' width={'150px'} height={'150px'} />
+                                                    <Skeleton variant='rounded' width={'150px'} height={'150px'} />
+                                                </Stack>
+                                            </Fade>
+                                        }
+
+                                        {(!loading && error) &&
+                                            <Alert severity='error'>{error.message}</Alert>
+                                        }
+                                    </Stack>
+                                </Paper>
+                            </Stack>
+
+                            <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                                <SelectSimple
+                                    width={'300px'}
+                                    title={'Tipo de reparación'}
+                                    options={['interna', 'externa']}
+                                    value={reparation}
+                                    onChange={(e) => setReparation(e.target.value)}
+                                />
+
+                                <Button
+                                    onClick={updateTypeMaintance}
+                                    size='small'
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    Guardar cambio
+                                </Button>
+                            </Stack>
+
+                            <ContainerScroll background={'white'} height={'300px'}>
+                                <Typography variant='caption'>
+                                    Proforma
+                                </Typography>
+                                <DataGridRepairs
+                                    rows={rows}
+                                    setRows={setRows}
+                                    typeRepair={typeRepair}
+                                    rowModesModel={rowModesModel}
+                                    setRowModesModel={setRowModesModel}
+                                />
+                            </ContainerScroll>
+
+                            <Stack gap={'5px'}>
+                                <Typography variant='caption'>Evidencias agregadas al documento</Typography>
+                                <Paper>
+                                    <Stack padding={'15px'} gap={'15px'} flexDirection={'row'} alignItems={'center'}>
+                                        {evidence.map((question) => (
+                                            <ImageDinamic
+                                                key={question.question}
+                                                question={question}
+                                                state={evidence}
+                                                toggleItem={toggleImage}
+                                            />
+                                        ))}
+
+                                        {(evidence.length === 0) &&
+                                            <Alert severity='info'>Sin evidencias agregadas</Alert>
+                                        }
+                                    </Stack>
+                                </Paper>
+                            </Stack>
+
+                            <Button
+                                onClick={sendMaintance}
+                                variant="contained"
+                                color="primary"
+                            >
+                                Iniciar reparación
+                            </Button>
+                        </Box>}
+
+                    {(typeRepair === 'proceso') &&
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '90vw', marginTop: '50px' }}>
+
+                            <ContainerScroll background={'whitesmoke'} height={'300px'}>
+                                <Stack gap={'10px'}>
+                                    <Typography variant="subtitle2">Anexa evidencias a las reparaciones para completar el documento</Typography>
+                                    {evidence.map((question, index) => (
+                                        <ImageEvidence
+                                            key={question.question}
+                                            index={index}
+                                            question={question}
+                                            onChangueImage={onChangueImage}
+                                            onDeleteImage={onDeleteImage}
+                                        />
+                                    ))}
+                                </Stack>
+                            </ContainerScroll>
+
+                            <ContainerScroll background={'white'} height={'300px'}>
+                                <Typography variant='caption'>
+                                    Proforma
+                                </Typography>
+                                <DataGridRepairs
+                                    rows={rows}
+                                    setRows={setRows}
+                                    typeRepair={typeRepair}
+                                    rowModesModel={rowModesModel}
+                                    setRowModesModel={setRowModesModel}
+                                />
+                            </ContainerScroll>
+
+                            <ContainerScroll background={'white'} height={'300px'}>
+                                <Typography variant='caption'>
+                                    Materiales de reparación
+                                </Typography>
+                                <DataGridMaterials
+                                    rows={rowsMaterials}
+                                    typeRepair={typeRepair}
+                                    setRows={setRowMaterials}
+                                    rowModesModel={rowModesMaterials}
+                                    setRowModesModel={setRowModesMaterials}
+                                />
+                            </ContainerScroll>
+
+                            <Button
+                                onClick={completeMaintance}
+                                variant="contained"
+                                color="primary"
+                            >
+                                terminar reparación
+                            </Button>
+
+                        </Box>}
+
+                    {(typeRepair === 'completado') &&
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '90vw', marginTop: '50px' }}>
+
+                            <ContainerScroll background={'whitesmoke'} height={'300px'}>
+                                <Stack gap={'10px'}>
+                                    <Typography variant="subtitle2">Evidencias de reparaciones</Typography>
+                                    {dataRepairs.map((question) => (
                                         <ImageDinamic
                                             key={question.question}
-                                            toggleItem={toggleImage}
                                             typeRepair={typeRepair}
                                             question={question}
-                                            state={evidence}
                                         />
                                     ))}
-
-                                    {(loading && !error) &&
-                                        <Fade in={loading}>
-                                            <Stack padding={'15px'} gap={'15px'} flexDirection={'row'} alignItems={'center'}>
-                                                <Skeleton variant='rounded' width={'150px'} height={'150px'} />
-                                                <Skeleton variant='rounded' width={'150px'} height={'150px'} />
-                                                <Skeleton variant='rounded' width={'150px'} height={'150px'} />
-                                            </Stack>
-                                        </Fade>
-                                    }
-
-                                    {(!loading && error) &&
-                                        <Alert severity='error'>{error.message}</Alert>
-                                    }
                                 </Stack>
-                            </Paper>
-                        </Stack>
+                            </ContainerScroll>
 
-                        <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                            <SelectSimple
-                                width={'300px'}
-                                title={'Tipo de reparación'}
-                                options={['interna', 'externa']}
-                                value={reparation}
-                                onChange={(e) => setReparation(e.target.value)}
-                            />
+                            <ContainerScroll background={'white'} height={'300px'}>
+                                <Typography variant='caption'>
+                                    Proforma
+                                </Typography>
+                                <DataGridRepairs
+                                    setRows={setRows}
+                                    typeRepair={typeRepair}
+                                    rows={dataReparationComplete.proforma}
+                                    rowModesModel={rowModesModel}
+                                    setRowModesModel={setRowModesModel}
+                                />
+                            </ContainerScroll>
 
-                            <Button
-                                onClick={updateTypeMaintance}
-                                size='small'
-                                variant="contained"
-                                color="primary"
-                            >
-                                Guardar cambio
-                            </Button>
-                        </Stack>
+                            <ContainerScroll background={'white'} height={'300px'}>
+                                <Typography variant='caption'>
+                                    Materiales de reparación
+                                </Typography>
+                                <DataGridMaterials
+                                    typeRepair={typeRepair}
+                                    setRows={setRowMaterials}
+                                    rowModesModel={rowModesMaterials}
+                                    rows={dataReparationComplete.materiales}
+                                    setRowModesModel={setRowModesMaterials}
+                                />
+                            </ContainerScroll>
 
-                        <ContainerScroll background={'white'} height={'300px'}>
-                            <Typography variant='caption'>
-                                Proforma
-                            </Typography>
-                            <DataGridRepairs
-                                rows={rows}
-                                setRows={setRows}
-                                typeRepair={typeRepair}
-                                rowModesModel={rowModesModel}
-                                setRowModesModel={setRowModesModel}
-                            />
-                        </ContainerScroll>
-
-                        <Stack gap={'5px'}>
-                            <Typography variant='caption'>Evidencias agregadas al documento</Typography>
-                            <Paper>
-                                <Stack padding={'15px'} gap={'15px'} flexDirection={'row'} alignItems={'center'}>
-                                    {evidence.map((question) => (
-                                        <ImageDinamic
-                                            key={question.question}
-                                            question={question}
-                                            state={evidence}
-                                            toggleItem={toggleImage}
-                                        />
-                                    ))}
-
-                                    {(evidence.length === 0) &&
-                                        <Alert severity='info' >Sin evidencias agregadas</Alert>
-                                    }
-                                </Stack>
-                            </Paper>
-                        </Stack>
-
-                        <Button
-                            onClick={sendMaintance}
-                            variant="contained"
-                            color="primary"
-                        >
-                            Iniciar reparación
-                        </Button>
-                    </Box>}
-
-                {(typeRepair === 'proceso') &&
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '90vw', marginTop: '50px' }}>
-
-                        <ContainerScroll background={'whitesmoke'} height={'300px'}>
-                            <Stack gap={'10px'}>
-                                <Typography variant="subtitle2">Anexa evidencias a las reparaciones para completar el documento</Typography>
-                                {evidence.map((question, index) => (
-                                    <ImageEvidence
-                                        key={question.question}
-                                        index={index}
-                                        question={question}
-                                        onChangueImage={onChangueImage}
-                                        onDeleteImage={onDeleteImage}
-                                    />
-                                ))}
+                            <Stack flexDirection={'row'} justifyContent={'flex-end'} gap={'10px'}>
+                                <Button
+                                    onClick={() => setViewPDF(true)}
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    imprimir forma sencilla
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                >
+                                    imprimir forma detallada
+                                </Button>
                             </Stack>
-                        </ContainerScroll>
 
-                        <ContainerScroll background={'white'} height={'300px'}>
-                            <Typography variant='caption'>
-                                Proforma
-                            </Typography>
-                            <DataGridRepairs
-                                rows={rows}
-                                setRows={setRows}
-                                typeRepair={typeRepair}
-                                rowModesModel={rowModesModel}
-                                setRowModesModel={setRowModesModel}
-                            />
-                        </ContainerScroll>
+                        </Box>}
 
-                        <ContainerScroll background={'white'} height={'300px'}>
-                            <Typography variant='caption'>
-                                Materiales de reparación
-                            </Typography>
-                            <DataGridMaterials
-                                rows={rowsMaterials}
-                                typeRepair={typeRepair}
-                                setRows={setRowMaterials}
-                                rowModesModel={rowModesMaterials}
-                                setRowModesModel={setRowModesMaterials}
-                            />
-                        </ContainerScroll>
-
-                        <Button
-                            onClick={completeMaintance}
-                            variant="contained"
-                            color="primary"
-                        >
-                            terminar reparación
-                        </Button>
-
-                    </Box>}
-
-                {(typeRepair === 'completado') &&
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '90vw', marginTop: '50px' }}>
-
-                        <ContainerScroll background={'whitesmoke'} height={'300px'}>
-                            <Stack gap={'10px'}>
-                                <Typography variant="subtitle2">Evidencias de reparaciones</Typography>
-                                {dataRepairs.map((question) => (
-                                    <ImageDinamic
-                                        key={question.question}
-                                        typeRepair={typeRepair}
-                                        question={question}
-                                    />
-                                ))}
-                            </Stack>
-                        </ContainerScroll>
-
-                        <ContainerScroll background={'white'} height={'300px'}>
-                            <Typography variant='caption'>
-                                Proforma
-                            </Typography>
-                            <DataGridRepairs
-                                setRows={setRows}
-                                typeRepair={typeRepair}
-                                rows={dataReparationComplete.proforma}
-                                rowModesModel={rowModesModel}
-                                setRowModesModel={setRowModesModel}
-                            />
-                        </ContainerScroll>
-
-                        <ContainerScroll background={'white'} height={'300px'}>
-                            <Typography variant='caption'>
-                                Materiales de reparación
-                            </Typography>
-                            <DataGridMaterials
-                                typeRepair={typeRepair}
-                                setRows={setRowMaterials}
-                                rowModesModel={rowModesMaterials}
-                                rows={dataReparationComplete.materiales}
-                                setRowModesModel={setRowModesMaterials}
-                            />
-                        </ContainerScroll>
-
-                        <Stack flexDirection={'row'} justifyContent={'flex-end'} gap={'10px'}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                            >
-                                imprimir forma sencilla
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                            >
-                                imprimir forma detallada
-                            </Button>
-                        </Stack>
-
-                    </Box>}
+                </Box>
 
             </Box>
 
-        </Box>
+            <Modal open={viewPDF}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', height: '100vh', width: '100vw' }}>
+                    <Paper sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '90%', minWidth: '90%' }}>
+                        <Button onClick={() => setViewPDF(false)}>Close</Button>
+                        <PDFViewer style={{ width: '100%', height: '90%', }}>
+                            <Proforma
+                                dataHeader={''}
+                                typeProforma={'sencillo'}
+                                arrayEvidences={dataRepairs}
+                                tanque={tanque.numero_tanque}
+                                arrayConcepts={dataReparationComplete.proforma}
+                            />
+                        </PDFViewer>
+                    </Paper>
+                </Box>
+            </Modal>
+        </>
     );
 }
 
