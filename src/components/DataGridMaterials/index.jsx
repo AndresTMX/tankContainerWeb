@@ -73,6 +73,7 @@ function DataGridMaterials({rows, rowModesModel, setRowModesModel, setRows, type
 
                 return [
                     <GridActionsCellItem
+                        disabled={typeRepair != 'completado'? false: true}
                         icon={<EditIcon />}
                         label="Edit"
                         className="textPrimary"
@@ -80,6 +81,7 @@ function DataGridMaterials({rows, rowModesModel, setRowModesModel, setRows, type
                         color="inherit"
                     />,
                     <GridActionsCellItem
+                        disabled={typeRepair != 'completado'? false: true}
                         icon={<DeleteIcon />}
                         label="Delete"
                         onClick={handleDeleteClick(id)}

@@ -80,6 +80,7 @@ function DataGridRepairs({rows, rowModesModel, setRowModesModel, setRows , typeR
 
                 return [
                     <GridActionsCellItem
+                        disabled={typeRepair != 'completado'? false: true}
                         icon={<EditIcon />}
                         label="Edit"
                         className="textPrimary"
@@ -87,6 +88,7 @@ function DataGridRepairs({rows, rowModesModel, setRowModesModel, setRows , typeR
                         color="inherit"
                     />,
                     <GridActionsCellItem
+                        disabled={typeRepair != 'completado'? false: true}
                         icon={<DeleteIcon />}
                         label="Delete"
                         onClick={handleDeleteClick(id)}

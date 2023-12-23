@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { Box, Paper, Stack, Button, IconButton, Typography, Card, CardMedia, CardActionArea, CardContent, CardActions, Modal, Fade, Alert, Skeleton } from "@mui/material";
 import { DataGridRepairs } from "../DataGridRepairs";
 import { DataGridMaterials } from "../DataGridMaterials";
@@ -18,68 +18,20 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import PanoramaIcon from '@mui/icons-material/Panorama';
 import { SelectSimple } from "../SelectSimple";
 import { ContainerScroll } from "../ContainerScroll";
+import { useDataRepair } from "../../Hooks/reparaciones/useDataRepair";
 
 function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTypeRepair }) {
 
-    const [viewPDF, setViewPDF] = useState(false);
+    const { dataJson, loading, error } = useGetCheckList(tanque.id_detalle_registro)
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
     const { updateRepair, completeRepair } = useUpdateRepair();
-    const { checklist, dataJson, loading, error } = useGetCheckList(tanque.id_detalle_registro)
-
-    const dataReparationComplete = typeRepair === 'completado' && tanque ? JSON.parse(tanque.data) : [];
-    const dataRepairs = typeRepair === 'completado' && tanque ? JSON.parse(dataReparationComplete.repairs) : [];
-    const dataEvidenceProces = typeRepair === 'proceso' && tanque ? JSON.parse(tanque.data) : [];
-    const questionWhitRepairsProcess = dataEvidenceProces.repairs.filter((question) => question.image != '').map((question) => ({
-        ...question,
-        previewEvidence: '',
-        imageEvidence: '',
-    }));
-    const questionWhitEvidence = dataJson.filter((question) => question.image != '');
-    const questionWhitRepairsImages = dataRepairs.filter((question) => question.image != '').map((question) => ({
-        ...question,
-        previewEvidence: '',
-        imageEvidence: '',
-    }));
-
     const [reparation, setReparation] = useState('');
-    //stados de la dataGrid de conceptos
-    const [rows, setRows] = useState([]);
-    const [rowModesModel, setRowModesModel] = useState({});
-    //stados de la dataGrid de materiales
-    const [rowsMaterials, setRowMaterials] = useState([]);
-    const [rowModesMaterials, setRowModesMaterials] = useState({});
+    const [viewPDF, setViewPDF] = useState(false);
 
-    //fotos de daños
-    const [evidence, setEvidences] = useState([]);
-
-    const toggleImage = (question) => {
-        const exist = evidence.findIndex((quest) => quest.question === question.question);
-        let newState
-
-        if (exist >= 0) {
-            setEvidences(evidence.filter((quest) => quest.question != question.question));
-        } else {
-            newState = evidence.length >= 1 ? [...evidence] : [];
-            newState.push(question)
-            setEvidences(newState)
-        }
-    }
-
-    const onChangueImage = (event, index) => {
-        const copyState = [...evidence];
-        const file = event.target.files[0];
-        const urlImage = URL.createObjectURL(file);
-        copyState[index].previewEvidence = urlImage;
-        copyState[index].imageEvidence = file;
-        setEvidences(copyState)
-    }
-
-    const onDeleteImage = (index) => {
-        const copyState = [...evidence];
-        copyState[index].previewEvidence = '';
-        copyState[index].imageEvidence = '';
-        setEvidences(copyState)
-    }
+    //hook de manejo de datos 
+    const { states, actions } = useDataRepair(typeRepair, tanque, dataJson, loading);
+    const { evidences, imagesChecklist, rows, rowModesModel, rowsMaterials, rowModesMaterials } = states;
+    const { toggleImage, onChangueImage, onDeleteImage, setRows, setRowModesModel, setRowMaterials, setRowModesMaterials } = actions;
 
     const updateTypeMaintance = async () => {
 
@@ -96,36 +48,50 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
         }
     }
 
-    const sendMaintance = async () => {
+    const initRepairButton = async () => {
+
+        const questionsWhitImageRepair = evidences.map((question) => ({
+            ...question,
+            previewEvidence: '',
+            imageEvidence: '',
+        }));
 
         const dataMaintance = {
             proforma: rows,
-            repairs: evidence
+            repairs: questionsWhitImageRepair
         }
 
         const data = JSON.stringify(dataMaintance);
 
-        await updateRepair({ status: 'proceso', data: data }, tanque.id)
-        setTimeout(() => {
-            selectItem(false)
-            updateRepairs()
-        }, 1000)
+        if (rows.length >= 1 && questionsWhitImageRepair.length >= 1) {
+            await updateRepair({ status: 'proceso', data: data }, tanque.id)
+            setTimeout(() => {
+                selectItem(false)
+                updateRepairs()
+                changueTypeRepair('proceso')
+            }, 1000)
+        } else {
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Agrega evidencias y conceptos para iniciar la reparación'
+            })
+        }
 
     }
 
-    const completeMaintance = async () => {
+    const completeRepairButton = async () => {
 
-        const validationEvidences = evidence.filter((question) => question.imageEvidence === '');
+        const validationEvidences = evidences.filter((question) => question.imageEvidence === '');
 
-        if (validationEvidences.length > 0) {
+        if (validationEvidences.length > 0 || rowsMaterials.length === 0) {
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
-                payload: 'Anexa evidencias para completar la reparación'
+                payload: 'Anexa evidencias y materiales para completar la reparación'
             })
         } else {
             const dataMaintance = {
                 proforma: rows,
-                repairs: evidence,
+                repairs: evidences,
                 materiales: rowsMaterials
             }
 
@@ -137,22 +103,6 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
             }, 1000)
         }
     }
-
-    useEffect(() => {
-        if (typeRepair === 'proceso') {
-            const dataJson = JSON.parse(tanque.data)
-            setEvidences(questionWhitRepairsProcess)
-            setRows([...dataJson.proforma])
-        }
-
-        if (typeRepair === 'completado') {
-            const dataJson = JSON.parse(tanque.data)
-            setEvidences(dataRepairs)
-            setRows([...dataJson.proforma])
-            setRowMaterials([...dataJson.materiales])
-        }
-
-    }, [typeRepair, loading])
 
     return (
         <>
@@ -190,15 +140,15 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                                 <Typography variant='caption'>Evidencias recopiladas en EIR</Typography>
                                 <Paper>
                                     <Stack padding={'15px'} gap={'15px'} flexDirection={'row'} alignItems={'center'}>
-                                        {questionWhitEvidence.map((question) => (
-                                            <ImageDinamic
-                                                key={question.question}
-                                                toggleItem={toggleImage}
-                                                typeRepair={typeRepair}
-                                                question={question}
-                                                state={evidence}
-                                            />
-                                        ))}
+                                        {!loading && imagesChecklist.length > 0 &&
+                                            imagesChecklist.map((question) => (
+                                                <ImageDinamic
+                                                    key={question.question}
+                                                    toggleItem={toggleImage}
+                                                    typeRepair={typeRepair}
+                                                    question={question}
+                                                />
+                                            ))}
 
                                         {(loading && !error) &&
                                             <Fade in={loading}>
@@ -253,16 +203,16 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                                 <Typography variant='caption'>Evidencias agregadas al documento</Typography>
                                 <Paper>
                                     <Stack padding={'15px'} gap={'15px'} flexDirection={'row'} alignItems={'center'}>
-                                        {evidence.map((question) => (
+                                        {evidences.map((question) => (
                                             <ImageDinamic
                                                 key={question.question}
                                                 question={question}
-                                                state={evidence}
                                                 toggleItem={toggleImage}
+                                                typeRepair={typeRepair}
                                             />
                                         ))}
 
-                                        {(evidence.length === 0) &&
+                                        {(evidences.length === 0) &&
                                             <Alert severity='info'>Sin evidencias agregadas</Alert>
                                         }
                                     </Stack>
@@ -270,7 +220,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                             </Stack>
 
                             <Button
-                                onClick={sendMaintance}
+                                onClick={initRepairButton}
                                 variant="contained"
                                 color="primary"
                             >
@@ -284,7 +234,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                             <ContainerScroll background={'whitesmoke'} height={'300px'}>
                                 <Stack gap={'10px'}>
                                     <Typography variant="subtitle2">Anexa evidencias a las reparaciones para completar el documento</Typography>
-                                    {evidence.map((question, index) => (
+                                    {evidences.map((question, index) => (
                                         <ImageEvidence
                                             key={question.question}
                                             index={index}
@@ -323,7 +273,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                             </ContainerScroll>
 
                             <Button
-                                onClick={completeMaintance}
+                                onClick={completeRepairButton}
                                 variant="contained"
                                 color="primary"
                             >
@@ -338,7 +288,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                             <ContainerScroll background={'whitesmoke'} height={'300px'}>
                                 <Stack gap={'10px'}>
                                     <Typography variant="subtitle2">Evidencias de reparaciones</Typography>
-                                    {dataRepairs.map((question) => (
+                                    {evidences.map((question) => (
                                         <ImageDinamic
                                             key={question.question}
                                             typeRepair={typeRepair}
@@ -355,7 +305,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                                 <DataGridRepairs
                                     setRows={setRows}
                                     typeRepair={typeRepair}
-                                    rows={dataReparationComplete.proforma}
+                                    rows={rows}
                                     rowModesModel={rowModesModel}
                                     setRowModesModel={setRowModesModel}
                                 />
@@ -369,7 +319,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                                     typeRepair={typeRepair}
                                     setRows={setRowMaterials}
                                     rowModesModel={rowModesMaterials}
-                                    rows={dataReparationComplete.materiales}
+                                    rows={rowsMaterials}
                                     setRowModesModel={setRowModesMaterials}
                                 />
                             </ContainerScroll>
@@ -380,13 +330,13 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                                     variant="contained"
                                     color="primary"
                                 >
-                                    imprimir forma sencilla
+                                    forma sencilla
                                 </Button>
                                 <Button
                                     variant="contained"
                                     color="secondary"
                                 >
-                                    imprimir forma detallada
+                                    forma detallada
                                 </Button>
                             </Stack>
 
@@ -399,14 +349,24 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
             <Modal open={viewPDF}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', height: '100vh', width: '100vw' }}>
                     <Paper sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '90%', minWidth: '90%' }}>
-                        <Button onClick={() => setViewPDF(false)}>Close</Button>
+                        <Stack
+                            flexDirection={'row'}
+                            alignItems={'center'}
+                            justifyContent={'flex-end'}
+                            width={'100%'}
+                            padding={'15px'}
+                            gap={'20px'}
+                        >
+                            <Button variant="contained" color="success" onClick={() => setViewPDF(false)}>descargar</Button>
+                            <Button variant="contained" color="error" onClick={() => setViewPDF(false)}>Close</Button>
+                        </Stack>
                         <PDFViewer style={{ width: '100%', height: '90%', }}>
                             <Proforma
                                 dataHeader={''}
                                 typeProforma={'sencillo'}
-                                arrayEvidences={dataRepairs}
+                                arrayEvidences={evidences}
                                 tanque={tanque.numero_tanque}
-                                arrayConcepts={dataReparationComplete.proforma}
+                                arrayConcepts={rows}
                             />
                         </PDFViewer>
                     </Paper>
@@ -430,7 +390,8 @@ export function ImageDinamic({ question, toggleItem, typeRepair }) {
 
     return (
         <>
-            {(typeRepair != 'completado') &&
+
+            {(typeRepair === 'pendiente') &&
                 <Card sx={{ width: '150px', height: '150px' }}>
 
                     <CardActionArea>
@@ -564,7 +525,7 @@ export function ImageDinamic({ question, toggleItem, typeRepair }) {
 
             <Modal open={modal}>
                 <Fade in={modal} onClick={() => setModal(!modal)}>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', paddingTop: '10%', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', paddingTop: '30px', alignItems: 'center' }}>
                         <Card sx={{ width: '100%', height: '100%', maxWidth: '80vw', maxHeight: '80vh', padding: '10px' }}>
                             <CardMedia
                                 component="img"
