@@ -2,6 +2,7 @@ import { Container, Box, Paper, Button, Typography, Stack, IconButton, Divider, 
 import { DetailsUser } from "../../components/DetailsUser";
 import { LoadingState } from '../../components/LoadingState'
 import { Notification } from "../../components/Notification";
+import { DataGridCustomers } from "../../components/DataGridCustomers";
 //forms
 import { FormAddUser } from "../../components/FormAddUser";
 import { FormAddTransporters } from "../../components/FormAddTransporters";
@@ -107,6 +108,8 @@ function PageAdmin() {
                     </Stack>
 
                 </Box>
+
+                <DataGridCustomers/>
 
             </Container>
 

@@ -109,11 +109,9 @@ function ViewAllTanks() {
     const columns = [
         { field: 'col1', headerName: 'Tanque', width: 120 },
         { field: 'col2', headerName: 'Status', renderCell: (params) => (<CustomChip status={params.value} />), width: 120 },
-        { field: 'col3', headerName: 'Tamaño', width: 100 },
-        { field: 'col4', headerName: 'Reparaciones internas', width: 200 },
-        { field: 'col5', headerName: 'Reparaciones externas', width: 200 },
+        { field: 'col3', headerName: 'Reparaciones internas', width: 200 },
+        { field: 'col4', headerName: 'Reparaciones externas', width: 200 },
     ];
-
 
     return (
         <>
@@ -170,7 +168,6 @@ function ViewAllTanks() {
                                 scrollButtons="auto"
                             >
                                 <Tab label="status" />
-                                <Tab label="tamaño" />
                                 <Tab label="reparaciones" />
                             </Tabs>
                         </Box>
@@ -252,79 +249,6 @@ function ViewAllTanks() {
                         </CustomTabPanel>
 
                         <CustomTabPanel index={1} value={tab}>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '10px',
-                                }}
-                            >
-                                <form onSubmit={(e) => OnSubmit(e, 'size')}>
-                                    <Stack gap='10px'>
-                                        <Stack
-                                            flexDirection={'row'}
-                                            alignItems={'center'}
-                                            justifyContent={'flex-start'}
-                                        >
-                                            <Typography>
-                                                {`Tanques seleccionados :  `}
-                                                {selectTank?.length >= 1 ?
-                                                    selectTank.map((tanque) =>
-                                                        (<strong>{tanque}</strong>)) : []}
-                                            </Typography>
-                                        </Stack>
-
-                                        <Stack
-                                            gap={'10px'}
-                                            alignItems={'center'}
-                                        >
-
-                                            <FormControl fullWidth>
-                                                <InputLabel>Nuevo tamaño</InputLabel>
-                                                <Select
-                                                    required={true}
-                                                    defaultValue=""
-                                                    value={tankStatus.tamaño}
-                                                    label="Nuevo status"
-                                                    onChange={(e) => setTankStatus({ ...tankStatus, tamaño: e.target.value })}
-                                                >
-                                                    <MenuItem value={'sencillo'}>sencillo</MenuItem>
-                                                    <MenuItem value={'doble'}>doble</MenuItem>
-
-                                                </Select>
-                                            </FormControl>
-
-                                        </Stack>
-
-                                        <Stack
-                                            flexDirection={'column'}
-                                            gap={'5px'}
-                                        >
-                                            <Button
-                                                type="submit"
-                                                fullWidth
-                                                color="primary"
-                                                variant="contained"
-                                            >
-                                                Actualizar
-                                            </Button>
-
-                                            <Button
-                                                onClick={() => setEditTank(false)}
-                                                fullWidth
-                                                color="error"
-                                                variant="contained"
-                                            >
-                                                Cancelar
-                                            </Button>
-
-                                        </Stack>
-                                    </Stack>
-                                </form>
-                            </Box>
-                        </CustomTabPanel>
-
-                        <CustomTabPanel index={2} value={tab}>
                             <Box
                                 sx={{
                                     display: 'flex',
@@ -517,7 +441,7 @@ function ItemViewTank({ tanque, onClick }) {
 export { ItemViewTank };
 
 
-export function CustomChip({ status }) {
+function CustomChip({ status }) {
 
     const routerColors = {
         forconfirm: "default",
@@ -532,7 +456,7 @@ export function CustomChip({ status }) {
     );
 }
 
-export function HeaderTable({ toggleEdit, toggleDelet }) {
+function HeaderTable({ toggleEdit, toggleDelet }) {
 
     return (
         <Box>

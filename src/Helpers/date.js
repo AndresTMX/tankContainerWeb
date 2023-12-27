@@ -2,9 +2,13 @@ import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/es';
+dayjs.locale('es');
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(relativeTime);
+
+export const dateInText = (date)=> dayjs(date).format('dddd, MMMM D, YYYY');
 
 export const currentDate = new dayjs(new Date());
 

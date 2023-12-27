@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 //components
 import { Box, Tabs, Tab } from "@mui/material";
-import { FormRegisterManiobras } from "../../components/FormRegisterManiobras";
+import { Materiales } from "../../components/Materiales";
 import { ViewAllTanks } from "../../components/ViewAllTanks";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { RegistersManiobras } from "../../components/RegistersManiobras";
@@ -36,6 +36,7 @@ function Maniobras() {
                     <Tab label="Maniobras" />
                     <Tab label="EIR" />
                     <Tab label="Tanques" />
+                    <Tab label="Materiales" />
                 </Tabs>
             </Box>
 
@@ -49,6 +50,10 @@ function Maniobras() {
 
             <CustomTabPanel value={tab} index={2}>
                 <ViewAllTanks/>
+            </CustomTabPanel>
+
+            <CustomTabPanel value={tab} index={3}>
+                <Materiales/>
             </CustomTabPanel>
 
             <LoadingState duration={1000} />

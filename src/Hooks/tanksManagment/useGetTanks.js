@@ -28,9 +28,8 @@ function useGetTanks() {
         id: tanque.tanque,
         col1: tanque.tanque,
         col2: tanque.status,
-        col3: tanque.tamaño? tanque.tamaño: 'Sin definir',
-        col4: tanque.reparaciones_internas? tanque.reparaciones_internas: '0',
-        col5: tanque.reparaciones_externas? tanque.reparaciones_externas: '0'
+        col3: tanque.reparaciones_internas? tanque.reparaciones_internas: '0',
+        col4: tanque.reparaciones_externas? tanque.reparaciones_externas: '0'
     })) : [];
 
     return { getTanks, tanks, tanksReady, rowTanks, tankLoading, tankError }

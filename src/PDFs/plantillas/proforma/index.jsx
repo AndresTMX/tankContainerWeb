@@ -10,7 +10,7 @@ import { dividirArray } from "../../../Helpers/transformRegisters";
 import { Firma } from "../../components/Firma"
 
 function Proforma({ typeProforma, dataHeader, arrayConcepts, arrayEvidences, tanque }) {
-
+    
     const ArraysConcepts = dividirArray(arrayConcepts, 4);
     const ArraysEvidences = dividirArray(arrayEvidences, 4);
 
@@ -22,8 +22,8 @@ function Proforma({ typeProforma, dataHeader, arrayConcepts, arrayEvidences, tan
         <Document>
             {ArraysConcepts.map((arrayConcept, index) => (
                 <SimplePageLetter key={index} page={index + 1} numPages={ArraysConcepts.length}>
-                    <HeaderProforma typeHeader={typeProforma} />
-                    <DataProforma typeData={typeProforma} />
+                    <HeaderProforma typeHeader={typeProforma}  />
+                    <DataProforma typeData={typeProforma} dataHeader={dataHeader}/>
                     <TableProforma arrayConcepts={arrayConcept} tanque={tanque} typeProforma={typeProforma} />
                     {typeProforma === 'sencillo' &&
                         <TitleDocument

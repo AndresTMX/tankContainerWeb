@@ -1,6 +1,13 @@
 import { View, Text, } from "@react-pdf/renderer";
+import { dateMXFormat, dateInText } from "../../../Helpers/date";
 
-function DataProforma({ typeData }) {
+function DataProforma({ typeData, dataHeader }) {
+
+    const { folio, ingreso, nombre_cliente, checkOut, numero_tanque } = dataHeader;
+
+    const fecha = dateMXFormat(checkOut);
+    const fechaEscrita = dateInText(checkOut);
+
     return (
         <>
             {typeData === 'sencillo' &&
@@ -24,14 +31,14 @@ function DataProforma({ typeData }) {
                         >
                             <BoxText
                                 label={'FECHA'}
-                                text={'9/20/2023'}
+                                text={fecha}
                                 widthLabel={'50px'}
                                 widthText={'60px'}
                             />
 
                             <BoxText
-                                label={'No. REFERENCIA'}
-                                text={'SCIALM2023/094'}
+                                label={'No. Folio'}
+                                text={folio}
                                 widthLabel={'80px'}
                                 widthText={'70px'}
                             />
@@ -58,7 +65,7 @@ function DataProforma({ typeData }) {
                             <View style={{ width: '40%' }}>
                                 <BoxText
                                     label={'CLIENTE'}
-                                    text={'TRIMODAL DE MEXICO, S.C.'}
+                                    text={nombre_cliente}
                                     widthLabel={'50px'}
                                     widthText={'auto'}
                                 />
@@ -107,14 +114,14 @@ function DataProforma({ typeData }) {
 
                             <BoxText
                                 label={'FECHA : '}
-                                text={'MIERCOLES, 20 DE SEPTIEMBRE DE 2023'}
+                                text={fechaEscrita}
                                 widthLabel={'40px'}
                                 widthText={'170px'}
                             />
 
                             <BoxText
                                 label={'FOLIO : '}
-                                text={'SCIALM2023/094'}
+                                text={folio}
                                 widthLabel={'40px'}
                                 widthText={'100px'}
                             />
@@ -190,7 +197,7 @@ function DataProforma({ typeData }) {
 
 export { DataProforma };
 
-export function BoxText({ label, text, widthLabel, widthText, direction, fontSize, padding , height}) {
+export function BoxText({ label, text, widthLabel, widthText, direction, fontSize, padding, height }) {
     return (
         <View
             style={{
@@ -198,7 +205,7 @@ export function BoxText({ label, text, widthLabel, widthText, direction, fontSiz
                 flexDirection: direction ? direction : 'row',
                 alignItems: 'center',
                 borderStyle: 'solid',
-                height: height? height: '15px',
+                height: height ? height : '15px',
                 border: 1,
                 gap: '3px',
             }}
@@ -210,27 +217,27 @@ export function BoxText({ label, text, widthLabel, widthText, direction, fontSiz
                     alignItems: 'center',
                     justifyContent: 'center',
                     backgroundColor: '#ffcc01',
-                    padding: padding? padding:'2px',
+                    padding: padding ? padding : '2px',
                     height: '100%',
                     width: widthLabel
 
                 }}
             >
-                <Text style={{ fontSize: fontSize? fontSize : '8px', }}>{label}</Text>
+                <Text style={{ fontSize: fontSize ? fontSize : '8px', }}>{label}</Text>
             </View>
             <View
                 style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent:'center',
-                    alignItems:'center',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                     height: '100%',
                     width: widthText,
                     paddingLeft: '3px',
                     paddingRight: '5px',
                 }}
             >
-                <Text style={{fontSize: fontSize? fontSize : '8px', }}>{text}</Text>
+                <Text style={{ fontSize: fontSize ? fontSize : '8px', }}>{text}</Text>
             </View>
         </View>
     )

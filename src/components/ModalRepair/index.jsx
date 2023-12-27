@@ -20,10 +20,11 @@ import PanoramaIcon from '@mui/icons-material/Panorama';
 import { SelectSimple } from "../SelectSimple";
 import { ContainerScroll } from "../ContainerScroll";
 import { useDataRepair } from "../../Hooks/reparaciones/useDataRepair";
+import { dateInText } from "../../Helpers/date";
 
 function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTypeRepair }) {
 
-    const { dataJson, loading, error } = useGetCheckList(tanque.id_detalle_registro)
+    const { checklist, dataJson, loading, error } = useGetCheckList(tanque.id_detalle_registro)
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
     const { updateRepair, completeRepair } = useUpdateRepair();
     const [reparation, setReparation] = useState('');
@@ -33,6 +34,12 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
     const { states, actions } = useDataRepair(typeRepair, tanque, dataJson, loading);
     const { evidences, imagesChecklist, rows, rowModesModel, rowsMaterials, rowModesMaterials } = states;
     const { toggleImage, onChangueImage, onDeleteImage, setRows, setRowModesModel, setRowMaterials, setRowModesMaterials } = actions;
+
+    //informacion recopilada en checklist
+    const dataChecklist = checklist.length >= 1 ? checklist[0] : [];
+    const { folio, ingreso, nombre_cliente, } = dataChecklist;
+    //fecha de finalizacion del mantenimiento
+    const { checkOut, numero_tanque, } = tanque
 
     const updateTypeMaintance = async () => {
 
@@ -137,6 +144,27 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                     {(typeRepair === 'pendiente') &&
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '90vw', marginTop: '50px' }}>
 
+                            <Paper sx={{ padding: '20px' }}>
+                                <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} flexWrap={'wrap'}>
+
+                                    <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
+                                        <Typography variant="subtitle2">Cliente :</Typography>
+                                        <Typography>{nombre_cliente}</Typography>
+                                    </Stack>
+
+                                    <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
+                                        <Typography variant="subtitle2">Folio :</Typography>
+                                        <Typography>{folio}</Typography>
+                                    </Stack>
+
+                                    <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
+                                        <Typography variant="subtitle2">Fecha de ingreso :</Typography>
+                                        <Typography>{dateInText(ingreso)}</Typography>
+                                    </Stack>
+
+                                </Stack>
+                            </Paper>
+
                             <Stack gap={'5px'}>
                                 <Typography variant='caption'>Evidencias recopiladas en EIR</Typography>
                                 <Paper>
@@ -232,6 +260,27 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                     {(typeRepair === 'proceso') &&
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '90vw', marginTop: '50px' }}>
 
+                            <Paper sx={{ padding: '20px' }}>
+                                <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} flexWrap={'wrap'}>
+
+                                    <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
+                                        <Typography variant="subtitle2">Cliente :</Typography>
+                                        <Typography>{nombre_cliente}</Typography>
+                                    </Stack>
+
+                                    <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
+                                        <Typography variant="subtitle2">Folio :</Typography>
+                                        <Typography>{folio}</Typography>
+                                    </Stack>
+
+                                    <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
+                                        <Typography variant="subtitle2">Fecha de ingreso :</Typography>
+                                        <Typography>{dateInText(ingreso)}</Typography>
+                                    </Stack>
+
+                                </Stack>
+                            </Paper>
+
                             <ContainerScroll background={'whitesmoke'} height={'300px'}>
                                 <Stack gap={'10px'}>
                                     <Typography variant="subtitle2">Anexa evidencias a las reparaciones para completar el documento</Typography>
@@ -285,6 +334,27 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
 
                     {(typeRepair === 'completado') &&
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '90vw', marginTop: '50px' }}>
+
+                            <Paper sx={{ padding: '20px' }}>
+                                <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} flexWrap={'wrap'}>
+
+                                    <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
+                                        <Typography variant="subtitle2">Cliente :</Typography>
+                                        <Typography>{nombre_cliente}</Typography>
+                                    </Stack>
+
+                                    <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
+                                        <Typography variant="subtitle2">Folio :</Typography>
+                                        <Typography>{folio}</Typography>
+                                    </Stack>
+
+                                    <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
+                                        <Typography variant="subtitle2">Fecha de ingreso :</Typography>
+                                        <Typography>{dateInText(ingreso)}</Typography>
+                                    </Stack>
+
+                                </Stack>
+                            </Paper>
 
                             <ContainerScroll background={'whitesmoke'} height={'300px'}>
                                 <Stack gap={'10px'}>
@@ -359,18 +429,18 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                             padding={'15px'}
                             gap={'20px'}
                         >
-                            <ButtonDowloandProforma 
-                            dataHeader={''} 
-                            typeProforma={viewPDF} 
-                            arrayEvidences={evidences} 
-                            arrayConcepts={rows}                                 
-                            tanque={tanque.numero_tanque}
+                            <ButtonDowloandProforma
+                                dataHeader={{ folio, ingreso, nombre_cliente, checkOut, numero_tanque }}
+                                typeProforma={viewPDF}
+                                arrayEvidences={evidences}
+                                arrayConcepts={rows}
+                                tanque={tanque.numero_tanque}
                             />
                             <Button variant="contained" color="error" onClick={() => setViewPDF(false)}>Close</Button>
                         </Stack>
                         <PDFViewer style={{ width: '100%', height: '90%', }}>
                             <Proforma
-                                dataHeader={''}
+                                dataHeader={{ folio, ingreso, nombre_cliente, checkOut, numero_tanque }}
                                 typeProforma={viewPDF}
                                 arrayEvidences={evidences}
                                 tanque={tanque.numero_tanque}
