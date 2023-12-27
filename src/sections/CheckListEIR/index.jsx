@@ -1,6 +1,5 @@
 import { useState, useContext } from "react";
 import { Box, Paper, Stack, Button, IconButton, Typography, Modal, Fade, Container } from "@mui/material";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import { StepBarProgress } from "../StepsManiobras/StepBarProgress";
@@ -9,12 +8,17 @@ import { useCheckList } from "../../Hooks/useChecklistManiobras";
 import { SelectSimple } from "../../components/SelectSimple";
 import { InputText } from "../../components/InputText";
 import { AccordionSimple } from "../../components/Accordion";
+import { ModalAddCustomer } from "../../components/DataGridCustomers";
 //icons
 import ChatIcon from '@mui/icons-material/Chat';
+import AddIcon from '@mui/icons-material/Add';
 import { TextGeneral } from "../../components/TextGeneral";
 //button download pdf
 import { ButtonDowloand } from "../../PDFs/components/ButtonDowloand";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
+//hooks
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useCustomers } from "../../Hooks/Customers/useCustomers";
 
 function CheckListEIR() {
 
@@ -88,10 +92,10 @@ export function QuestionItem({ question, value, index, SelectQuestionComent, Cha
             />
 
             <InputImage
-            index={index}
-            preview={question.preview}
-            onChangue={(e) => ChangueImage(index, e)}
-            discardImage={DiscardImage}
+              index={index}
+              preview={question.preview}
+              onChangue={(e) => ChangueImage(index, e)}
+              discardImage={DiscardImage}
             />
 
             <IconButton
@@ -375,7 +379,7 @@ export function StepTwo({ nextStepBar }) {
   ]
   const stateCheckList = state.maniobrasCheckList.pageTwo.length >= 1 ? state.maniobrasCheckList.pageTwo : mockListCheck;
   const { actions, states } = useCheckList(stateCheckList)
-  const { ChangueInput, ChangueComent,ChangueImage, DiscardImage, SelectQuestionComent, ToggleModalComent, nextStep } = actions
+  const { ChangueInput, ChangueComent, ChangueImage, DiscardImage, SelectQuestionComent, ToggleModalComent, nextStep } = actions
   const { listCheck, indexQuestion, modalComent, maniobrasCheckList } = states
 
   const next = (e) => {
@@ -675,9 +679,11 @@ export function StepThree({ nextStepBar }) {
 export function StepFor({ nextStepBar }) {
 
   const [state, dispatch] = useContext(ManiobrasContext);
+  const [modalCustomer, setModalCustomer] = useState(false)
+  const { selectCustomers, updateCustomers, createCustomer } = useCustomers();
 
   const [cliente, setCliente] = useState('');
-  const [status, setStatus] = useState('')
+  const [status, setStatus] = useState('');
 
   const onSumbit = (e) => {
     e.preventDefault();
@@ -688,9 +694,13 @@ export function StepFor({ nextStepBar }) {
 
   const optionsStatus = [
     { id: 'prelavado', nombre: 'prelavado' },
+    { id: 'parked', nombre: 'almacenaje' },
     { id: 'interna', nombre: 'reparacion interna' },
     { id: 'externa', nombre: 'reparacion externa' },
   ]
+
+  const toggleModalCustomer = () => setModalCustomer(!modalCustomer)
+
 
   return (
     <>
@@ -698,12 +708,27 @@ export function StepFor({ nextStepBar }) {
 
         <form onSubmit={onSumbit}>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} >
-            <InputText
-              label="Cliente"
+
+            <Stack width={'100%'} alignItems={'flex-end'}>
+              <Button
+                size="small"
+                color="primary"
+                variant="contained"
+                endIcon={<AddIcon />}
+                onClick={toggleModalCustomer}
+              >
+                nuevo cliente
+              </Button>
+            </Stack>
+
+            <SelectSimple
+              type={'obj'}
+              title='Cliente'
               width={'100%'}
               value={cliente}
-              onChangue={(e) => setCliente(e.target.value)}
-              required={true}
+              options={selectCustomers}
+              onChange={(e) => setCliente(e.target.value)}
+              helperText={'Selecciona un cliente'}
             />
 
             <SelectSimple
@@ -748,6 +773,13 @@ export function StepFor({ nextStepBar }) {
         </form>
 
       </Paper>
+
+      <ModalAddCustomer
+        modal={modalCustomer}
+        createCustomer={createCustomer}
+        updateCustomers={updateCustomers}
+        toggleModal={toggleModalCustomer}
+      />
     </>
   )
 }
@@ -756,6 +788,7 @@ export function StepFinal({ nextStepBar }) {
 
   const [state, dispatch] = useContext(ManiobrasContext);
   const { maniobrasCheckList, previewPDF, selectItem, cliente, status } = state;
+  const { customerId, getCustomerWhitId } = useCustomers(cliente);
 
   const flatCheckList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
 
@@ -822,7 +855,7 @@ export function StepFinal({ nextStepBar }) {
             <TextGeneral
               width={'100%'}
               label={"Nombre del cliente"}
-              text={cliente}
+              text={customerId? customerId?.cliente:'...'}
             />
 
             <TextGeneral

@@ -307,7 +307,7 @@ function DetailsCheckList({changueTypeRegister}) {
             const data = {
                 user_id: key,
                 registro_detalle_entrada_id: selectItem.id,
-                nombre_cliente: state.cliente,
+                cliente_id: state.cliente,
                 ingreso: selectItem.checkIn,
             }
 

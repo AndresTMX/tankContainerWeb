@@ -200,7 +200,7 @@ function ListCheckList({ requestGetRegisters, loadingGetRegisters, errorGetRegis
 
                                                 <TextGeneral
                                                     label={'Cliente '}
-                                                    text={item.nombre_cliente}
+                                                    text={item.clientes.cliente}
                                                 />
 
                                                 <TextGeneral

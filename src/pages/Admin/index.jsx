@@ -3,6 +3,7 @@ import { DetailsUser } from "../../components/DetailsUser";
 import { LoadingState } from '../../components/LoadingState'
 import { Notification } from "../../components/Notification";
 import { DataGridCustomers } from "../../components/DataGridCustomers";
+import { ContainerScroll } from "../../components/ContainerScroll";
 //forms
 import { FormAddUser } from "../../components/FormAddUser";
 import { FormAddTransporters } from "../../components/FormAddTransporters";
@@ -40,7 +41,7 @@ function PageAdmin() {
                 }}>
 
                 {/* vista de todos los usuraios */}
-                <Box>
+                <Box sx={{ bgcolor: 'whitesmoke', padding: '20px', borderRadius: '4px' }}>
 
                     <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
                         <Typography variant="subtitle2">Usuarios registrados</Typography>
@@ -55,15 +56,17 @@ function PageAdmin() {
                     </Stack>
                     <Divider flexItem orientation="horizontal" />
 
-                    <Box>
-                        {users.map((user) => (
-                            <DetailsUser key={user.first_name} user={user} />
-                        ))}
-                    </Box>
+                    <ContainerScroll height={'250px'}>
+                        <Stack gap={'10px'}>
+                            {users.map((user) => (
+                                <DetailsUser key={user.first_name} user={user} />
+                            ))}
+                        </Stack>
+                    </ContainerScroll>
                 </Box>
 
                 {/* vista de todas las lineas transportistas */}
-                <Box>
+                <Box sx={{ bgcolor: 'whitesmoke', padding: '20px', borderRadius: '4px' }}>
                     <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
                         <Typography variant="subtitle2">Lineas transportistas</Typography>
                         <Stack flexDirection='row' gap='10px'>
@@ -78,38 +81,39 @@ function PageAdmin() {
                     <Divider flexItem orientation="horizontal" />
 
 
-                    
-                    <Stack spacing='5px'>
-                        {transporters.map((item) => (
-                            <Paper 
-                            elevation={2}
-                            sx={{padding:'5px'}}
-                            key={item.id}>
-                                <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
-                                    <Typography variant="subtitle2">{item.name}</Typography>
 
-                                   <div>
-                                   <Chip 
-                                    size="small"
-                                    color='info' 
-                                    icon={<EventAvailableIcon/>}
-                                    label={`${dateMXFormat(item.created_at)}`} 
-                                    />
-                                    <IconButton
-                                    color="error"
-                                    onClick={() => deleteTransporter(item.id)}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                   </div>
-                                </Stack>
-                            </Paper>
-                        ))}
-                    </Stack>
+                    <ContainerScroll height={'200px'}>
+                        <Stack gap='10px'>
+                            {transporters.map((item) => (
+                                <Paper
+                                    sx={{ padding: '5px' }}
+                                    key={item.id}>
+                                    <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
+                                        <Typography variant="subtitle2">{item.name}</Typography>
+
+                                        <div>
+                                            <Chip
+                                                size="small"
+                                                color='info'
+                                                icon={<EventAvailableIcon />}
+                                                label={`${dateMXFormat(item.created_at)}`}
+                                            />
+                                            <IconButton
+                                                color="error"
+                                                onClick={() => deleteTransporter(item.id)}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </div>
+                                    </Stack>
+                                </Paper>
+                            ))}
+                        </Stack>
+                    </ContainerScroll>
 
                 </Box>
 
-                <DataGridCustomers/>
+                <DataGridCustomers />
 
             </Container>
 

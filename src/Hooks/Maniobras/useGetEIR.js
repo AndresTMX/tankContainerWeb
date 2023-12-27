@@ -65,6 +65,7 @@ function useGetEIR(typeRegister) {
             .from('maniobras_checklist')
             .select(`
                      *,
+                     clientes(*),
                      users_data(*),
                      registros_detalles_entradas(*)
                      `)

@@ -3,19 +3,25 @@ import { useState, useEffect, useContext } from "react";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 
-function useCustomers() {
+function useCustomers(idCustomer) {
 
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(null);
     const [update, setUpdate] = useState(false);
     const [error, setError] = useState(null);
+    const [selectCustomers, setSelectCustomers] = useState([]);
+    const [customerId, setCustomerId] = useState([])
     //dataGrid
     const [rowsCustomers, setRowsCustomers] = useState([]);
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
     useEffect(() => {
-        getCustomers();
+        if(idCustomer){
+            getCustomerWhitId(idCustomer);
+        }else{
+            getCustomers();
+        }
     }, [update])
 
     const getCustomers = async () => {
@@ -38,8 +44,14 @@ function useCustomers() {
                 col4: item.phone
             }));
 
+            const customerNameAndId = data.map((item) => ({
+                id: item.id,
+                nombre: item.cliente
+            }));
+
             setCustomers(data);
             setRowsCustomers(rows);
+            setSelectCustomers(customerNameAndId);
             setLoading(false);
 
         } catch (error) {
@@ -103,16 +115,31 @@ function useCustomers() {
         }
     }
 
-    const updateCustomer = async (customerId, updates) => {
+    const updateCustomer = async (updates) => {
         try {
-            const { error } = await supabase
-                .from('clientes')
-                .update({ rfc: '', email: '', phone: ''})
-                .eq('id', customerId)
 
-            if (error) {
-                throw new Error(error.message)
-            }
+            const updatesCustomers = updates.map(async (update) => {
+                try {
+                    const { error } = await supabase
+                        .from('clientes')
+                        .update({ ...update })
+                        .eq('id', update.id)
+
+                    if (error) {
+                        throw new Error(error.message)
+                    }
+
+                } catch (error) {
+                    setLoading(false);
+                    dispatchGlobal({
+                        type: actionTypesGlobal.setNotification,
+                        payload: error.message
+                    });
+                }
+            })
+
+            await Promise.all(updatesCustomers);
+
         } catch (error) {
             setLoading(false);
             dispatchGlobal({
@@ -122,9 +149,29 @@ function useCustomers() {
         }
     }
 
+    const getCustomerWhitId = async (idCustomer) => {
+        try {
+            const { data, error } = await supabase
+                .from('clientes')
+                .select(`*`)
+                .eq('id', idCustomer)
+
+            if (error) {
+                throw new Error(error.message)
+            }
+
+            setCustomerId(...data);
+        } catch (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: error.message
+            });
+        }
+    }
+
     const updateCustomers = () => setUpdate(!update);
 
-    return { customers, rowsCustomers, loading, error, updateCustomers, createCustomer, deleteCustomer, updateCustomer }
+    return { customers, rowsCustomers, selectCustomers, customerId, loading, error, updateCustomers, createCustomer, deleteCustomer, updateCustomer, getCustomerWhitId }
 
 }
 
