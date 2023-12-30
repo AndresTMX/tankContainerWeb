@@ -22,7 +22,7 @@ function Step2({ step, nextStep, previusStep }) {
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
     const [state, dispatch] = useContext(PrelavadoContext);
-    const IsSmall = useMediaQuery('(max-width:850px)');
+    const IsSmall = useMediaQuery('(max-width:700px)');
 
     const { checklist } = state;
 
@@ -100,71 +100,93 @@ function Step2({ step, nextStep, previusStep }) {
 
     return (
         <>
-            <ContainerScroll height='55vh'>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '10px',
-                        padding: '10px',
-                        width: '100%',
-                        backgroundColor: 'whitesmoke'
-                    }}>
-                    <Typography variant="h6">Revisión de empaques de valvula de descarga</Typography>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                    padding: '0px',
+                    width: '100%',
+                    maxWidth: '95vw',
+                    backgroundColor: 'whitesmoke'
+                }}>
+
+                <ContainerScroll height='55vh'>
+
+                    <Typography variant="h6" sx={{marginBottom:'20px'}}>Revisión de empaques de valvula de descarga</Typography>
 
                     <FormGroup
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
-                            alignItems: 'center',
                             borderRadius: '4px',
-                            gap: '5px'
+                            gap: '5px',
                         }}
                     >
                         <Stack spacing='10px' marginBottom='10px'>
                             {listCheck.map((item, index) => (
-                                <Paper key={index}
+                                <Paper
+                                    key={index}
                                     elevation={4}>
                                     <Stack
                                         flexDirection={IsSmall ? 'column' : 'row'}
                                         gap='10px'
                                         spacing='10px'
-                                        alignItems={IsSmall ? 'start' : 'center'}
-                                        justifyContent='space-between'
+                                        alignItems={'center'}
+                                        justifyContent={'space-between'}
                                         sx={{
                                             width: '100%',
                                             backgroundColor: 'white',
-                                            padding: '20px'
+                                            padding: '20px',
+                                            maxWidth:'85vw'
                                         }}
                                     >
-                                        <Stack width={IsSmall ? '100%' : '50%'}>
-                                            <p>{item.question}</p>
+                                        <Stack width={IsSmall ? '100%' : '50%'} alignItems={IsSmall ? 'center' : 'start'}>
+                                            <Typography textAlign={IsSmall?'center':'start'} >{item.question}</Typography>
                                         </Stack>
 
-                                        <Stack flexDirection='row' gap='20px' alignItems='center' justifyContent='center'>
-                                            <Stack flexDirection='column' alignItems='center' >
-                                                <strong>Si</strong>
-                                                <InputCheck value={item.value === 'si' ? true : false} onchangue={(e) => ChangueInput(index, 'si')} />
+                                        <Stack 
+                                        flexDirection='row' 
+                                        gap='20px' 
+                                        flexWrap={'wrap'} 
+                                        alignItems='center' 
+                                        justifyContent={'center'} 
+                                        width={ IsSmall? '100%':'200px'} 
+                                        >
 
+                                            <Stack 
+                                            flexDirection='row' 
+                                            gap='20px' 
+                                            alignItems={IsSmall ? 'center' : 'start'} 
+                                            justifyContent={'space-around'} 
+                                            width={IsSmall? '400px':'100%'}
+                                            >
+                                               
+                                                <Stack flexDirection='column' alignItems='center' >
+                                                    <strong>Si</strong>
+                                                    <InputCheck value={item.value === 'si' ? true : false} onchangue={(e) => ChangueInput(index, 'si')} />
+
+                                                </Stack>
+                                                <Stack flexDirection='column' alignItems='center'>
+                                                    <strong>No</strong>
+                                                    <InputCheck value={item.value === 'no' ? true : false} onchangue={(e) => ChangueInput(index, 'no')} />
+                                                </Stack>
                                             </Stack>
-                                            <Stack flexDirection='column' alignItems='center'>
-                                                <strong>No</strong>
-                                                <InputCheck value={item.value === 'no' ? true : false} onchangue={(e) => ChangueInput(index, 'no')} />
+
+                                            <Stack flexDirection='row' alignItems='center' justifyContent={'center'}  gap={IsSmall ? '40px' : '10px'} width={'100%'} maxWidth={'70vw'} >
+                                                <IconButton
+                                                    onClick={() => SelectQuestionComent(index)}
+                                                    variant="contained"
+                                                    color="primary">
+                                                    <ChatIcon />
+                                                </IconButton>
+
+                                                <InputImage index={index} discardImage={DiscardImage} preview={item.preview} onChangue={(e) => ChangueImage(index, e)} />
+
+                                                {IsSmall && <Divider orientation={'horizontal'} flexItem />}
                                             </Stack>
                                         </Stack>
 
-                                        <Stack flexDirection='row' alignItems='center' gap={IsSmall ? '40px' : '10px'} >
-                                            <IconButton
-                                                onClick={() => SelectQuestionComent(index)}
-                                                variant="contained"
-                                                color="primary">
-                                                <ChatIcon />
-                                            </IconButton>
-
-                                            <InputImage index={index} discardImage={DiscardImage} preview={item.preview} onChangue={(e) => ChangueImage(index, e)} />
-
-                                            {IsSmall && <Divider orientation={'horizontal'} flexItem />}
-                                        </Stack>
                                     </Stack>
                                 </Paper>
                             ))}
@@ -173,13 +195,13 @@ function Step2({ step, nextStep, previusStep }) {
 
                     </FormGroup>
 
-                        <ButtonsNavigationCheck
-                            step={step}
-                            nextStep={SaveChanguesOnGloablState}
-                            previusStep={() => previusStep(1)} />
-                </Box>
+                    <ButtonsNavigationCheck
+                        step={step}
+                        nextStep={SaveChanguesOnGloablState}
+                        previusStep={() => previusStep(1)} />
+                </ContainerScroll>
+            </Box>
 
-            </ContainerScroll>
 
             <Modal open={modalComent}>
                 <Container

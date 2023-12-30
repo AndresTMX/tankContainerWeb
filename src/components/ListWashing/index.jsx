@@ -1,27 +1,44 @@
 //components
-import { Box, Stack, Paper, Typography, Chip, } from "@mui/material";
+import { Box, Stack, Alert } from "@mui/material";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import { HistoryItemLoading } from "../../components/HistoryItem";
 import { ItemWashing } from "../ItemWashing";
+import { NotConexionState } from "../NotConectionState";
 
-function ListWashing({ washingList, loadignWashing, errorWashing }) {
+function ListWashing({ washingList, loadignWashing, errorWashing, typeWashing }) {
+    console.log("🚀 ~ file: index.jsx:9 ~ ListWashing ~ washingList:", washingList)
     return (
         <>
-            <Box>
+            <Box sx={{ maxWidth: '95vw', minWidth: '700px' }}>
                 <ContainerScroll height='64vh'>
 
-                    {(!loadignWashing && !errorWashing && washingList.length >= 1) &&
-                        <Stack spacing='20px'>
-                            {washingList.map((item) => (
+                    {(washingList.length === 0 && !errorWashing && !loadignWashing) &&
+                        <Box sx={{ width: '100%' }}  >
+                            <Alert sx={{ width: '100%' }} severity="info">{'Sin prelavados pendientes'}</Alert>
+                        </Box>
+                    }
+
+                    {(errorWashing) &&
+                        <NotConexionState />
+                    }
+
+                    {(!loadignWashing && errorWashing) &&
+                        <Box sx={{ width: '100%' }}  >
+                            <Alert sx={{ width: '100%' }} severity="error">{errorWashing.message.troString()}</Alert>
+                        </Box>
+                    }
+
+                    <Stack gap='10px' >
+                        {(!loadignWashing && !errorWashing && washingList.length >= 1) &&
+                            washingList.map((item) => (
                                 <ItemWashing
                                     key={item.id}
                                     data={item} />
                             ))}
-                        </Stack>
-                    }
+                    </Stack>
 
                     {(loadignWashing && !errorWashing) &&
-                        <Stack spacing='20px' maxWidth={'700px'}>
+                        <Stack gap='20px' maxWidth={'700px'}>
                             <HistoryItemLoading />
                             <HistoryItemLoading />
                             <HistoryItemLoading />

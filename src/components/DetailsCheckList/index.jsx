@@ -16,7 +16,7 @@ import { tiempoTranscurrido } from "../../Helpers/date";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
 
-function DetailsCheckList({changueTypeRegister}) {
+function DetailsCheckList({changueTypeRegister, step}) {
 
     const IsSmall = useMediaQuery('(max-width:900px)');
     const IsExtraSmall = useMediaQuery('(max-width:450px)');
@@ -274,7 +274,7 @@ function DetailsCheckList({changueTypeRegister}) {
     const { selectItem, maniobrasCheckList, status } = state;
     const { carga, dayInput, dateInput, linea, numero_tanque, tracto, checkIn } = selectItem;
 
-    const complete = maniobrasCheckList.pageThree.length >= 1 ? true : false;
+    const complete = step === 5? true:false;
 
     const time = tiempoTranscurrido(checkIn);
     const [modal, setModal] = useState(false);
@@ -381,6 +381,7 @@ function DetailsCheckList({changueTypeRegister}) {
 
                         <Stack flexDirection='row' gap='10px'>
                             <Button
+                                disabled={!complete}
                                 onClick={completeCheck}
                                 size="small"
                                 variant="contained"

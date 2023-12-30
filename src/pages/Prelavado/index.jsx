@@ -13,12 +13,11 @@ import { ItemWashing } from "../../components/ItemWashing";
 //calendar experimental
 import { WashingAgend } from "../../components/WashingAgend";
 //hooks
-import { useGetWashing } from "../../Hooks/lavadosManagment/useGetWashing";
+import { usePreWashing } from "../../Hooks/Prelavado/usePreWashing";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useSearcher } from "../../Hooks/useSearcher";
 //context
 import { PrelavadoContext } from "../../Context/PrelavadoContext";
-import { actionTypes } from "../../Reducers/PrelavadoReducer";
 import { ListWashing } from "../../components/ListWashing";
 //checklist
 import { CheckListPrelavado } from "../../sections/CheckListPrelavado";
@@ -26,7 +25,7 @@ import { CheckListPrelavado } from "../../sections/CheckListPrelavado";
 function Prelavado() {
 
    const [state, dispatch] = useContext(PrelavadoContext);
-   const { washing, loadignWashing, errorWashing } = useGetWashing();
+   const { washing, loadignWashing, errorWashing, updater, changueTypeWashing, type } = usePreWashing('prelavado');
 
    const IsSmall = useMediaQuery('(max-width:900px)');
    const isMovile = useMediaQuery("(max-width:640px)");
@@ -269,22 +268,19 @@ function Prelavado() {
    ]
 
    const [tab, setTab] = useState(1)
+   const [step, setStep] = useState(1);
 
    const ToggleTab = (event, newValue) => {
       setTab(newValue)
    }
 
-   const changueSection = (newType) => {
-      dispatch({ type: actionTypes.setTypeWashing, payload: newType })
-   }
-
    return (
       <>
-         <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0px', overflowX: 'hidden', minHeight:'100vh' }}>
+         <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0px', overflowX: 'hidden', minHeight: '100vh' }}>
 
             <Tabs value={tab} onChange={ToggleTab}>
                <Tab label="Agenda de lavados" />
-               <Tab label="Lavados pendientes" />
+               <Tab label="Prelavados" />
                <Tab label="Mapa de almacen" />
             </Tabs>
 
@@ -315,23 +311,24 @@ function Prelavado() {
                               display: 'flex',
                               flexDirection: 'column',
                               justifyContent: 'center',
-                              padding: '0px'
+                              padding: '0px',
+                              alignItems: 'center'
 
                            }}
                         >
                            <Paper
                               elevation={2}
                               sx={{
-                                 width: IsSmall ? '90vw' : ' 100%',
+                                 width: '95vw',
                                  padding: IsSmall ? '0px' : '10px',
-                                 maxWidth: '750px',
-                                 backgroundColor: 'whitesmoke',
+                                 maxWidth: '700px',
+                                 background: 'whitesmoke',
+                                 alignItems: isMovile ? 'center' : '',
                               }}>
 
                               <Stack
                                  sx={{
-                                    backgroundColor: 'whitesmoke',
-                                    padding: '20px',
+                                    padding: IsSmall ? '15px' : '20px',
                                     borderRadius: '4px',
                                  }}
                                  flexDirection="row"
@@ -349,19 +346,19 @@ function Prelavado() {
                                     width={isMovile ? "100%" : "auto"}
                                  >
                                     <Chip
-                                       onClick={() => changueSection("prelavado")}
-                                       color={state.typeWashing === "prelavado" ? "warning" : "default"}
+                                       onClick={() => changueTypeWashing("prelavado")}
+                                       color={type === "prelavado" ? "warning" : "default"}
                                        label="pendientes"
                                     />
                                     <Chip
-                                       onClick={() => changueSection("lavado")}
-                                       color={state.typeWashing === "lavado" ? "success" : "default"}
+                                       onClick={() => changueTypeWashing("lavado")}
+                                       color={type === "lavado" ? "success" : "default"}
                                        label="realizados"
                                     />
 
                                  </Stack>
 
-                                 <Stack width={isMovile ? '100%' : 'auto'}>
+                                 <Stack width={isMovile ? '100%' : '350px'}>
                                     <Searcher
                                     // search={search}
                                     // searching={searching}
@@ -375,11 +372,12 @@ function Prelavado() {
 
                            </Paper>
 
-                           <ListWashing
+                           {/* <ListWashing
+                              typeWashing={type}
                               washingList={washing}
                               loadignWashing={loadignWashing}
                               errorWashing={errorWashing}
-                           />
+                           /> */}
 
                         </Container>
                      </Fade>
@@ -404,19 +402,19 @@ function Prelavado() {
             </CustomTabPanel>
 
             {selectCheck && (
-               <Paper 
-               elevation={4} 
-               sx={{
-                   width: '100%', 
-                   display: 'flex', 
-                   justifyContent: 'center', 
-                   maxWidth: '740px', 
-                   padding:'10px',
-                   }}>
-                  <Box sx={{ padding: '15px', width:'100%' }}>
-                     <Stack>
-                        <ItemWashing data={selectCheck} />
-                        <CheckListPrelavado />
+               <Paper
+                  elevation={4}
+                  sx={{
+                     display: 'flex',
+                     justifyContent: 'center',
+                     width: '700px',
+                     maxWidth: '95vw',
+                     padding: '10px',
+                  }}>
+                  <Box sx={{ padding: isMovile ? '0px' : '15px', width: '100%' }}>
+                     <Stack alignItems={'center'}>
+                        <ItemWashing data={selectCheck} updater={updater} step={step} setStep={setStep} />
+                        <CheckListPrelavado step={step} setStep={setStep} />
                      </Stack>
                   </Box>
                </Paper>

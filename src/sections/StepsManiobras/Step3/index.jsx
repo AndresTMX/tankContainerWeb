@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import { PrelavadoContext } from "../../../Context/PrelavadoContext";
 import { actionTypes } from "../../../Reducers/PrelavadoReducer";
 //hooks
-import { Typography, Stack, Paper, FormGroup, Divider, IconButton, Button, Container, Modal, Fade } from "@mui/material";
+import { Typography, Stack, Paper, FormGroup, Divider, IconButton, Button, Container, Modal, Fade, Box } from "@mui/material";
 import { useCheckList } from "../../../Hooks/useChecklistPrelavado";
 import { InputImage } from "../../../components/InputImage";
 import { InputText } from "../../../components/InputText";
@@ -17,7 +17,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 
 function Step3({ step, nextStep, previusStep }) {
 
-    const IsSmall = useMediaQuery('(max-width:850px)');
+    const IsSmall = useMediaQuery('(max-width:700px)');
     const [state, dispatch] = useContext(PrelavadoContext);
     const [message, setMessage] = useState(false)
 
@@ -85,16 +85,20 @@ function Step3({ step, nextStep, previusStep }) {
 
             {!message &&
                 <Fade in={!message} timeout={500}>
-                    <Paper
+                    <Box
                         elevation={4}
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
-                            gap: '20px',
-                            padding: '20px',
-                            width: '100%'
-                        }}>
-                        <Typography variant="h6">Revisión de empaques para valvula sanitaria 3A</Typography>
+                            gap: '10px',
+                            padding: '0px',
+                            width: '90vw',
+                            maxWidth: '650px',
+                            backgroundColor: 'whitesmoke'
+                        }}
+                    >
+
+                        <Typography variant="h6" sx={{ padding: '20px 20px 0px' }}>Revisión de empaques para valvula sanitaria 3A</Typography>
 
                         <ContainerScroll height={'45vh'}>
                             <FormGroup
@@ -107,59 +111,81 @@ function Step3({ step, nextStep, previusStep }) {
                                 }}
                             >
                                 {listCheck.map((item, index) => (
-                                    <Stack
+                                    <Paper
                                         key={index}
-                                        flexDirection={IsSmall ? 'column' : 'row'}
-                                        gap='20px'
-                                        spacing='10px'
-                                        alignItems={IsSmall ? 'start' : 'center'}
-                                        justifyContent='space-between'
-                                        sx={{
-                                            width: '100%',
-                                            backgroundColor: 'white',
-                                            padding: '20px'
-                                        }}
-                                    >
-                                        <Stack width={IsSmall ? '100%' : '50%'}>
-                                            <p>{item.question}</p>
-                                        </Stack>
-
-                                        <Stack flexDirection='row' gap='20px' alignItems='center' justifyContent='center'>
-                                            <Stack flexDirection='column' alignItems='center' >
-                                                <strong>Si</strong>
-                                                <InputCheck value={item.value === 'si' ? true : false} onchangue={(e) => ChangueInput(index, 'si')} />
-
+                                        sx={{ width: '100%',  }}
+                                        elevation={4}>
+                                        <Stack
+                                            flexDirection={IsSmall ? 'column' : 'row'}
+                                            gap='10px'
+                                            spacing='10px'
+                                            alignItems={'center'}
+                                            justifyContent={'space-between'}
+                                            sx={{
+                                                width: '100%',
+                                                backgroundColor: 'white',
+                                                padding: '20px',
+                                                maxWidth: '85vw'
+                                            }}
+                                        >
+                                            <Stack width={IsSmall ? '100%' : '50%'} alignItems={IsSmall ? 'center' : 'start'}>
+                                                <Typography textAlign={IsSmall ? 'center' : 'start'} >{item.question}</Typography>
                                             </Stack>
-                                            <Stack flexDirection='column' alignItems='center'>
-                                                <strong>No</strong>
-                                                <InputCheck value={item.value === 'no' ? true : false} onchangue={(e) => ChangueInput(index, 'no')} />
+
+                                            <Stack
+                                                flexDirection='row'
+                                                gap='20px'
+                                                flexWrap={'wrap'}
+                                                alignItems='center'
+                                                justifyContent={'center'}
+                                                width={IsSmall ? '100%' : '200px'}
+                                            >
+
+                                                <Stack
+                                                    flexDirection='row'
+                                                    gap='20px'
+                                                    alignItems={IsSmall ? 'center' : 'start'}
+                                                    justifyContent={'space-around'}
+                                                    width={IsSmall ? '400px' : '100%'}
+                                                >
+
+                                                    <Stack flexDirection='column' alignItems='center' >
+                                                        <strong>Si</strong>
+                                                        <InputCheck value={item.value === 'si' ? true : false} onchangue={(e) => ChangueInput(index, 'si')} />
+
+                                                    </Stack>
+                                                    <Stack flexDirection='column' alignItems='center'>
+                                                        <strong>No</strong>
+                                                        <InputCheck value={item.value === 'no' ? true : false} onchangue={(e) => ChangueInput(index, 'no')} />
+                                                    </Stack>
+                                                </Stack>
+
+                                                <Stack flexDirection='row' alignItems='center' justifyContent={'center'} gap={IsSmall ? '40px' : '10px'} width={'100%'} maxWidth={'70vw'} >
+                                                    <IconButton
+                                                        onClick={() => SelectQuestionComent(index)}
+                                                        variant="contained"
+                                                        color="primary">
+                                                        <ChatIcon />
+                                                    </IconButton>
+
+                                                    <InputImage index={index} discardImage={DiscardImage} preview={item.preview} onChangue={(e) => ChangueImage(index, e)} />
+
+                                                    {IsSmall && <Divider orientation={'horizontal'} flexItem />}
+                                                </Stack>
                                             </Stack>
+
                                         </Stack>
-
-                                        <Stack flexDirection='row' alignItems='center' gap={IsSmall ? '40px' : '10px'}>
-                                            <IconButton
-                                                onClick={() => SelectQuestionComent(index)}
-                                                variant="contained"
-                                                color="primary">
-                                                <ChatIcon />
-                                            </IconButton>
-
-                                            <InputImage index={index} discardImage={DiscardImage} preview={item.preview} onChangue={(e) => ChangueImage(index, e)} />
-
-                                            {IsSmall && <Divider orientation={'horizontal'} flexItem />}
-                                        </Stack>
-
-                                    </Stack>
+                                    </Paper>
                                 ))}
-                            <ButtonsNavigationCheck
-                                step={step}
-                                nextStep={SaveChanguesOnGloablState}
-                                previusStep={() => previusStep(2)} />
+                                <ButtonsNavigationCheck
+                                    step={step}
+                                    nextStep={SaveChanguesOnGloablState}
+                                    previusStep={() => previusStep(2)} />
                             </FormGroup>
 
                         </ContainerScroll>
 
-                    </Paper>
+                    </Box>
                 </Fade>
             }
 

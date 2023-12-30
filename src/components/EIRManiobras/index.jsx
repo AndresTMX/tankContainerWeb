@@ -58,6 +58,9 @@ function EIRManiobras() {
         newStatus: status,
     }
 
+    //counterStep
+    const [step, setStep] = useState(1);
+
     return (
         <>
             <Container
@@ -192,9 +195,14 @@ function EIRManiobras() {
                                         gap: '10px',
                                     }}
                                 >
-                                    <DetailsCheckList changueTypeRegister={changueTypeRegister}/>
+                                    <DetailsCheckList 
+                                    step={step}
+                                    changueTypeRegister={changueTypeRegister}/>
 
-                                    <CheckListEIR />
+                                    <CheckListEIR
+                                    step={step}
+                                    setStep={setStep}
+                                    />
 
                                 </Box>
                             </Paper>

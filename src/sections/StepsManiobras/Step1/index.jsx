@@ -26,11 +26,12 @@ function Step1({ nextStep }) {
                     <Stack
                         alignItems='center'>
                         <Button
+                            fullWidth
                             onClick={() => nextStep(2)}
                             sx={{ maxWidth: '250px' }}
-                            fullWidth
+                            variant="contained"
                             color="primary"
-                            variant="contained">
+                            >
                             Ok
                         </Button>
                     </Stack>

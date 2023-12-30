@@ -18,7 +18,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 
 function Step6({ step, nextStep, previusStep }) {
 
-    const IsSmall = useMediaQuery('(max-width:850px)');
+    const IsSmall = useMediaQuery('(max-width:700px)');
     const [state, dispatch] = useContext(PrelavadoContext);
 
     const { checklist } = state;
@@ -96,9 +96,8 @@ function Step6({ step, nextStep, previusStep }) {
                         {listCheck.map((item, index) => (
                             <Stack
                                 key={index}
-                                flexDirection={IsSmall ? 'column' : 'row'}
                                 gap='20px'
-                                spacing='10px'
+                                flexDirection={IsSmall ? 'column' : 'row'}
                                 alignItems={IsSmall ? 'start' : 'center'}
                                 justifyContent='space-between'
                                 sx={{
@@ -108,10 +107,17 @@ function Step6({ step, nextStep, previusStep }) {
                                 }}
                             >
                                 <Stack width={IsSmall ? '100%' : '50%'}>
-                                    <p>{item.question}</p>
+                                    <Typography textAlign={IsSmall?'center':'start'}>{item.question}</Typography>
                                 </Stack>
 
-                                <Stack flexDirection='row' gap='20px' alignItems='center' justifyContent='center'>
+                                <Stack
+                                    flexDirection='row' 
+                                    gap='20px' 
+                                    flexWrap={'wrap'} 
+                                    alignItems='center' 
+                                    justifyContent={ IsSmall? 'space-around': 'center'} 
+                                    width={ IsSmall? '100%':'200px'} 
+                                >
                                     <Stack flexDirection='column' alignItems='center' >
                                         <strong>Si</strong>
                                         <InputCheck value={item.value === 'si' ? true : false} onchangue={() => ChangueInput(index, 'si')} />
@@ -123,7 +129,13 @@ function Step6({ step, nextStep, previusStep }) {
                                     </Stack>
                                 </Stack>
 
-                                <Stack flexDirection='row' alignItems='center' gap={IsSmall ? '40px' : '10px'}>
+                                <Stack 
+                                flexDirection='row' 
+                                alignItems='center' 
+                                justifyContent={IsSmall? 'center': 'flex-end'}
+                                gap={IsSmall ? '40px' : '10px'}
+                                width={ IsSmall? '100%':'200px'} 
+                                >
                                     <IconButton
                                         onClick={() => SelectQuestionComent(index)}
                                         variant="contained"
@@ -138,10 +150,10 @@ function Step6({ step, nextStep, previusStep }) {
 
                             </Stack>
                         ))}
-                    <ButtonsNavigationCheck
-                        step={step}
-                        nextStep={SaveChanguesOnGloablState}
-                        previusStep={() => previusStep(5)} />
+                        <ButtonsNavigationCheck
+                            step={step}
+                            nextStep={SaveChanguesOnGloablState}
+                            previusStep={() => previusStep(5)} />
                     </FormGroup>
 
                 </ContainerScroll>

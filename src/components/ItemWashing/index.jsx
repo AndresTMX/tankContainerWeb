@@ -2,8 +2,8 @@ import { Box, Paper, Button, IconButton, Chip, Stack, Divider } from "@mui/mater
 import { TextGeneral } from "../TextGeneral";
 //icons
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 //helpers
 import { dateMXFormat, datetimeMXFormat, tiempoTranscurrido } from "../../Helpers/date";
 //context
@@ -12,12 +12,16 @@ import { PrelavadoContext } from "../../Context/PrelavadoContext";
 import { actionTypes } from "../../Reducers/PrelavadoReducer";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { useChecklistPrelavado } from "../../Hooks/Prelavado/useChecklistPrelavado";
 
-function ItemWashing({ data }) {
+function ItemWashing({ data, updater, step, setStep }) {
 
     const [state, dispatch] = useContext(PrelavadoContext);
 
-    const IsSmall = useMediaQuery('(max-width:900px)')
+    const IsSmall = useMediaQuery('(max-width:900px)');
+    const IsMovile = useMediaQuery('(max-width:500px)');
+
+    const { completeChecklist } = useChecklistPrelavado(updater);
 
     const onWashing = () => {
         dispatch({
@@ -27,111 +31,160 @@ function ItemWashing({ data }) {
     }
 
     const CancelChecklist = () => {
+        setStep(1);
         dispatch({
             type: actionTypes.setSelectCheck,
             payload: false
         })
+        dispatch({
+            type: actionTypes.setCheckList,
+            payload: {
+                cuviertaValvula: {
+                    type: ''
+                }
+            }
+        })
+    }
+
+    const completeWashing = async () => {
+
+        const arrrayObjects = Object.values(state.checklist)
+
+        const arrayColection = arrrayObjects.map((item, index) => {
+            let array = [];
+
+            const data = Object.values(item).flat()
+
+            for (let element of data) {
+
+                if (typeof element === 'string') {
+                    element = { cubierta: item.type }
+                }
+
+                array.push(element)
+            }
+
+            return array
+
+        });
+
+        const questionsFlat = arrayColection.flat();
+
+        // const questionsInString = JSON.stringify(questionsFlat);
+
+        const dataChecklist = {
+            registro_detalle_entrada_id: data.id,
+            numero_tanque: data.numero_tanque,
+            numero_pipa: data.numero_pipa,
+            data: questionsFlat,
+        }
+
+        await completeChecklist(data.id, dataChecklist)
+        CancelChecklist();
+
     }
 
     return (
         <>
-            <Box>
-                <Paper elevation={3}>
-                    <Stack padding='15px' spacing='10px' width={IsSmall ? 'auto' : '700px'}>
-                        {/* Cabecera */}
-                        <Stack
-                            flexDirection='row'
-                            justifyContent='space-between'
-                            flexWrap='wrap'
-                            gap='10px'
+            <Paper elevation={3} sx={{ width: '88vw', maxWidth: '650px' }}>
+                <Stack
+                    padding='15px'
+                    spacing='10px'
+                >
+                    {/* Cabecera */}
+                    <Stack
+                        flexDirection='row'
+                        justifyContent='space-between'
+                        flexWrap='wrap'
+                        gap='10px'
 
-                        >
+                    >
 
-                            <Stack flexDirection='row' gap='10px' flexWrap='wrap'>
-                                <Chip
-                                    icon={<CalendarTodayIcon />}
-                                    label={dateMXFormat(data.registros.checkIn)}
-                                    color='info'
-                                    size="small"
-                                />
+                        <Stack flexDirection='row' gap='10px' flexWrap='wrap'>
+                            <Chip
+                                icon={<CalendarTodayIcon />}
+                                label={dateMXFormat(data.registros.checkIn)}
+                                color='info'
+                                size="small"
+                            />
 
-                                <Chip
-                                    icon={<AccessTimeIcon />}
-                                    label={datetimeMXFormat(data.registros.checkIn)}
-                                    color='info'
-                                    size="small"
-                                />
+                            <Chip
+                                icon={<AccessTimeIcon />}
+                                label={datetimeMXFormat(data.registros.checkIn)}
+                                color='info'
+                                size="small"
+                            />
 
-                                <Chip
-                                    icon={<AccessTimeIcon />}
-                                    label={tiempoTranscurrido(data.registros.checkIn)}
-                                    color='info'
-                                    size="small"
-                                />
-                            </Stack>
-
-                            <Stack flexDirection='row' paddingRight='10px' gap='10px' width={IsSmall ? '80%' : 'auto'}>
-                                {(!state.selectCheck) &&
-                                    <Button
-                                        fullWidth={IsSmall}
-                                        onClick={onWashing}
-                                        variant="contained"
-                                        color="primary"
-                                        size="small"
-                                    >
-                                        Check
-                                    </Button>}
-
-                                {(state.selectCheck) &&
-                                    <Button
-                                        fullWidth={IsSmall}
-                                        onClick={() => console.log('wedwqe')}
-                                        variant="contained"
-                                        color="primary"
-                                        size="small"
-                                    >
-                                        completar
-                                    </Button>}
-
-                                {(state.selectCheck) &&
-                                    <IconButton
-                                        fullWidth={IsSmall}
-                                        onClick={CancelChecklist}
-                                        variant="contained"
-                                        color="error"
-                                        size="small"
-                                    >
-                                        <DoDisturbIcon />
-                                    </IconButton>}
-                            </Stack>
-
+                            <Chip
+                                icon={<AccessTimeIcon />}
+                                label={tiempoTranscurrido(data.registros.checkIn)}
+                                color='info'
+                                size="small"
+                            />
                         </Stack>
 
-                        <Stack flexDirection='row' justifyContent='start' gap='15px'>
-                            <TextGeneral
-                                label='Tipo de lavado'
-                                text={data.carga}
-                            />
+                        <Stack flexDirection='row' paddingRight='10px' gap='10px' width={IsMovile ? '100%' : 'auto'}>
+                            {(!state.selectCheck) &&
+                                <Button
+                                    fullWidth={IsMovile}
+                                    onClick={onWashing}
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                >
+                                    Check
+                                </Button>}
 
-                            <Divider orientation="vertical" flexItem />
+                            {(state.selectCheck) &&
+                                <Button
+                                    disabled={step != 8 ? true : false}
+                                    fullWidth={IsSmall}
+                                    onClick={completeWashing}
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                >
+                                    completar
+                                </Button>}
 
-                            {(data.carga != 'Pipa') &&
-                                <TextGeneral
-                                    label='Tipo de lavado'
-                                    text={`Tanque ${data.numero_tanque}`}
-                                />}
-
-                            {(data.carga != 'Pipa') && <Divider orientation="vertical" flexItem />}
-
-                            <TextGeneral
-                                label='N° de tracto'
-                                text={data.tracto}
-                            />
+                            {(state.selectCheck) &&
+                                <IconButton
+                                    fullWidth={IsSmall}
+                                    onClick={CancelChecklist}
+                                    variant="contained"
+                                    color="error"
+                                    size="small"
+                                >
+                                    <DoDisturbIcon />
+                                </IconButton>}
                         </Stack>
 
                     </Stack>
-                </Paper>
-            </Box>
+
+                    <Stack flexDirection={IsMovile ? 'column' : 'row'} justifyContent='start' gap='15px'>
+                        <TextGeneral
+                            label='Tipo de lavado'
+                            text={data.carga}
+                        />
+
+                        <Divider orientation={IsMovile ? "horizontal" : "vertical"} flexItem />
+
+                        {(data.carga != 'pipa') &&
+                            <TextGeneral
+                                label='Numero de tanque'
+                                text={`${data.numero_tanque}`}
+                            />}
+
+                        {(data.carga != 'pipa') && <Divider orientation={IsMovile ? "horizontal" : "vertical"} flexItem />}
+
+                        <TextGeneral
+                            label='N° de tracto'
+                            text={data.tracto}
+                        />
+                    </Stack>
+
+                </Stack>
+            </Paper>
         </>
     );
 }

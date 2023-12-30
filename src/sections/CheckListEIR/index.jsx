@@ -20,9 +20,7 @@ import { actionTypes } from "../../Reducers/ManiobrasReducer";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useCustomers } from "../../Hooks/Customers/useCustomers";
 
-function CheckListEIR() {
-
-  const [step, setStep] = useState(1);
+function CheckListEIR({step, setStep}) {
 
   const nextStepBar = (step) => {
     setStep(step)
