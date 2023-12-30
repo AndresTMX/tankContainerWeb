@@ -6,6 +6,7 @@ import supabase from "../../supabase";
 import { dividirArray } from "../../Helpers/transformRegisters";
 import { sendImageCloudinary } from "../../cloudinary";
 import { dateMXFormat } from "../../Helpers/date";
+import { dividirArrayPorPropiedad } from "../../Helpers/transformRegisters";
 
 function useChecklistPrelavado(updaterFunction) {
 
@@ -61,7 +62,7 @@ function useChecklistPrelavado(updaterFunction) {
                 newDataInString = JSON.stringify(mergeChecklist);
             } else {
                 mergeChecklist = [...oldDataChecklist, ...currentChecklistInJson];
-                const newDataInJson = dividirArray(mergeChecklist, 17);
+                const newDataInJson = dividirArrayPorPropiedad(mergeChecklist, 'cubierta');
                 newDataInString = JSON.stringify(newDataInJson);
             }
 
@@ -136,7 +137,8 @@ function useChecklistPrelavado(updaterFunction) {
             //extraer las imagenes y cambiarles el nombre
             const imagesWhitName = imagesWhitQuestion.map((question, index) => {
                 const oldFile = question.image;
-                return new File([oldFile], question.question, { type: oldFile.type });
+                const newName = question.question.replace(/[?¿]/g, '');
+                return new File([oldFile], newName, { type: oldFile.type });
             });
 
             //extraer los objetos para mapearlos
@@ -160,17 +162,24 @@ function useChecklistPrelavado(updaterFunction) {
             } catch (error) {
                 throw new Error(`Error al resolver promsesas, error: ${error.message}`)
             }
-         
-            //copia del array original con los cambios listos para enviar la data
-            const arrayWhitUrls = dataChecklist.map((item) => {
-                if (item.image !== '') {
-                    const indexImage = links.findIndex((link) => link.question === item.question);
-                    if (indexImage !== -1) {
-                        item.image = links[indexImage].url;
-                        item.preview = '';
-                    }
+
+            //copia del array original 
+            const copyOriginalArray = JSON.stringify(dataChecklist);
+            const newArray = JSON.parse(copyOriginalArray)
+
+            const arrayWhitUrls = newArray.map((item, index) => {
+
+                if (index != 0 && item.image != "") {
+                    const questionClear = item.question.replace(/[?¿]/g, '');
+                    const indexImage = links.findIndex((link) => link.question === questionClear);
+                    const url = links[indexImage].url;
+
+                    item.image = url;
+                    item.preview = '';
                 }
-                return { ...item }; // Crear un nuevo objeto para evitar modificar el original
+
+                return item
+
             });
 
             const checklistWhitUrlInString = JSON.stringify(arrayWhitUrls);

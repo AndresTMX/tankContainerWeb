@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Container, Box, Paper, Typography, Chip, Stack, Button, Alert, Modal, Tab, Tabs, IconButton, Card, CardMedia, } from "@mui/material";
+import { Container, Box, Paper, Typography, Chip, Stack, Button, Alert, Modal, Tab, Tabs, IconButton, Card, CardMedia, CardActions, } from "@mui/material";
 import { dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
 import { ContainerScroll } from "../ContainerScroll";
 import { NotConexionState } from "../NotConectionState";
@@ -12,6 +12,9 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
+import ClearIcon from '@mui/icons-material/Clear';
+import { dividirArrayPorPropiedad } from "../../Helpers/transformRegisters";
+import { CheckListCalidadPrelavado } from "../../sections/CheckListCalidadPrelavado";
 
 function ListPrelavadosPending({ prelavados, loading, error, cache, updateList }) {
 
@@ -86,8 +89,10 @@ export function ItemPrelavadoChecklist({ prelavado }) {
     const prelavadosInJson = JSON.parse(data);
 
     const [viewPrelavados, setViewPrelavados] = useState(false);
+    const [viewChecklist, setViewChecklist] = useState(false);
 
     const togglePrelavados = () => setViewPrelavados(!viewPrelavados);
+    const toggleChecklist = () => setViewChecklist(!viewChecklist);
 
     return (
 
@@ -141,6 +146,7 @@ export function ItemPrelavadoChecklist({ prelavado }) {
                             >prelavados</Button>
 
                             <Button
+                                onClick={toggleChecklist}
                                 endIcon={<ManageSearchIcon />}
                                 size='small'
                                 variant='contained'
@@ -159,6 +165,13 @@ export function ItemPrelavadoChecklist({ prelavado }) {
                 prelavados={prelavadosInJson}
             />
 
+            <CheckListCalidadPrelavado
+            modal={viewChecklist}
+            toggleModal={toggleChecklist}
+            />
+
+
+
         </>
 
     )
@@ -167,12 +180,13 @@ export function ItemPrelavadoChecklist({ prelavado }) {
 export function ModalVisualizePrelavados({ modal, toggleModal, prelavados, }) {
 
     const IsSmall = useMediaQuery('(max-width:900px)');
-
     const [tab, setTab] = useState(0);
-
     const ToggleTab = (event, newValue) => {
         setTab(newValue)
     }
+
+    const totalQuestions = prelavados.flat();
+    const allChecklist = dividirArrayPorPropiedad(totalQuestions, 'cubierta')
 
     return (
         <>
@@ -180,7 +194,17 @@ export function ModalVisualizePrelavados({ modal, toggleModal, prelavados, }) {
                 <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '10%' }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '700px' }}>
                         <Paper sx={{ display: 'flex', flexDirection: 'column', padding: '20px', }}>
-                            <Button color='error' variant='outlined' onClick={toggleModal} >close</Button>
+                            <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                                <Typography variant='button'>Checklists de prelavado</Typography>
+
+                                <IconButton
+                                    color='error'
+                                    variant='outlined'
+                                    onClick={toggleModal}
+                                >
+                                    <ClearIcon />
+                                </IconButton>
+                            </Stack>
                             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
                                 <Tabs
                                     value={tab}
@@ -188,26 +212,27 @@ export function ModalVisualizePrelavados({ modal, toggleModal, prelavados, }) {
                                     variant={IsSmall ? "scrollable" : ''}
                                     scrollButtons="auto"
                                 >
-                                    {prelavados.map((prelavado, index) => (
+                                    {allChecklist.map((prelavado, index) => (
                                         <Tab key={index} label={`Prelavado ${index + 1}`} />
                                     ))}
                                 </Tabs>
                             </Box>
 
-                            {prelavados.map((prelavado, index) => (
-                                <CustomTabPanel key={`panel_${index}`} index={index} value={tab} >
-                                    <ContainerScroll height={'400px'} >
-                                        <Stack width={'100%'} gap={'8px'} alignItems={'center'}>
-                                            {prelavado.map((question) => (
-                                                <CheckListInspect
-                                                    key={question}
-                                                    question={question}
-                                                />
-                                            ))}
-                                        </Stack>
-                                    </ContainerScroll>
-                                </CustomTabPanel>
-                            ))}
+                            {prelavados.length >= 1 &&
+                                allChecklist.map((prelavado, index) => (
+                                    <CustomTabPanel key={`panel_${index}`} index={index} value={tab} >
+                                        <ContainerScroll height={'400px'} >
+                                            <Stack width={'100%'} gap={'8px'} alignItems={'center'}>
+                                                {prelavado.map((question, index) => (
+                                                    <CheckListInspect
+                                                        key={`checklist_${index}`}
+                                                        question={question}
+                                                    />
+                                                ))}
+                                            </Stack>
+                                        </ContainerScroll>
+                                    </CustomTabPanel>
+                                ))}
 
                         </Paper>
                     </Box>
@@ -218,6 +243,9 @@ export function ModalVisualizePrelavados({ modal, toggleModal, prelavados, }) {
 }
 
 function CheckListInspect({ question }) {
+
+    const [image, viewImage] = useState(false)
+
     return (
         <>
             <Paper sx={{ padding: '20px', width: '100%' }}>
@@ -232,6 +260,7 @@ function CheckListInspect({ question }) {
 
                     <Stack display='flex' flexDirection='column' gap='5px'>
                         <IconButton
+                            onClick={() => viewImage(!image)}
                             disabled={question?.image ? false : true}
                             color={question?.image ? 'info' : 'default'}
                         >
@@ -243,17 +272,20 @@ function CheckListInspect({ question }) {
                 </Stack>
             </Paper>
 
-            {/* <Modal>
-                <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '10%' }}>
-                    <Box>
-                        <Card>
-                            <CardMedia>
-
-                            </CardMedia>
-                        </Card>
-                    </Box>
+            <Modal open={image}>
+                <Container
+                    onClick={() => viewImage(!image)}
+                    sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '10%' }}>
+                    <Card>
+                        <CardMedia
+                            component="img"
+                            height="400px"
+                            image={question.image}
+                            alt={question?.value ? question.value : question.cubierta}
+                        />
+                    </Card>
                 </Container>
-            </Modal> */}
+            </Modal>
         </>
     )
 }

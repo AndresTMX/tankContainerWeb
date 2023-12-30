@@ -350,11 +350,11 @@ function Prelavado() {
                                        color={type === "prelavado" ? "warning" : "default"}
                                        label="pendientes"
                                     />
-                                    <Chip
+                                    {/* <Chip
                                        onClick={() => changueTypeWashing("lavado")}
                                        color={type === "lavado" ? "success" : "default"}
                                        label="realizados"
-                                    />
+                                    /> */}
 
                                  </Stack>
 
@@ -372,12 +372,12 @@ function Prelavado() {
 
                            </Paper>
 
-                           {/* <ListWashing
+                           <ListWashing
                               typeWashing={type}
                               washingList={washing}
                               loadignWashing={loadignWashing}
                               errorWashing={errorWashing}
-                           /> */}
+                           />
 
                         </Container>
                      </Fade>

@@ -97,7 +97,6 @@ function ItemWashing({ data, updater, step, setStep }) {
                         justifyContent='space-between'
                         flexWrap='wrap'
                         gap='10px'
-
                     >
 
                         <Stack flexDirection='row' gap='10px' flexWrap='wrap'>
