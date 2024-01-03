@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Container, Box, Paper, Typography, Chip, Stack, Button, Alert, Modal, Tab, Tabs, IconButton, Card, CardMedia, CardActions, } from "@mui/material";
-import { dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
-import { ContainerScroll } from "../ContainerScroll";
+import { Container, Box, Paper, Typography, Chip, Stack, Button, Alert, Modal, Tab, Tabs, IconButton, Card, CardMedia, } from "@mui/material";
+import { CheckListCalidadPrelavado } from "../../sections/CheckListCalidadPrelavado";
 import { NotConexionState } from "../NotConectionState";
+import { ContainerScroll } from "../ContainerScroll";
 import { HistoryItemLoading } from "../HistoryItem";
 import { CustomTabPanel } from "../CustomTabPanel";
-import useMediaQuery from "@mui/material/useMediaQuery";
 //icons
 import HistoryIcon from '@mui/icons-material/History';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
@@ -13,25 +12,47 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import ClearIcon from '@mui/icons-material/Clear';
+//helpers
+import { dateMXFormat, datetimeMXFormat, tiempoTranscurrido } from "../../Helpers/date";
 import { dividirArrayPorPropiedad } from "../../Helpers/transformRegisters";
-import { CheckListCalidadPrelavado } from "../../sections/CheckListCalidadPrelavado";
+//hooks
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { usePreWashingInspect } from "../../Hooks/Calidad/usePrewashingInspect";
 
-function ListPrelavadosPending({ prelavados, loading, error, cache, updateList }) {
+function ListPrelavadosPending() {
+
+    const [typeInspect, setTypeInspect] = useState('pendiente')
+    const { inspect: prelavados, loading, error, updater, cache } = usePreWashingInspect(typeInspect)
 
     const renderPrelavados = prelavados?.length >= 1 ? true : false;
 
     const renderCache = cache?.length >= 1 ? true : false;
 
     return (
-        <>
-            <ContainerScroll height={'60vh'}>
+        <Stack gap='10px'>
+
+            <Paper sx={{ padding: '20px', bgcolor: 'whitesmoke' }}>
+                <Stack flexDirection={'row'} gap={'10px'}>
+                    <Chip
+                        color={typeInspect === 'pendiente' ? 'warning' : 'default'}
+                        onClick={() => setTypeInspect('pendiente')}
+                        label={'pendientes'} />
+
+                    <Chip
+                        color={typeInspect === 'revisado' ? 'success' : 'default'}
+                        onClick={() => setTypeInspect('revisado')}
+                        label={'realizados'} />
+                </Stack>
+            </Paper>
+
+            <ContainerScroll height={'70vh'}>
 
                 <Stack width={'100%'} gap={'5px'} alignItems={'center'}>
 
                     {(!loading && error) && <NotConexionState />}
 
                     {(!loading && !error && !renderPrelavados) &&
-                        <Alert severity="info">
+                        <Alert severity="info" sx={{ width: '100%' }}>
                             ¡Sin inspecciones pendientes!
                         </Alert>}
 
@@ -50,6 +71,8 @@ function ListPrelavadosPending({ prelavados, loading, error, cache, updateList }
                             <ItemPrelavadoChecklist
                                 key={prelavado.id}
                                 prelavado={prelavado}
+                                updater={updater}
+                                type={typeInspect}
                             />
                         ))}
 
@@ -58,6 +81,9 @@ function ListPrelavadosPending({ prelavados, loading, error, cache, updateList }
                             <ItemPrelavadoChecklist
                                 key={prelavado.id}
                                 prelavado={prelavado}
+                                updater={updater}
+                                type={typeInspect}
+
                             />
                         ))}
 
@@ -66,14 +92,30 @@ function ListPrelavadosPending({ prelavados, loading, error, cache, updateList }
 
             </ContainerScroll>
 
-        </>
+        </Stack>
     );
 }
 
 export { ListPrelavadosPending };
 
 
-export function ItemPrelavadoChecklist({ prelavado }) {
+export function ItemPrelavadoChecklist({ prelavado, updater, type }) {
+
+    return (
+
+        <>
+
+            {type === 'pendiente' && <ItemPendiente prelavado={prelavado} updater={updater} />}
+
+            {type === 'revisado' && <ItemRevisado prelavado={prelavado} updater={updater} />}
+
+
+        </>
+
+    )
+}
+
+function ItemPendiente({ prelavado, updater }) {
 
     const {
         data,
@@ -95,7 +137,6 @@ export function ItemPrelavadoChecklist({ prelavado }) {
     const toggleChecklist = () => setViewChecklist(!viewChecklist);
 
     return (
-
         <>
             <Box
                 sx={{
@@ -130,10 +171,14 @@ export function ItemPrelavadoChecklist({ prelavado }) {
                     <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
 
                         <Stack flexDirection={'row'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
-                            <Typography variant='button'>
-                                {numero_tanque != null ? 'Tanque' : 'Pipa'}
-                                {numero_tanque != null ? numero_tanque : numero_pipa}
-                            </Typography>
+                            <Stack>
+                                <Typography variant='caption'>
+                                    {numero_tanque != null ? 'Tanque ' : 'Pipa '}
+                                </Typography>
+                                <Typography variant='button'>
+                                    {numero_tanque != null ? numero_tanque : numero_pipa}
+                                </Typography>
+                            </Stack>
                         </Stack>
 
                         <Stack flexDirection={'row'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
@@ -159,6 +204,7 @@ export function ItemPrelavadoChecklist({ prelavado }) {
                 </Paper>
             </Box>
 
+
             <ModalVisualizePrelavados
                 modal={viewPrelavados}
                 toggleModal={togglePrelavados}
@@ -166,14 +212,153 @@ export function ItemPrelavadoChecklist({ prelavado }) {
             />
 
             <CheckListCalidadPrelavado
-            modal={viewChecklist}
-            toggleModal={toggleChecklist}
+                modal={viewChecklist}
+                toggleModal={toggleChecklist}
+                prelavado={prelavado}
+                updater={updater}
             />
 
+        </>
+    )
+}
 
+function ItemRevisado({ prelavado, updater }) {
+
+    const {
+        data,
+        created_at,
+        registro_detalle_entrada_id,
+        registros_detalles_entradas,
+        tipo_lavado,
+    } = prelavado;
+
+    const { carga, numero_pipa, numero_tanque, status, } =
+        registros_detalles_entradas ? registros_detalles_entradas : {};
+
+    const prelavadosInJson = JSON.parse(data);
+
+    const [modal, setModal] = useState(false)
+
+    return (
+        <>
+            <Box
+                sx={{
+                    display: 'flex',
+                    width: '100%',
+                    flexDirection: 'column',
+                    alignItems: 'center'
+                }}>
+                <Paper elevation={4} sx={{ padding: '20px', width: '100%', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                    <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
+
+                        <Stack flexDirection={'row'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
+                            <Chip size='small' color='warning' label={status} />
+                        </Stack>
+
+                        <Stack flexDirection={'row'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
+
+                            <Chip
+                                size='small'
+                                color='info'
+                                icon={<CalendarTodayIcon />}
+                                label={dateMXFormat(created_at)} />
+                            <Chip
+                                size='small'
+                                color='info'
+                                icon={<ScheduleIcon />}
+                                label={datetimeMXFormat(created_at)} />
+
+                            <Chip
+                                size='small'
+                                color='info'
+                                icon={<ScheduleIcon />}
+                                label={tiempoTranscurrido(created_at)} />
+                        </Stack>
+
+                    </Stack>
+
+                    <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
+
+                        <Stack flexDirection={'row'} alignItems={'center'} flexWrap={'wrap'} gap={'20px'}>
+
+                            <Stack>
+                                <Typography variant='caption'>
+                                    {numero_tanque != null ? 'Tanque ' : 'Pipa '}
+                                </Typography>
+                                <Typography variant='button'>
+                                    {numero_tanque != null ? numero_tanque : numero_pipa}
+                                </Typography>
+                            </Stack>
+
+                            <Stack>
+                                <Typography variant='caption'>
+                                    Tipo de lavado
+                                </Typography>
+                                <Typography variant='button'>
+                                    {tipo_lavado}
+                                </Typography>
+                            </Stack>
+                        </Stack>
+
+                        <Stack flexDirection={'row'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
+
+                            <Button
+                                onClick={() => setModal(true)}
+                                endIcon={<ManageSearchIcon />}
+                                size='small'
+                                variant='contained'
+                                color='primary'
+                            >checklist</Button>
+                        </Stack>
+
+                    </Stack>
+
+                </Paper>
+            </Box>
+
+            <Modal open={modal}>
+                <Container sx={{ display: 'flex', flexDirection: 'column', paddingTop: '5%', minHeight: '100vh', width: '100vw', alignItems: 'center' }}>
+                    <Paper sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '90vw', maxWidth: '700px' }}>
+                        <Stack
+                            flexDirection={'row'}
+                            alignItems={'center'}
+                            justifyContent={'space-between'}
+                        >
+                            <Typography variant="button">
+                                inspección de calidad
+                            </Typography>
+
+                            <IconButton
+                                onClick={() => setModal(!modal)}
+                            >
+                                <ClearIcon color='error' />
+                            </IconButton>
+                        </Stack>
+
+                        <ContainerScroll height={'400px'}>
+                            <Stack gap='8px'>
+                                {prelavadosInJson.map((question) => (
+                                    <Paper elevation={2} sx={{ padding: '15px' }} key={question.question}>
+                                        <Stack gap={'5px'}>
+                                            <Typography variant='body2'>
+                                                {question.question}
+                                            </Typography>
+
+                                            <Typography variant='caption'>
+                                                {question.value}
+                                            </Typography>
+                                        </Stack>
+                                    </Paper>
+                                ))}
+                            </Stack>
+                        </ContainerScroll>
+
+
+                    </Paper>
+                </Container>
+            </Modal>
 
         </>
-
     )
 }
 
@@ -185,7 +370,7 @@ export function ModalVisualizePrelavados({ modal, toggleModal, prelavados, }) {
         setTab(newValue)
     }
 
-    const totalQuestions = prelavados.flat();
+    const totalQuestions = prelavados.length > 0 ? prelavados.flat() : [];
     const allChecklist = dividirArrayPorPropiedad(totalQuestions, 'cubierta')
 
     return (
@@ -289,3 +474,4 @@ function CheckListInspect({ question }) {
         </>
     )
 }
+

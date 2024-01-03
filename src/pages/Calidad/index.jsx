@@ -3,15 +3,13 @@ import { useContext, useState } from "react";
 import { Container, Box, Tabs, Tab, Button, Stack, Fade, Paper, Divider, Typography, } from "@mui/material";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { ListPrelavadosPending } from "../../components/ListPrelavadosPending";
+import { Notification } from "../../components/Notification";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { usePreWashing } from "../../Hooks/Prelavado/usePreWashing";
 
 function Calidad() {
 
    const IsSmall = useMediaQuery('(max-width:900px)');
-
-   const { washing, loadignWashing, errorWashing, updater, type, cache } = usePreWashing('lavado');
 
    const [tab, setTab] = useState(0);
 
@@ -32,19 +30,14 @@ function Calidad() {
                   scrollButtons="auto"
                >
                   <Tab label="Prelavados" />
-                  <Tab label="Liberaciones" />
+                  <Tab label="Lavados" />
+                  <Tab label="Documentacion" />
                </Tabs>
             </Box>
 
             <CustomTabPanel value={tab} index={0}>
                <Box sx={{ width:'90vw', maxWidth:'700px' }} > 
-                  <ListPrelavadosPending
-                     loading={loadignWashing}
-                     prelavados={washing}
-                     error={errorWashing}
-                     updateList={updater}
-                     cache={cache}
-                  />
+                  <ListPrelavadosPending/>
                </Box>
             </CustomTabPanel>
 
@@ -56,6 +49,8 @@ function Calidad() {
 
 
          </Box>
+
+         <Notification/>
       </>
    );
 }

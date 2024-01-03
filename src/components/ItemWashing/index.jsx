@@ -70,8 +70,6 @@ function ItemWashing({ data, updater, step, setStep }) {
 
         const questionsFlat = arrayColection.flat();
 
-        // const questionsInString = JSON.stringify(questionsFlat);
-
         const dataChecklist = {
             registro_detalle_entrada_id: data.id,
             numero_tanque: data.numero_tanque,
@@ -120,6 +118,7 @@ function ItemWashing({ data, updater, step, setStep }) {
                                 color='info'
                                 size="small"
                             />
+                            
                         </Stack>
 
                         <Stack flexDirection='row' paddingRight='10px' gap='10px' width={IsMovile ? '100%' : 'auto'}>

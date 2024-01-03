@@ -25,7 +25,7 @@ import { CheckListPrelavado } from "../../sections/CheckListPrelavado";
 function Prelavado() {
 
    const [state, dispatch] = useContext(PrelavadoContext);
-   const { washing, loadignWashing, errorWashing, updater, changueTypeWashing, type } = usePreWashing('prelavado');
+   const { washing, loadignWashing, errorWashing, updater,} = usePreWashing('prelavado');
 
    const IsSmall = useMediaQuery('(max-width:900px)');
    const isMovile = useMediaQuery("(max-width:640px)");
@@ -346,8 +346,7 @@ function Prelavado() {
                                     width={isMovile ? "100%" : "auto"}
                                  >
                                     <Chip
-                                       onClick={() => changueTypeWashing("prelavado")}
-                                       color={type === "prelavado" ? "warning" : "default"}
+                                       color={'warning'}
                                        label="pendientes"
                                     />
                                     {/* <Chip
@@ -373,7 +372,6 @@ function Prelavado() {
                            </Paper>
 
                            <ListWashing
-                              typeWashing={type}
                               washingList={washing}
                               loadignWashing={loadignWashing}
                               errorWashing={errorWashing}

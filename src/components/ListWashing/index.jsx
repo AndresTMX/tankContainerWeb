@@ -5,8 +5,7 @@ import { HistoryItemLoading } from "../../components/HistoryItem";
 import { ItemWashing } from "../ItemWashing";
 import { NotConexionState } from "../NotConectionState";
 
-function ListWashing({ washingList, loadignWashing, errorWashing, typeWashing }) {
-    console.log("🚀 ~ file: index.jsx:9 ~ ListWashing ~ washingList:", washingList)
+function ListWashing({ washingList, loadignWashing, errorWashing }) {
     return (
         <>
             <Box sx={{ maxWidth: '95vw', minWidth: '700px' }}>

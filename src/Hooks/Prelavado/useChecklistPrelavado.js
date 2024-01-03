@@ -69,7 +69,7 @@ function useChecklistPrelavado(updaterFunction) {
             //actualizar el campo data agregando el nuevo checklist y las iteraciones sumandole 1
             const { error: errorUpdate } = await supabase
                 .from('prelavado_checklist')
-                .update({ data: newDataInString, iteraciones: iteraciones })
+                .update({ data: newDataInString, iteraciones: iteraciones, status:'pendiente' })
                 .eq('registro_detalle_entrada_id', idRegister)
 
             if (errorUpdate) {
