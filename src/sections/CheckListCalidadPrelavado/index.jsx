@@ -427,11 +427,9 @@ function CheckListCalidadPrelavado({ modal, toggleModal, prelavado, updater }) {
     );
 }
 
-export { CheckListCalidadPrelavado };
-
 function ItemQuestion({ question, index, toggleCheck }) {
     const IsSmall = useMediaQuery("(max-width:700px)");
-
+    
     return (
         <Paper sx={{ padding: "10px" }}>
             <Box>
@@ -482,3 +480,5 @@ function ItemQuestion({ question, index, toggleCheck }) {
         </Paper>
     );
 }
+
+export { CheckListCalidadPrelavado, ItemQuestion }

@@ -4,72 +4,74 @@ import { NotConexionState } from "../NotConectionState";
 import { ContainerScroll } from "../ContainerScroll";
 import { HistoryItemLoading } from "../HistoryItem";
 import { HistoryItem } from "../HistoryItem"
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 
 function RegistersVigilancia({ data, error, loading, search, resultsSearch, errorSearch, loadingSearch, updater }) {
 
+    const isMovile = useMediaQuery('(max-width:635px)')
+
     return (
         <>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: "10px", margin: 'auto', maxWidth: '700px' }}>
-                <ContainerScroll height="72vh">
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "10px", margin: 'auto' }}>
+                <ContainerScroll height={isMovile ? "68vh" : "72vh"}>
 
-                    {(error) && (
-                        <NotConexionState />
-                    )}
+                    <Stack gap='10px' width='100%'>
 
-                    {(!error && !errorSearch && !loading && !loadingSearch && resultsSearch.length === 0 && data.length >= 1) &&
-                        <Fade in={!loading} timeout={500}>
-                            <Stack gap="20px">
-                                {data.map((item) => (
-                                    <HistoryItem
-                                        updater={updater}
-                                        type="vigilancia"
-                                        key={item.id}
-                                        data={item}
-                                    />
-                                ))}
-                            </Stack>
-                        </Fade>
-                    }
+                        {(error) && (
+                            <NotConexionState />
+                        )}
 
-                    {(!errorSearch && !loading && !loadingSearch && resultsSearch.length >= 1) &&
-                        <Fade in={!loading} timeout={500}>
-                            <Stack gap="20px">
-                                <Typography>Coincidencias basadas en tu busqueda: {search}</Typography>
-                                {data.map((item) => (
-                                    <HistoryItem
-                                        type="vigilancia"
-                                        updater={updater}
-                                        key={item.id}
-                                        data={item}
-                                    />
-                                ))}
-                            </Stack>
-                        </Fade>
-                    }
+                        {(!error && errorSearch) &&
+                            <Fade in={errorSearch}>
+                                <Box sx={{ width: '90vw', maxWidth: '700px' }}  >
+                                    <Alert sx={{ width: '100%' }} severity="warning">{errorSearch.toString()}</Alert>
+                                </Box>
+                            </Fade>
+                        }
 
+                        {(!errorSearch && !loading && !loadingSearch && resultsSearch.length >= 1) &&
+                            <Typography>Coincidencias encontradas para la busqeda {search}</Typography>
+                        }
 
-                    {(loading || loadingSearch) &&
-                        <Stack spacing={1}>
-                            <HistoryItemLoading />
-                            <HistoryItemLoading />
-                            <HistoryItemLoading />
-                        </Stack>
-                    }
+                        {(loading || loadingSearch) &&
+                            <>
+                                <HistoryItemLoading />
+                                <HistoryItemLoading />
+                                <HistoryItemLoading />
+                            </>
+                        }
 
-                    {(!error && errorSearch) &&
-                        <Fade in={errorSearch}>
-                            <Box sx={{ width: '90vw', maxWidth: '700px' }}  >
-                                <Alert sx={{ width: '100%' }} severity="warning">{errorSearch.toString()}</Alert>
+                        {(!error && !errorSearch && !loading && !loadingSearch && data.length === 0) &&
+                            <Box sx={{ width: '90vw', maxWidth: '700px' }} >
+                                <Alert sx={{ width: '100%' }} severity="warning">{'Sin maniobras pendientes'}</Alert>
                             </Box>
-                        </Fade>
-                    }
+                        }
 
-                    {(!error && !errorSearch && !loading && !loadingSearch  && data.length === 0) &&
-                        <Box sx={{ width: '90vw', maxWidth: '700px' }} >
-                            <Alert sx={{ width: '100%' }} severity="warning">{'Sin maniobras pendientes'}</Alert>
-                        </Box>
-                    }
+
+                        {(!error && !errorSearch && !loading && !loadingSearch && resultsSearch.length === 0 && data.length >= 1) &&
+                            data.map((item) => (
+                                <HistoryItem
+                                    updater={updater}
+                                    type="vigilancia"
+                                    key={item.id}
+                                    data={item}
+                                />
+                            ))
+                        }
+
+                        {(!errorSearch && !loading && !loadingSearch && resultsSearch.length >= 1) &&
+                            data.map((item) => (
+                                <HistoryItem
+                                    type="vigilancia"
+                                    updater={updater}
+                                    key={item.id}
+                                    data={item}
+                                />
+                            ))
+                        }
+
+                    </Stack>
 
                 </ContainerScroll>
             </Box>

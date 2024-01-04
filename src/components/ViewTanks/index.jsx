@@ -7,7 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { usePostRegister } from "../../Hooks/registersManagment/usePostRegister";
+import { usePostRegister } from "../../Hooks/Maniobras/usePostRegister";
 import { useAddOutputManiobra } from "../../Hooks/Maniobras/useAddOutputManiobra";
 import { useSelectManiobras } from "../../Hooks/Maniobras/useSelectManiobras";
 import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";

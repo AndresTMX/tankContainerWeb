@@ -11,9 +11,7 @@ import { useGetRegisters } from "../../Hooks/Vigilancia/useGetRegisters";
 import { useSearcherVigilancia } from "../../Hooks/Vigilancia/useSaearcherVigilancia";
 
 function Vigilancia() {
-
-    const IsSmall = useMediaQuery('(max-width:900px)');
-    const isMovile = useMediaQuery("(max-width:640px)");
+    const isMovile = useMediaQuery("(max-width:700px)");
 
     const [typeRegister, setTypeRegister] = useState("entrada")
     const { data, loading, error, updater } = useGetRegisters(typeRegister);
@@ -22,21 +20,17 @@ function Vigilancia() {
     const { searching, onChangueSearch, searchingKey } = functions;
 
     return (
-        <>
-            <Container
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    marginTop: '20px',
-                    alignItems: IsSmall ? '' : 'center',
-                    minHeight: '100%',
-                    gap: '10px'
-                }}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Stack
+                paddingTop={'20px'}
+                width={ isMovile? '96vw': '90vw'}
+                maxWidth={'700px'}
+                gap={'10px'}
             >
                 <Paper sx={{ backgroundColor: 'whitesmoke' }} elevation={4}>
-                    <Stack sx={{ padding: '20px', borderRadius: '4px', width: '90vw', maxWidth: '700px' }}
+                    <Stack sx={{ padding: '20px', borderRadius: '4px', widht: '100%' }}
                         flexDirection="row"
-                        justifyContent={isMovile ? "center" : "space-between"}
+                        justifyContent={'space-between'}
                         alignItems="center"
                         flexWrap="wrap"
                         gap="20px"
@@ -60,7 +54,7 @@ function Vigilancia() {
 
                         </Stack>
 
-                        <Stack width={isMovile ? "100%" : "auto"}>
+                        <Stack width={'400px'}>
                             <Searcher
                                 search={states.search}
                                 onChangueSearch={onChangueSearch}
@@ -86,10 +80,10 @@ function Vigilancia() {
                     />
                 </Box>
 
-            </Container>
+            </Stack>
 
             <Notification />
-        </>
+        </Box>
     );
 }
 

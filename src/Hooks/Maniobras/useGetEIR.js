@@ -39,7 +39,7 @@ function useGetEIR(typeRegister) {
                     `)
             .eq('type', 'entrada')
             .not('checkIn', 'is', null)
-            .order('create_at', { ascending: false })
+            .order('created_at', { ascending: false })
             .range(0, 50)
 
         if (error) {

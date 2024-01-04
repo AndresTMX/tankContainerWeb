@@ -41,7 +41,7 @@ function useGetRegisters(typeRegister) {
                     `)
             .eq('type', typeRegister)
             .is('checkIn', null)
-            .order('create_at', { ascending: false })
+            .order('created_at', { ascending: false })
             .range(0, 50)
 
         if (error) {
@@ -85,7 +85,7 @@ function useGetRegisters(typeRegister) {
         `)
             .eq('type', typeRegister)
             .is('checkIn', null)
-            .order('create_at', { ascending: false })
+            .order('created_at', { ascending: false })
             .range(0, 50)
 
         if (error) {

@@ -1,4 +1,4 @@
-import { Stack, Chip, Typography } from "@mui/material";
+import { Stack, Typography, Alert } from "@mui/material";
 
 function NotConexionState() {
     return (
@@ -6,21 +6,19 @@ function NotConexionState() {
             <Stack
                 sx={{
                     backgroundColor: "white",
-                    padding: "10px",
+                    padding: "20px",
                     borderRadius: "4px",
                 }}
                 flexDirection="column"
-                gap="5px"
+                gap="10px"
                 justifyContent="flex-start"
             >
-                <Chip
-                    sx={{ width: "130px" }}
-                    color="warning"
-                    label="¡Error al cargar!"
-                />
+               <Alert severity="error">
+                Error al cargar
+               </Alert>
 
                 <Typography variant="caption">
-                    probablemente no tienes internet, esta es la Información de la
+                    Probablemente no tienes internet, esta es la Información de la
                     ultima consulta exitosa a la base de datos, suerte.
                 </Typography>
             </Stack>

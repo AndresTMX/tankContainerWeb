@@ -2,7 +2,7 @@ import supabase from "../../supabase";
 import { useState, useContext } from "react";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
-import { usePostRegister } from "../registersManagment/usePostRegister";
+import { usePostRegister } from "../Maniobras/usePostRegister";
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
 import { AuthContext } from "../../Context/AuthContext";
@@ -52,9 +52,18 @@ function usePostCheckList() {
 
             const updateStatus = state.status != 'prelavado' ? 'reparacion' : state.status;
 
+            const { error: errorUpdateTank } = await supabase
+                .from('tanques')
+                .update({ status: updateStatus })
+                .eq('tanque', state.selectItem.numero_tanque)
+
+            if (errorUpdateTank) {
+                throw new Error(`Error: ${errorUpdate}`)
+            }
+
             const { errorUpdate } = await supabase.from('registros_detalles_entradas')
-            .update({status:updateStatus})
-            .eq('id', idRegistro )
+                .update({ status: updateStatus })
+                .eq('id', idRegistro)
 
             if (errorUpdate) {
                 throw new Error(`Error: ${errorUpdate}`)

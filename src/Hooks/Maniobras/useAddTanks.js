@@ -119,10 +119,10 @@ function useAddTanks() {
         const updatesTanks = tanques.map(async (tanque) => {
             try {
                 const { error } = await supabase.from('tanques')
-                    .update({ 
+                    .update({
                         reparaciones_externas: tanque.reparaciones_externas,
                         reparaciones_internas: tanque.reparaciones_internas
-                     })
+                    })
                     .eq('tanque', tanque.tanque)
 
                 if (error) {
@@ -163,7 +163,6 @@ function useAddTanks() {
             payload: 'Tanques actualizados con exito'
         })
     }
-  
 
     const deleteTanks = async (tanques) => {
 

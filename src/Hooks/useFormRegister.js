@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { usePostRegister } from "./registersManagment/usePostRegister";
+import { usePostRegister } from "./Maniobras/usePostRegister";
 import { GlobalContext } from "../Context/GlobalContext";
 import { actionTypes } from "../Reducers/GlobalReducer";
 

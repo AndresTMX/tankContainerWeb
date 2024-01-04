@@ -41,7 +41,7 @@ function useGetManiobrasType(typeManiobra) {
             .eq('type', 'entrada')
             .eq('status', 'maniobras')
             .not('checkIn', 'is', null)
-            .order('create_at', { ascending: false })
+            .order('created_at', { ascending: false })
             .range(0, 19)
         if (error) {
             setErrorManiobra(error)
@@ -111,7 +111,7 @@ function useGetManiobrasType(typeManiobra) {
                 )
             `)
             .is('checkIn', null)
-            .order('create_at', { ascending: false })
+            .order('created_at', { ascending: false })
             .range(0, 19)
 
 

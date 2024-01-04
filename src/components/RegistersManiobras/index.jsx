@@ -1,19 +1,16 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 //components
 import { Searcher } from "../Searcher";
 import { HistoryItem } from "../HistoryItem";
 import { HistoryItemLoading } from "../HistoryItem";
-import { actionTypes } from "../../Reducers/ManiobrasReducer";
-import { ResultSearch } from "../ResultsSearch";
 import { ContainerScroll } from "../ContainerScroll";
 import { FormRegisterManiobras } from "../FormRegisterManiobras";
 import { NotConexionState } from "../NotConectionState";
-import { Box, Stack, Chip, Typography, Paper, Button, Modal, Fade,Container } from "@mui/material";
+import { Box, Stack, Chip, Typography, Paper, Button, Modal, Fade, Container, Alert } from "@mui/material";
 //helpers
 import { filterSearchVigilancia } from "../../Helpers/searcher";
 //hooks
 import { useGetManiobrasType } from "../../Hooks/Maniobras/useGetManiobrasType";
-import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { useSearcher } from "../../Hooks/useSearcher";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //icons
@@ -23,7 +20,8 @@ import { AddNewTanks } from "../AddNewTanks";
 
 function RegistersManiobras() {
 
-    const isMovile = useMediaQuery("(max-width:640px)");
+    const isMovile = useMediaQuery("(max-width:750px)");
+    const isSmall = useMediaQuery("(max-width:455px)")
 
     const [typeManiobra, setTypeManiobra] = useState('confirmado')
     const { loadingManiobra, errorManiobra, maniobras, forceUpdate } = useGetManiobrasType(typeManiobra);
@@ -47,7 +45,7 @@ function RegistersManiobras() {
 
     return (
         <>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: '700px', margin: 'auto' }}>
+            <Stack gap='10px'>
 
                 <Paper sx={{ backgroundColor: 'whitesmoke' }} elevation={4}>
                     <Stack
@@ -80,7 +78,11 @@ function RegistersManiobras() {
                                 label="pendientes"
                             />
 
-                            <Button size="small" variant="contained" color="primary"
+                            <Button
+                                size="small"
+                                color="primary"
+                                variant="contained"
+                                fullWidth={isSmall ? true : false}
                                 onClick={() => setManiobraModal(!maniobraModal)}
                                 endIcon={<AddIcon />}
                             >
@@ -89,7 +91,7 @@ function RegistersManiobras() {
 
                         </Stack>
 
-                        <Stack width={isMovile ? "100%" : "auto"}>
+                        <Stack width={isMovile ? "100%" : "auto"} alignItems={isMovile ? 'center' : 'flex-end'}>
                             <Searcher
                                 onChangueSearch={onChangueSearch}
                                 searchingKey={searchingKey}
@@ -101,8 +103,16 @@ function RegistersManiobras() {
                     </Stack>
                 </Paper>
 
-                <ContainerScroll height="70vh">
+                <ContainerScroll height={isMovile ? "60vh " : "68vh"}>
                     <Box sx={{ display: "flex", flexDirection: "column", gap: "20px", width: '100%' }}>
+
+                        {(!errorManiobra && !loadingManiobra && maniobras?.length === 0) &&
+                            <Fade in={!loadingManiobra}>
+                                <Alert severity="info">
+                                    {`Parece que no hay maniobras aún`}
+                                </Alert>
+                            </Fade>
+                        }
 
                         {errorManiobra && (
                             <NotConexionState />
@@ -140,28 +150,26 @@ function RegistersManiobras() {
 
                     </Box>
                 </ContainerScroll>
-            </Box>
+            </Stack>
 
             <Modal open={maniobraModal}>
                 <Fade in={maniobraModal}>
                     <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '5%', width: '100%', height: 'auto' }}>
                         <FormRegisterManiobras
-                        toggleModal={toggleModalManiobras}
-                        setTypeManiobra={setTypeManiobra}
-                        forceUpdate={forceUpdate}
-                        toggleModalAddTanks={toggleModalAddTanks}
+                            toggleModal={toggleModalManiobras}
+                            setTypeManiobra={setTypeManiobra}
+                            forceUpdate={forceUpdate}
+                            toggleModalAddTanks={toggleModalAddTanks}
                         />
                     </Box>
                 </Fade>
             </Modal>
 
-
-
             <Modal open={modalTank}>
                 <Fade in={modalTank}>
-                   <Container>
-                     <AddNewTanks toggleModal={toggleModalAddTanks} />
-                   </Container>
+                    <Container>
+                        <AddNewTanks toggleModal={toggleModalAddTanks} />
+                    </Container>
                 </Fade>
             </Modal>
         </>

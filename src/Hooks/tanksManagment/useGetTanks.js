@@ -11,7 +11,7 @@ function useGetTanks() {
 
         setTankLoading(true)
         const { error, data } = await supabase.from('tanques')
-            .select(`*`)
+            .select(`*, registros_detalles_entradas(status)`)
 
         if (!error) {
             setTanks(data);
@@ -27,7 +27,7 @@ function useGetTanks() {
     const rowTanks = tanks.length >= 1 ? tanks.map((tanque) => ({
         id: tanque.tanque,
         col1: tanque.tanque,
-        col2: tanque.status,
+        col2: tanque.registros_detalles_entradas[0]?.status||tanque.status,
         col3: tanque.reparaciones_internas? tanque.reparaciones_internas: '0',
         col4: tanque.reparaciones_externas? tanque.reparaciones_externas: '0'
     })) : [];

@@ -19,9 +19,9 @@ import { ViewTanks } from "../ViewTanks";
 import { FormEditManiobras } from "../FormEditManiobras";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useUpdateRegister } from "../../Hooks/registersManagment/useUpdateRegister";
-import { useDeletRegister } from "../../Hooks/registersManagment/useDeletRegister";
-import { usePostRegister } from "../../Hooks/registersManagment/usePostRegister";
+import { useUpdateRegister } from "../../Hooks/Vigilancia/useUpdateRegister";
+import { useDeletRegister } from "../../Hooks/Maniobras/useDeletRegister";
+import { usePostRegister } from "../../Hooks/Maniobras/usePostRegister";
 import { useDownContainer } from "../../Hooks/Maniobras/useDownContainer";
 //icons
 import InfoIcon from "@mui/icons-material/Info";
@@ -188,17 +188,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
 
   const [modalConfirm, setModalConfirm] = useState(false);
 
-  const { checkRegisterWhitId, checkOutRegisterWhitId } = useUpdateRegister();
-
-  const checkIn = async() => {
-    await checkRegisterWhitId(data.id, 'maniobras', data)
-    updater()
-  }
-
-  const checkOut = async() => {
-    await checkOutRegisterWhitId(data.id, 'finish', data)
-    updater()
-  }
+  const { checkRegisterWhitId, checkOutRegisterWhitId } = useUpdateRegister(updater);
 
   return (
     <>
@@ -264,7 +254,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
 
             {(typeRegister === 'entrada') &&
               <Button
-                onClick={checkIn}
+                onClick={() => checkRegisterWhitId(data.id, 'maniobras', data)}
                 size="small"
                 variant="contained"
                 color="primary"
@@ -275,7 +265,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
 
             {(typeRegister === 'salida') &&
               <Button
-                onClick={checkOut}
+                onClick={() => checkOutRegisterWhitId(data.id, 'finish', data)}
                 size="small"
                 variant="contained"
                 color="primary"
@@ -583,8 +573,8 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
   const [modalTanks, setModalTanks] = useState(false);
   const [editData, setEditData] = useState(false);
 
-  const { routerDelet } = useDeletRegister();
-  const { returnEmpty } = usePostRegister();
+  const { routerDelet } = useDeletRegister(updater);
+  const { returnEmpty } = usePostRegister(updater);
   const { changueStatusToWashing } = useEditManiobra();
   const { downContainerToManiobra } = useDownContainer();
 
@@ -596,13 +586,6 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
   const dowTank = (tanque) => {
     downContainerToManiobra(tanque.id, tanque.tanque)
     setTimeout(() => {
-      updater()
-    }, 1200)
-  }
-
-  const deleteRegister = (typeChargue, data) => {
-    routerDelet(typeChargue, data)
-    setTimeout( ()=> {
       updater()
     }, 1200)
   }
@@ -731,7 +714,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
 
             {(typeManiobra === 'pendiente' && typeRegister === 'entrada') &&
               <Button
-                onClick={() => deleteRegister(typeChargue, data)}
+                onClick={() => routerDelet(typeChargue, data)}
                 size="small"
                 variant="contained"
                 color="error"
