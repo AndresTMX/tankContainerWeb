@@ -6,9 +6,10 @@ import { ItemWashing } from "../ItemWashing";
 import { NotConexionState } from "../NotConectionState";
 
 function ListWashing({ washingList, loadignWashing, errorWashing }) {
+
     return (
         <>
-            <Box sx={{ maxWidth: '95vw', minWidth: '700px' }}>
+            <Box>
                 <ContainerScroll height='64vh'>
 
                     {(washingList.length === 0 && !errorWashing && !loadignWashing) &&
@@ -27,7 +28,7 @@ function ListWashing({ washingList, loadignWashing, errorWashing }) {
                         </Box>
                     }
 
-                    <Stack gap='10px' >
+                    <Stack gap='10px'  >
                         {(!loadignWashing && !errorWashing && washingList.length >= 1) &&
                             washingList.map((item) => (
                                 <ItemWashing

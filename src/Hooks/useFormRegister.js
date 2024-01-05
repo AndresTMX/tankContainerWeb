@@ -101,13 +101,14 @@ function useFormRegister() {
           registers.push({
             tracto: tracto.trim(),
             carga: typeChargue,
-            operador: operator,
-            transportista: select,
-            numero_tanque: value
+            operador_id: operator,
+            transportista_id: select,
+            numero_tanque: value,
+            status: 'forconfirm'
           });
         }
       });
-      const request = await sendInputRegistersTank(registers)
+      await sendInputRegistersTank(registers)
       clearInputs()
     }
   }
@@ -116,12 +117,12 @@ function useFormRegister() {
     const data = {
       tracto: tracto.trim(),
       carga: 'vacio',
-      operador: operator,
-      transportista: select,
-      numero_tanque: null
+      operador_id: operator,
+      transportista_id: select,
+      numero_tanque: null,
+      status:'forconfirm'
     }
-    console.log(data)
-    const request = await sendInputRegisterEmptyTracto(data)
+    await sendInputRegisterEmptyTracto(data)
     clearInputs()
   }
 
@@ -135,14 +136,15 @@ function useFormRegister() {
         registers.push({
           tracto: tracto.trim(),
           carga: typeChargue,
-          operador: operator,
-          transportista: select,
-          numero_pipa: item
+          operador_id: operator,
+          transportista_id: select,
+          numero_pipa: item,
+          status: 'forconfirm'
         })
       }
     })
 
-    const request = await sendInputRegistersPipa(registers)
+    await sendInputRegistersPipa(registers)
     clearInputs()
   }
 

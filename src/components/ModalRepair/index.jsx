@@ -37,7 +37,8 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
 
     //informacion recopilada en checklist
     const dataChecklist = checklist.length >= 1 ? checklist[0] : [];
-    const { folio, ingreso, nombre_cliente, } = dataChecklist;
+    const { folio, ingreso, clientes} = dataChecklist;
+    const {cliente} = clientes || {};
     //fecha de finalizacion del mantenimiento
     const { checkOut, numero_tanque, } = tanque
 
@@ -149,11 +150,11 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
 
                                     <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
                                         <Typography variant="subtitle2">Cliente :</Typography>
-                                        <Typography>{nombre_cliente}</Typography>
+                                        <Typography>{cliente}</Typography>
                                     </Stack>
 
                                     <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
-                                        <Typography variant="subtitle2">Folio :</Typography>
+                                        <Typography variant="subtitle2">Folio EIR :</Typography>
                                         <Typography>{folio}</Typography>
                                     </Stack>
 
@@ -265,11 +266,11 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
 
                                     <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
                                         <Typography variant="subtitle2">Cliente :</Typography>
-                                        <Typography>{nombre_cliente}</Typography>
+                                        <Typography>{cliente}</Typography>
                                     </Stack>
 
                                     <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
-                                        <Typography variant="subtitle2">Folio :</Typography>
+                                        <Typography variant="subtitle2">Folio EIR:</Typography>
                                         <Typography>{folio}</Typography>
                                     </Stack>
 
@@ -340,11 +341,11 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
 
                                     <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
                                         <Typography variant="subtitle2">Cliente :</Typography>
-                                        <Typography>{nombre_cliente}</Typography>
+                                        <Typography>{cliente}</Typography>
                                     </Stack>
 
                                     <Stack flexDirection={'row'} alignItems={'center'} gap={'5px'}>
-                                        <Typography variant="subtitle2">Folio :</Typography>
+                                        <Typography variant="subtitle2">Folio EIR:</Typography>
                                         <Typography>{folio}</Typography>
                                     </Stack>
 
@@ -430,7 +431,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                             gap={'20px'}
                         >
                             <ButtonDowloandProforma
-                                dataHeader={{ folio, ingreso, nombre_cliente, checkOut, numero_tanque }}
+                                dataHeader={{ folio, ingreso, cliente, checkOut, numero_tanque }}
                                 typeProforma={viewPDF}
                                 arrayEvidences={evidences}
                                 arrayConcepts={rows}
@@ -440,7 +441,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                         </Stack>
                         <PDFViewer style={{ width: '100%', height: '90%', }}>
                             <Proforma
-                                dataHeader={{ folio, ingreso, nombre_cliente, checkOut, numero_tanque }}
+                                dataHeader={{ folio, ingreso, cliente, checkOut, numero_tanque }}
                                 typeProforma={viewPDF}
                                 arrayEvidences={evidences}
                                 tanque={tanque.numero_tanque}

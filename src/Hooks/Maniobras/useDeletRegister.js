@@ -46,6 +46,8 @@ function useDeletRegister(updater) {
                 payload: 'Registro eliminado'
             })
 
+            updater()
+
         } catch (error) {
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,

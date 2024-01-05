@@ -578,11 +578,6 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
   const { changueStatusToWashing } = useEditManiobra();
   const { downContainerToManiobra } = useDownContainer();
 
-  const returnEmptyTracto = async () => {
-    await returnEmpty(data)
-    updater()
-  }
-
   const dowTank = (tanque) => {
     downContainerToManiobra(tanque.id, tanque.tanque)
     setTimeout(() => {
@@ -694,7 +689,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
 
             {(typeChargue != 'pipa' && typeManiobra === 'confirmado') &&
               <Button
-                onClick={returnEmptyTracto}
+                onClick={() => returnEmpty(data)}
                 size="small"
                 variant="contained"
                 color="error"

@@ -25,7 +25,7 @@
     "@mui/styled-engine-sc": "^6.0.0-alpha.8",
     "@mui/x-data-grid": "^6.18.5",
     "@react-pdf/renderer": "^3.1.14",
-    "@supabase/supabase-js": "^2.38.4",
+    "@supabase/supabase-js": "^2.39.2",
     "dayjs": "^1.11.10",
     "import": "^0.0.6",
     "localforage": "^1.10.0",

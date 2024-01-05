@@ -23,7 +23,7 @@ function useGetCheckList(idDetailRegister) {
             setLoading(true)
 
             const { data, error } = await supabase.from('maniobras_checklist')
-                .select(`*`)
+                .select(`*, clientes(*)`)
                 .eq('registro_detalle_entrada_id', id)
 
             if (error) {

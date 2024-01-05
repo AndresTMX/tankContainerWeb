@@ -1,5 +1,5 @@
 //components
-import { Box, Stack, Paper, Typography, Chip, Button, Alert, Fade } from "@mui/material";
+import { Box, Stack, Paper, Typography, Chip, Button, Alert, Fade, Divider } from "@mui/material";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import { HistoryItemLoading } from "../HistoryItem";
 import { TextGeneral } from "../TextGeneral";
@@ -21,6 +21,8 @@ import { ButtonDowloand } from "../../PDFs/components/ButtonDowloand";
 function ListCheckList({ requestGetRegisters, loadingGetRegisters, errorGetRegisters, resultsSearch, errorSearch, loadingSearch, search }) {
 
     const IsSmall = useMediaQuery("(max-width:900px)");
+    const IsMovile = useMediaQuery("(max-width:730px)");
+
 
     const [state, dispatch] = useContext(ManiobrasContext);
 
@@ -61,7 +63,7 @@ function ListCheckList({ requestGetRegisters, loadingGetRegisters, errorGetRegis
     return (
         <>
             <Box>
-                <ContainerScroll height='67vh'>
+                <ContainerScroll height={IsMovile? '62vh':'67vh'}>
 
                     {(errorGetRegisters) && (
                         <Fade in={errorGetRegisters}>
@@ -115,7 +117,6 @@ function ListCheckList({ requestGetRegisters, loadingGetRegisters, errorGetRegis
                                         key={item.folio}
                                         sx={{
                                             padding: '20px',
-                                            width: IsSmall ? '100%' : '700px'
                                         }}
                                     >
 
@@ -168,10 +169,11 @@ function ListCheckList({ requestGetRegisters, loadingGetRegisters, errorGetRegis
                                                 </Stack>
 
 
-                                                <Stack>
+                                                <Stack width={IsMovile? '100%': 'auto'}>
 
                                                     {(!state.selectItem || state.selectItem.folio != item.folio) &&
                                                         <Button
+                                                            fullWidth={IsMovile}
                                                             onClick={() => generateDocument(item)}
                                                             size="small"
                                                             variant='contained'
@@ -187,9 +189,8 @@ function ListCheckList({ requestGetRegisters, loadingGetRegisters, errorGetRegis
 
                                             <Stack
                                                 justifyContent='space-between'
-                                                flexDirection='row'
-                                                alignItems='center'
-                                                flexWrap='wrap'
+                                                flexDirection={ IsMovile? 'column':'row'}
+                                                alignItems={IsMovile? 'start':'center'}
                                                 gap='20px'
 
                                             >
@@ -198,10 +199,15 @@ function ListCheckList({ requestGetRegisters, loadingGetRegisters, errorGetRegis
                                                     text={`${item.users_data?.first_name} ${item.users_data?.last_name}`}
                                                 />
 
+                                                <Divider flexItem horientation={'horizontal'} />
+
                                                 <TextGeneral
                                                     label={'Cliente '}
                                                     text={item.clientes.cliente}
                                                 />
+
+                                                <Divider flexItem horientation={'horizontal'} />
+
 
                                                 <TextGeneral
                                                     label={'N° de contenedor'}

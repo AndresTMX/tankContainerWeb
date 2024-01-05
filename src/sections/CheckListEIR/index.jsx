@@ -20,7 +20,7 @@ import { actionTypes } from "../../Reducers/ManiobrasReducer";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useCustomers } from "../../Hooks/Customers/useCustomers";
 
-function CheckListEIR({step, setStep}) {
+function CheckListEIR({ step, setStep }) {
 
   const nextStepBar = (step) => {
     setStep(step)
@@ -32,7 +32,6 @@ function CheckListEIR({step, setStep}) {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
         }}>
 
         <StepBarProgress step={step} numSteps={6} />
@@ -67,17 +66,23 @@ function CheckListEIR({step, setStep}) {
 export { CheckListEIR };
 
 export function QuestionItem({ question, value, index, SelectQuestionComent, ChangueInput, ChangueImage, DiscardImage }) {
-  const IsSmall = useMediaQuery('(max-width:700px)');
+
+  const IsSmall = useMediaQuery('(max-width:750px)');
   return (
     <>
       <Paper elevation={3} sx={{ width: '100%', padding: '15px', backgroundColor: 'white' }}>
 
-        <Stack flexDirection={IsSmall ? 'column' : 'row'} alignItems={IsSmall ? 'start' : 'center'} justifyContent='space-between'>
-          <Typography variant="subtitle2" sx={{ maxWidth: IsSmall ? null : '270px' }}>
+        <Stack 
+        flexDirection={IsSmall ? 'column' : 'row'}
+        alignItems={IsSmall ? 'start' : 'center'} 
+        justifyContent='space-between'
+        >
+          <Typography variant="subtitle2" 
+          sx={{ maxWidth: IsSmall ? '100%' : '270px', padding:IsSmall? '7px' : '0px' }}>
             {question.question}
           </Typography>
 
-          <Stack flexDirection='row' alignItems='center' width={IsSmall ? '100%' : 'auto'} >
+          <Stack flexDirection='row' alignItems='center' width={IsSmall ? '100%' : 'auto'} flexWrap={'wrap'} >
 
             <SelectSimple
               required={true}
@@ -89,19 +94,26 @@ export function QuestionItem({ question, value, index, SelectQuestionComent, Cha
               options={['Si', 'No', 'Cortado', 'Doblado', 'Faltante', 'Respaldo', 'Abollado']}
             />
 
-            <InputImage
-              index={index}
-              preview={question.preview}
-              onChangue={(e) => ChangueImage(index, e)}
-              discardImage={DiscardImage}
-            />
+            <Stack 
+            flexDirection='row' 
+            alignItems='center' 
+            width={IsSmall ? '100%' : 'auto'}
+            padding='7px'
+            >
+              <InputImage
+                index={index}
+                preview={question.preview}
+                onChangue={(e) => ChangueImage(index, e)}
+                discardImage={DiscardImage}
+              />
 
-            <IconButton
-              onClick={() => SelectQuestionComent(index)}
-              variant="contained"
-              color="primary">
-              <ChatIcon />
-            </IconButton>
+              <IconButton
+                onClick={() => SelectQuestionComent(index)}
+                variant="contained"
+                color="primary">
+                <ChatIcon />
+              </IconButton>
+            </Stack>
           </Stack>
 
         </Stack>
@@ -853,7 +865,7 @@ export function StepFinal({ nextStepBar }) {
             <TextGeneral
               width={'100%'}
               label={"Nombre del cliente"}
-              text={customerId? customerId?.cliente:'...'}
+              text={customerId ? customerId?.cliente : '...'}
             />
 
             <TextGeneral

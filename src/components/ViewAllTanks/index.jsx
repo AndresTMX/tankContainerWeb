@@ -448,7 +448,8 @@ function CustomChip({ status }) {
         reparacion: "error",
         ready: "success",
         eir: "warning",
-        finish: "info",
+        finish: "error",
+        prelavado:"info",
     }
 
     return (

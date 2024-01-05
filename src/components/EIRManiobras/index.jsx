@@ -24,8 +24,7 @@ import { EIR } from "../../PDFs/plantillas/EIR";
 
 function EIRManiobras() {
 
-    const IsSmall = useMediaQuery('(max-width:900px)');
-    const isMovile = useMediaQuery("(max-width:640px)");
+    const isMovile = useMediaQuery("(max-width:730px)");
 
     const { folio } = useGetLastFolio();
     const { key } = useContext(AuthContext);
@@ -63,7 +62,7 @@ function EIRManiobras() {
 
     return (
         <>
-            <Container
+            <Box
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -72,29 +71,26 @@ function EIRManiobras() {
 
                 {(!select) &&
                     <Fade timeout={500} in={!select}>
-                        <Container
+                        <Box
                             sx={{
                                 gap: '10px',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                justifyContent: 'center',
-                                alignItems: !IsSmall ? 'center' : '',
                             }}>
 
                             <Paper
                                 elevation={2}
                                 sx={{
-                                    width: '100%',
                                     padding: '10px',
-                                    maxWidth: '750px',
-                                    backgroundColor: 'whitesmoke',
+                                    alignItems:'center',    
+                                    bgcolor:'whitesmoke'
                                 }}>
 
                                 <Stack
                                     sx={{
-                                        backgroundColor: 'whitesmoke',
-                                        padding: '20px',
+                                        padding: '10px',
                                         borderRadius: '4px',
+                                        width: isMovile? '100%':'auto',
                                     }}
                                     flexDirection="row"
                                     justifyContent={isMovile ? "center" : "space-between"}
@@ -107,8 +103,8 @@ function EIRManiobras() {
                                         flexDirection="row"
                                         alignItems="center"
                                         flexWrap="wrap"
-                                        gap="10px"
-                                        width={isMovile ? "100%" : "auto"}
+                                        gap="20px"
+                                        width={"auto"}
                                     >
                                         <Chip
                                             onClick={() => setTypeRegister("pendientes")}
@@ -123,7 +119,7 @@ function EIRManiobras() {
 
                                     </Stack>
 
-                                    <Stack width={isMovile ? '100%' : 'auto'}>
+                                    <Stack width={isMovile ? '100%' : '400px'} alignItems={isMovile? 'center':'flex-end'}>
                                         <Searcher
                                             search={search}
                                             searching={searching}
@@ -160,7 +156,7 @@ function EIRManiobras() {
                                 />
                             }
 
-                        </Container>
+                        </Box>
                     </Fade>
                 }
 
@@ -175,7 +171,8 @@ function EIRManiobras() {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
-                                paddingBottom: '20px',
+                                paddingBottom: '10px',
+                                paddingTop:'1px',
                                 overflow: 'hidden',
                                 height: '100%',
                             }}>
@@ -183,9 +180,8 @@ function EIRManiobras() {
                             <Paper
                                 elevation={4}
                                 sx={{
-                                    width: '85vw',
-                                    maxWidth: '800px',
-                                    padding: '20px',
+                                    width:'99%',
+                                    padding: '10px',
                                 }}
                             >
                                 <Box
@@ -210,7 +206,7 @@ function EIRManiobras() {
                     </Fade>
                 }
 
-            </Container>
+            </Box>
 
             <ViewerDocument stateModal={previewPDF} dispatch={dispatch}>
                 <EIR maniobrasCheckList={checkList} data={data} />

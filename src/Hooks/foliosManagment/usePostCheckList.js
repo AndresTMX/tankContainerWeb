@@ -35,7 +35,7 @@ function usePostCheckList() {
 
             if (state.status === 'interna' || state.status === 'externa') {
 
-                const { dataRepair, errorRepair } = await supabase
+                const { data: dataRepair, error: errorRepair } = await supabase
                     .from(tableReparaciones)
                     .insert({
                         id_usuario: key,

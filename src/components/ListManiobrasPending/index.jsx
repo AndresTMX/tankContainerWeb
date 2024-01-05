@@ -4,15 +4,20 @@ import { NotConexionState } from "../NotConectionState";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import { HistoryItemLoading } from "../../components/HistoryItem";
 import { HistoryItem } from "../../components/HistoryItem";
+//hooks
+import useMediaQuery from "@mui/material/useMediaQuery";
 //icons
 import WarningIcon from '@mui/icons-material/Warning';
 
 function ListManiobrasPending({ requestGetRegisters, loadingGetRegisters, errorGetRegisters, resultsSearch, errorSearch, loadingSearch, search }) {
+    
+    const IsSmall = useMediaQuery("(max-width:900px)");
+    const IsMovile = useMediaQuery("(max-width:730px)");
 
     return (
         <>
             <Box>
-                <ContainerScroll height='67vh'>
+                <ContainerScroll height={IsMovile? '62vh':'67vh'}>
 
                     {(errorGetRegisters) && (
                         <NotConexionState />

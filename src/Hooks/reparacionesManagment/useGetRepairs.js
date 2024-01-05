@@ -25,6 +25,7 @@ function useGetRepairs(typeRegister) {
         registros_detalles_entradas(*)
         `)
             .eq('status', typeRegister)
+            .eq('tipo_reparacion', 'interna')
             .order('checkIn', { ascending: false })
 
         setTimeout(() => {

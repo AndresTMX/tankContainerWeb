@@ -108,66 +108,68 @@ function usePostRegister(updater) {
 
     const sendInputRegistersTank = async (data) => {
 
-        dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
-
-
-        if (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Error al actualizar el estado del tractocamion'
-            })
-        }
-
-        const registerData = await addRegisterData('entrada');
-
-        const detailsRegisters = data.map(async (register) => {
-            try {
-                await addDetailsRegisterData(register, registerData[0].id, 'entrada');
-            } catch (error) {
-                setError(error);
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: 'Error al crear los detalles del registro'
-                })
-            }
-        });
-
         try {
-            Promise.all(detailsRegisters)
-        } catch (error) {
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
-                payload: false
+                payload: true
             });
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Error al subir los detalles del registro'
-            })
-        }
 
-        const updatesStatusTanks = data.map(async (register) => {
-            try {
-                await updateTank(register.numero_tanque, 'forconfirm');
-            } catch (error) {
-                setError(error);
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: 'Error al crear los detalles del registro'
+            //crear nuevo registro general
+            const { data: dataRegister, error: errorCreateRegister } = await supabase
+                .from(tableRegisters)
+                .insert({
+                    user_id: session.id,
+                    type: 'entrada',
+                    status: 'maniobras'
                 })
+                .select()
+
+            if (errorCreateRegister) {
+                throw new Error(`Error al crear registro de entrada`)
             }
-        });
 
-        try {
-            Promise.all(updatesStatusTanks);
-        } catch (error) {
-            setError(error);
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Error al crear los detalles del registro'
-            })
-        }
+            //crear nuevos detalles del registro
+            const detailsRegisters = data.map(async (register) => {
+                const { data, error: errorCreateDetails } = await supabase
+                    .from(tableInputsRegistersDetails)
+                    .insert({
+                        registro_id: dataRegister[0].id,
+                        ...register
+                    })
+                    .select()
 
-        setTimeout(() => {
+                if (errorCreateDetails) {
+                    throw new Error(`Error al crear detalles del registro, error: ${errorCreateDetails.message}`)
+                }
+
+            });
+
+            try {
+                await Promise.all(detailsRegisters)
+            } catch (error) {
+                await supabase.from(tableRegisters).delete().eq('id', dataRegister[0].id)
+                throw new Error(error.message)
+            }
+
+            //actualizar estatus de los tanques asociados al registro
+            const updatesStatusTanks = data.map(async (register) => {
+                const { error: errorUpdateTanks } = await supabase
+                    .from('tanques')
+                    .update({ status: 'forconfirm' })
+                    .eq('tanque', register.numero_tanque)
+
+                if (errorUpdateTanks) {
+                    throw new Error(`Error al actualizar estatus de los tanques, error: ${errorUpdateTanks.message}`)
+                }
+            });
+
+            try {
+                await Promise.all(updatesStatusTanks);
+            } catch (error) {
+                throw new Error(`Error al actualizar estatus de los tanques, error: ${error.message}`)
+            }
+
+
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
                 payload: false
@@ -176,59 +178,100 @@ function usePostRegister(updater) {
                 type: actionTypesGlobal.setNotification,
                 payload: 'Registro enviado'
             })
-        }, 1200)
+
+        } catch (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            });
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: error.message
+            })
+        }
 
     }
 
     const sendInputRegistersPipa = async (data) => {
-        dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
-
-        const registerData = await addRegisterData('entrada');
-        const detailsRegisters = data.map(async (register) => {
-            try {
-                await addDetailsRegisterData(register, registerData[0].id, 'entrada');
-            } catch (error) {
-                dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: 'Error al actualizar el estado del tractocamion'
-                })
-            }
-        })
-
         try {
-            Promise.all(detailsRegisters)
-        } catch (error) {
-            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false });
+
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: true
+            });
+
+            const { data: dataRegister, error: errorRegiser } = await supabase
+                .from(tableRegisters)
+                .insert({ user_id: session.id, type: 'entrada', status: 'maniobras' })
+                .select()
+
+            if (errorRegiser) {
+                throw new Error(`Error al crear nuevo registro, error: ${errorRegiser.message}`)
+            }
+
+            const detailsRegisters = data.map(async (register) => {
+                const { data, error: errorDetails } = await supabase
+                    .from(tableInputsRegistersDetails)
+                    .insert({ registro_id: dataRegister[0].id, ...register })
+                    .select()
+
+                if (errorDetails) {
+                    throw new Error(`Error al agregar los detalles al registro, error: ${errorDetails.message}`)
+                }
+            })
+
+            try {
+                await Promise.all(detailsRegisters)
+            } catch (error) {
+                await supabase.from(tableRegisters).delete().eq('id', dataRegister[0].id)
+                throw new Error(error)
+            }
+
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            });
+
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
-                payload: 'Error al actualizar el estado del tractocamion'
+                payload: 'Registro enviado'
+            })
+
+        } catch (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            });
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: error.message
             })
         }
-
-        setTimeout(() => {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Registro enviado'
-            })
-        }, 1200)
-
-
     }
 
-    const sendInputRegisterEmptyTracto = async (data) => {
+    const sendInputRegisterEmptyTracto = async (register) => {
+        try {
+            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
-        dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
+            const { data: dataRegister, error: errorRegister } = await supabase
+                .from(tableRegisters)
+                .insert({ user_id: session.id, type: 'entrada', status: 'maniobras' })
+                .select()
 
-        const registerData = await addRegisterData('entrada');
-        const detailsRegister = await addDetailsRegisterData(data, registerData[0].id, 'vacio');
+            if (errorRegister) {
+                throw new Error(`Error al crear nuevo registro, error: ${errorRegister.message}`)
+            }
 
-        setTimeout(() => {
+            const { data, error: errorDetails } = await supabase
+                .from(tableInputsRegistersDetails)
+                .insert({ registro_id: dataRegister[0].id, ...register })
+
+            if (errorDetails) {
+                await supabase.from('registros').delete().eq('id', dataRegister[0].id)
+                throw new Error(`Error al crear detalles del registro, error: ${errorDetails.message}`)
+            }
+
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
                 payload: false
@@ -237,7 +280,16 @@ function usePostRegister(updater) {
                 type: actionTypesGlobal.setNotification,
                 payload: 'Registro enviado'
             })
-        }, 1200)
+        } catch (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            });
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: error.message
+            })
+        }
     }
 
     const sendOutputRegisters = async (idRegistro, data, newStatus) => {
@@ -479,6 +531,7 @@ function usePostRegister(updater) {
             const tracto = data.registros_detalles_entradas[0].tracto;
             const idTransportista = data.registros_detalles_entradas[0].transportistas.id;
             const idOperador = data.registros_detalles_entradas[0].operadores.id;
+            const registros = data.registros_detalles_entradas;
 
             //actualizar el registro general a finalizado
             const { error: errorUpdateRegister } = await supabase
@@ -494,67 +547,72 @@ function usePostRegister(updater) {
                 carga: 'vacio',
                 tracto: tracto,
                 numero_tanque: null,
-                transportista: idTransportista,
-                operador: idOperador,
+                transportista_id: idTransportista,
+                operador_id: idOperador,
                 status: 'forconfirm'
             }
-
-            // try {
-            //     const dataRegister = await addRegisterData('salida');
-            //     const detailsRegister = await addDetailsRegisterData(dataOutputRegister, dataRegister[0].id, 'salida');
-            // } catch (error) {
-            //     dispatchGlobal({
-            //         type: actionTypesGlobal.setNotification,
-            //         payload: 'Ocurrio un error al intentar subir registro de salida'
-            //     });
-            //     dispatchGlobal({
-            //         type: actionTypesGlobal.setLoading,
-            //         payload: false
-            //     });
-            // }
 
             //Se agrega un nuevo registro general de salida 
             const { data: dataRegister, error: errorAddRegister } = await supabase
                 .from('registros')
-                .insert({ user_id: session.id, type: 'salida', status: 'maniobras' })
+                .insert({ user_id: session.id, type: 'salida', status: 'forconfirm' })
                 .select()
 
             if (errorAddRegister) {
                 throw new Error(`Error al agregar nuevo registro de salida, error: ${errorAddRegister.message}`)
             }
 
+            //agregar detalles de salida 
             const { data: dataDetails, error: errorDetails } = await supabase
                 .from(tableOutputsRegistersDetails)
-                .insert(
-                    {
-                        registro_id: idRegister,
-                        carga: dataDetails.carga,
-                        tracto: dataDetails.tracto,
-                        numero_tanque: dataDetails.numero_tanque,
-                        transportista_id: dataDetails.transportista,
-                        operador_id: dataDetails.operador,
-                    })
-                .select()
+                .insert({ registro_id: dataRegister[0].id, ...dataOutputRegister })
 
             if (errorDetails) {
                 throw new Error(`Error al agregar detalles al registro de salida, error: ${errorDetails.message}`)
             }
 
-            const tanksInManiobrasState = data.registros_detalles_entradas.length >= 1 ?
-                data.registros_detalles_entradas.filter((tanque) => tanque.status === 'maniobras') : []
+            //Filtrar los tanques asociados al registro que tengan el estatus "maniobras"
+            const tanksInManiobrasState = registros.length >= 1 ?
+                registros.filter((tanque) => tanque.status === 'maniobras') : []
 
-
+            //actualizar estos tanques al estatus "eir"
             const tanquesUpdates = tanksInManiobrasState.map(async (tanque) => {
-                const { error } = await supabase.from('tanques').update({ status: 'eir' }).eq('tanque', tanque.numero_tanque)
+                const { error: errorUpdateStatusTanks } = await supabase
+                    .from('tanques')
+                    .update({ status: 'eir' })
+                    .eq('tanque', tanque.numero_tanque)
+
+                if (errorUpdateStatusTanks) {
+                    throw new Error(`Error al actualizar estatus de tanques, error: ${errorUpdateStatusTanks.message}`)
+                }
+
             })
 
-            await Promise.all(tanquesUpdates);
+            try {
+                await Promise.all(tanquesUpdates);
+            } catch (error) {
+                throw new Error(`Error al actualizar status de tanques, error: ${error.message}`)
+            }
 
+            //actualizar estatus de los registros de entrada asociados 
             const registersUpdates = tanksInManiobrasState.map(async (tanque) => {
-                const { error } = await supabase.from('registros_detalles_entradas').update({ status: 'eir' }).eq('registro_id', data.id)
+                const { error: errorUpdateRegisters } = await supabase
+                    .from('registros_detalles_entradas')
+                    .update({ status: 'eir' })
+                    .eq('registro_id', idRegister)
+
+                if (errorUpdateRegisters) {
+                    throw new Error(`Error al actualizar status de los registros, error: ${errorUpdateRegisters.message}`)
+                }
             })
 
-            await Promise.all(registersUpdates);
+            try {
+                await Promise.all(registersUpdates);
+            } catch (error) {
+                throw new Error(`Error al actualizar el estatus de los registros, error: ${error.message}`)
+            }
+
+            updater();
 
 
             dispatch({
@@ -574,6 +632,10 @@ function usePostRegister(updater) {
             });
 
         } catch (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            });
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
                 payload: error.message

@@ -86,6 +86,16 @@ function useUpdateRegister(updater) {
                 throw new Error(`Error al intentar confirmar la entrada del registro, error: ${errorUpdateRegister.message}`)
             }
 
+            //actualizar los detalles del registro de salida
+            const { error: errorUpdateStatus } = await supabase
+            .from('registros_detalles_salidas')
+            .update({status: 'finish'})
+            .eq('registro_id', data.id)
+
+            if(errorUpdateStatus){
+                throw new Error(`Error al actualizar el estatus del registro de salida, error:${errorUpdateStatus}`)
+            }
+
             //si la carga es tanque se actualizan los estatus de los tanques
             if (carga === 'tanque') {
                 const updatesStatusTanks = registros.map(async (register) => {

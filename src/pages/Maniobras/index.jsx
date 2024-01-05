@@ -28,7 +28,7 @@ function Maniobras() {
 
             <Stack
                 width={IsSmall ? '96vw' : '90vw'}
-                maxWidth={'700px'}
+                maxWidth={'800px'}
                 gap={'10px'}
             >
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>

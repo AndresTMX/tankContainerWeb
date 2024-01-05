@@ -136,6 +136,8 @@ function ItemPendiente({ prelavado, updater }) {
     const togglePrelavados = () => setViewPrelavados(!viewPrelavados);
     const toggleChecklist = () => setViewChecklist(!viewChecklist);
 
+    const isMovile = useMediaQuery('(max-width:500px)')
+
     return (
         <>
             <Box
@@ -145,32 +147,70 @@ function ItemPendiente({ prelavado, updater }) {
                     flexDirection: 'column',
                     alignItems: 'center'
                 }}>
-                <Paper elevation={4} sx={{ padding: '20px', width: '100%', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <Paper
+                    elevation={4} sx={{ padding: '20px', width: '100%', display: 'flex', flexDirection: 'column', gap: '15px' }}>
                     <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
 
-                        <Stack flexDirection={'row'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
-                            <Chip size='small' color='warning' label={status} />
-                            <Chip size='small' color='info' label={`Retornos : ${iteraciones}`} />
+                        <Stack flexDirection={'row'} alignItems={'center'} justifyContent={isMovile? 'space-around': 'flex-start'} gap={'10px'} flexWrap={'wrap'}>
+                            <Chip
+                                size='small'
+                                color='warning'
+                                label={status}
+                                sx={{ width: isMovile ? '40%' : 'auto' }}
+                            />
+                            <Chip
+                                size='small'
+                                color='info'
+                                label={`Retornos : ${iteraciones}`}
+                                sx={{ width: isMovile ? '40%' : 'auto' }}
+                            />
+                            {isMovile &&
+                                <Chip
+                                    size='small'
+                                    color='info'
+                                    icon={<CalendarTodayIcon />}
+                                    label={dateMXFormat(created_at)}
+                                    sx={{ width: isMovile ? '40%' : 'auto' }}
+                                />}
+                            {isMovile &&
+                                <Chip
+                                    size='small'
+                                    color='info'
+                                    icon={<ScheduleIcon />}
+                                    label={datetimeMXFormat(created_at)}
+                                    sx={{ width: isMovile ? '40%' : 'auto' }}
+                                />}
                         </Stack>
 
-                        <Stack flexDirection={'row'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
-                            <Chip
-                                size='small'
-                                color='info'
-                                icon={<CalendarTodayIcon />}
-                                label={dateMXFormat(created_at)} />
-                            <Chip
-                                size='small'
-                                color='info'
-                                icon={<ScheduleIcon />}
-                                label={datetimeMXFormat(created_at)} />
-                        </Stack>
+                        {!isMovile &&
+                            <Stack flexDirection={'row'} alignItems={'center'} gap={'10px'}>
+                                <Chip
+                                    size='small'
+                                    color='info'
+                                    icon={<CalendarTodayIcon />}
+                                    label={dateMXFormat(created_at)} />
+                                <Chip
+                                    size='small'
+                                    color='info'
+                                    icon={<ScheduleIcon />}
+                                    label={datetimeMXFormat(created_at)} />
+                            </Stack>}
 
                     </Stack>
 
-                    <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
+                    <Stack
+                        flexDirection={isMovile ? 'column' : 'row'}
+                        justifyContent={isMovile ? 'flex-start' : 'space-between'}
+                        alignItems={'center'}
+                        gap={'10px'}>
 
-                        <Stack flexDirection={'row'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
+                        <Stack
+                            flexDirection={'row'}
+                            alignItems={'center'}
+                            flexWrap={'wrap'}
+                            gap={'10px'}
+                            width={isMovile ? '100%' : 'auto'}
+                        >
                             <Stack>
                                 <Typography variant='caption'>
                                     {numero_tanque != null ? 'Tanque ' : 'Pipa '}
@@ -181,8 +221,15 @@ function ItemPendiente({ prelavado, updater }) {
                             </Stack>
                         </Stack>
 
-                        <Stack flexDirection={'row'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
+                        <Stack
+                            flexDirection={isMovile ? 'column' : 'row'}
+                            width={isMovile ? '100%' : 'auto'}
+                            alignItems={'center'}
+                            flexWrap={'wrap'}
+                            gap={'10px'}
+                        >
                             <Button
+                                fullWidth={isMovile}
                                 onClick={togglePrelavados}
                                 endIcon={<HistoryIcon />}
                                 size='small'
@@ -191,6 +238,7 @@ function ItemPendiente({ prelavado, updater }) {
                             >prelavados</Button>
 
                             <Button
+                                fullWidth={isMovile}
                                 onClick={toggleChecklist}
                                 endIcon={<ManageSearchIcon />}
                                 size='small'
