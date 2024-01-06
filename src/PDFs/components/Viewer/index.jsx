@@ -1,12 +1,7 @@
 import { Container, Modal, Fade, Box, Paper, Button } from "@mui/material";
 import { PDFViewer } from "@react-pdf/renderer";
-import { actionTypes } from "../../../Reducers/ManiobrasReducer";
 
-function ViewerDocument({ children, stateModal, dispatch }) {
-
-    const ToggleModal = () => {
-        dispatch({ type: actionTypes.setPreviewPDF, payload: !stateModal })
-    }
+function ViewerDocument({ children, stateModal, ToggleModal }) {
 
     return (
         <>

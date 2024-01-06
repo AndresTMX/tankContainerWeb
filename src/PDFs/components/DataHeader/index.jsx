@@ -1,6 +1,10 @@
-import { Text, View, StyleSheet, Image } from "@react-pdf/renderer";
+import { Text, View, StyleSheet } from "@react-pdf/renderer";
+import { dateMXFormat, datetimeMXFormat }from "../../../Helpers/date";
 
 function DataHeader({data}) {
+
+    const fechaActual = dateMXFormat(new Date())
+    const horaActual = datetimeMXFormat(new Date())
 
     const style = StyleSheet.create({
 
@@ -36,12 +40,12 @@ function DataHeader({data}) {
 
                     <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> Fecha :</Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.fechaActual}</Text>
+                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{fechaActual}</Text>
                     </View>
 
                     <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> Hora: </Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.horaActual}</Text>
+                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{horaActual}</Text>
                     </View>
 
                     
@@ -52,7 +56,7 @@ function DataHeader({data}) {
 
                     <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> Salida: </Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.fechaActual}</Text>
+                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{fechaActual}</Text>
                     </View>
 
 
@@ -67,7 +71,7 @@ function DataHeader({data}) {
 
                     <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> No° de unidad :</Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.numero_unidad}</Text>
+                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.tracto}</Text>
                     </View>
 
 

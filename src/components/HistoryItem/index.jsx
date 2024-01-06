@@ -31,20 +31,13 @@ import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrow
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 //helpers
 import { transformRegisters } from "../../Helpers/transformRegisters";
-import { actionTypes } from "../../Reducers/ManiobrasReducer";
-import { tiempoTranscurrido, } from "../../Helpers/date";
 //context
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
-import { GlobalContext } from "../../Context/GlobalContext";
 import { useEditManiobra } from "../../Hooks/Maniobras/useEditManiobra";
 
 function HistoryItem({ data, type, typeManiobra, updater, changueTypeManiobra }) {
 
   const IsSmall = useMediaQuery("(max-width:900px)");
-  const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-  const [state, dispatch] = useContext(ManiobrasContext);
-  const { selectOutputRegisters } = state;
-
   const dataOperador = extractDataOperator(type, data)
 
   function extractDataOperator(type, data) {
@@ -77,7 +70,6 @@ function HistoryItem({ data, type, typeManiobra, updater, changueTypeManiobra })
     setModal({ ...modal, modal1: !modal.modal1 });
   };
 
-
   return (
     <>
       <Paper
@@ -97,13 +89,6 @@ function HistoryItem({ data, type, typeManiobra, updater, changueTypeManiobra })
             ToggleModalInfoOperator={ToggleModalInfoOperator}
 
           />
-        )}
-
-        {type === 'eir' && (
-          <HistoryItemEIR
-            data={data}
-            IsSmall={IsSmall}
-            ToggleModalInfoOperator={ToggleModalInfoOperator} />
         )}
 
         {type === 'maniobras' && (
@@ -333,7 +318,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
           </Stack>
         </Box>
 
-        {( typeChargue != 'vacio' && tanques.length >= 1) && (
+        {(typeChargue != 'vacio' && tanques.length >= 1) && (
           <Stack
             justifyContent="center"
             spacing="10px"
@@ -397,159 +382,6 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
   );
 }
 
-export function HistoryItemEIR({ data, IsSmall, ToggleModalInfoOperator }) {
-
-  const [state, dispatch] = useContext(ManiobrasContext)
-
-  const { carga, tracto, numero_tanque, checkIn, linea, dayInput, dateInput, OperatorSliceName, shortNameOperator } = data;
-
-  const time = tiempoTranscurrido(checkIn);
-
-  const selectTank = () => {
-    dispatch({ type: actionTypes.setSelectItem, payload: data })
-    dispatch({ type: actionTypes.setSelect, payload: true })
-  }
-
-  const discardTank = () => {
-    dispatch({ type: actionTypes.setSelectItem, payload: false })
-    dispatch({ type: actionTypes.setSelect, payload: false })
-
-  }
-
-  return (
-    <>
-      <Stack spacing="8px" flexDirection="column">
-        <Stack
-          flexDirection="row"
-          justifyContent="space-between"
-          flexWrap="wrap"
-          gap="10px"
-        >
-          <Stack
-            flexDirection="row"
-            alignItems="center"
-            flexWrap="wrap"
-            gap="10px"
-          >
-
-            <Chip
-              size="small"
-              color="secondary"
-              label={dayInput}
-              icon={<CalendarTodayIcon />}
-              sx={{
-                width: "120px",
-                fontWeight: 500,
-                padding: "5px",
-              }}
-            />
-
-            <Chip
-              size="small"
-              color="info"
-              label={dateInput}
-              icon={<AccessTimeIcon />}
-              sx={{
-                maxWidth: "90px",
-                fontWeight: 500,
-                padding: "5px",
-              }}
-            />
-
-            <Chip
-              size="small"
-              color="info"
-              label={time}
-              icon={<AccessTimeIcon />}
-              sx={{
-                maxWidth: "200px",
-                fontWeight: 500,
-                padding: "5px",
-              }}
-            />
-
-          </Stack>
-
-
-          <Button
-            onClick={selectTank}
-            size="small"
-            variant="contained"
-            color="info"
-          >
-            check
-          </Button>
-
-        </Stack>
-
-        <Box
-          sx={{
-            display: "flex",
-            width: '100%',
-            flexDirection: IsSmall ? "column" : "row",
-            gap: "10px",
-            justifyContent: "space-between",
-            alignItems: !IsSmall ? "center" : "start",
-            backgroundColor: "whitesmoke",
-            borderRadius: "4px",
-            padding: "15px",
-          }}
-        >
-          <Stack
-            width={'100%'}
-            flexDirection={IsSmall ? "column" : "row"}
-            justifyContent={IsSmall ? "flex-start" : "space-around"}
-            alignItems={IsSmall ? "start" : "center"}
-            gap="10px"
-          >
-            <TextGeneral width={'200px'} text={linea} label="Linea" />
-            <Divider
-              orientation={IsSmall ? "horizontal" : "vertical"}
-              flexItem
-            />
-            <TextGeneral width={'50px'} label="Tracto" text={tracto} />
-            <Divider
-              orientation={IsSmall ? "horizontal" : "vertical"}
-              flexItem
-            />
-            <TextGeneral width={'100px'} label="Tipo de carga" text={carga} />
-            {(carga === 'tanque') && <>
-              <Divider
-                orientation={IsSmall ? "horizontal" : "vertical"}
-                flexItem
-              />
-              <TextGeneral width={'70px'} label="N° tanque" text={numero_tanque} />
-            </>}
-          </Stack>
-
-
-          <Divider
-            orientation={IsSmall ? "horizontal" : "vertical"}
-            flexItem
-          />
-
-          <Stack
-            width={'100%'}
-            flexDirection={"row"}
-            alignItems={"center"}
-            justifyContent="space-between"
-            gap="10px"
-          >
-
-            <Stack flexDirection="row" gap="10px">
-              <TextGeneral width={'100px'} label="Operador" text={shortNameOperator} />
-              <IconButton color="info" onClick={ToggleModalInfoOperator}>
-                <InfoIcon />
-              </IconButton>
-            </Stack>
-          </Stack>
-        </Box>
-
-      </Stack>
-    </>
-  );
-}
-
 export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, typeManiobra, updater, changueTypeManiobra }) {
 
   const {
@@ -585,9 +417,9 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
     }, 1200)
   }
 
-  const changueToWashing = async() => {
+  const changueToWashing = async () => {
     await changueStatusToWashing(data.id);
-    setTimeout( ()=> {
+    setTimeout(() => {
       updater()
     }, 1200)
   }

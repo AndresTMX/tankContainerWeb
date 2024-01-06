@@ -312,6 +312,7 @@ function DetailsCheckList({ changueTypeRegister, step }) {
     }
 
     await sendCheckList(data, flatCheckList)
+    //maniobrasContextRevisar
     dispatch({ type: actionTypes.setSelectItem, payload: false })
     dispatch({ type: actionTypes.setSelect, payload: false })
     changueTypeRegister("realizados")
