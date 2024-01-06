@@ -45,14 +45,11 @@ function EIRManiobras() {
     const checkList = [...maniobrasCheckList?.pageOne, ...maniobrasCheckList?.pageTwo, ...maniobrasCheckList?.pageThree];
 
     const [viewPDF, setViewPDF] = useState(false);
-    const ToggleModalPDF = () => setViewPDF(!viewPDF);
+    const toggleModalPDF = () => setViewPDF(!viewPDF);
 
     const [modalCheck, setModalCheck] = useState(false);
     const toggleModalCheck = () => setModalCheck(!modalCheck);
     const [item, selectItem] = useState({});
-
-    const [newDocument, setNewDocument] = useState({ usuario_emisor: `${first_name} ${last_name}` });
-
     //inicio del hook del buscador
     const { states: statesSearcher, functions } = useSearcher(routerFilterSearch, dataEIR, typeRegister);
     const { search, results, loading, error } = statesSearcher;
@@ -70,132 +67,143 @@ function EIRManiobras() {
                     padding: '0px',
                 }}>
 
-                <Stack gap='10px'>
+                {!modalCheck &&
+                    <Stack gap='10px'>
 
-                    <Paper elevation={2} sx={{ padding: '10px', bgcolor: 'whitesmoke' }}>
-
-                        <Stack
-                            justifyContent={isMovile ? "center" : "space-between"}
-                            width={isMovile ? '100%' : 'auto'}
-                            flexDirection="row"
-                            alignItems="center"
-                            borderRadius="4px"
-                            flexWrap="wrap"
-                            padding="10px"
-                            gap="20px"
-                        >
+                        <Paper elevation={2} sx={{ padding: '10px', bgcolor: 'whitesmoke' }}>
 
                             <Stack
+                                justifyContent={isMovile ? "center" : "space-between"}
+                                width={isMovile ? '100%' : 'auto'}
                                 flexDirection="row"
                                 alignItems="center"
+                                borderRadius="4px"
                                 flexWrap="wrap"
-                                width="auto"
+                                padding="10px"
                                 gap="20px"
                             >
-                                <Chip
-                                    onClick={() => setTypeRegister("pendientes")}
-                                    color={typeRegister === "pendientes" ? "warning" : "default"}
-                                    label="pendientes"
-                                />
-                                <Chip
-                                    onClick={() => setTypeRegister("realizados")}
-                                    color={typeRegister === "realizados" ? "success" : "default"}
-                                    label="realizados"
-                                />
 
-                            </Stack>
+                                <Stack
+                                    flexDirection="row"
+                                    alignItems="center"
+                                    flexWrap="wrap"
+                                    width="auto"
+                                    gap="20px"
+                                >
+                                    <Chip
+                                        onClick={() => setTypeRegister("pendientes")}
+                                        color={typeRegister === "pendientes" ? "warning" : "default"}
+                                        label="pendientes"
+                                    />
+                                    <Chip
+                                        onClick={() => setTypeRegister("realizados")}
+                                        color={typeRegister === "realizados" ? "success" : "default"}
+                                        label="realizados"
+                                    />
 
-                            <Box sx={{ width: isMovile ? '100%' : '400px', alignItems: isMovile ? 'center' : 'flex-end' }}>
-                                <Searcher
-                                    search={search}
-                                    searching={searching}
-                                    placeholder={'Busca registros usando ....'}
-                                    searchingKey={searchingKey}
-                                    onChangueSearch={onChangueSearch}
-                                />
-                            </Box>
-
-                        </Stack>
-
-                    </Paper>
-
-                    <ContainerScroll height={'55vh'}>
-
-                        {(errorEIR) && <NotConexionState />}
-
-                        {(!errorEIR && error) &&
-                            <Fade in={error}>
-                                <Box sx={{ width: '90vw', maxWidth: '700px' }}  >
-                                    <Alert sx={{ width: '100%' }} severity="warning">{error.toString()}</Alert>
-                                </Box>
-                            </Fade>
-                        }
-
-                        {(loadingEIR || loading) && (
-                            <Stack spacing="20px" sx={{ maxWidth: '700px' }}>
-                                <HistoryItemLoading />
-                                <HistoryItemLoading />
-                                <HistoryItemLoading />
-                            </Stack>
-                        )}
-
-                        {(!loadingEIR && !loading && !errorEIR && !error && dataEIR.length === 0) && (
-                            <Fade in={error}>
-                                <Box sx={{ width: '90vw', maxWidth: '700px' }}  >
-                                    <Alert severity='info'>
-                                        Sin checklist pendientes
-                                    </Alert>
-                                </Box>
-                            </Fade>
-                        )}
-
-                        {(!error && !loadingEIR && !loading && search.length >= 1 && results.length >= 1) &&
-                            <Fade in={!loading} timeout={500}>
-                                <Stack gap="20px">
-                                    <Typography>Coincidencias basadas en tu busqueda: {search}</Typography>
-                                    {results.map((item) => (
-                                        <ItemEIR
-                                            key={item.id}
-                                            data={item}
-                                            typeRegister={typeRegister}
-
-
-                                        />
-                                    ))}
                                 </Stack>
-                            </Fade>
-                        }
 
-                        {(!loadingEIR && !loading && !errorEIR && !error && results.length === 0) &&
-                            <Fade in={!loadingEIR} timeout={500}>
-                                <Stack spacing='20px'>
-                                    {
-                                        dataEIR.map((item) => (
+                                <Box sx={{ width: isMovile ? '100%' : '400px', alignItems: isMovile ? 'center' : 'flex-end' }}>
+                                    <Searcher
+                                        search={search}
+                                        searching={searching}
+                                        placeholder={'Busca registros usando ....'}
+                                        searchingKey={searchingKey}
+                                        onChangueSearch={onChangueSearch}
+                                    />
+                                </Box>
+
+                            </Stack>
+
+                        </Paper>
+
+                        <ContainerScroll height={'55vh'}>
+
+                            {(errorEIR) && <NotConexionState />}
+
+                            {(!errorEIR && error) &&
+                                <Fade in={error}>
+                                    <Box sx={{ width: '90vw', maxWidth: '700px' }}  >
+                                        <Alert sx={{ width: '100%' }} severity="warning">{error.toString()}</Alert>
+                                    </Box>
+                                </Fade>
+                            }
+
+                            {(loadingEIR || loading) && (
+                                <Stack spacing="20px" sx={{ maxWidth: '700px' }}>
+                                    <HistoryItemLoading />
+                                    <HistoryItemLoading />
+                                    <HistoryItemLoading />
+                                </Stack>
+                            )}
+
+                            {(!loadingEIR && !loading && !errorEIR && !error && dataEIR.length === 0) && (
+                                <Fade in={error}>
+                                    <Box sx={{ width: '90vw', maxWidth: '700px' }}  >
+                                        <Alert severity='info'>
+                                            Sin checklist pendientes
+                                        </Alert>
+                                    </Box>
+                                </Fade>
+                            )}
+
+                            {(!error && !loadingEIR && !loading && search.length >= 1 && results.length >= 1) &&
+                                <Fade in={!loading} timeout={500}>
+                                    <Stack gap="20px">
+                                        <Typography>Coincidencias basadas en tu busqueda: {search}</Typography>
+                                        {results.map((item) => (
                                             <ItemEIR
                                                 key={item.id}
                                                 data={item}
                                                 typeRegister={typeRegister}
+                                                toggleChecklist={toggleModalCheck}
+                                                selectItem={selectItem}
+                                                item={item}
 
-                                            />))
-                                    }
-                                </Stack>
-                            </Fade>}
 
-                    </ContainerScroll>
+                                            />
+                                        ))}
+                                    </Stack>
+                                </Fade>
+                            }
 
-                </Stack>
+                            {(!loadingEIR && !loading && !errorEIR && !error && results.length === 0) &&
+                                <Fade in={!loadingEIR} timeout={500}>
+                                    <Stack spacing='20px'>
+                                        {
+                                            dataEIR.map((item) => (
+                                                <ItemEIR
+                                                    key={item.id}
+                                                    data={item}
+                                                    typeRegister={typeRegister}
+                                                    toggleChecklist={toggleModalCheck}
+                                                    selectItem={selectItem}
+                                                    item={item}
+
+                                                />))
+                                        }
+                                    </Stack>
+                                </Fade>}
+
+                        </ContainerScroll>
+
+                    </Stack>}
 
             </Box>
 
             <ModalCheckListEIR
                 changueTypeRegister={changueTypeRegister}
+                toggleModalCheck={toggleModalCheck}
+                toggleModalPDF={toggleModalPDF}
                 stateModal={modalCheck}
+                selectItem={selectItem}
                 setStep={setStep}
                 step={step}
+                item={item}
             />
 
-            <ViewerDocument stateModal={viewPDF} ToggleModal={ToggleModalPDF}>
-                <EIR maniobrasCheckList={checkList} dataDocument={newDocument} />
+            <ViewerDocument stateModal={viewPDF} ToggleModal={toggleModalPDF}>
+                <EIR maniobrasCheckList={checkList} dataDocument={item} />
             </ViewerDocument>
         </>
     );
@@ -203,52 +211,48 @@ function EIRManiobras() {
 
 export { EIRManiobras };
 
-export function ModalCheckListEIR({ stateModal, setStep, step, changueTypeRegister }) {
+export function ModalCheckListEIR({ stateModal, setStep, step, changueTypeRegister, item, selectItem, toggleModalCheck, toggleModalPDF }) {
     return (
         <>
-            <Modal open={stateModal}>
-                <Fade
-                    timeout={500}
-                    in={stateModal}
+            {stateModal &&
+                <Paper
+                    elevation={4}
+                    sx={{
+                        width: '95vw',
+                        maxWidth: '800px',
+                        padding: '15px',
+                        overflowX:'hidden'
+                    }}
                 >
                     <Box
                         sx={{
                             display: 'flex',
-                            width: '100vw',
-                            height: '100vh',
-                            paddingTop: '5%',
-                            alignItems: 'center',
                             flexDirection: 'column',
-                        }}>
+                            gap: '10px',
+                            width:'100%',
+                            maxWidth: '800px',
 
-                        <Paper
-                            elevation={4}
-                            sx={{
-                                width: '99%',
-                                padding: '10px',
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '10px',
-                                }}
-                            >
-                                <DetailsCheckList
-                                    step={step}
-                                    changueTypeRegister={changueTypeRegister} />
+                        }}
+                    >
+                        <DetailsCheckList
+                            step={step}
+                            item={item}
+                            selectItem={selectItem}
+                            changueTypeRegister={changueTypeRegister}
+                            toggleModalCheck={toggleModalCheck}
 
-                                <CheckListEIR
-                                    step={step}
-                                    setStep={setStep}
-                                />
+                        />
 
-                            </Box>
-                        </Paper>
+                        <CheckListEIR
+                            step={step}
+                            item={item}
+                            setStep={setStep}
+                            selectItem={selectItem}
+                            toggleModalPDF={toggleModalPDF}
+                        />
+
                     </Box>
-                </Fade>
-            </Modal>
+                </Paper>}
         </>
     )
 }

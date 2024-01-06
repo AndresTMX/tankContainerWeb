@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Box, Paper, Stack, Button, IconButton, Typography, Modal, Fade, Container } from "@mui/material";
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { ContainerScroll } from "../../components/ContainerScroll";
@@ -15,12 +15,13 @@ import AddIcon from '@mui/icons-material/Add';
 import { TextGeneral } from "../../components/TextGeneral";
 //button download pdf
 import { ButtonDowloand } from "../../PDFs/components/ButtonDowloand";
-import { actionTypes } from "../../Reducers/ManiobrasReducer";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useCustomers } from "../../Hooks/Customers/useCustomers";
 
-function CheckListEIR({ step, setStep }) {
+function CheckListEIR({ step, setStep, item, selectItem, toggleModalPDF }) {
+
+  const [state, dispatch] = useContext(ManiobrasContext);
 
   const nextStepBar = (step) => {
     setStep(step)
@@ -37,24 +38,39 @@ function CheckListEIR({ step, setStep }) {
         <StepBarProgress step={step} numSteps={6} />
 
         {step === 1 && (
-          <StepOne nextStepBar={nextStepBar} />
+          <StepOne
+            state={state}
+            nextStepBar={nextStepBar} />
         )}
 
         {step === 2 && (
-          <StepTwo nextStepBar={nextStepBar} />
+          <StepTwo
+            state={state}
+            nextStepBar={nextStepBar} />
         )}
 
 
         {step === 3 && (
-          <StepThree nextStepBar={nextStepBar} />
+          <StepThree
+            state={state}
+            nextStepBar={nextStepBar} />
         )}
 
         {step === 4 && (
-          <StepFor nextStepBar={nextStepBar} />
+          <StepFor
+            item={item}
+            selectItem={selectItem}
+            nextStepBar={nextStepBar} />
         )}
 
         {step === 5 && (
-          <StepFinal nextStepBar={nextStepBar} />
+          <StepFinal
+            item={item}
+            state={state}
+            selectItem={selectItem}
+            nextStepBar={nextStepBar}
+            toggleModalPDF={toggleModalPDF}
+          />
         )}
 
 
@@ -72,13 +88,13 @@ export function QuestionItem({ question, value, index, SelectQuestionComent, Cha
     <>
       <Paper elevation={3} sx={{ width: '100%', padding: '15px', backgroundColor: 'white' }}>
 
-        <Stack 
-        flexDirection={IsSmall ? 'column' : 'row'}
-        alignItems={IsSmall ? 'start' : 'center'} 
-        justifyContent='space-between'
+        <Stack
+          flexDirection={IsSmall ? 'column' : 'row'}
+          alignItems={IsSmall ? 'start' : 'center'}
+          justifyContent='space-between'
         >
-          <Typography variant="subtitle2" 
-          sx={{ maxWidth: IsSmall ? '100%' : '270px', padding:IsSmall? '7px' : '0px' }}>
+          <Typography variant="subtitle2"
+            sx={{ maxWidth: IsSmall ? '100%' : '270px', padding: IsSmall ? '7px' : '0px' }}>
             {question.question}
           </Typography>
 
@@ -94,11 +110,11 @@ export function QuestionItem({ question, value, index, SelectQuestionComent, Cha
               options={['Si', 'No', 'Cortado', 'Doblado', 'Faltante', 'Respaldo', 'Abollado']}
             />
 
-            <Stack 
-            flexDirection='row' 
-            alignItems='center' 
-            width={IsSmall ? '100%' : 'auto'}
-            padding='7px'
+            <Stack
+              flexDirection='row'
+              alignItems='center'
+              width={IsSmall ? '100%' : 'auto'}
+              padding='7px'
             >
               <InputImage
                 index={index}
@@ -126,10 +142,9 @@ export function QuestionItem({ question, value, index, SelectQuestionComent, Cha
   );
 }
 
-export function StepOne({ nextStepBar }) {
+export function StepOne({ nextStepBar, state }) {
 
   const IsSmall = useMediaQuery('(max-width:850px)');
-  const [state, dispatch] = useContext(ManiobrasContext);
   //inicio del hook de checklist
   const mockListCheck = [
     {
@@ -217,8 +232,6 @@ export function StepOne({ nextStepBar }) {
   const { actions, states } = useCheckList(stateCheckList)
   const { ChangueInput, ChangueImage, DiscardImage, ChangueComent, SelectQuestionComent, ToggleModalComent, nextStep } = actions
   const { listCheck, indexQuestion, modalComent, } = states
-
-
 
   const next = (e) => {
     e.preventDefault();
@@ -310,9 +323,8 @@ export function StepOne({ nextStepBar }) {
   )
 }
 
-export function StepTwo({ nextStepBar }) {
+export function StepTwo({ nextStepBar, state }) {
 
-  const [state, dispatch] = useContext(ManiobrasContext);
   const IsSmall = useMediaQuery('(max-width:850px)');
   //inicio del hook de checklist
   const mockListCheck = [
@@ -491,9 +503,8 @@ export function StepTwo({ nextStepBar }) {
   )
 }
 
-export function StepThree({ nextStepBar }) {
+export function StepThree({ nextStepBar, state }) {
 
-  const [state, dispatch] = useContext(ManiobrasContext);
   const IsSmall = useMediaQuery('(max-width:850px)');
   //inicio del hook de checklist
   const mockListCheck = [
@@ -585,7 +596,7 @@ export function StepThree({ nextStepBar }) {
   const stateCheckList = state.maniobrasCheckList.pageThree.length >= 1 ? state.maniobrasCheckList.pageThree : mockListCheck;
   const { actions, states } = useCheckList(stateCheckList)
   const { ChangueInput, ChangueComent, SelectQuestionComent, ChangueImage, DiscardImage, ToggleModalComent, nextStep } = actions
-  const { listCheck, indexQuestion, modalComent, maniobrasCheckList } = states
+  const { listCheck, indexQuestion, modalComent } = states
 
   const next = (e) => {
     e.preventDefault();
@@ -686,19 +697,13 @@ export function StepThree({ nextStepBar }) {
   )
 }
 
-export function StepFor({ nextStepBar }) {
+export function StepFor({ nextStepBar, item, selectItem }) {
 
-  const [state, dispatch] = useContext(ManiobrasContext);
   const [modalCustomer, setModalCustomer] = useState(false)
   const { selectCustomers, updateCustomers, createCustomer } = useCustomers();
 
-  const [cliente, setCliente] = useState('');
-  const [status, setStatus] = useState('');
-
   const onSumbit = (e) => {
     e.preventDefault();
-    dispatch({ type: actionTypes.setCliente, payload: cliente })
-    dispatch({ type: actionTypes.setStatus, payload: status })
     nextStepBar(5)
   }
 
@@ -735,9 +740,9 @@ export function StepFor({ nextStepBar }) {
               type={'obj'}
               title='Cliente'
               width={'100%'}
-              value={cliente}
+              value={item.cliente_id}
               options={selectCustomers}
-              onChange={(e) => setCliente(e.target.value)}
+              onChange={(e) => selectItem({ ...item, cliente_id: e.target.value })}
               helperText={'Selecciona un cliente'}
             />
 
@@ -745,9 +750,9 @@ export function StepFor({ nextStepBar }) {
               type={'obj'}
               title='Siguiente etapa'
               width={'100%'}
-              value={status}
+              value={item.status}
               options={optionsStatus}
-              onChange={(e) => setStatus(e.target.value)}
+              onChange={(e) => selectItem({ ...item, status: e.target.value })}
               helperText={'Selecciona a que etapa pasa este contedor'}
             />
 
@@ -794,19 +799,11 @@ export function StepFor({ nextStepBar }) {
   )
 }
 
-export function StepFinal({ nextStepBar }) {
+export function StepFinal({ nextStepBar, toggleModalPDF, item, state, selectItem }) {
 
-  const [state, dispatch] = useContext(ManiobrasContext);
-  const { maniobrasCheckList, previewPDF, selectItem, cliente, status } = state;
-  const { customerId, getCustomerWhitId } = useCustomers(cliente);
-
+  const { maniobrasCheckList } = state;
+  const { customerId } = useCustomers(item.cliente_id);
   const flatCheckList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
-
-  const ToggleViewer = () => {
-    dispatch({ type: actionTypes.setPreviewPDF, payload: !previewPDF })
-  }
-
-  // ['Si', 'No', 'Cortado', 'Doblado', 'Faltante', 'Respaldo', 'Abollado']
 
   function filterChecklist(checklist, valueFilter) {
     return checklist.filter((item) => item.value === valueFilter)
@@ -817,6 +814,10 @@ export function StepFinal({ nextStepBar }) {
   const faltantes = filterChecklist(flatCheckList, 'Faltante');
   const respaldo = filterChecklist(flatCheckList, 'Respaldo');
   const abollados = filterChecklist(flatCheckList, 'Abollado');
+
+  useEffect(() => {
+    selectItem({ ...item, cliente: customerId.cliente })
+  }, [customerId])
 
   return (
     <>
@@ -871,7 +872,7 @@ export function StepFinal({ nextStepBar }) {
             <TextGeneral
               width={'100%'}
               label={"Status proximo"}
-              text={status}
+              text={item.status}
             />
           </Stack>
         </Stack>
@@ -910,13 +911,16 @@ export function StepFinal({ nextStepBar }) {
             </Button>
             <Button
               size="small"
-              onClick={ToggleViewer}
+              onClick={toggleModalPDF}
               variant="contained"
               color="info">
               Previsualizar
             </Button>
           </Stack>
-          <ButtonDowloand />
+          <ButtonDowloand
+            selectItem={selectItem}
+            item={item}
+            state={state} />
         </Stack>
 
       </Paper>

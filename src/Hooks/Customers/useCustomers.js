@@ -15,11 +15,12 @@ function useCustomers(idCustomer) {
     const [rowsCustomers, setRowsCustomers] = useState([]);
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
+    const cache = localStorage.getItem('customers')
 
     useEffect(() => {
-        if(idCustomer){
+        if (idCustomer) {
             getCustomerWhitId(idCustomer);
-        }else{
+        } else {
             getCustomers();
         }
     }, [update])
@@ -52,6 +53,7 @@ function useCustomers(idCustomer) {
             setCustomers(data);
             setRowsCustomers(rows);
             setSelectCustomers(customerNameAndId);
+            localStorage.setItem('customers', JSON.stringify(data));
             setLoading(false);
 
         } catch (error) {

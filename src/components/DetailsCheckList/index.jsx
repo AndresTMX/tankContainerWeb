@@ -16,13 +16,12 @@ import { tiempoTranscurrido } from "../../Helpers/date";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
 
-function DetailsCheckList({ changueTypeRegister, step }) {
+function DetailsCheckList({ changueTypeRegister, step , selectItem, item, toggleModalCheck, }) {
 
   const IsSmall = useMediaQuery('(max-width:900px)');
   const IsExtraSmall = useMediaQuery('(max-width:450px)');
 
   const { sendCheckList, errorPost, request } = usePostCheckList();
-
 
   const pageOne = [
     {
@@ -271,8 +270,9 @@ function DetailsCheckList({ changueTypeRegister, step }) {
   const [state, dispatch] = useContext(ManiobrasContext);
   const [stateGlobal, dispatchGlobal] = useContext(GlobalContext)
 
-  const { selectItem, maniobrasCheckList, status } = state;
-  const { carga, dayInput, dateInput, linea, numero_tanque, tracto, checkIn } = selectItem;
+  const { maniobrasCheckList} = state;
+
+  const { carga, dayInput, dateInput, linea, numero_tanque, tracto, checkIn } = item;
 
   const complete = step === 5 ? true : false;
 
@@ -280,8 +280,10 @@ function DetailsCheckList({ changueTypeRegister, step }) {
   const [modal, setModal] = useState(false);
 
   const clearSelect = () => {
-    dispatch({ type: actionTypes.setSelectItem, payload: false })
-    dispatch({ type: actionTypes.setSelect, payload: false })
+    // dispatch({ type: actionTypes.setSelectItem, payload: false })
+    // dispatch({ type: actionTypes.setSelect, payload: false })
+    selectItem({})
+    toggleModalCheck()
     dispatch({ type: actionTypes.setManiobrasCheck, payload: { pageOne: pageOne, pageTwo: pageTwo, pageThree: pageThree } })
 
   }
@@ -306,15 +308,14 @@ function DetailsCheckList({ changueTypeRegister, step }) {
 
     const data = {
       user_id: key,
-      registro_detalle_entrada_id: selectItem.id,
-      cliente_id: state.cliente,
-      ingreso: selectItem.checkIn,
+      registro_detalle_entrada_id: item.id,
+      cliente_id: item.cliente_id,
+      ingreso: item.checkIn,
     }
 
     await sendCheckList(data, flatCheckList)
-    //maniobrasContextRevisar
-    dispatch({ type: actionTypes.setSelectItem, payload: false })
-    dispatch({ type: actionTypes.setSelect, payload: false })
+    selectItem({})
+    toggleModalCheck()
     changueTypeRegister("realizados")
     dispatch({ type: actionTypes.setManiobrasCheck, payload: { pageOne: pageOne, pageTwo: pageTwo, pageThree: pageThree } })
   }

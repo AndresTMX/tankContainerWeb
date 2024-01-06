@@ -3,8 +3,8 @@ import { dateMXFormat, datetimeMXFormat }from "../../../Helpers/date";
 
 function DataHeader({data}) {
 
-    const fechaActual = dateMXFormat(new Date())
-    const horaActual = datetimeMXFormat(new Date())
+    const fechaActual = dateMXFormat(new Date());
+    const horaActual = datetimeMXFormat(new Date());
 
     const style = StyleSheet.create({
 
@@ -51,7 +51,7 @@ function DataHeader({data}) {
                     
                     <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> Entrada: </Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.entrada}</Text>
+                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.dayInput}</Text>
                     </View>
 
                     <View style={style.BoxData}>

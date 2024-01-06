@@ -10,11 +10,11 @@ function ModalInfoOperator({ modal, toggleModal, nombre, contacto }) {
                 display: "flex",
                 flexDirection: "column",
                 position: "absolute",
-                justifyContent: "center",
                 alignItems: "center",
+                paddingTop:'5%'
             }}
         >
-            <Fade timeout={500} in={modal}>
+            <Fade timeout={300} in={modal}>
                 <Box
                     sx={{
                         display: "flex",

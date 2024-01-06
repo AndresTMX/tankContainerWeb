@@ -1,43 +1,27 @@
-import { useContext } from "react";
+import { useEffect } from "react";
 import { Button } from "@mui/material";
 import { EIR } from "../../plantillas/EIR";
 import { Proforma } from "../../plantillas/proforma";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import { ManiobrasContext } from "../../../Context/ManiobrasContext"
 import { useGetLastFolio } from "../../../Hooks/foliosManagment/useGetLastFolio";
-import { currentDate, dateMXFormat, datetimeMXFormat } from "../../../Helpers/date";
-import { AuthContext } from "../../../Context/AuthContext";
 
+function ButtonDowloand({ item, state, selectItem }) {
 
-function ButtonDowloand() {
-
-  const { key } = useContext(AuthContext);
-  const [state, dispatch] = useContext(ManiobrasContext);
   const { folio } = useGetLastFolio();
-
-  const session = JSON.parse(sessionStorage.getItem(key));
-  const { maniobrasCheckList, selectItem, cliente, status } = state;
-  const { carga, dayInput, dateInput, linea, numero_tanque, tracto, checkIn } = selectItem;
-
+  const { maniobrasCheckList } = state;
   const checkList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
 
-  const data = {
-    numero_tanque: numero_tanque,
-    fechaActual: dateMXFormat(currentDate),
-    horaActual: datetimeMXFormat(currentDate),
-    cliente: cliente,
-    entrada: dayInput,
-    numero_unidad: tracto,
-    usuario_emisor: `${session.user_metadata.first_name} ${session.user_metadata.last_name} `,
-    folio: selectItem.folio ? selectItem.folio : folio,
-    newStatus: status,
-  }
+  useEffect(() => {
+    if (!item.folio) {
+      selectItem({ ...item, folio })
+    }
+  }, [folio])
 
   return (
     <PDFDownloadLink
-      document={<EIR maniobrasCheckList={checkList} data={data} />}
-      fileName={`EIR_${selectItem.folio} `}
+      document={<EIR maniobrasCheckList={checkList} dataDocument={item} />}
+      fileName={`EIR_${folio} `}
 
     >
       {({ blob, url, loading, error }) =>

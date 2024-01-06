@@ -7,16 +7,17 @@ import InfoIcon from "@mui/icons-material/Info";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 //helpers
-import { dateMXFormat, tiempoTranscurrido, datetimeMXFormat } from "../../Helpers/date";
+import { tiempoTranscurrido } from "../../Helpers/date";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 
-function ItemEIR({ typeRegister, data, }) {
+function ItemEIR({ typeRegister, data, toggleChecklist, selectItem, item }) {
 
     //state modal info operator
     const [modal, setModal] = useState(false);
     const toggleModal = () => setModal(!modal);
+    const { contacto, nombre } = data.operador || {};
 
     return (
         <>
@@ -24,6 +25,10 @@ function ItemEIR({ typeRegister, data, }) {
             {(typeRegister === 'pendientes') &&
                 <ItemPending
                     data={data}
+                    toggleOperator={toggleModal}
+                    toggleChecklist={toggleChecklist}
+                    selectItem={selectItem}
+                    item={item}
 
                 />}
 
@@ -36,8 +41,8 @@ function ItemEIR({ typeRegister, data, }) {
             <ModalInfoOperator
                 modal={modal}
                 toggleModal={toggleModal}
-                contacto={''}
-                nombre={''}
+                contacto={contacto}
+                nombre={nombre}
             />
 
         </>
@@ -46,14 +51,14 @@ function ItemEIR({ typeRegister, data, }) {
 
 export { ItemEIR };
 
-export function ItemPending({ data, ToggleModalOperator, toggleChecklist, selectItem }) {
+export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem, item }) {
 
     const IsSmall = useMediaQuery('(max-width:700px)');
 
     const { carga, tracto, numero_tanque, checkIn, linea, dayInput, dateInput, shortNameOperator } = data;
 
     const selectTank = () => {
-        selectItem({ ...data })
+        selectItem({ ...item, ...data })
         toggleChecklist()
     }
 
@@ -178,7 +183,7 @@ export function ItemPending({ data, ToggleModalOperator, toggleChecklist, select
 
                         <Stack flexDirection="row" gap="10px">
                             <TextGeneral width={'100px'} label="Operador" text={shortNameOperator} />
-                            <IconButton color="info" onClick={ToggleModalOperator}>
+                            <IconButton color="info" onClick={toggleOperator}>
                                 <InfoIcon />
                             </IconButton>
                         </Stack>
@@ -227,7 +232,7 @@ export function ItemComplete({ }) {
     return (
         <Paper sx={{ padding: '20px' }}>
 
-            <Stack gap='20px' >
+            {/* <Stack gap='20px' >
 
                 <Stack
                     justifyContent='space-between'
@@ -323,7 +328,7 @@ export function ItemComplete({ }) {
                 </Stack>
 
 
-            </Stack>
+            </Stack> */}
 
 
         </Paper>
