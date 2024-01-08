@@ -313,7 +313,7 @@ function DetailsCheckList({ changueTypeRegister, step , selectItem, item, toggle
       ingreso: item.checkIn,
     }
 
-    await sendCheckList(data, flatCheckList)
+    await sendCheckList(data, flatCheckList, item)
     selectItem({})
     toggleModalCheck()
     changueTypeRegister("realizados")

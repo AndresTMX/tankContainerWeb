@@ -84,7 +84,7 @@ function ItemWashing({ data, updater, step, setStep }) {
 
     return (
         <>
-            <Paper elevation={3} sx={{ width: '88vw', maxWidth: '650px' }}>
+            <Paper elevation={3}>
                 <Stack
                     padding='15px'
                     spacing='10px'

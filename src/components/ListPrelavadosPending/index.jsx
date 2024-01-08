@@ -58,7 +58,7 @@ function ListPrelavadosPending() {
 
 
                     {(loading && !error) &&
-                        <Stack width={'100%'} gap={'5px'} alignItems={'center'}>
+                        <Stack width={'100%'} gap={'5px'}>
                             <HistoryItemLoading />
                             <HistoryItemLoading />
                             <HistoryItemLoading />

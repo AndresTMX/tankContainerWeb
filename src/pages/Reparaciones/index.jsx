@@ -1,10 +1,9 @@
 //imports hooks
-import { useState, useContext } from "react";
+import { useState} from "react";
 import { useSearcher } from "../../Hooks/useSearcher"
-import { ReparacionesContext } from "../../Context/ReparacionesContext"
-import { useGetRepairs } from "../../Hooks/reparacionesManagment/useGetRepairs";
+import { useGetRepairs } from "../../Hooks/Reparaciones/useGetRepairs";
 //imports materialui
-import { Box, Tabs, Tab, Stack, Fade, Paper, Typography, Chip, } from "@mui/material";
+import { Box, Stack, Fade, Paper, Typography, Chip, } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //components
 import { MaintenancesItem } from "../../components/MaintenancesITem";

@@ -6,8 +6,8 @@ import { Proforma } from "../../PDFs/plantillas/proforma";
 import { PDFViewer } from "@react-pdf/renderer";
 import { ButtonDowloandProforma } from "../../PDFs/components/ButtonDowloand";
 //hooks
-import { useGetCheckList } from "../../Hooks/reparaciones/useGetChecklist";
-import { useUpdateRepair } from "../../Hooks/reparacionesManagment/useUpdateRepair";
+import { useGetCheckList } from "../../Hooks/Reparaciones/useGetChecklist";
+import { useUpdateRepair } from "../../Hooks/Reparaciones/useUpdateRepair";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 //icons
@@ -19,7 +19,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import PanoramaIcon from '@mui/icons-material/Panorama';
 import { SelectSimple } from "../SelectSimple";
 import { ContainerScroll } from "../ContainerScroll";
-import { useDataRepair } from "../../Hooks/reparaciones/useDataRepair";
+import { useDataRepair } from "../../Hooks/Reparaciones/useDataRepair";
 import { dateInText } from "../../Helpers/date";
 
 function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTypeRepair }) {

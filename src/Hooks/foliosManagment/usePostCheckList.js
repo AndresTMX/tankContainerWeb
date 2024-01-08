@@ -25,7 +25,7 @@ function usePostCheckList() {
     const [request, setRequest] = useState(false)
     const { updateStatusRegisters } = usePostRegister();
 
-    const sendCheckList = async (dataCheck, flatCheckList) => {
+    const sendCheckList = async (dataCheck, flatCheckList, item) => {
         try {
             dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true })
             setErrorPost(false)
@@ -33,16 +33,16 @@ function usePostCheckList() {
 
             const idRegistro = dataCheck.registro_detalle_entrada_id;
 
-            if (state.status === 'interna' || state.status === 'externa') {
+            if (item.status === 'interna' || item.status === 'externa') {
 
                 const { data: dataRepair, error: errorRepair } = await supabase
                     .from(tableReparaciones)
                     .insert({
                         id_usuario: key,
-                        id_detalle_registro: state.selectItem.id,
-                        numero_tanque: state.selectItem.numero_tanque,
+                        id_detalle_registro: item.id,
+                        numero_tanque: item.numero_tanque,
                         status: 'pendiente',
-                        tipo_reparacion: state.status,
+                        tipo_reparacion: item.status,
                     })
 
                 if (errorRepair) {
@@ -50,12 +50,12 @@ function usePostCheckList() {
                 }
             }
 
-            const updateStatus = state.status != 'prelavado' ? 'reparacion' : state.status;
+            const updateStatus = item.status;
 
             const { error: errorUpdateTank } = await supabase
                 .from('tanques')
                 .update({ status: updateStatus })
-                .eq('tanque', state.selectItem.numero_tanque)
+                .eq('tanque', item.numero_tanque)
 
             if (errorUpdateTank) {
                 throw new Error(`Error: ${errorUpdate}`)

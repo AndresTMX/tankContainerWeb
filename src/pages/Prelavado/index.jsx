@@ -25,7 +25,7 @@ import { CheckListPrelavado } from "../../sections/CheckListPrelavado";
 function Prelavado() {
 
    const [state, dispatch] = useContext(PrelavadoContext);
-   const { washing, loadignWashing, errorWashing, updater,} = usePreWashing('prelavado');
+   const { washing, loadignWashing, errorWashing, updater, } = usePreWashing('prelavado');
 
    const IsSmall = useMediaQuery('(max-width:900px)');
    const isMovile = useMediaQuery("(max-width:640px)");
@@ -303,25 +303,22 @@ function Prelavado() {
 
             <CustomTabPanel value={tab} index={1}>
                {!state.selectCheck &&
-                  <Box>
+                  <Box sx={{ width: '90vw', maxWidth: '750px'}}>
                      <Fade in={tab === 1 ? true : false} timeout={500}>
-                        <Container
+                        <Box
                            sx={{
                               gap: '10px',
                               display: 'flex',
                               flexDirection: 'column',
                               justifyContent: 'center',
-                              padding: '0px',
-                              alignItems: 'center'
-
+                              alignItems: 'center',
                            }}
                         >
                            <Paper
                               elevation={2}
                               sx={{
-                                 width: '95vw',
+                                 width: '100%',
                                  padding: IsSmall ? '0px' : '10px',
-                                 maxWidth: '700px',
                                  background: 'whitesmoke',
                                  alignItems: isMovile ? 'center' : '',
                               }}>
@@ -377,7 +374,7 @@ function Prelavado() {
                               errorWashing={errorWashing}
                            />
 
-                        </Container>
+                        </Box>
                      </Fade>
                   </Box>}
             </CustomTabPanel>
@@ -409,8 +406,8 @@ function Prelavado() {
                      maxWidth: '95vw',
                      padding: '10px',
                   }}>
-                  <Box sx={{ padding: isMovile ? '0px' : '15px', width: '100%' }}>
-                     <Stack alignItems={'center'}>
+                  <Box sx={{ padding: isMovile ? '0px' : '15px', width: '90vw', maxWidth: '750px'  }}>
+                     <Stack>
                         <ItemWashing data={selectCheck} updater={updater} step={step} setStep={setStep} />
                         <CheckListPrelavado step={step} setStep={setStep} />
                      </Stack>

@@ -9,44 +9,42 @@ function ListWashing({ washingList, loadignWashing, errorWashing }) {
 
     return (
         <>
-            <Box>
-                <ContainerScroll height='64vh'>
+            <ContainerScroll height='64vh'>
 
-                    {(washingList.length === 0 && !errorWashing && !loadignWashing) &&
-                        <Box sx={{ width: '100%' }}  >
-                            <Alert sx={{ width: '100%' }} severity="info">{'Sin prelavados pendientes'}</Alert>
-                        </Box>
-                    }
+                {(washingList.length === 0 && !errorWashing && !loadignWashing) &&
+                    <Box sx={{ width: '100%' }}  >
+                        <Alert sx={{ width: '100%' }} severity="info">{'Sin prelavados pendientes'}</Alert>
+                    </Box>
+                }
 
-                    {(errorWashing) &&
-                        <NotConexionState />
-                    }
+                {(errorWashing) &&
+                    <NotConexionState />
+                }
 
-                    {(!loadignWashing && errorWashing) &&
-                        <Box sx={{ width: '100%' }}  >
-                            <Alert sx={{ width: '100%' }} severity="error">{errorWashing.message.troString()}</Alert>
-                        </Box>
-                    }
+                {(!loadignWashing && errorWashing) &&
+                    <Box sx={{ width: '100%' }}  >
+                        <Alert sx={{ width: '100%' }} severity="error">{errorWashing.message.troString()}</Alert>
+                    </Box>
+                }
 
-                    <Stack gap='10px'  >
-                        {(!loadignWashing && !errorWashing && washingList.length >= 1) &&
-                            washingList.map((item) => (
-                                <ItemWashing
-                                    key={item.id}
-                                    data={item} />
-                            ))}
+                <Stack gap='10px' >
+                    {(!loadignWashing && !errorWashing && washingList.length >= 1) &&
+                        washingList.map((item) => (
+                            <ItemWashing
+                                key={item.id}
+                                data={item} />
+                        ))}
+                </Stack>
+
+                {(loadignWashing && !errorWashing) &&
+                    <Stack gap='10px' >
+                        <HistoryItemLoading />
+                        <HistoryItemLoading />
+                        <HistoryItemLoading />
                     </Stack>
+                }
 
-                    {(loadignWashing && !errorWashing) &&
-                        <Stack gap='20px' maxWidth={'700px'}>
-                            <HistoryItemLoading />
-                            <HistoryItemLoading />
-                            <HistoryItemLoading />
-                        </Stack>
-                    }
-
-                </ContainerScroll>
-            </Box>
+            </ContainerScroll>
         </>
     );
 }
