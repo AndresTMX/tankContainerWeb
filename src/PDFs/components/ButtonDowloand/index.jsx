@@ -18,10 +18,12 @@ function ButtonDowloand({ item, state, selectItem }) {
     }
   }, [folio])
 
+  const folioDocument = item.folio||folio;
+
   return (
     <PDFDownloadLink
       document={<EIR maniobrasCheckList={checkList} dataDocument={item} />}
-      fileName={`EIR_${folio} `}
+      fileName={`EIR_${folioDocument} `}
 
     >
       {({ blob, url, loading, error }) =>

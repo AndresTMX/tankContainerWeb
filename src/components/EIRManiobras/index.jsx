@@ -34,8 +34,12 @@ function EIRManiobras() {
 
     //hook para consultar eir
     const [typeRegister, setTypeRegister] = useState("pendientes")
-    const changueTypeRegister = (newType) => setTypeRegister(newType)
-    const { loading: loadingEIR, error: errorEIR, data: dataEIR } = useGetEIR(typeRegister)
+    const changueTypeRegister = (newType) => {
+        setData([])
+        selectItem({});
+        setTypeRegister(newType)
+    }
+    const { loading: loadingEIR, error: errorEIR, data: dataEIR, setData } = useGetEIR(typeRegister)
 
     //contexto maniobras
     const [state, dispatch] = useContext(ManiobrasContext);
@@ -91,19 +95,19 @@ function EIRManiobras() {
                                     gap="20px"
                                 >
                                     <Chip
-                                        onClick={() => setTypeRegister("pendientes")}
+                                        onClick={() => changueTypeRegister("pendientes")}
                                         color={typeRegister === "pendientes" ? "warning" : "default"}
                                         label="pendientes"
                                     />
                                     <Chip
-                                        onClick={() => setTypeRegister("realizados")}
+                                        onClick={() => changueTypeRegister("realizados")}
                                         color={typeRegister === "realizados" ? "success" : "default"}
                                         label="realizados"
                                     />
 
                                 </Stack>
 
-                                <Box sx={{ width: isMovile ? '100%' : '400px', alignItems: isMovile ? 'center' : 'flex-end' }}>
+                                <Box sx={{ width:'350px', alignItems: isMovile ? 'center' : 'flex-end' }}>
                                     <Searcher
                                         search={search}
                                         searching={searching}
@@ -117,7 +121,7 @@ function EIRManiobras() {
 
                         </Paper>
 
-                        <ContainerScroll height={'55vh'}>
+                        <ContainerScroll height={ isMovile? '62vh' : '68vh'}>
 
                             {(errorEIR) && <NotConexionState />}
 
@@ -130,7 +134,7 @@ function EIRManiobras() {
                             }
 
                             {(loadingEIR || loading) && (
-                                <Stack spacing="20px" sx={{ maxWidth: '700px' }}>
+                                <Stack gap="20px" >
                                     <HistoryItemLoading />
                                     <HistoryItemLoading />
                                     <HistoryItemLoading />
@@ -149,12 +153,12 @@ function EIRManiobras() {
 
                             {(!error && !loadingEIR && !loading && search.length >= 1 && results.length >= 1) &&
                                 <Fade in={!loading} timeout={500}>
-                                    <Stack gap="20px">
+                                    <Stack gap="10px">
                                         <Typography>Coincidencias basadas en tu busqueda: {search}</Typography>
-                                        {results.map((item) => (
+                                        {results.map((element) => (
                                             <ItemEIR
-                                                key={item.id}
-                                                data={item}
+                                                key={typeRegister === 'pendientes' ? element.id : element.folio}
+                                                data={element}
                                                 typeRegister={typeRegister}
                                                 toggleChecklist={toggleModalCheck}
                                                 selectItem={selectItem}
@@ -169,12 +173,12 @@ function EIRManiobras() {
 
                             {(!loadingEIR && !loading && !errorEIR && !error && results.length === 0) &&
                                 <Fade in={!loadingEIR} timeout={500}>
-                                    <Stack spacing='20px'>
+                                    <Stack spacing='10px'>
                                         {
-                                            dataEIR.map((item) => (
+                                            dataEIR.map((element) => (
                                                 <ItemEIR
-                                                    key={item.id}
-                                                    data={item}
+                                                    key={typeRegister === 'pendientes' ? element.id : element.folio}
+                                                    data={element}
                                                     typeRegister={typeRegister}
                                                     toggleChecklist={toggleModalCheck}
                                                     selectItem={selectItem}
@@ -221,7 +225,7 @@ export function ModalCheckListEIR({ stateModal, setStep, step, changueTypeRegist
                         width: '95vw',
                         maxWidth: '800px',
                         padding: '15px',
-                        overflowX:'hidden'
+                        overflowX: 'hidden'
                     }}
                 >
                     <Box
@@ -229,7 +233,7 @@ export function ModalCheckListEIR({ stateModal, setStep, step, changueTypeRegist
                             display: 'flex',
                             flexDirection: 'column',
                             gap: '10px',
-                            width:'100%',
+                            width: '100%',
                             maxWidth: '800px',
 
                         }}

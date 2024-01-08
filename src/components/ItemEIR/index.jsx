@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Box, Paper, Stack, Button, IconButton, Divider, Chip, } from "@mui/material";
+import { ButtonDowloand } from "../../PDFs/components/ButtonDowloand";
 import { ModalInfoOperator } from "../ModalInfoOperator";
 import { TextGeneral } from "../TextGeneral";
+//context
+import { ManiobrasContext } from "../../Context/ManiobrasContext";
+import { actionTypes } from "../../Reducers/ManiobrasReducer";
 //icons
 import InfoIcon from "@mui/icons-material/Info";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 //helpers
-import { tiempoTranscurrido } from "../../Helpers/date";
+import { tiempoTranscurrido, dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
-
 
 function ItemEIR({ typeRegister, data, toggleChecklist, selectItem, item }) {
 
@@ -35,6 +38,8 @@ function ItemEIR({ typeRegister, data, toggleChecklist, selectItem, item }) {
             {(typeRegister === 'realizados') &&
                 <ItemComplete
                     data={data}
+                    selectItem={selectItem}
+                    item={item}
 
                 />}
 
@@ -195,44 +200,51 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
     );
 }
 
-export function ItemComplete({ }) {
+export function ItemComplete({ data, selectItem, item }) {
 
-    const generateDocument = (item) => {
-        // const json = JSON.parse(item.data)
-        // const listQuestions = Object.values(json)
+    const [state, dispatch] = useContext(ManiobrasContext);
+    const isMovile = useMediaQuery('(max-width:620px)');
 
-        // const dataDocument = {
-        //     folio: item.folio,
-        //     fechaActual: dateMXFormat(item.created_at),
-        //     horaActual: datetimeMXFormat(item.created_at),
-        //     cliente: item.nombre_cliente,
-        //     dayInput: dateMXFormat(item.ingreso),
-        //     numero_tanque: item.registros_detalles_entradas.numero_tanque,
-        //     tracto: item.registros_detalles_entradas.tracto,
-        //     usuario_emisor: `${item.users_data.first_name} ${item.users_data.last_name}`
-        // }
+    const { folio, created_at, ingreso, registros_detalles_entradas, clientes, users_data, data: checklistString } = data || {};
+    const { status, numero_tanque, tracto } = registros_detalles_entradas || {};
+    const { first_name, last_name } = users_data || {}
+    const { cliente } = clientes || {};
 
-        // const pageOne = listQuestions.slice(0, 11);
-        // const pageTwo = listQuestions.slice(11, 21);
-        // const pageThree = listQuestions.slice(21, 33);
+    const generateDocument = () => {
+        const checklistJson = JSON.parse(checklistString)
+        const listQuestions = Object.values(checklistJson)
 
-        // dispatch({ type: actionTypes.setCliente, payload: item.nombre_cliente })
-        // dispatch({ type: actionTypes.setSelectItem, payload: dataDocument })
-        // dispatch({
-        //     type: actionTypes.setManiobrasCheck,
-        //     payload: {
-        //         pageOne: pageOne,
-        //         pageTwo: pageTwo,
-        //         pageThree: pageThree
-        //     }
-        // });
+        const dataDocument = {
+            folio: folio,
+            fechaActual: dateMXFormat(created_at),
+            horaActual: datetimeMXFormat(created_at),
+            cliente: cliente,
+            dayInput: dateMXFormat(ingreso),
+            numero_tanque: numero_tanque,
+            tracto: tracto,
+            usuario_emisor: `${first_name} ${last_name}`
+        }
+
+        const pageOne = listQuestions.slice(0, 11);
+        const pageTwo = listQuestions.slice(11, 21);
+        const pageThree = listQuestions.slice(21, 33);
+
+        selectItem(dataDocument)
+        dispatch({
+            type: actionTypes.setManiobrasCheck,
+            payload: {
+                pageOne: pageOne,
+                pageTwo: pageTwo,
+                pageThree: pageThree
+            }
+        });
 
     }
 
     return (
         <Paper sx={{ padding: '20px' }}>
 
-            {/* <Stack gap='20px' >
+            <Stack gap='20px' >
 
                 <Stack
                     justifyContent='space-between'
@@ -251,13 +263,13 @@ export function ItemComplete({ }) {
                         <Chip
                             size="small"
                             color="success"
-                            label={`Folio: ${item.folio}`}
+                            label={`Folio: ${folio}`}
                         />
 
                         <Chip
                             size="small"
                             color="secondary"
-                            label={dateMXFormat(item.created_at)}
+                            label={dateMXFormat(created_at)}
                             icon={<CalendarTodayIcon />}
                             sx={{
                                 width: "120px",
@@ -269,7 +281,7 @@ export function ItemComplete({ }) {
                         <Chip
                             size="small"
                             color="info"
-                            label={datetimeMXFormat(item.created_at)}
+                            label={datetimeMXFormat(created_at)}
                             icon={<AccessTimeIcon />}
                             sx={{
                                 maxWidth: "90px",
@@ -281,15 +293,16 @@ export function ItemComplete({ }) {
                         <Chip
                             size="small"
                             color='warning'
-                            label={item.registros_detalles_entradas.status} />
+                            label={status} />
                     </Stack>
 
 
-                    <Stack>
+                    <Stack width={isMovile? '100%': 'auto'}>
 
-                        {(!state.selectItem || state.selectItem.folio != item.folio) &&
+                        {(folio != item.folio) &&
                             <Button
-                                onClick={() => generateDocument(item)}
+                                onClick={() => generateDocument()}
+                                fullWidth={isMovile}
                                 size="small"
                                 variant='contained'
                                 color='primary'
@@ -297,39 +310,47 @@ export function ItemComplete({ }) {
                                 Reimprimir
                             </Button>}
 
-                        {(state.selectItem && state.selectItem.folio === item.folio) && <ButtonDowloand />}
+                        {(folio === item.folio) &&
+                            <ButtonDowloand
+                                selectItem={selectItem}
+                                state={state}
+                                item={item}
+                            />}
                     </Stack>
 
                 </Stack>
 
                 <Stack
                     justifyContent='space-between'
-                    flexDirection='row'
-                    alignItems='center'
+                    flexDirection={isMovile ? 'column' : 'row'}
+                    alignItems={isMovile ? 'start' : 'center'}
                     flexWrap='wrap'
                     gap='20px'
 
                 >
                     <TextGeneral
                         label={'Realizado por '}
-                        text={`${item.users_data?.first_name} ${item.users_data?.last_name}`}
+                        text={`${first_name} ${last_name}`}
                     />
+
+                    <Divider flexItem />
 
                     <TextGeneral
                         label={'Cliente '}
-                        text={item.nombre_cliente}
+                        text={cliente}
                     />
+
+                    <Divider flexItem />
 
                     <TextGeneral
                         label={'N° de contenedor'}
-                        text={item.registros_detalles_entradas.numero_tanque}
+                        text={numero_tanque}
                     />
 
                 </Stack>
 
 
-            </Stack> */}
-
+            </Stack>
 
         </Paper>
     )

@@ -1,6 +1,6 @@
 
 //funcion para buscar dentro de vigilancia
-export function filterSearchVigilancia( busqueda, array) {
+export function filterSearchVigilancia(busqueda, array) {
 
     try {
         const busquedaMinuscula = busqueda.toLowerCase();
@@ -39,10 +39,10 @@ export function filterSearchVigilancia( busqueda, array) {
 
         })
 
-        if(filtered.length === 0 ){
+        if (filtered.length === 0) {
             throw new Error(`No hay coincidencias para la busqueda ${busqueda}`)
         }
-        
+
         return filtered
     } catch (error) {
         return error
@@ -57,12 +57,16 @@ export function filterSearchManiobras(busqueda, array) {
         const results = []
 
         array.map((register) => {
-            const linea = register.linea.toLowerCase();
-            const tracto = register.tracto;
             const numero_tanque = register.numero_tanque.toLowerCase();
             const operador = register.operador.nombre.toLowerCase();
+            const linea = register.linea.toLowerCase();
+            const tracto = register.tracto;
 
-            if (numero_tanque.includes(busquedaMinuscula) || tracto.includes(busqueda) || operador.includes(busquedaMinuscula) || linea.includes(busquedaMinuscula)) {
+            if (numero_tanque.includes(busquedaMinuscula)
+                || operador.includes(busquedaMinuscula)
+                || linea.includes(busquedaMinuscula)
+                || tracto.includes(busqueda)
+            ) {
                 results.push(register)
             }
 
@@ -86,12 +90,18 @@ export function filterSearchCheckList(busqueda, array) {
 
         array.map((register) => {
             const folio = register.folio.toString();
-            const cliente = register.nombre_cliente.toLowerCase();
-            const tanque = register.registros_detalles_entradas.numero_tanque.toLowerCase();
+            const cliente = register.clientes.cliente.toLowerCase();
             const tracto = register.registros_detalles_entradas.tracto;
             const status = register.registros_detalles_entradas.status.toLowerCase();
+            const tanque = register.registros_detalles_entradas.numero_tanque.toLowerCase();
 
-            if (folio.includes(busqueda) || cliente.includes(busquedaMinuscula) || tanque.includes(busquedaMinuscula) || tracto.includes(busqueda) || status.includes(busquedaMinuscula)) {
+
+            if (folio.includes(busqueda)
+                || tracto.includes(busqueda)
+                || cliente.includes(busquedaMinuscula)
+                || tanque.includes(busquedaMinuscula)
+                || cliente.includes(busquedaMinuscula)
+                || status.includes(busquedaMinuscula)) {
                 return results.push(register)
             }
         })
@@ -107,18 +117,18 @@ export function filterSearchCheckList(busqueda, array) {
 }
 
 //funcion para buscar reparaciones 
-export function filterSearchRepair( typeRegister, busqueda, array){
-    
+export function filterSearchRepair(typeRegister, busqueda, array) {
+
     try {
         const results = []
         const busquedaMinuscula = busqueda.toLowerCase();
-        
+
         array.map((register) => {
             const numTank = register.numero_tanque.toLowerCase();
             const tracto = register.registros_detalles_entradas.tracto;
             const type = register.tipo_reparacion.toLowerCase();
 
-            if(numTank.includes(busquedaMinuscula) || tracto.includes(busqueda) || type.includes(busquedaMinuscula)){
+            if (numTank.includes(busquedaMinuscula) || tracto.includes(busqueda) || type.includes(busquedaMinuscula)) {
                 results.push(register)
             }
         })
@@ -142,27 +152,10 @@ export function routerFilterSearch(typeRegister, busqueda, array) {
         realizados: () => filterSearchCheckList(busqueda, array)
     }
 
-    if(routes[typeRegister]){
-      return routes[typeRegister]()
+    if (routes[typeRegister]) {
+        return routes[typeRegister]()
     }
 
 }
 
-
-// //router filter de reparaciones
-// export function routerFilterSearchRepairs(typeRegister, busqueda, array){
-
-//     if(typeRegister === 'pendiente'){
-
-//     }
-
-//     if(typeRegister === 'proceso'){
-        
-//     }
-
-//     if(typeRegister === 'realizado'){
-        
-//     }
-
-// }
 

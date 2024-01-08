@@ -103,7 +103,7 @@ function useGetEIR(typeRegister) {
         routerFetch()
     }, [typeRegister])
 
-    return {loading, error, data}
+    return {loading, error, data, setData}
 
 }
 

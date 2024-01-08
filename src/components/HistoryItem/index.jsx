@@ -735,8 +735,8 @@ export function HistoryItemLoading() {
   const IsSmall = useMediaQuery("(max-width:900px)");
   return (
     <>
-      <Paper sx={{ display: "flex", flexDirection: "column", padding: "10px", gap: "10px", width: '80vw', maxWidth: '100%' }}>
-        <Stack sx={{ maxWidth: '700px' }}>
+      <Paper sx={{ display: "flex", flexDirection: "column", padding: "10px", gap: "10px"}}>
+        <Stack>
           <Stack
             justifyContent="space-between"
             flexDirection="row"

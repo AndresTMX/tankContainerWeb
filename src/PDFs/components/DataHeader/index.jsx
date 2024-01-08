@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
-import { dateMXFormat, datetimeMXFormat }from "../../../Helpers/date";
+import { dateMXFormat, datetimeMXFormat } from "../../../Helpers/date";
 
-function DataHeader({data}) {
+function DataHeader({ data }) {
 
     const fechaActual = dateMXFormat(new Date());
     const horaActual = datetimeMXFormat(new Date());
@@ -13,8 +13,8 @@ function DataHeader({data}) {
             flexDirection: 'column',
             width: '100%',
             gap: '5px',
-            backgroundColor:'whitesmoke',
-            border:1
+            backgroundColor: 'whitesmoke',
+            border: 1
         },
 
         BoxData: {
@@ -40,15 +40,15 @@ function DataHeader({data}) {
 
                     <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> Fecha :</Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{fechaActual}</Text>
+                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.fechaActual || fechaActual}</Text>
                     </View>
 
                     <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> Hora: </Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{horaActual}</Text>
+                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.horaActual || horaActual}</Text>
                     </View>
 
-                    
+
                     <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> Entrada: </Text>
                         <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.dayInput}</Text>
@@ -56,13 +56,13 @@ function DataHeader({data}) {
 
                     <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> Salida: </Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{fechaActual}</Text>
+                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.fechaActual|| fechaActual}</Text>
                     </View>
 
 
                 </View>
 
-                <View style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'start', padding: '5px', gap:'15px' }}>
+                <View style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'start', padding: '5px', gap: '15px' }}>
 
                     <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> Cliente: </Text>
