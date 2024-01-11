@@ -16,37 +16,32 @@ function useAddOutputManiobra() {
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
         try {
-            const { errorRegiser } = await supabase.from('registros').update({ status: 'finish' }).eq('id', idRegistro)
+
+            //crear un nuevo registro de salida 
+            const { data: outputRegister, error: errorCreateOutputRegister } = await supabase
+                .from('registros')
+                .insert({ user_id: session.id, type: 'salida' })
+                .select()
+
+            if (errorCreateOutputRegister) {
+                throw new Error(`Error al crear el registro de salida, error: ${errorCreateOutputRegister.message}`)
+            }
+
+            const dataId = outputRegister[0].id
+
+            //actualizar el registro de entrada a finalizado 
+            const { errorRegiser } = await supabase
+                .from('registros')
+                .update({ status: 'finalized'})
+                .eq('id', idRegistro)
 
             if (errorRegiser) {
-                throw new Error('Error al intentar actualizar el estatus del registro')
+                throw new Error(`Error al intentar actualizar el estatus del registro, error: ${errorRegiser.message}`)
             }
-        } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            })
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
-        }
-
-        const { data, error } = await supabase
-            .from('registros')
-            .insert({ user_id: session.id, type: 'salida', status: 'forconfirm' })
-            .select()
-
-        if (error) {
-            throw new Error('Error al crear el registro de salida')
-        }
-
-        const dataId = data[0].id
-
-        try {
-
+            
+            //agregear registros de detalles 
             const outputDetails = dataTanques.map(async (tanque) => {
-                const { data, error } = await supabase
+                const { data, error: errorAddDetailsOutput } = await supabase
                     .from('registros_detalles_salidas')
                     .insert({
                         registro_id: dataId,
@@ -55,24 +50,35 @@ function useAddOutputManiobra() {
                         numero_tanque: tanque.numero_tanque,
                         transportista_id: tanque.transportista,
                         operador_id: tanque.operador,
-                        status:'forconfirm'
                     })
-                if (error) {
-                    throw new Error(`Error al crear los detalles de la salida del tanque`)
+                if (errorAddDetailsOutput) {
+                    throw new Error(`Error al crear los detalles de la salida del tanque ${errorAddDetailsOutput.message}`)
                 }
             })
 
-            await Promise.all(outputDetails);
+            try {
+                await Promise.all(outputDetails);
+            } catch (error) {
+                throw new Error(`Error al crear detalles de salida , error: ${error.message}`)
+            }
 
+            //actualizar el estatus de los tanques 
             const updatesStatusTanques = dataTanques.map(async (tanque) => {
-                const { error } = await supabase.from('tanques').update({ status: 'forconfirm' }).eq('tanque', tanque.numero_tanque)
+                const { error: errorUpdateStatusTanks } = await supabase
+                    .from('tanques')
+                    .update({ status: 'finalized' })
+                    .eq('tanque', tanque.numero_tanque)
 
-                if (error) {
-                    throw new Error(`Error al actualizar status de los tanques`)
+                if (errorUpdateStatusTanks) {
+                    throw new Error(`Error al actualizar status de los tanques , error: ${errorUpdateStatusTanks.message}`)
                 }
             });
 
-            await Promise.all(updatesStatusTanques);
+            try {
+                await Promise.all(updatesStatusTanques);
+            } catch (error) {
+                throw new Error(error.message)
+            }
 
             setTimeout(() => {
                 dispatchGlobal({
@@ -97,7 +103,6 @@ function useAddOutputManiobra() {
         }
 
     }
-
 
     return { addOutputRegisterForManiobra }
 

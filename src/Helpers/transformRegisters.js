@@ -102,7 +102,26 @@ export const transformRegisters = (data) => {
   };
 };
 
+export const transformManiobras = (data) => {
+
+  const filterData = data.reduce((array, currentElement) => {
+
+    const idRegister = currentElement.registros.id;
+
+    if (!array[idRegister]) {
+      array[idRegister] = [];
+    }
+
+    array[idRegister].push(currentElement)
+
+    return array
+  }, {});
+
+  return Object.values(filterData);
+} 
+
 /* 
+DEPRECADA
 funcion que filtra los registros de entrada y devuelve solo los 
 registros que tienen el status 'maniobras' para ser usados en la
 pagina de maniobras y posteriormente hacerles checklist

@@ -1,6 +1,6 @@
 import { Container } from "@mui/material";
 
-function ContainerScroll({ children, height, background, colorBar }) {
+function ContainerScroll({ children, height, background, colorBar, maxHeight }) {
     const Heigth =  height? height : "60vh";
     return ( 
         <Container
@@ -12,6 +12,7 @@ function ContainerScroll({ children, height, background, colorBar }) {
           overflowY: "scroll",
           overflowX:"hidden",
           height: Heigth,
+          maxHeight: maxHeight? maxHeight:null,
           paddingTop:'20px',
           paddingBottom:'20px',
           "&::-webkit-scrollbar": {

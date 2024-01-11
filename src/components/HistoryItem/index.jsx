@@ -31,6 +31,7 @@ import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrow
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 //helpers
 import { transformRegisters } from "../../Helpers/transformRegisters";
+import { datetimeMXFormat, dateMXFormat } from "../../Helpers/date";
 //context
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { useEditManiobra } from "../../Hooks/Maniobras/useEditManiobra";
@@ -44,12 +45,16 @@ function HistoryItem({ data, type, typeManiobra, updater, changueTypeManiobra })
 
     let dataOperador
 
-    if (type === 'vigilancia' || type === 'maniobras') {
+    if (type === 'vigilancia') {
 
       const typeItem = data.type;
       dataOperador = typeItem === 'entrada' ?
         data?.registros_detalles_entradas[0]?.operadores :
         data?.registros_detalles_salidas[0]?.operadores;
+    }
+
+    if(type === 'maniobras'){
+      dataOperador = {}
     }
 
     if (type === 'eir') {
@@ -103,49 +108,7 @@ function HistoryItem({ data, type, typeManiobra, updater, changueTypeManiobra })
 
       </Paper>
 
-      <Modal
-        open={modal.modal1}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          position: "absolute",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Fade timeout={500} in={modal.modal1}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "15px",
-              alignItems: "start",
-              justifyContent: "center",
-              backgroundColor: "white",
-              width: "auto",
-              padding: "20px",
-              borderRadius: "4px",
-            }}
-          >
-            <Typography variant="h6">Información del operador</Typography>
-
-            <TextGeneral text={dataOperador?.nombre} label="Nombre del operador" />
-            <TextGeneral
-              text={dataOperador?.contacto}
-              label="Contacto del operador"
-            />
-
-            <Button
-              fullWidth
-              variant="contained"
-              color="error"
-              onClick={ToggleModalInfoOperator}
-            >
-              cerrar
-            </Button>
-          </Box>
-        </Fade>
-      </Modal>
+      
     </>
   );
 }
@@ -239,7 +202,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
 
             {(typeRegister === 'entrada') &&
               <Button
-                onClick={() => checkRegisterWhitId(data.id, 'maniobras', data)}
+                onClick={() => checkRegisterWhitId(data.id, data)}
                 size="small"
                 variant="contained"
                 color="primary"
@@ -250,7 +213,7 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
 
             {(typeRegister === 'salida') &&
               <Button
-                onClick={() => checkOutRegisterWhitId(data.id, 'finish', data)}
+                onClick={() => checkOutRegisterWhitId(data.id, data)}
                 size="small"
                 variant="contained"
                 color="primary"
@@ -383,23 +346,30 @@ export function HistoryItemVigilancia({ data, ToggleModalInfoOperator, IsSmall, 
 }
 
 export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, typeManiobra, updater, changueTypeManiobra }) {
+console.log("🚀 ~ file: index.jsx:391 ~ HistoryItemManiobras ~ data:", data)
 
-  const {
-    typeRegister,
-    linea,
-    tanques,
-    tanquesManiobras,
-    operador,
-    tracto,
-    numeroTanques,
-    typeChargue,
-    dayInput,
-    dateInput,
-    OperatorSliceName,
-    shortNameOperator,
-    dayCreat,
-    dateCreate,
-  } = transformRegisters(data);
+  //  const { carga, tracto, operadores, registros, transportistas } = data[0];
+  //  const { nombre } = operadores || {};
+  //  const { name: linea } = transportistas || {};
+  //  const { checkIn, type , status} = registros || {};
+  //  console.log("🚀 ~ file: index.jsx:397 ~ HistoryItemManiobras ~ status:", status)
+
+  //  //Nmbre corto del operador
+  //  const OperatorSliceName = nombre.split(" ").slice(0, 2);
+  //  const shortNameOperator = `${OperatorSliceName[0]} ${OperatorSliceName[1]}`;
+
+  // const {
+  //   typeRegister,
+  //   linea,
+  //   tanques,
+  //   tanquesManiobras,
+  //   tracto,
+  //   numeroTanques,
+  //   typeChargue,
+  //   shortNameOperator,
+  //   dayCreat,
+  //   dateCreate,
+  // } = transformRegisters(data);
 
   const [state, dispatch] = useContext(ManiobrasContext);
   const [modalTanks, setModalTanks] = useState(false);
@@ -426,15 +396,15 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
 
   return (
     <>
-      <Stack spacing="8px" flexDirection="column">
+      {/* <Stack spacing="8px" flexDirection="column">
 
-        {(typeChargue === "tanque" && tanquesManiobras.length === 0) &&
+        {(carga === "tanque" && data.length === 0) &&
           <Alert sx={{ width: '100%' }} severity="info">
             Puedes subir tanques a este tractocamion para generar una salida
           </Alert>
         }
 
-        {(typeChargue === "vacio") &&
+        {(carga === "vacio") &&
           <Alert sx={{ width: '100%' }} severity="info">
             Puedes subir tanques a este tractocamion para generar una salida
           </Alert>
@@ -456,7 +426,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
             <Chip
               size="small"
               color="secondary"
-              label={dayCreat}
+              label={dateMXFormat(checkIn)}
               icon={<CalendarTodayIcon />}
               sx={{
                 width: "120px",
@@ -468,7 +438,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
             <Chip
               size="small"
               color="info"
-              label={dateCreate}
+              label={datetimeMXFormat(checkIn)}
               icon={<AccessTimeIcon />}
               sx={{
                 maxWidth: "90px",
@@ -479,10 +449,10 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
 
             <Chip
               size="small"
-              color={typeRegister === "entrada" ? "success" : "warning"}
-              label={typeRegister}
+              color={type === "entrada" ? "success" : "warning"}
+              label={type}
               icon={
-                typeRegister === "entrada" ? (
+                type === "entrada" ? (
                   <KeyboardDoubleArrowRightIcon />
                 ) : (
                   <KeyboardDoubleArrowLeftIcon />
@@ -499,7 +469,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
 
           <Stack flexDirection='row' gap='10px'>
 
-            {(typeChargue === 'pipa' && typeManiobra === 'confirmado') &&
+            {(carga === 'pipa' && status === 'confirm') &&
               <Button
                 onClick={changueToWashing}
                 size="small"
@@ -509,7 +479,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
                 pasar a lavado
               </Button>}
 
-            {(typeChargue != 'pipa' && typeManiobra === 'confirmado' && tanquesManiobras.length === 0) &&
+            {(carga != 'pipa' && status === 'confirm' && data.length === 0) &&
               <Button
                 onClick={() => setModalTanks(!modalTanks)}
                 size="small"
@@ -519,7 +489,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
                 Subir tanques
               </Button>}
 
-            {(typeChargue != 'pipa' && typeManiobra === 'confirmado') &&
+            {(carga != 'pipa' && status === 'confirm') &&
               <Button
                 onClick={() => returnEmpty(data)}
                 size="small"
@@ -529,7 +499,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
                 retornar vacio
               </Button>}
 
-            {(typeManiobra === 'pendiente') &&
+            {(status === 'pendiente') &&
               <Button
                 onClick={() => setEditData(true)}
                 size="small"
@@ -539,9 +509,9 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
                 editar registro
               </Button>}
 
-            {(typeManiobra === 'pendiente' && typeRegister === 'entrada') &&
+            {(status === 'pendiente' && type === 'entrada') &&
               <Button
-                onClick={() => routerDelet(typeChargue, data)}
+                onClick={() => routerDelet(carga, data)}
                 size="small"
                 variant="contained"
                 color="error"
@@ -586,7 +556,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
               flexItem
             />
 
-            <TextGeneral width={'100px'} label="Tipo de carga" text={typeChargue} />
+            <TextGeneral width={'100px'} label="Tipo de carga" text={carga} />
 
           </Stack>
 
@@ -613,7 +583,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
           </Stack>
         </Box>
 
-        {(typeChargue === "tanque" && tanquesManiobras.length >= 1) && (
+        {(carga === "tanque" && data.length >= 1) && (
           <Stack
             justifyContent="center"
             spacing="10px"
@@ -623,8 +593,8 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
               padding: "15px",
             }}
           >
-            <strong>{`${typeChargue}s`}</strong>
-            {tanquesManiobras.map((tanque, index) => (
+            <strong>{`${carga}s`}</strong>
+            {data.map((tanque, index) => (
               <Box key={tanque.id}>
                 <Box
                   sx={{
@@ -638,10 +608,10 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
                   <TextGeneral
                     variant="row"
                     label={`# ${index + 1}`}
-                    text={typeChargue === 'tanque' ? tanque.tanque : tanque.pipa}
+                    text={carga === 'tanque' ? tanque.numero_tanque : tanque.numero_pipa}
                   />
 
-                  {typeManiobra === 'confirmado' &&
+                  {status === 'confirm' &&
                     <Button
                       onClick={() => dowTank(tanque)}
                       size="small"
@@ -652,7 +622,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
                     </Button>}
 
                 </Box>
-                {numeroTanques != index + 1 && (
+                {data.length != index + 1 && (
                   <Divider orientation={"horizontal"} flexItem />
                 )}
               </Box>
@@ -660,7 +630,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
           </Stack>
         )}
 
-        {(typeChargue === "pipa") && (
+        {(type === "pipa") && (
           <Stack
             justifyContent="center"
             spacing="10px"
@@ -670,8 +640,8 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
               padding: "15px",
             }}
           >
-            <strong>{`${typeChargue}s`}</strong>
-            {tanques.map((tanque, index) => (
+            <strong>{`${type}s`}</strong>
+            {data.map((tanque, index) => (
               <Box key={tanque.id}>
                 <Box
                   sx={{
@@ -685,11 +655,11 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
                   <TextGeneral
                     variant="row"
                     label={`N°`}
-                    text={typeChargue === 'tanque' ? tanque.tanque : tanque.pipa}
+                    text={type === 'tanque' ? tanque.tanque : tanque.pipa}
                   />
 
                 </Box>
-                {numeroTanques != index + 1 && (
+                {data.length != index + 1 && (
                   <Divider orientation={"horizontal"} flexItem />
                 )}
               </Box>
@@ -697,9 +667,9 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
           </Stack>
         )}
 
-      </Stack>
+      </Stack> */}
 
-      {modalTanks &&
+      {/* {modalTanks &&
         <Modal open={modalTanks}>
           <Box
             sx={{
@@ -725,7 +695,7 @@ export function HistoryItemManiobras({ data, IsSmall, ToggleModalInfoOperator, t
             <FormEditManiobras data={data} toggleModal={setEditData} updater={updater} />
           </Box>
         </Modal>
-      }
+      } */}
 
     </>
   )

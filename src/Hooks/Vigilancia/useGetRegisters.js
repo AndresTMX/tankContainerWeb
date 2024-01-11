@@ -18,12 +18,7 @@ function useGetRegisters(typeRegister) {
             .select(`
                         *,
                         registros_detalles_entradas (
-                            id,
-                            carga,
-                            tracto,
-                            numero_tanque,
-                            status,
-                            numero_pipa,
+                            *,
                             transportistas (
                                 id,
                                 name
@@ -31,11 +26,7 @@ function useGetRegisters(typeRegister) {
                             operadores (
                                 id,
                                 nombre,
-                                correo,
                                 contacto
-                            ),
-                            tanques(
-                                status
                             )
                         )
                     `)
@@ -62,12 +53,8 @@ function useGetRegisters(typeRegister) {
             .from('registros')
             .select(`
             *,
-            registros_detalles_salidas (
-                id,
-                carga,
-                tracto,
-                numero_tanque,
-                numero_pipa,
+            registros_detalles_entradas (
+                *,
                 transportistas (
                     id,
                     name
@@ -75,11 +62,7 @@ function useGetRegisters(typeRegister) {
                 operadores (
                     id,
                     nombre,
-                    correo,
                     contacto
-                ),
-                tanques(
-                    status
                 )
             )
         `)

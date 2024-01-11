@@ -1,27 +1,25 @@
-import { useEffect, useState, } from "react";
+import { useState, } from "react";
 //components
-import { Container, Paper, Box, Stack, Typography, Button, IconButton, Modal, Fade, Chip, Skeleton, Alert } from "@mui/material";
+import { Container, Paper, Box, Stack, Typography, Button, IconButton, Modal, Fade, } from "@mui/material";
+import { AddTankManiobra } from "../AddTankManiobra"
 import { SelectSimple } from "../SelectSimple";
 import { InputText } from "../InputText";
 //hooks
 import { useGetTransporters } from "../../Hooks/transportersManagment/useGetTransporters";
 import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";
-import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
-import { useFormRegister } from "../../Hooks/useFormRegister";
+import { useFormRegister } from "../../Hooks/Maniobras/useFormRegister";
+import { useCustomers } from "../../Hooks/Customers/useCustomers";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //icons
 import UpdateIcon from '@mui/icons-material/Update';
-import AddIcon from '@mui/icons-material/Add';
 
-function FormRegisterManiobras({ toggleModal, forceUpdate, setTypeManiobra, toggleModalAddTanks }) {
-
-    useEffect(() => {
-        getTanks();
-    }, [])
+function FormRegisterManiobras({ toggleModal, forceUpdate, setTypeManiobra }) {
 
     const IsMovile = useMediaQuery('(max-width:500px)');
-    //hooks de tanques
-    const { tanks, tankError, tankLoading, tanksReady, getTanks } = useGetTanks();
+
+    //hooks de clientes
+    const { selectCustomers } = useCustomers();
+
     //hook de operadores
     const { states, functions } = useGetOperators();
     const { updateOperators } = functions;
@@ -32,9 +30,9 @@ function FormRegisterManiobras({ toggleModal, forceUpdate, setTypeManiobra, togg
         nombre: operator.nombre
     })) : [];
     //hook de formulario
-    const { statesFormRegister, functionsFormRegister } = useFormRegister();
-    const { typeChargue, tracto, select, operator, dataTank, dataPipa, typePipa } = statesFormRegister;
-    const { handleChangeList, handleChangeTracto, handleChangueTypeChargue, handleChangueOperator, routerRegisters, setDataPipa, setTypePipa, toggleTank } = functionsFormRegister;
+    const { statesFormRegister, functionsFormRegister } = useFormRegister(forceUpdate);
+    const { typeChargue, tracto, select, operator, dataTank, dataPipa, typePipa, cliente } = statesFormRegister;
+    const { handleChangeList, handleChangeTracto, handleChangueTypeChargue, handleChangueOperator, routerRegisters, setDataPipa, setTypePipa, toggleTank, setDataTank, selectClient } = functionsFormRegister;
     //hook de transportistas
     const { transporters, updateAllTransports } = useGetTransporters();
     const arrayTransporters = transporters.length >= 1 ? transporters.map((transporter) => ({
@@ -57,15 +55,12 @@ function FormRegisterManiobras({ toggleModal, forceUpdate, setTypeManiobra, togg
         setModal(!modal);
         toggleModal();
         setTimeout(() => {
-            forceUpdate();
             setTypeManiobra('pendiente')
         }, 1200)
 
     }
 
-    const colorItemTank = (tanque) => dataTank.find((item) => item === tanque) ? 'primary' : 'default';
     const [modal, setModal] = useState(false)
-
 
     return (
         <>
@@ -88,25 +83,18 @@ function FormRegisterManiobras({ toggleModal, forceUpdate, setTypeManiobra, togg
                             maxWidth: '900px',
 
                         }}>
-                        <Stack
-                            width='100%'
-                            flexDirection='row'
-                            alignItems='center'
-                            justifyContent='space-between'>
-                            <Typography color='GrayText'>
-                                Actualizar datos
-                            </Typography>
-                            <IconButton
-                                color="primary"
-                                onClick={() => { updateOperators(); updateAllTransports(); }}>
+
+                        <Stack width='100%' flexDirection='row' alignItems='center' justifyContent='space-between'>
+                            <Typography color='GrayText'>Actualizar datos</Typography>
+                            <IconButton color="primary" onClick={() => { updateOperators(); updateAllTransports(); }}>
                                 <UpdateIcon />
                             </IconButton>
                         </Stack>
+
                     </Paper>
 
                     <form onSubmit={ToggleModalForm}>
-                        <Paper
-                            elevation={4}
+                        <Paper elevation={4}
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -118,6 +106,18 @@ function FormRegisterManiobras({ toggleModal, forceUpdate, setTypeManiobra, togg
                                 padding: '20px',
                                 borderRadius: '4px',
                             }}>
+
+                            <Stack width={'100%'}>
+                                <SelectSimple
+                                    type={'obj'}
+                                    required={true}
+                                    width={'100%'}
+                                    title={'Cliente'}
+                                    value={cliente}
+                                    options={selectCustomers}
+                                    onChange={selectClient}
+                                />
+                            </Stack>
 
                             <Stack
                                 flexDirection={IsMovile ? 'column' : 'row'}
@@ -145,55 +145,12 @@ function FormRegisterManiobras({ toggleModal, forceUpdate, setTypeManiobra, togg
                             </Stack>
 
                             {(typeChargue === 'tanque') &&
-                                <Stack width={'100%'} gap='10px'>
-                                    <Stack flexWrap={'wrap'} flexDirection={'row'} alignItems={'center'} gap={'20px'} justifyContent={'space-between'}>
-                                        <Typography variant='caption'>Tanques disponibles</Typography>
-                                        <Button onClick={toggleModalAddTanks} size="small" variant="contained">nuevo tanque</Button>
-                                    </Stack>
-                                    <Paper
-                                        elevation={2}
-                                        sx={{
-                                            display: 'flex',
-                                            flexDirection: 'row',
-                                            flexWrap: 'wrap',
-                                            padding: '15px',
-                                            width: '100%',
-                                            gap: '10px'
-                                        }}
-                                    >
-                                        {tanksReady.map((item) => (
-                                            <Chip
-                                                key={item.tanque}
-                                                label={item.tanque}
-                                                deleteIcon={<AddIcon />}
-                                                color={colorItemTank(item.tanque)}
-                                                onDelete={() => toggleTank(item.tanque)}
-                                            />
-                                        ))}
-
-                                        {tankLoading && (
-                                            <Stack
-                                                flexDirection={'row'}
-                                                alignItems={'center'}
-                                                flexWrap={'wrap'}
-                                                gap={'10px'}
-                                            >
-                                                <Skeleton variant='rounded' width={'85px'} height={'32px'} />
-                                                <Skeleton variant="rounded" width={'85px'} height={'32px'} />
-                                                <Skeleton variant="rounded" width={'85px'} height={'32px'} />
-                                            </Stack>
-                                        )}
-
-                                        {tankError &&
-                                            <Alert severity="error">Hubo un error al cargar los tanques, intenta de nuevo</Alert>
-                                        }
-
-                                        {(tanksReady.length === 0) &&
-                                            <Typography variant='caption'>Sin tanques disponibles</Typography>
-                                        }
-
-                                    </Paper>
-                                </Stack>}
+                                <AddTankManiobra
+                                    dataTank={dataTank}
+                                    setDataTank={setDataTank}
+                                    toggleTank={toggleTank}
+                                />
+                            }
 
 
                             {typeChargue === 'pipa' &&

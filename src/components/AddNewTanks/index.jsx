@@ -1,123 +1,129 @@
-import { useState } from "react";
-import { Container, Box, Paper, Typography, Stack, Button } from "@mui/material";
-import { SelectSimple } from "../SelectSimple";
-import { InputText } from "../InputText";
-//hooks
-import { useAddTanks } from "../../Hooks/Maniobras/useAddTanks";
+import { useEffect, useState, useContext } from "react";
+import { Stack, TextField, IconButton, Button } from "@mui/material";
+import { ContainerScroll } from "../ContainerScroll";
+//icons
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import SaveAsIcon from '@mui/icons-material/SaveAs';
+import AddIcon from '@mui/icons-material/Add';
+//context
+import { GlobalContext } from "../../Context/GlobalContext";
+import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 
-function AddNewTanks({ toggleModal }) {
+function AddNewTanks({ dataTank, setDataTank }) {
 
-    const { addTanks } = useAddTanks();
+    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
+    const [newTanks, setNewTanks] = useState([''])
+    const [update, setUpdate] = useState(false)
 
-    //modal de tanques
-    const [newTank, setNewTank] = useState('');
-    const [newTankStatus, setNewTankStatus] = useState('');
-    const [optionTanks, setOptionTanks] = useState('')
-
-    const dividerNumTanks = async () => {
-        const arrayCleanSpaces = newTank.trim().split(',');
-        let dataTanks = arrayCleanSpaces.map((tank) => tank.replace(/\s/g, ''));
-        await addTanks(dataTanks, newTankStatus);
-        toggleModal()
-    }
-
-    const singleTank = async () => {
-        let dataTanks = []
-        dataTanks.push(newTank.replace(/\s/g, ''))
-        await addTanks(dataTanks, newTankStatus);
-        toggleModal()
-    }
-
-    const routerTanks = (e) => {
-        e.preventDefault();
-
-        const options = {
-            sencillo: () => singleTank(),
-            multiple: () => dividerNumTanks()
+    useEffect(() => {
+        const newState = new Set()
+        for (let element of newTanks) {
+            newState.add(element)
         }
+        setDataTank([...newState])
+    }, [update]);
 
-        if (options[optionTanks]) {
-            options[optionTanks]()
+    const addField = () => {
+
+        if (newTanks.length === 4) {
+            alert('no puedes agregar mas de 4 tanques a un tracto')
+        } else {
+            const newState = [...newTanks]
+            newState.push('')
+            setNewTanks(newState)
         }
+    }
+
+    const saveField = () => {
+        setUpdate(!update)
+    }
+
+    const deleteField = (index) => {
+        const newState = [...newTanks]
+        newState.splice(index, 1)
+        setNewTanks(newState)
+        setUpdate(!update)
 
     }
+
+    const onChangueField = (index, value) => {
+        const newState = [...newTanks]
+        newState[index] = value
+        setNewTanks(newState)
+    }
+
+    const validateExist = (index) => {
+        return dataTank[index]
+    }
+
+    const length = newTanks.length;
 
     return (
-        <Container>
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-                <form onSubmit={routerTanks}>
-                    <Paper sx={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <Typography variant='button'>Agrega contedores a la base de datos</Typography>
-                        <Stack display={'flex'} gap={'10px'} alignItems={'center'}>
+        <>
+            <ContainerScroll height={'auto'} maxHeight={'150px'} background={'white'} >
 
-                            <SelectSimple
-                                width={'100%'}
-                                title={'Tipo de registro'}
-                                value={optionTanks}
-                                required={true}
-                                options={['sencillo', 'multiple']}
-                                onChange={(e) => setOptionTanks(e.target.value)}
-                                helperText={'Sencillo para agregar solo un registro, multiple para agregar varios'}
+                <Stack gap='8px'>
+
+                    <Stack flexDirection={'row'} justifyContent={'space-between'}>
+                        <Button
+                            variant="contained"
+                            onClick={addField}
+                            endIcon={<AddIcon />
+                            }>
+                            Agregar otro
+                        </Button>
+
+                    </Stack>
+
+                    {
+                        newTanks.map((element, index) => (
+                            <InputTank
+                                index={index}
+                                value={element}
+                                validateExist={validateExist}
+                                onChange={onChangueField}
+                                deleteField={deleteField}
+                                saveField={saveField}
+                                length={length}
                             />
-
-                            {(optionTanks === 'sencillo') &&
-                                <>
-                                    <Typography textAlign={'start'} width={'100%'} variant='caption'>Agrega un nuevo contedor a la base de datos</Typography>
-                                    <InputText
-                                        label={'Numero de contenedor'}
-                                        width={'100%'}
-                                        value={newTank}
-                                        required={true}
-                                        onChangue={(e) => setNewTank(e.target.value)}
-                                    />
-                                </>
-                            }
-
-                            {(optionTanks === 'multiple') &&
-                                <>
-                                    <Typography textAlign={'start'} width={'100%'} variant='caption'>Agrega varios contenedores a la base de datos</Typography>
-                                    <InputText
-                                        type={'textarea'}
-                                        label={'Numeros de contenedores separados por comas'}
-                                        width={'100%'}
-                                        value={newTank}
-                                        required={true}
-                                        onChangue={(e) => setNewTank(e.target.value)}
-                                    />
-                                </>
-                            }
-
-                            <SelectSimple
-                                width={'100%'}
-                                title={'Estatus'}
-                                value={newTankStatus}
-                                required={true}
-                                options={['ready', 'maniobras', 'parked', 'reparacion', 'prelavado',]}
-                                onChange={(e) => setNewTankStatus(e.target.value)}
-                                helperText={'Para usarlo inmediatamente despues de agregrarlo selecciona ready'}
-                            />
-                        </Stack>
-
-                        <Stack flexDirection='row' justifyContent='space-between' gap='10px'>
-                            <Button
-                                fullWidth
-                                type="submit"
-                                variant="contained"
-                                color="primary"
-                            >Agregar</Button>
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                color="error" on
-                                onClick={toggleModal}>
-                                Cancelar</Button>
-                        </Stack>
-
-                    </Paper>
-                </form>
-            </Box>
-        </Container>
+                        ))
+                    }
+                </Stack>
+            </ContainerScroll>
+        </>
     );
 }
 
 export { AddNewTanks };
+
+function InputTank({ value, onChange, index, deleteField, saveField, validateExist, length }) {
+
+    const buttonSave = validateExist(index);
+
+    return (
+        <Stack flexDirection='row' alignItems='center' gap='5px'>
+            <TextField
+                id={`addTank_${index}`}
+                sx={{ maxWidth: '89%' }}
+                fullWidth
+                value={value}
+                onChange={(e) => onChange(index, e.target.value)} />
+
+            <IconButton
+                color="info"
+                disabled={buttonSave}
+                onClick={saveField}
+            >
+                <SaveAsIcon fontSize="large" />
+            </IconButton>
+
+            <IconButton
+                color="error"
+                onClick={() => deleteField(index)}
+            >
+                <RemoveCircleIcon fontSize="large" />
+            </IconButton>
+        </Stack>
+    )
+}

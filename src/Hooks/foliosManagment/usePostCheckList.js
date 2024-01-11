@@ -1,10 +1,7 @@
 import supabase from "../../supabase";
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
-import { usePostRegister } from "../Maniobras/usePostRegister";
-import { ManiobrasContext } from "../../Context/ManiobrasContext";
-import { actionTypes } from "../../Reducers/ManiobrasReducer";
 import { AuthContext } from "../../Context/AuthContext";
 import { sendImageCloudinary } from "../../cloudinary";
 
@@ -13,7 +10,6 @@ function usePostCheckList() {
 
     const { key } = useContext(AuthContext)
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-    const [state, dispatch] = useContext(ManiobrasContext)
 
     const tableManiobrasChecklist = 'maniobras_checklist'
     const tableReparaciones = 'reparaciones'
@@ -21,15 +17,9 @@ function usePostCheckList() {
     const preset = 'mvtjch9n';
     const folderName = 'maniobras_checklist';
 
-    const [errorPost, setErrorPost] = useState(false)
-    const [request, setRequest] = useState(false)
-    const { updateStatusRegisters } = usePostRegister();
-
     const sendCheckList = async (dataCheck, flatCheckList, item) => {
         try {
             dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true })
-            setErrorPost(false)
-            setRequest(false)
 
             const idRegistro = dataCheck.registro_detalle_entrada_id;
 
@@ -52,18 +42,9 @@ function usePostCheckList() {
 
             const updateStatus = item.status;
 
-            const { error: errorUpdateTank } = await supabase
-                .from('tanques')
-                .update({ status: updateStatus })
-                .eq('tanque', item.numero_tanque)
-
-            if (errorUpdateTank) {
-                throw new Error(`Error: ${errorUpdate}`)
-            }
-
             const { errorUpdate } = await supabase.from('registros_detalles_entradas')
                 .update({ status: updateStatus })
-                .eq('id', idRegistro)
+                .eq('entrada_id', idRegistro)
 
             if (errorUpdate) {
                 throw new Error(`Error: ${errorUpdate}`)
@@ -96,14 +77,11 @@ function usePostCheckList() {
             }
 
             setTimeout(() => {
-                dispatch({ type: actionTypes.setSelectItem, payload: false })
                 dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false })
             }, 1000)
 
 
         } catch (error) {
-            setErrorPost(error)
-            dispatch({ type: actionTypes.setSelectItem, payload: false })
             dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false })
             dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: error.message })
         }
@@ -169,8 +147,7 @@ function usePostCheckList() {
         }
     }
 
-
-    return { sendCheckList, errorPost, request }
+    return { sendCheckList }
 
 }
 

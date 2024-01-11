@@ -14,35 +14,10 @@ function useGetManiobrasType(typeManiobra) {
 
         const { data, error } = await supabase
             .from('registros')
-            .select(`
-                *,
-                registros_detalles_entradas (
-                    id,
-                    carga,
-                    tracto,
-                    numero_tanque,
-                    status,
-                    numero_pipa,
-                    transportistas (
-                        id,
-                        name
-                    ),
-                    operadores (
-                        id,
-                        nombre,
-                        correo,
-                        contacto
-                    ),
-                    tanques(
-                        status
-                    )
-                )
-            `)
-            .eq('type', 'entrada')
-            .eq('status', 'maniobras')
-            .not('checkIn', 'is', null)
+            .select(`*`)
+            .eq('status', 'confirm')
             .order('created_at', { ascending: false })
-            .range(0, 19)
+            .range(0, 50)
         if (error) {
             setErrorManiobra(error)
             const cache = localStorage.getItem('maniobras_realizadas');
@@ -65,55 +40,11 @@ function useGetManiobrasType(typeManiobra) {
         setLoadingManiobra(true)
 
         const { data, error } = await supabase
-            .from('registros')
-            .select(`
-                *,
-                registros_detalles_salidas (
-                    id,
-                    carga,
-                    tracto,
-                    numero_tanque,
-                    numero_pipa,
-                    transportistas (
-                        id,
-                        name
-                    ),
-                    operadores (
-                        id,
-                        nombre,
-                        correo,
-                        contacto
-                    ),
-                    tanques(
-                        status
-                    )
-                ),
-                registros_detalles_entradas (
-                    id,
-                    carga,
-                    tracto,
-                    numero_tanque,
-                    status,
-                    numero_pipa,
-                    transportistas (
-                        id,
-                        name
-                    ),
-                    operadores (
-                        id,
-                        nombre,
-                        correo,
-                        contacto
-                    ),
-                    tanques(
-                        status
-                    )
-                )
-            `)
-            .is('checkIn', null)
-            .order('created_at', { ascending: false })
-            .range(0, 19)
-
+        .from('registros')
+        .select(`*`)
+        .eq('status', 'forconfirm')
+        .order('created_at', { ascending: false })
+        .range(0, 50)
 
         if (error) {
             setErrorManiobra(error)

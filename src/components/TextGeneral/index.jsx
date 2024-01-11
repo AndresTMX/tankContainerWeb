@@ -1,7 +1,6 @@
 import { Box, Typography, Chip } from "@mui/material";
-import InfoIcon from '@mui/icons-material/Info';
 
-function TextGeneral({ width, text, label, variant, onClick }) {
+function TextGeneral({ width, text, label, variant, onClick, styles }) {
     return (
         <>
             {!variant && (

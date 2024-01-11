@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { Box, Paper, Stack, Button, IconButton, Divider, Chip, } from "@mui/material";
+import { Box, Paper, Stack, Button, IconButton, Divider, Chip, Typography } from "@mui/material";
 import { ButtonDowloand } from "../../PDFs/components/ButtonDowloand";
 import { ModalInfoOperator } from "../ModalInfoOperator";
 import { TextGeneral } from "../TextGeneral";
@@ -14,13 +14,14 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { tiempoTranscurrido, dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { useRegisterForDetails } from "../../Hooks/Maniobras/useRegisterForDetails";
 
 function ItemEIR({ typeRegister, data, toggleChecklist, selectItem, item }) {
 
     //state modal info operator
     const [modal, setModal] = useState(false);
     const toggleModal = () => setModal(!modal);
-    const { contacto, nombre } = data.operador || {};
+    const { contacto, nombre } = data.operadores || {};
 
     return (
         <>
@@ -58,12 +59,22 @@ export { ItemEIR };
 
 export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem, item }) {
 
+    const { entrada_id } = data;
+
+    const { register, loading, error } = useRegisterForDetails(entrada_id)
+
+    const { checkIn, created_at } = register;
+
     const IsSmall = useMediaQuery('(max-width:700px)');
 
-    const { carga, tracto, numero_tanque, checkIn, linea, dayInput, dateInput, shortNameOperator } = data;
+    const { carga, tracto, numero_tanque, transportistas, operadores } = data;
+
+    const { name: linea } = transportistas || {};
+
+    const { contacto, correo, nombre } = operadores || {};
 
     const selectTank = () => {
-        selectItem({ ...item, ...data })
+        selectItem({ ...item, ...data , checkIn, linea })
         toggleChecklist()
     }
 
@@ -86,7 +97,7 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
                         <Chip
                             size="small"
                             color="secondary"
-                            label={dayInput}
+                            label={dateMXFormat(checkIn)}
                             icon={<CalendarTodayIcon />}
                             sx={{
                                 width: "120px",
@@ -98,7 +109,7 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
                         <Chip
                             size="small"
                             color="info"
-                            label={dateInput}
+                            label={datetimeMXFormat(checkIn)}
                             icon={<AccessTimeIcon />}
                             sx={{
                                 maxWidth: "90px",
@@ -168,7 +179,10 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
                                 orientation={IsSmall ? "horizontal" : "vertical"}
                                 flexItem
                             />
-                            <TextGeneral width={'70px'} label="N° tanque" text={numero_tanque} />
+                            <Stack width={'100px'}>
+                                <Typography variant="subtitle2">N° de tanque</Typography>
+                                <Typography variant="button">{numero_tanque}</Typography>
+                            </Stack>
                         </>}
                     </Stack>
 
@@ -187,7 +201,9 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
                     >
 
                         <Stack flexDirection="row" gap="10px">
-                            <TextGeneral width={'100px'} label="Operador" text={shortNameOperator} />
+                            <TextGeneral width={'100px'} 
+                            label="Operador" 
+                            text={`${nombre?.split(" ").slice(0, 2)[0]} ${nombre?.split(" ").slice(0, 2)[1]}`} />
                             <IconButton color="info" onClick={toggleOperator}>
                                 <InfoIcon />
                             </IconButton>
@@ -297,7 +313,7 @@ export function ItemComplete({ data, selectItem, item }) {
                     </Stack>
 
 
-                    <Stack width={isMovile? '100%': 'auto'}>
+                    <Stack width={isMovile ? '100%' : 'auto'}>
 
                         {(folio != item.folio) &&
                             <Button

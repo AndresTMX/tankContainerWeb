@@ -56,7 +56,7 @@ function ViewAndSelectTanks({ colorItemTank, toggleTank, dataTank, tankChargue, 
 export { ViewAndSelectTanks };
 
 export function ViewAndDeletTanks({ deleteTank, dataTank, }) {
- 
+
     return (
         <Box>
             <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
@@ -71,10 +71,10 @@ export function ViewAndDeletTanks({ deleteTank, dataTank, }) {
                 >
                     {dataTank.map((item) => (
                         <ItemTank
+                            key={item.numero_tanque}
                             typeItem={'delete'}
-                            key={item.tanque}
                             onClick={() => deleteTank(item)}
-                            tanque={item}
+                            tanque={item.numero_tanque}
                             colorTank={() => 'error'}
                         />
                     ))}
@@ -108,7 +108,7 @@ export function ItemTank({ tanque, onClick, colorTank, typeItem }) {
                             alignItems: 'center',
                             justifyContent: 'space-between'
                         }}>
-                        <Typography sx={{paddingLeft:'15px'}}>{tanque.tanque}</Typography>
+                        <Typography sx={{paddingLeft:'15px'}}>{tanque.numero_tanque||tanque.tanque}</Typography>
 
                         <IconButton>
                             <ClearIcon sx={{color:'white'}} onClick={() => onClick(tanque)} />

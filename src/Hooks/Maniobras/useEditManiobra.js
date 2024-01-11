@@ -4,7 +4,7 @@ import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import supabase from "../../supabase";
 
 
-function useEditManiobra() {
+function useEditManiobra(updaterregisters) {
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
@@ -18,7 +18,7 @@ function useEditManiobra() {
         //actualizar el registro
         try {
             const { error } = await supabase.from('registros')
-                .update({ status: 'lavado' })
+                .update({ status: 'proceso' })
                 .eq('id', idRegister)
 
             if (error) {
@@ -39,7 +39,7 @@ function useEditManiobra() {
         //actualizar los detalles del registro
         try {
             const { error } = await supabase.from('registros_detalles_entradas')
-                .update({ status: 'lavado' })
+                .update({ status: 'prelavado' })
                 .eq('registro_id', idRegister)
 
             if (error) {
@@ -66,6 +66,8 @@ function useEditManiobra() {
             type: actionTypesGlobal.setNotification,
             payload: 'Estatus actualizado'
         });
+
+        updaterregisters();
 
     }
 

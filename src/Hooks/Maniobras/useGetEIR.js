@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { filterInputRegistersForStatus } from "../../Helpers/transformRegisters";
 import supabase from "../../supabase";
 
 function useGetEIR(typeRegister) {
@@ -12,33 +11,28 @@ function useGetEIR(typeRegister) {
         setLoading(true)
 
         const { data, error } = await supabase
-            .from('registros')
-            .select(`
-                        *,
-                        registros_detalles_entradas (
+            .from('registros_detalles_entradas')
+            .select(` *,
+                        id,
+                        entrada_id,
+                        carga,
+                        tracto,
+                        numero_tanque,
+                        status,
+                        numero_pipa,
+                        transportistas (
                             id,
-                            carga,
-                            tracto,
-                            numero_tanque,
-                            status,
-                            numero_pipa,
-                            transportistas (
-                                id,
-                                name
-                            ),
-                            operadores (
-                                id,
-                                nombre,
-                                correo,
-                                contacto
-                            ),
-                            tanques(
-                                status
-                            )
+                            name
+                        ),
+                        operadores (
+                            id,
+                            nombre,
+                            correo,
+                            contacto
                         )
-                    `)
-            .eq('type', 'entrada')
-            .not('checkIn', 'is', null)
+                    )
+                `)
+            .eq('status', 'eir')
             .order('created_at', { ascending: false })
             .range(0, 50)
 
@@ -51,10 +45,10 @@ function useGetEIR(typeRegister) {
             }
         } else {
             setTimeout(() => {
-                const newData = filterInputRegistersForStatus(data, 'eir');
-                setData(newData)
+                // const newData = filterInputRegistersForStatus(data, 'eir');
+                setData(data)
                 setLoading(false)
-                localStorage.setItem('checklist_EIR_pendientes', JSON.stringify(newData))
+                localStorage.setItem('checklist_EIR_pendientes', JSON.stringify(data))
             }, 1000)
         }
     }
@@ -103,7 +97,7 @@ function useGetEIR(typeRegister) {
         routerFetch()
     }, [typeRegister])
 
-    return {loading, error, data, setData}
+    return { loading, error, data, setData }
 
 }
 

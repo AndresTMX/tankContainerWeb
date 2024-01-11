@@ -58,13 +58,15 @@ export function filterSearchManiobras(busqueda, array) {
 
         array.map((register) => {
             const numero_tanque = register.numero_tanque.toLowerCase();
-            const operador = register.operador.nombre.toLowerCase();
-            const linea = register.linea.toLowerCase();
+            const operador = register.operadores.nombre.toLowerCase();
+            const linea = register.transportistas.name.toLowerCase();
             const tracto = register.tracto;
+            const carga = register.carga;
 
             if (numero_tanque.includes(busquedaMinuscula)
                 || operador.includes(busquedaMinuscula)
                 || linea.includes(busquedaMinuscula)
+                || carga.includes(busquedaMinuscula)
                 || tracto.includes(busqueda)
             ) {
                 results.push(register)

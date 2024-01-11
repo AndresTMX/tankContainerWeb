@@ -111,15 +111,14 @@ function ViewAllTanks() {
         { field: 'col2', headerName: 'Status', renderCell: (params) => (<CustomChip status={params.value} />), width: 120 },
         { field: 'col3', headerName: 'Reparaciones internas', width: 200 },
         { field: 'col4', headerName: 'Reparaciones externas', width: 200 },
+        { field: 'col5', headerName: 'Reingresos', width: 200 },
     ];
 
     return (
         <>
 
-            <Container>
-                <Box>
-
-                    <Paper>
+                <Box sx={{width:'100%' }}>
+                    <Paper sx={{width:'90vw', maxWidth:'1000px', justifyContent:'center', display:'flex'}}>
                         <ContainerScroll background={'white'} height={'75vh'}>
 
                             <DataGrid
@@ -138,7 +137,6 @@ function ViewAllTanks() {
                         </ContainerScroll>
                     </Paper>
                 </Box>
-            </Container>
 
             <Modal open={editTank}>
                 <Box
@@ -449,7 +447,7 @@ function CustomChip({ status }) {
         ready: "success",
         eir: "warning",
         finish: "error",
-        prelavado:"info",
+        prelavado: "info",
     }
 
     return (

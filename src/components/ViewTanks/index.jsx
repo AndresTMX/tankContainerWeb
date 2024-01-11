@@ -13,35 +13,24 @@ import { useSelectManiobras } from "../../Hooks/Maniobras/useSelectManiobras";
 import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
 import { ItemTank } from "../ViewAndSelectTanks";
 //helpers
-import { transformRegisters } from "../../Helpers/transformRegisters";
 import { useEffect } from "react";
 
-function ViewTanks({ typeView, toggle, data, changueTypeManiobra }) {
+function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
 
     const IsSmall = useMediaQuery("(max-width:900px)");
     const IsMovile = useMediaQuery("(max-width:500px)");
 
     useEffect(() => {
         getTanks();
-    }, [data])
+    }, [details])
 
-    const {
-        typeRegister,
-        linea,
-        tanques,
-        tanquesManiobras,
-        transportista,
-        operador,
-        tracto,
-        numeroTanques,
-        typeChargue,
-        shortNameOperator,
-    } = transformRegisters(data);
+    const { carga, tracto, operadores, transportistas, status, transportista_id, operador_id , idRegister} = details[0] || {};
+    const { nombre, contacto } = operadores || {};
+    const { name: linea, } = transportistas || {};
 
     const { addOutputRegisterForManiobra } = useAddOutputManiobra();
-    const { sendOutputRegisters } = usePostRegister();
     const { tanksReady, tankLoading, tankError, getTanks } = useGetTanks();
-    const { copyTanksFree, copyTanksManiobras, toggleTank, deletTanksChargue, dataTank, colorItemTank } = useSelectManiobras(tanquesManiobras, tanksReady, tankLoading);
+    const { copyTanksFree, copyTanksManiobras, toggleTank, deletTanksChargue, dataTank, colorItemTank } = useSelectManiobras(detailManiobras, tanksReady, tankLoading);
 
     const addContainers = async () => {
 
@@ -51,13 +40,13 @@ function ViewTanks({ typeView, toggle, data, changueTypeManiobra }) {
             registers.push({
                 carga: 'tanque',
                 tracto: tracto,
-                operador: operador.id,
-                numero_tanque: tanque.tanque,
-                transportista: transportista.id,
+                operador: operador_id ,
+                numero_tanque: tanque.numero_tanque,
+                transportista: transportista_id,
             })
         })
 
-        await addOutputRegisterForManiobra(data.id, registers)
+        await addOutputRegisterForManiobra(idRegister, registers)
         setTimeout(() => {
             changueTypeManiobra('pendiente')
             toggle(false)
@@ -95,20 +84,20 @@ function ViewTanks({ typeView, toggle, data, changueTypeManiobra }) {
                                     orientation={IsSmall ? "horizontal" : "vertical"}
                                     flexItem
                                 />
-                                <TextGeneral width={'50px'} label="Tracto" text={tracto} />
+                                <TextGeneral width={'100px'} label="Tracto" text={tracto} />
                                 <Divider
                                     orientation={IsSmall ? "horizontal" : "vertical"}
                                     flexItem
                                 />
 
-                                <TextGeneral width={'100px'} label="Tipo de carga" text={typeChargue} />
+                                <TextGeneral width={'100px'} label="Tipo de carga" text={carga} />
 
                                 <Divider
                                     orientation={IsSmall ? "horizontal" : "vertical"}
                                     flexItem
                                 />
 
-                                <TextGeneral width={'100px'} label="Operador" text={shortNameOperator} />
+                                <TextGeneral width={'100px'} label="Operador" text={`${nombre?.split(" ").slice(0, 2)[0]} ${nombre?.split(" ").slice(0, 2)[1]} `} />
 
                             </Stack>
                         </Paper>

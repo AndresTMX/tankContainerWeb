@@ -1,12 +1,12 @@
 import { useState } from "react";
 //components
 import { Searcher } from "../Searcher";
-import { HistoryItem } from "../HistoryItem";
 import { HistoryItemLoading } from "../HistoryItem";
 import { ContainerScroll } from "../ContainerScroll";
 import { FormRegisterManiobras } from "../FormRegisterManiobras";
 import { NotConexionState } from "../NotConectionState";
-import { Box, Stack, Chip, Typography, Paper, Button, Modal, Fade, Container, Alert } from "@mui/material";
+import { ItemManiobras } from "../ItemManiobras";
+import { Box, Stack, Chip, Typography, Paper, Button, Modal, Fade, Alert,} from "@mui/material";
 //helpers
 import { filterSearchVigilancia } from "../../Helpers/searcher";
 //hooks
@@ -34,14 +34,6 @@ function RegistersManiobras() {
     const toggleModalManiobras = () => setManiobraModal(!maniobraModal);
 
     const changueTypeManiobra = (newType) => setTypeManiobra(newType);
-
-    const [modalTank, setModalTank] = useState(false);
-
-
-    const toggleModalAddTanks = () => {
-        setManiobraModal(!maniobraModal)
-        setModalTank(!modalTank)
-    }
 
     return (
         <>
@@ -74,7 +66,7 @@ function RegistersManiobras() {
                             />
                             <Chip
                                 onClick={() => setTypeManiobra('pendiente')}
-                                color={typeManiobra === "pendiente" ? "info" : "default"}
+                                color={typeManiobra === "pendiente" ? "warning" : "default"}
                                 label="pendientes"
                             />
 
@@ -126,13 +118,11 @@ function RegistersManiobras() {
 
                         {(!loadingManiobra && results.length === 0 && !error) && (
                             <Stack gap="20px">
-                                {maniobras.map((item) => (
-                                    <HistoryItem
-                                        type="maniobras"
-                                        data={item}
-                                        key={item.id}
-                                        updater={forceUpdate}
-                                        typeManiobra={typeManiobra}
+                                {maniobras.map((element) => (
+                                    <ItemManiobras
+                                        key={element.id}
+                                        register={element}
+                                        updaterRegisters={forceUpdate}
                                         changueTypeManiobra={changueTypeManiobra}
                                     />
                                 ))}
@@ -141,8 +131,6 @@ function RegistersManiobras() {
 
                         {(loadingManiobra || loading) &&
                             <Stack spacing={1}>
-                                <HistoryItemLoading />
-                                <HistoryItemLoading />
                                 <HistoryItemLoading />
                             </Stack>
                         }
@@ -154,22 +142,13 @@ function RegistersManiobras() {
 
             <Modal open={maniobraModal}>
                 <Fade in={maniobraModal}>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '5%', width: '100%', height: 'auto' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '2%', width: '100%', height: 'auto' }}>
                         <FormRegisterManiobras
                             toggleModal={toggleModalManiobras}
                             setTypeManiobra={setTypeManiobra}
                             forceUpdate={forceUpdate}
-                            toggleModalAddTanks={toggleModalAddTanks}
                         />
                     </Box>
-                </Fade>
-            </Modal>
-
-            <Modal open={modalTank}>
-                <Fade in={modalTank}>
-                    <Container>
-                        <AddNewTanks toggleModal={toggleModalAddTanks} />
-                    </Container>
                 </Fade>
             </Modal>
         </>

@@ -1,9 +1,9 @@
 import { useState, useContext } from "react";
-import { usePostRegister } from "./Maniobras/usePostRegister";
-import { GlobalContext } from "../Context/GlobalContext";
-import { actionTypes } from "../Reducers/GlobalReducer";
+import { usePostRegister } from "./usePostRegister";
+import { GlobalContext } from "../../Context/GlobalContext";
+import { actionTypes } from "../../Reducers/GlobalReducer";
 
-function useFormRegister() {
+function useFormRegister(updaterRegisters) {
 
   const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
@@ -11,17 +11,20 @@ function useFormRegister() {
     sendInputRegisterEmptyTracto,
     sendInputRegistersTank,
     sendInputRegistersPipa,
-  } = usePostRegister();
+  } = usePostRegister(updaterRegisters);
 
   const [typeChargue, setTypeChargue] = useState("");
   const [tracto, setTracto] = useState("");
   const [select, setSelet] = useState("");
   const [operator, setOperator] = useState("");
-  const [numTank, setNumTank] = useState(0);
   const [dataTank, setDataTank] = useState([]);
   const [dataPipa, setDataPipa] = useState({ pipa1: "", pipa2: "" });
-  const [typePipa, setTypePipa] = useState('')
+  const [typePipa, setTypePipa] = useState('');
+  const [cliente, setCliente] = useState('');
 
+  const selectClient = (event) => {
+    setCliente(event.target.value)
+  }
 
   const handleChangeList = (event) => {
     setSelet(event.target.value);
@@ -103,11 +106,11 @@ function useFormRegister() {
             carga: typeChargue,
             operador_id: operator,
             transportista_id: select,
-            numero_tanque: value,
-            status: 'forconfirm'
+            numero_tanque: value.toLowerCase().trim(),
           });
         }
       });
+
       await sendInputRegistersTank(registers)
       clearInputs()
     }
@@ -120,7 +123,6 @@ function useFormRegister() {
       operador_id: operator,
       transportista_id: select,
       numero_tanque: null,
-      status:'forconfirm'
     }
     await sendInputRegisterEmptyTracto(data)
     clearInputs()
@@ -139,7 +141,6 @@ function useFormRegister() {
           operador_id: operator,
           transportista_id: select,
           numero_pipa: item,
-          status: 'forconfirm'
         })
       }
     })
@@ -167,10 +168,10 @@ function useFormRegister() {
     tracto,
     select,
     operator,
-    numTank,
     dataTank,
     dataPipa,
     typePipa,
+    cliente,
   };
 
   const functionsFormRegister = {
@@ -180,6 +181,7 @@ function useFormRegister() {
     handleChangueOperator,
     setDataTank,
     setDataPipa,
+    selectClient,
     routerRegisters,
     setTypePipa,
     toggleTank,

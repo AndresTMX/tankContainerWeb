@@ -18,6 +18,8 @@ import { ButtonDowloand } from "../../PDFs/components/ButtonDowloand";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useCustomers } from "../../Hooks/Customers/useCustomers";
+import { GlobalContext } from "../../Context/GlobalContext";
+import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 
 function CheckListEIR({ step, setStep, item, selectItem, toggleModalPDF }) {
 
@@ -59,6 +61,7 @@ function CheckListEIR({ step, setStep, item, selectItem, toggleModalPDF }) {
         {step === 4 && (
           <StepFor
             item={item}
+            state={state}
             selectItem={selectItem}
             nextStepBar={nextStepBar} />
         )}
@@ -697,19 +700,31 @@ export function StepThree({ nextStepBar, state }) {
   )
 }
 
-export function StepFor({ nextStepBar, item, selectItem }) {
+export function StepFor({ nextStepBar, item, selectItem, state }) {
 
+  const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
   const [modalCustomer, setModalCustomer] = useState(false)
   const { selectCustomers, updateCustomers, createCustomer } = useCustomers();
+  const { maniobrasCheckList } = state;
+  const flatCheckList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
+  const questionsWhitEvidenceAnex = flatCheckList.filter((question) => question.image != '');
 
   const onSumbit = (e) => {
     e.preventDefault();
-    nextStepBar(5)
+
+    if ((item.status === 'interna' || item.status === 'externa') && questionsWhitEvidenceAnex.length === 0) {
+      dispatchGlobal({
+        type: actionTypesGlobal.setNotification,
+        payload: 'Anexa evidencias para enviar este tanque a reparacion'
+      })
+    } else {
+      nextStepBar(5)
+    }
   }
 
   const optionsStatus = [
     { id: 'prelavado', nombre: 'prelavado' },
-    { id: 'parked', nombre: 'almacenaje' },
+    { id: 'almacenaje', nombre: 'almacenaje' },
     { id: 'interna', nombre: 'reparacion interna' },
     { id: 'externa', nombre: 'reparacion externa' },
   ]

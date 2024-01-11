@@ -3,18 +3,16 @@ import { useContext } from "react";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 
-function useDeletRegister(updater) {
+function useDeletRegister( updaterRegisters) {
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
-    const deleteRegisterTank = async (data) => {
+    const deleteRegisterTank = async ( idRegister, details) => {
 
         try {
-            const arrayDetails = data.registros_detalles_entradas;
-            const idRegister = data.id;
-
+   
             //actualizar los tanques con el estatus ready 
-            const updateTanques = arrayDetails.map(async (item) => {
+            const updateTanques = details.map(async (item) => {
                 const { error: errorUpdateTanques } = await supabase.from('tanques')
                     .update({ status: 'ready' })
                     .eq('tanque', item.numero_tanque)
@@ -46,7 +44,7 @@ function useDeletRegister(updater) {
                 payload: 'Registro eliminado'
             })
 
-            updater()
+            updaterRegisters()
 
         } catch (error) {
             dispatchGlobal({
@@ -60,10 +58,8 @@ function useDeletRegister(updater) {
 
     }
 
-    const deleteRegisterPipa = async (data) => {
+    const deleteRegisterPipa = async (idRegister) => {
         try {
-
-            const idRegister = data.id;
 
             //eliminar el registro 
             const { error: errorDeleteRegister } = await supabase
@@ -80,7 +76,7 @@ function useDeletRegister(updater) {
                 payload: 'Registro eliminado'
             })
 
-            updater()
+            updaterRegisters()
         } catch (error) {
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
@@ -89,10 +85,8 @@ function useDeletRegister(updater) {
         }
     }
 
-    const deleteRegisterEmpty = async (data) => {
+    const deleteRegisterEmpty = async (idRegister) => {
         try {
-
-            const idRegister = data.id;
 
             const { error } = await supabase.from('registros')
                 .delete()
@@ -107,7 +101,7 @@ function useDeletRegister(updater) {
                 payload: 'Registro eliminado'
             })
 
-            updater()
+            updaterRegisters()
         } catch (error) {
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
@@ -116,12 +110,12 @@ function useDeletRegister(updater) {
         }
     }
 
-    const routerDelet = async (typeChargue, data) => {
+    const routerDelet = async (typeChargue, idRegister, details) => {
 
         const router = {
-            tanque: () => deleteRegisterTank(data),
-            pipa: () => deleteRegisterPipa(data),
-            vacio: () => deleteRegisterEmpty(data),
+            tanque: () => deleteRegisterTank(idRegister, details),
+            pipa: () => deleteRegisterPipa(idRegister ),
+            vacio: () => deleteRegisterEmpty(idRegister ),
         }
 
         try {

@@ -1,15 +1,20 @@
-import { useState } from 'react';
-import { Box, Button, } from '@mui/material';
+import { Button, } from '@mui/material';
 //icons
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
+//hook de materiales
+import { useMaterials } from '../../Hooks/Maniobras/useMaterials';
 //dataGrid
 import { GridRowModes, DataGrid, GridToolbarContainer, GridActionsCellItem, GridRowEditStopReasons } from '@mui/x-data-grid';
 
 function DataGridMaterials({rows, rowModesModel, setRowModesModel, setRows, typeRepair}) {
+
+    const { materiales } = useMaterials()
+    
+    const arrayMaterials =  materiales.map((element) => element.material)
     
     const columns = [
         { 
@@ -22,11 +27,12 @@ function DataGridMaterials({rows, rowModesModel, setRowModesModel, setRows, type
         {
             field: 'material',
             headerName: 'material',
-            type: 'text',
+            type: 'singleSelect',
             width: 250,
             align: 'left',
             headerAlign: 'left',
             editable: true,
+            valueOptions: arrayMaterials,
         },
         {
             field: 'precio_unit',
@@ -104,6 +110,10 @@ function DataGridMaterials({rows, rowModesModel, setRowModesModel, setRows, type
 
     const handleSaveClick = (id) => () => {
         setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+        // const saveRow = rows.find((item) => item.id === id)
+        // const indexMaterial = rows.findIndex((item) => item.material === saveRow.material)
+        // const newRowWhitPrice = {...saveRow, cantidad: saveRow.cantidad + 1, importe: materiales[indexMaterial].precio_unitario, precio_unit:  materiales[indexMaterial].precio_unitario }
+        // setRows(...rows, newRowWhitPrice)
     };
 
     const handleDeleteClick = (id) => () => {

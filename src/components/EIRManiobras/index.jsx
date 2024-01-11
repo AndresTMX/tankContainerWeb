@@ -107,7 +107,7 @@ function EIRManiobras() {
 
                                 </Stack>
 
-                                <Box sx={{ width:'350px', alignItems: isMovile ? 'center' : 'flex-end' }}>
+                                <Box sx={{ width: '350px', alignItems: isMovile ? 'center' : 'flex-end' }}>
                                     <Searcher
                                         search={search}
                                         searching={searching}
@@ -121,7 +121,7 @@ function EIRManiobras() {
 
                         </Paper>
 
-                        <ContainerScroll height={ isMovile? '62vh' : '68vh'}>
+                        <ContainerScroll height={isMovile ? '62vh' : '68vh'}>
 
                             {(errorEIR) && <NotConexionState />}
 
@@ -141,12 +141,18 @@ function EIRManiobras() {
                                 </Stack>
                             )}
 
-                            {(!loadingEIR && !loading && !errorEIR && !error && dataEIR.length === 0) && (
-                                <Fade in={error}>
-                                    <Box sx={{ width: '90vw', maxWidth: '700px' }}  >
-                                        <Alert severity='info'>
-                                            Sin checklist pendientes
-                                        </Alert>
+                            {(!loadingEIR && !error && !loading && !errorEIR && dataEIR.length === 0) && (
+                                <Fade in={!loadingEIR}>
+                                    <Box sx={{ width: '90vw', maxWidth: '700px' }} >
+                                        {typeRegister === 'pendientes' &&
+                                            <Alert severity='info'>
+                                                Sin checklist pendientes
+                                            </Alert>}
+
+                                        {typeRegister === 'realizados' &&
+                                            <Alert severity='info'>
+                                                Sin checklist realizados
+                                            </Alert>}
                                     </Box>
                                 </Fade>
                             )}
