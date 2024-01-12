@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Container, Box, Paper, Stack, Alert, Chip, Typography, Button, Modal, IconButton } from "@mui/material";
 //estados genericos
 import { NotConexionState } from "../NotConectionState";
-import { HistoryItemLoading } from "../HistoryItem";
+import { ItemLoadingState } from "../ItemLoadingState";
 //componentes
 import { ContainerScroll } from "../ContainerScroll";
 import { ItemQuestion } from "../../sections/CheckListCalidadPrelavado";
@@ -68,9 +68,9 @@ function Lavados({ typeWashing }) {
 
                     {(loading && !error) &&
                         <>
-                            <HistoryItemLoading />
-                            <HistoryItemLoading />
-                            <HistoryItemLoading />
+                            <ItemLoadingState />
+                            <ItemLoadingState />
+                            <ItemLoadingState />
                         </>
                     }
 

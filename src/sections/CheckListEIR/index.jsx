@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { Box, Paper, Stack, Button, IconButton, Typography, Modal, Fade, Container } from "@mui/material";
+import { Box, Paper, Stack, Button, IconButton, Typography, Modal, Fade, Container, TextField } from "@mui/material";
 import { ModalAddCustomer } from "../../components/DataGridCustomers";
 import { StepBarProgress } from "../StepsManiobras/StepBarProgress";
 import { ContainerScroll } from "../../components/ContainerScroll";
@@ -704,7 +704,6 @@ export function StepFor({ nextStepBar, item, selectItem, state }) {
 
   const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
   const [modalCustomer, setModalCustomer] = useState(false)
-  const { selectCustomers, updateCustomers, createCustomer } = useCustomers();
   const { maniobrasCheckList } = state;
   const flatCheckList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
   const questionsWhitEvidenceAnex = flatCheckList.filter((question) => question.image != '');
@@ -751,15 +750,7 @@ export function StepFor({ nextStepBar, item, selectItem, state }) {
               </Button>
             </Stack>
 
-            <SelectSimple
-              type={'obj'}
-              title='Cliente'
-              width={'100%'}
-              value={item.cliente_id}
-              options={selectCustomers}
-              onChange={(e) => selectItem({ ...item, cliente_id: e.target.value })}
-              helperText={'Selecciona un cliente'}
-            />
+            <TextField disabled value={item.cliente}/>
 
             <SelectSimple
               type={'obj'}

@@ -20,16 +20,9 @@ function useGetEIR(typeRegister) {
                         numero_tanque,
                         status,
                         numero_pipa,
-                        transportistas (
-                            id,
-                            name
-                        ),
-                        operadores (
-                            id,
-                            nombre,
-                            correo,
-                            contacto
-                        )
+                        transportistas (*),
+                        operadores (*),
+                        clientes(*)
                     )
                 `)
             .eq('status', 'eir')

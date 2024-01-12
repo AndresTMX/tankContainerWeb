@@ -4,7 +4,7 @@ import { Box, Paper, Stack, Button, IconButton, Skeleton, Chip, Modal, Fade, Ale
 //customComponents
 import { ModalInfoOperator } from "../ModalInfoOperator";
 import { FormEditManiobras } from "../FormEditManiobras";
-import { HistoryItemLoading } from "../HistoryItem";
+import { ItemLoadingState } from "../ItemLoadingState";
 import { TextGeneral } from "../TextGeneral";
 import { ViewTanks } from "../ViewTanks";
 //hooks
@@ -17,7 +17,6 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 //helpers
 import { dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
 //icons
-import AddIcon from '@mui/icons-material/Add';
 import InfoIcon from "@mui/icons-material/Info";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -34,7 +33,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
     const { carga, tracto, operadores, transportistas, status , clientes} = details[0] || {};
     const { nombre, contacto } = operadores || {};
     const { name: linea } = transportistas || {};
-    const { cliente } = clientes || {};
+    const { cliente, id:idCliente } = clientes || {};
 
     // const [state, dispatch] = useContext(ManiobrasContext);
     const [modalTanks, setModalTanks] = useState(false);
@@ -285,7 +284,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                             }}
                         >
                             <Typography variant='button'>{`${carga}s`}</Typography>
-                            {details.map((detail, index) => (
+                            {detailManiobras.map((detail, index) => (
                                 <Box key={detail.id}>
                                     <Box
                                         sx={{
@@ -313,7 +312,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                                             </Button>}
 
                                     </Box>
-                                    {details.length != index + 1 && (
+                                    {detailManiobras.length != index + 1 && (
                                         <Divider orientation={"horizontal"} flexItem />
                                     )}
                                 </Box>
@@ -332,7 +331,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                             }}
                         >
                             <Typography variant='button' >{`${carga}s`}</Typography>
-                            {details.map((detail, index) => (
+                            {detailManiobras.map((detail, index) => (
                                 <Box key={detail.id}>
                                     <Box
                                         sx={{
@@ -349,7 +348,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                                         </Stack>
 
                                     </Box>
-                                    {details.length != index + 1 && (
+                                    {detailManiobras.length != index + 1 && (
                                         <Divider orientation={"horizontal"} flexItem />
                                     )}
                                 </Box>

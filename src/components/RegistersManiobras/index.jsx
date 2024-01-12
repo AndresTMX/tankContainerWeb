@@ -1,7 +1,7 @@
 import { useState } from "react";
 //components
 import { Searcher } from "../Searcher";
-import { HistoryItemLoading } from "../HistoryItem";
+import { ItemLoadingState } from "../ItemLoadingState";
 import { ContainerScroll } from "../ContainerScroll";
 import { NotConexionState } from "../NotConectionState";
 import { ItemManiobras } from "../ItemManiobras";
@@ -132,7 +132,7 @@ function RegistersManiobras() {
 
                         {(loadingManiobra || loading) &&
                             <Stack spacing={1}>
-                                <HistoryItemLoading />
+                                <ItemLoadingState />
                             </Stack>
                         }
 

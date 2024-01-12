@@ -5,7 +5,7 @@ import { DetailsCheckList } from "../../components/DetailsCheckList";
 import { CheckListEIR } from "../../sections/CheckListEIR";
 import { NotConexionState } from "../NotConectionState";
 import { Searcher } from "../../components/Searcher";
-import { HistoryItemLoading } from "../HistoryItem";
+import { ItemLoadingState } from "../ItemLoadingState";
 import { ItemEIR } from "../ItemEIR";
 //context
 import { AuthContext } from "../../Context/AuthContext";
@@ -135,9 +135,9 @@ function EIRManiobras() {
 
                             {(loadingEIR || loading) && (
                                 <Stack gap="20px" >
-                                    <HistoryItemLoading />
-                                    <HistoryItemLoading />
-                                    <HistoryItemLoading />
+                                    <ItemLoadingState />
+                                    <ItemLoadingState />
+                                    <ItemLoadingState />
                                 </Stack>
                             )}
 

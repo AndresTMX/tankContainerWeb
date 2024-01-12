@@ -12,8 +12,8 @@ function useUpdateRegister(updater) {
     const checkRegisterWhitId = async (idRegister, data) => {
         try {
 
-            const detalles = data?.registros_detalles_entradas;
-            const carga = data?.registros_detalles_entradas[0].carga;
+            const detalles = data;
+            const carga = data[0].carga;
 
             //actualizar registros para confirmar la entrada
             const { error: errorUpdateRegister } = await supabase.from('registros')

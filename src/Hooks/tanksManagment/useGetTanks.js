@@ -24,7 +24,7 @@ function useGetTanks() {
                 if (errorDetails) {
                     setTankError(errorDetails)
                 } else {
-                    const registros = data.map((registro) => ({ ...registro, status: dataDetails[0].status }))
+                    const registros = data.map((registro) => ({ ...registro, status: dataDetails[0]?.status }))
                     setTanks(registros)
                 }
             })

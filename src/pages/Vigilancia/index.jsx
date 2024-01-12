@@ -1,6 +1,6 @@
 import { useState } from "react";
 //imports materialui
-import { Container, Box, Paper, Chip, Stack, } from "@mui/material";
+import { Box, Paper, Chip, Stack, } from "@mui/material";
 //components
 import { Searcher } from "../../components/Searcher";
 import { Notification } from "../../components/Notification";

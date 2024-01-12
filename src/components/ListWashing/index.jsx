@@ -1,7 +1,7 @@
 //components
 import { Box, Stack, Alert } from "@mui/material";
 import { ContainerScroll } from "../../components/ContainerScroll";
-import { HistoryItemLoading } from "../../components/HistoryItem";
+import { ItemLoadingState } from "../../components/ItemLoadingState";
 import { ItemWashing } from "../ItemWashing";
 import { NotConexionState } from "../NotConectionState";
 
@@ -38,9 +38,9 @@ function ListWashing({ washingList, loadignWashing, errorWashing }) {
 
                 {(loadignWashing && !errorWashing) &&
                     <Stack gap='10px' >
-                        <HistoryItemLoading />
-                        <HistoryItemLoading />
-                        <HistoryItemLoading />
+                        <ItemLoadingState />
+                        <ItemLoadingState />
+                        <ItemLoadingState />
                     </Stack>
                 }
 

@@ -3,7 +3,7 @@ import { Container, Box, Paper, Typography, Chip, Stack, Button, Alert, Modal, T
 import { CheckListCalidadPrelavado } from "../../sections/CheckListCalidadPrelavado";
 import { NotConexionState } from "../NotConectionState";
 import { ContainerScroll } from "../ContainerScroll";
-import { HistoryItemLoading } from "../HistoryItem";
+import { ItemLoadingState } from "../ItemLoadingState";
 import { CustomTabPanel } from "../CustomTabPanel";
 //icons
 import HistoryIcon from '@mui/icons-material/History';
@@ -59,9 +59,9 @@ function ListPrelavadosPending() {
 
                     {(loading && !error) &&
                         <Stack width={'100%'} gap={'5px'}>
-                            <HistoryItemLoading />
-                            <HistoryItemLoading />
-                            <HistoryItemLoading />
+                            <ItemLoadingState />
+                            <ItemLoadingState />
+                            <ItemLoadingState />
                         </Stack>
                     }
 

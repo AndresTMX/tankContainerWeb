@@ -65,16 +65,18 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
 
     const { checkIn, created_at } = register;
 
-    const IsSmall = useMediaQuery('(max-width:700px)');
+    const IsSmall = useMediaQuery('(max-width:850px)');
 
-    const { carga, tracto, numero_tanque, transportistas, operadores } = data;
-
-    const { name: linea } = transportistas || {};
+    const { carga, tracto, numero_tanque, transportistas, operadores, clientes } = data;
 
     const { contacto, correo, nombre } = operadores || {};
 
+    const { cliente, id: idCliente } = clientes || {};
+
+    const { name: linea } = transportistas || {};
+
     const selectTank = () => {
-        selectItem({ ...item, ...data , checkIn, linea })
+        selectItem({ ...item, ...data, checkIn, linea })
         toggleChecklist()
     }
 
@@ -132,7 +134,6 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
 
                     </Stack>
 
-
                     <Button
                         onClick={selectTank}
                         size="small"
@@ -144,9 +145,26 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
 
                 </Stack>
 
+                <Stack
+                    bgcolor='whitesmoke'
+                    flexDirection='row'
+                    alignItems='center'
+                    gap='10px'
+                    padding='10px'
+                >
+                    <Typography variant="subtitle2">
+                        Cliente
+                    </Typography>
+
+                    <Typography variant="subtitle">
+                        {cliente}
+                    </Typography>
+                </Stack>
+
                 <Box
                     sx={{
                         display: "flex",
+                        bgcolor:"whitesmoke",
                         alignItems: !IsSmall ? "center" : "start",
                         flexDirection: IsSmall ? "column" : "row",
                         justifyContent: "space-between",
@@ -201,9 +219,9 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
                     >
 
                         <Stack flexDirection="row" gap="10px">
-                            <TextGeneral width={'100px'} 
-                            label="Operador" 
-                            text={`${nombre?.split(" ").slice(0, 2)[0]} ${nombre?.split(" ").slice(0, 2)[1]}`} />
+                            <TextGeneral width={'100px'}
+                                label="Operador"
+                                text={`${nombre?.split(" ").slice(0, 2)[0]} ${nombre?.split(" ").slice(0, 2)[1]}`} />
                             <IconButton color="info" onClick={toggleOperator}>
                                 <InfoIcon />
                             </IconButton>

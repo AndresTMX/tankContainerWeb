@@ -8,7 +8,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 //components
 import { MaintenancesItem } from "../../components/MaintenancesITem";
 import { ContainerScroll } from "../../components/ContainerScroll";
-import { HistoryItemLoading } from "../../components/HistoryItem";
+import { ItemLoadingState } from "../../components/ItemLoadingState";
 import { Searcher } from "../../components/Searcher";
 import { ModalRepair } from "../../components/ModalRepair";
 import { Notification } from "../../components/Notification";
@@ -136,9 +136,9 @@ function Reparaciones() {
 
                                 {(loadingRepairs && !errorRepairs) &&
                                     <Stack gap='10px'>
-                                        <HistoryItemLoading />
-                                        <HistoryItemLoading />
-                                        <HistoryItemLoading />
+                                        <ItemLoadingState />
+                                        <ItemLoadingState />
+                                        <ItemLoadingState />
                                     </Stack>}
                             </ContainerScroll>
                         </Paper>

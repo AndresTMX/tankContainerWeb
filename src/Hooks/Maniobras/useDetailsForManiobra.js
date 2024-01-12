@@ -9,7 +9,11 @@ function useDetailsForManiobra(idManiobra, type) {
     const [error, setError] = useState(null);
     const [detailManiobras, setDetailManiobras] = useState([]);
 
-    const tableDetails = type === 'entrada' ? 'registros_detalles_entradas':'registros_detalles_salidas';
+    const tableDetails = type === 'entrada' ? 'registros_detalles_entradas' : 'registros_detalles_salidas';
+    const columnFilter = type === 'entrada' ? 'entrada_id' : 'salida_id';
+    const consultSelect = type === 'entrada' ?
+        `*, operadores (id, nombre, correo, contacto ), transportistas (id, name), clientes (*)` :
+        `*, registros (*) , operadores (id, nombre, correo, contacto ), transportistas (id, name), clientes (*)`
 
     const getDetailsForManiobra = async () => {
         try {
@@ -18,13 +22,8 @@ function useDetailsForManiobra(idManiobra, type) {
 
             const { data, error } = await supabase
                 .from(tableDetails)
-                .select(`
-                *,
-                operadores (id, nombre, correo, contacto ),
-                transportistas (id, name),
-                clientes (*)
-                `)
-                .eq('entrada_id', idManiobra)
+                .select(consultSelect)
+                .eq(columnFilter, idManiobra)
 
             if (error) {
                 throw new Error(error.message)
