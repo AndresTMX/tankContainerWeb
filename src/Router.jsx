@@ -7,6 +7,7 @@ import { Perfil } from "./pages/Perfil";
 import { Vigilancia } from "./pages/Vigilancia";
 import { Maniobras } from "./pages/Maniobras";
 import { Reparaciones } from "./pages/Reparaciones";
+import { ManiobrasForm } from "./pages/ManiobrasForm";
 import { Prelavado } from "./pages/Prelavado";
 import { Calidad } from "./pages/Calidad";
 import { Lavado } from "./pages/Lavado";
@@ -92,6 +93,25 @@ function Router() {
                         <Maniobras />
                       </ManiobrasProvider>
                     </UI>
+                  </RouteProtect>
+                }
+              >
+                <Route path=":parametro" element={
+                  <RouteProtect>
+                    <UI>
+                      <ManiobrasProvider>
+                        <Maniobras />
+                      </ManiobrasProvider>
+                    </UI>
+                  </RouteProtect>
+                } />
+              </Route>
+
+              <Route
+                path="/create_maniobra"
+                element={
+                  <RouteProtect>
+                    <ManiobrasForm />
                   </RouteProtect>
                 }
               />

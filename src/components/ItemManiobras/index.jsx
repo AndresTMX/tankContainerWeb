@@ -31,9 +31,10 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
 
     const { checkIn, created_at, type: typeRegister, status: statusRegister, id: idRegister } = register || {};
     const { details, detailManiobras, loading, error, updateDetails } = useDetailsForManiobra(idRegister, typeRegister)
-    const { carga, tracto, operadores, transportistas, status } = details[0] || {};
+    const { carga, tracto, operadores, transportistas, status , clientes} = details[0] || {};
     const { nombre, contacto } = operadores || {};
     const { name: linea } = transportistas || {};
+    const { cliente } = clientes || {};
 
     // const [state, dispatch] = useContext(ManiobrasContext);
     const [modalTanks, setModalTanks] = useState(false);
@@ -194,6 +195,22 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                         </Stack>
 
 
+                    </Stack>
+
+                    <Stack 
+                    bgcolor='whitesmoke'
+                    flexDirection='row'
+                    alignItems='center'
+                    gap='10px'
+                    padding='10px'
+                    >
+                        <Typography variant="subtitle2">
+                            Cliente 
+                        </Typography>
+
+                        <Typography variant="subtitle">
+                            {cliente}
+                        </Typography>
                     </Stack>
 
                     <Box

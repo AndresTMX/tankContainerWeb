@@ -3,8 +3,9 @@ import { useContext } from "react";
 import { AuthContext } from "../../Context/AuthContext"
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
+import { currenDateFormatTz } from "../../Helpers/date";
 
-function usePostRegister(updaterRegisters) {
+function usePostRegister() {
 
     const { key } = useContext(AuthContext);
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
@@ -73,7 +74,6 @@ function usePostRegister(updaterRegisters) {
                 payload: 'Registro enviado'
             })
 
-            updaterRegisters()
 
         } catch (error) {
             dispatchGlobal({
@@ -135,7 +135,6 @@ function usePostRegister(updaterRegisters) {
                 payload: 'Registro enviado'
             })
 
-            updaterRegisters()
 
         } catch (error) {
             dispatchGlobal({
@@ -182,7 +181,6 @@ function usePostRegister(updaterRegisters) {
                 payload: 'Registro enviado'
             })
 
-            updaterRegisters()
         } catch (error) {
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
@@ -211,16 +209,6 @@ function usePostRegister(updaterRegisters) {
             const idTransportista = registros[0].transportista_id;
             const idOperador = registros[0].operador_id;
 
-            //actualizar el registro general a finalizado
-            const { error: errorUpdateRegister } = await supabase
-                .from('registros')
-                .update({ status: 'finalized' })
-                .eq('id', idRegister)
-
-            if (errorUpdateRegister) {
-                throw new Error(`Error al intentar actualizar el registro`)
-            }
-
             const dataOutputRegister = {
                 carga: 'vacio',
                 tracto: tracto,
@@ -229,7 +217,17 @@ function usePostRegister(updaterRegisters) {
                 operador_id: idOperador,
             }
 
-            //Se agrega un nuevo registro general de salida 
+            //actualizar el registro general a finalizado
+            const { error: errorUpdateRegister } = await supabase
+                .from('registros')
+                .update({ status: 'finalized', checkOut: currenDateFormatTz })
+                .eq('id', idRegister)
+
+            if (errorUpdateRegister) {
+                throw new Error(`Error al intentar actualizar el registro`)
+            }
+
+            //Se crea un nuevo registro general de salida 
             const { data: dataRegister, error: errorAddRegister } = await supabase
                 .from('registros')
                 .insert({ user_id: session.id, type: 'salida' })
@@ -248,29 +246,18 @@ function usePostRegister(updaterRegisters) {
                 throw new Error(`Error al agregar detalles al registro de salida, error: ${errorDetails.message}`)
             }
 
+            //Si el detalle de registro es tipo vacio se actualiza el campo salida_id con el nuevo registro de salida
+            const { data: dataUpdateDetails, error: errorUpdadeDetails } = await supabase
+            .from(`registros_detalles_entradas`)
+            .update({salida_id: dataRegister[0].id})
+            .eq('entrada_id', idRegister)
+            
+            //de lo contrario se actualiza el estado de los demas tanques a eir
             //Filtrar los tanques asociados al registro que tengan el estatus "maniobras"
             const tanksInManiobrasState = registros.length >= 1 ?
                 registros.filter((tanque) => tanque.status === 'maniobras') : []
 
-            //actualizar estos tanques al estatus "eir"
-            const tanquesUpdates = tanksInManiobrasState.map(async (tanque) => {
-                const { error: errorUpdateStatusTanks } = await supabase
-                    .from('tanques')
-                    .update({ status: 'process' })
-                    .eq('tanque', tanque.numero_tanque)
-
-                if (errorUpdateStatusTanks) {
-                    throw new Error(`Error al actualizar estatus de tanques, error: ${errorUpdateStatusTanks.message}`)
-                }
-
-            })
-
-            try {
-                await Promise.all(tanquesUpdates);
-            } catch (error) {
-                throw new Error(`Error al actualizar status de tanques, error: ${error.message}`)
-            }
-
+        
             //actualizar estatus de los registros de entrada asociados 
             const registersUpdates = tanksInManiobrasState.map(async (tanque) => {
                 const { error: errorUpdateRegisters } = await supabase
@@ -300,7 +287,6 @@ function usePostRegister(updaterRegisters) {
                 payload: 'Registro enviado'
             });
 
-            updaterRegisters();
 
         } catch (error) {
             dispatchGlobal({

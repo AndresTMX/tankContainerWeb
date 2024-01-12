@@ -61,36 +61,35 @@ function AddNewTanks({ dataTank, setDataTank }) {
 
     return (
         <>
-            <ContainerScroll height={'auto'} maxHeight={'150px'} background={'white'} >
 
-                <Stack gap='8px'>
+            <Stack gap='8px'>
 
-                    <Stack flexDirection={'row'} justifyContent={'space-between'}>
-                        <Button
-                            variant="contained"
-                            onClick={addField}
-                            endIcon={<AddIcon />
-                            }>
-                            Agregar otro
-                        </Button>
+                <Stack flexDirection={'row'} justifyContent={'space-between'}>
+                    <Button
+                        variant="contained"
+                        onClick={addField}
+                        endIcon={<AddIcon />
+                        }>
+                        Agregar otro
+                    </Button>
 
-                    </Stack>
-
-                    {
-                        newTanks.map((element, index) => (
-                            <InputTank
-                                index={index}
-                                value={element}
-                                validateExist={validateExist}
-                                onChange={onChangueField}
-                                deleteField={deleteField}
-                                saveField={saveField}
-                                length={length}
-                            />
-                        ))
-                    }
                 </Stack>
-            </ContainerScroll>
+
+                {
+                    newTanks.map((element, index) => (
+                        <InputTank
+                            key={index}
+                            index={index}
+                            value={element}
+                            validateExist={validateExist}
+                            onChange={onChangueField}
+                            deleteField={deleteField}
+                            saveField={saveField}
+                            length={length}
+                        />
+                    ))
+                }
+            </Stack>
         </>
     );
 }

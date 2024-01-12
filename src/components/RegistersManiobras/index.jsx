@@ -3,37 +3,38 @@ import { useState } from "react";
 import { Searcher } from "../Searcher";
 import { HistoryItemLoading } from "../HistoryItem";
 import { ContainerScroll } from "../ContainerScroll";
-import { FormRegisterManiobras } from "../FormRegisterManiobras";
 import { NotConexionState } from "../NotConectionState";
 import { ItemManiobras } from "../ItemManiobras";
-import { Box, Stack, Chip, Typography, Paper, Button, Modal, Fade, Alert,} from "@mui/material";
+import { Box, Stack, Chip, Typography, Paper, Button, Fade, Alert, } from "@mui/material";
 //helpers
 import { filterSearchVigilancia } from "../../Helpers/searcher";
 //hooks
 import { useGetManiobrasType } from "../../Hooks/Maniobras/useGetManiobrasType";
-import { useSearcher } from "../../Hooks/useSearcher";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { useSearcher } from "../../Hooks/useSearcher";
+import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 //icons
 import AddIcon from '@mui/icons-material/Add';
-import { AddNewTanks } from "../AddNewTanks";
-
 
 function RegistersManiobras() {
 
     const isMovile = useMediaQuery("(max-width:750px)");
-    const isSmall = useMediaQuery("(max-width:455px)")
+    const isSmall = useMediaQuery("(max-width:455px)");
+    //capturo parametro del registro
+    const { parametro } = useParams();
 
-    const [typeManiobra, setTypeManiobra] = useState('confirmado')
+    const [typeManiobra, setTypeManiobra] = useState(parametro || 'confirmado')
     const { loadingManiobra, errorManiobra, maniobras, forceUpdate } = useGetManiobrasType(typeManiobra);
 
     const { states, functions } = useSearcher(filterSearchVigilancia, maniobras);
     const { search, results, loading, error } = states;
     const { searching, onChangueSearch, searchingKey } = functions;
 
-    const [maniobraModal, setManiobraModal] = useState(false);
-    const toggleModalManiobras = () => setManiobraModal(!maniobraModal);
-
     const changueTypeManiobra = (newType) => setTypeManiobra(newType);
+
+    //navigate form create maniobra
+    const navigate = useNavigate();
 
     return (
         <>
@@ -75,7 +76,7 @@ function RegistersManiobras() {
                                 color="primary"
                                 variant="contained"
                                 fullWidth={isSmall ? true : false}
-                                onClick={() => setManiobraModal(!maniobraModal)}
+                                onClick={() => navigate('/create_maniobra')}
                                 endIcon={<AddIcon />}
                             >
                                 Nueva maniobra
@@ -135,22 +136,10 @@ function RegistersManiobras() {
                             </Stack>
                         }
 
-
                     </Box>
                 </ContainerScroll>
             </Stack>
 
-            <Modal open={maniobraModal}>
-                <Fade in={maniobraModal}>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '2%', width: '100%', height: 'auto' }}>
-                        <FormRegisterManiobras
-                            toggleModal={toggleModalManiobras}
-                            setTypeManiobra={setTypeManiobra}
-                            forceUpdate={forceUpdate}
-                        />
-                    </Box>
-                </Fade>
-            </Modal>
         </>
     );
 }

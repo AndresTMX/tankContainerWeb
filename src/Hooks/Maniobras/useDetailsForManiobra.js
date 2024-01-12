@@ -21,7 +21,8 @@ function useDetailsForManiobra(idManiobra, type) {
                 .select(`
                 *,
                 operadores (id, nombre, correo, contacto ),
-                transportistas (id, name)
+                transportistas (id, name),
+                clientes (*)
                 `)
                 .eq('entrada_id', idManiobra)
 

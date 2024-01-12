@@ -3,7 +3,7 @@ import { usePostRegister } from "./usePostRegister";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes } from "../../Reducers/GlobalReducer";
 
-function useFormRegister(updaterRegisters) {
+function useFormRegister() {
 
   const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
@@ -11,19 +11,23 @@ function useFormRegister(updaterRegisters) {
     sendInputRegisterEmptyTracto,
     sendInputRegistersTank,
     sendInputRegistersPipa,
-  } = usePostRegister(updaterRegisters);
+  } = usePostRegister();
 
+  const [dataPipa, setDataPipa] = useState({ pipa1: "", pipa2: "" });
   const [typeChargue, setTypeChargue] = useState("");
-  const [tracto, setTracto] = useState("");
-  const [select, setSelet] = useState("");
+  const [dataClient, setDataClient] = useState([]);
   const [operator, setOperator] = useState("");
   const [dataTank, setDataTank] = useState([]);
-  const [dataPipa, setDataPipa] = useState({ pipa1: "", pipa2: "" });
   const [typePipa, setTypePipa] = useState('');
   const [cliente, setCliente] = useState('');
+  const [tracto, setTracto] = useState("");
+  const [select, setSelet] = useState("");
 
-  const selectClient = (event) => {
-    setCliente(event.target.value)
+  const selectClient = (event, clientes) => {
+    const customers = JSON.parse(localStorage.getItem('customers'))||[];
+    const customerSelected = customers.filter((customer) => customer.id === event.target.value);
+    setDataClient(customerSelected[0]);
+    setCliente(event.target.value);
   }
 
   const handleChangeList = (event) => {
@@ -38,8 +42,8 @@ function useFormRegister(updaterRegisters) {
     setTypeChargue(event.target.value);
   };
 
-  const handleChangueOperator = (value) => {
-    setOperator(value);
+  const handleChangueOperator = (event) => {
+    setOperator(event.target.value);
   };
 
   const validateNumTank = () => {
@@ -88,10 +92,23 @@ function useFormRegister(updaterRegisters) {
   const clearInputs = () => {
     setSelet("");
     setTracto("");
-    setTypeChargue("");
-    setDataTank({ numTank1: "", numTank2: "", numTank3: "", numTank4: "" });
-    setDataPipa({ pipa1: "", pipa2: "" });
+    setCliente("");
     setOperator("");
+    setTypeChargue("");
+    setDataPipa(
+      {
+        pipa1: "",
+        pipa2: ""
+      }
+    );
+    setDataTank(
+      {
+        numTank1: "",
+        numTank2: "",
+        numTank3: "",
+        numTank4: ""
+      }
+    );
   };
 
   const routeTank = async () => {
@@ -106,6 +123,7 @@ function useFormRegister(updaterRegisters) {
             carga: typeChargue,
             operador_id: operator,
             transportista_id: select,
+            cliente_id: cliente,
             numero_tanque: value.toLowerCase().trim(),
           });
         }
@@ -122,6 +140,7 @@ function useFormRegister(updaterRegisters) {
       carga: 'vacio',
       operador_id: operator,
       transportista_id: select,
+      cliente_id: cliente,
       numero_tanque: null,
     }
     await sendInputRegisterEmptyTracto(data)
@@ -140,6 +159,7 @@ function useFormRegister(updaterRegisters) {
           carga: typeChargue,
           operador_id: operator,
           transportista_id: select,
+          cliente_id: cliente,
           numero_pipa: item,
         })
       }
@@ -172,6 +192,7 @@ function useFormRegister(updaterRegisters) {
     dataPipa,
     typePipa,
     cliente,
+    dataClient,
   };
 
   const functionsFormRegister = {
@@ -184,6 +205,7 @@ function useFormRegister(updaterRegisters) {
     selectClient,
     routerRegisters,
     setTypePipa,
+    setDataClient,
     toggleTank,
   };
 

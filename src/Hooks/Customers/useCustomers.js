@@ -23,6 +23,7 @@ function useCustomers(idCustomer) {
         } else {
             getCustomers();
         }
+
     }, [update])
 
     const getCustomers = async () => {
@@ -121,26 +122,28 @@ function useCustomers(idCustomer) {
         try {
 
             const updatesCustomers = updates.map(async (update) => {
-                try {
-                    const { error } = await supabase
-                        .from('clientes')
-                        .update({ ...update })
-                        .eq('id', update.id)
 
-                    if (error) {
-                        throw new Error(error.message)
-                    }
+                const { error } = await supabase
+                    .from('clientes')
+                    .update({ ...update })
+                    .eq('id', update.id)
 
-                } catch (error) {
-                    setLoading(false);
-                    dispatchGlobal({
-                        type: actionTypesGlobal.setNotification,
-                        payload: error.message
-                    });
+                if (error) {
+                    throw new Error(error.message)
                 }
+
+                setLoading(false)
+                dispatchGlobal({
+                    type: actionTypesGlobal.setNotification,
+                    payload: error.message
+                });
             })
 
-            await Promise.all(updatesCustomers);
+            try {
+                await Promise.all(updatesCustomers);
+            } catch (error) {
+                throw new Error(`Error: ${error.message}`)
+            }
 
         } catch (error) {
             setLoading(false);

@@ -96,6 +96,8 @@ function RouteProtect({ children }) {
         "/prelavado",
         "/calidad",
         "/lavado",
+        "/create_maniobra",
+        "/maniobras/pendiente"
       ],
     },
     {
@@ -110,6 +112,9 @@ function RouteProtect({ children }) {
         "/prelavado",
         "/calidad",
         "/lavado",
+        "/create_maniobra",
+        "/maniobras/pendiente"
+
       ],
     },
     {

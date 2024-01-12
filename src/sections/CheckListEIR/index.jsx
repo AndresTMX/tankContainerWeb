@@ -1,24 +1,24 @@
 import { useState, useContext, useEffect } from "react";
 import { Box, Paper, Stack, Button, IconButton, Typography, Modal, Fade, Container } from "@mui/material";
-import { ManiobrasContext } from "../../Context/ManiobrasContext";
-import { ContainerScroll } from "../../components/ContainerScroll";
+import { ModalAddCustomer } from "../../components/DataGridCustomers";
 import { StepBarProgress } from "../StepsManiobras/StepBarProgress";
-import { InputImage } from "../../components/InputImage";
+import { ContainerScroll } from "../../components/ContainerScroll";
+import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { useCheckList } from "../../Hooks/useChecklistManiobras";
 import { SelectSimple } from "../../components/SelectSimple";
-import { InputText } from "../../components/InputText";
 import { AccordionSimple } from "../../components/Accordion";
-import { ModalAddCustomer } from "../../components/DataGridCustomers";
+import { TextGeneral } from "../../components/TextGeneral";
+import { InputImage } from "../../components/InputImage";
+import { InputText } from "../../components/InputText";
 //icons
 import ChatIcon from '@mui/icons-material/Chat';
 import AddIcon from '@mui/icons-material/Add';
-import { TextGeneral } from "../../components/TextGeneral";
 //button download pdf
 import { ButtonDowloand } from "../../PDFs/components/ButtonDowloand";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useCustomers } from "../../Hooks/Customers/useCustomers";
 import { GlobalContext } from "../../Context/GlobalContext";
+import { useCustomers } from "../../Hooks/Customers/useCustomers";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 
 function CheckListEIR({ step, setStep, item, selectItem, toggleModalPDF }) {
@@ -724,7 +724,7 @@ export function StepFor({ nextStepBar, item, selectItem, state }) {
 
   const optionsStatus = [
     { id: 'prelavado', nombre: 'prelavado' },
-    { id: 'almacenaje', nombre: 'almacenaje' },
+    { id: 'almacenado', nombre: 'almacenaje' },
     { id: 'interna', nombre: 'reparacion interna' },
     { id: 'externa', nombre: 'reparacion externa' },
   ]

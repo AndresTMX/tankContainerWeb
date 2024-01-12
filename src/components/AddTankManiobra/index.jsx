@@ -13,7 +13,7 @@ function AddTankManiobra({ dataTank, setDataTank, toggleTank }) {
     }
 
     return (
-        <Box sx={{width:'100%', padding:'10px'}}>
+        <Box sx={{width:'100%'}}>
 
             <Tabs value={tab} onChange={toggleTab}>
                 <Tab label='Tanques almacenados' />

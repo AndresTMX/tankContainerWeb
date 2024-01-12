@@ -10,41 +10,42 @@ function useEditManiobra(updaterregisters) {
 
     const changueStatusToWashing = async (idRegister) => {
 
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: true
-        })
-
-        //actualizar el registro
         try {
-            const { error } = await supabase.from('registros')
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: true
+            })
+
+            //actualizar el registro
+            const { error: errorUpdateRegister } = await supabase.from('registros')
                 .update({ status: 'proceso' })
                 .eq('id', idRegister)
 
-            if (error) {
-                throw new Error(`Error al intentar actualizar el registro`)
+            if (errorUpdateRegister) {
+                throw new Error(`Error al intentar actualizar el registro, error: ${errorUpdateRegister.message}`)
             }
-        } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
 
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            });
-        }
 
-        //actualizar los detalles del registro
-        try {
-            const { error } = await supabase.from('registros_detalles_entradas')
+            //actualizar los detalles del registro
+            const { error: errorUpdateDetails } = await supabase.from('registros_detalles_entradas')
                 .update({ status: 'prelavado' })
-                .eq('registro_id', idRegister)
+                .eq('entrada_id', idRegister)
 
-            if (error) {
-                throw new Error(`Error al intentar actualizar el registro`)
+            if (errorUpdateDetails) {
+                throw new Error(`Error al intentar actualizar el registro, error: ${errorUpdateDetails.message}`)
             }
+
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            });
+
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Estatus actualizado'
+            });
+
+            updaterregisters();
         } catch (error) {
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
@@ -57,17 +58,9 @@ function useEditManiobra(updaterregisters) {
             });
         }
 
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: false
-        });
 
-        dispatchGlobal({
-            type: actionTypesGlobal.setNotification,
-            payload: 'Estatus actualizado'
-        });
 
-        updaterregisters();
+
 
     }
 
@@ -529,7 +522,7 @@ function useEditManiobra(updaterregisters) {
 
     }
 
-    return { routerFetch , changueStatusToWashing}
+    return { routerFetch, changueStatusToWashing }
 
 }
 
