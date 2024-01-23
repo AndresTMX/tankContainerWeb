@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { Box, Paper, Stack, Button, IconButton, Typography, Card, CardMedia, CardActionArea, CardContent, CardActions, Modal, Fade, Alert, Skeleton } from "@mui/material";
+import { Box, Paper, Stack, Button, IconButton, Typography, Card, CardMedia, CardActionArea, CardContent, CardActions, Modal, Fade, Alert, Skeleton, Select, MenuItem, FormControl, InputLabel, Menu, FormHelperText } from "@mui/material";
 import { DataGridRepairs } from "../DataGridRepairs";
 import { DataGridMaterials } from "../DataGridMaterials";
 import { Proforma } from "../../PDFs/plantillas/proforma";
@@ -28,6 +28,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
     const { updateRepair, completeRepair } = useUpdateRepair();
     const [reparation, setReparation] = useState('');
+    const [newStatus, setNewStatus] = useState('');
     const [viewPDF, setViewPDF] = useState(false);
 
     //hook de manejo de datos 
@@ -37,8 +38,8 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
 
     //informacion recopilada en checklist
     const dataChecklist = checklist.length >= 1 ? checklist[0] : [];
-    const { folio, ingreso, clientes} = dataChecklist;
-    const {cliente} = clientes || {};
+    const { folio, ingreso, clientes } = dataChecklist;
+    const { cliente } = clientes || {};
     //fecha de finalizacion del mantenimiento
     const { checkOut, numero_tanque, } = tanque
 
@@ -92,16 +93,17 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
 
         const validationEvidences = evidences.filter((question) => question.imageEvidence === '');
 
-        if (validationEvidences.length > 0 || rowsMaterials.length === 0) {
+        if (validationEvidences.length > 0 || rowsMaterials.length === 0 && newStatus === '') {
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
-                payload: 'Anexa evidencias y materiales para completar la reparación'
+                payload: 'Anexa evidencias, materiales y estatus para completar la reparación'
             })
         } else {
             const dataMaintance = {
                 proforma: rows,
                 repairs: evidences,
-                materiales: rowsMaterials
+                materiales: rowsMaterials,
+                status: newStatus,
             }
 
             await completeRepair(dataMaintance, tanque.id);
@@ -280,6 +282,21 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                                     </Stack>
 
                                 </Stack>
+                            </Paper>
+
+                            <Paper sx={{padding:'20px'}}>
+                                <FormControl fullWidth>
+                                    <InputLabel>Siguiente estatus</InputLabel>
+                                    <Select
+                                        value={newStatus}
+                                        onChange={(e) => setNewStatus(e.target.value)}
+                                        label='Siguiente estatus'
+                                    >
+                                        <MenuItem value="almacenado">Almacenado</MenuItem>
+                                        <MenuItem value="finalized">Finalizado</MenuItem>
+                                    </Select>
+                                    <FormHelperText>Este estatus definirá si el tanque se almacena para programar un lavado en el futuro o se le deja de dar seguimiento</FormHelperText>
+                                </FormControl>
                             </Paper>
 
                             <ContainerScroll background={'whitesmoke'} height={'300px'}>

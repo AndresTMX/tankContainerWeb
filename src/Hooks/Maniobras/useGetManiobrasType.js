@@ -14,7 +14,7 @@ function useGetManiobrasType(typeManiobra) {
 
         const { data, error } = await supabase
             .from('registros')
-            .select(`*`)
+            .select(`*, operadores(*)`)
             .eq('status', 'confirm')
             .order('created_at', { ascending: false })
             .range(0, 50)
@@ -41,7 +41,7 @@ function useGetManiobrasType(typeManiobra) {
 
         const { data, error } = await supabase
         .from('registros')
-        .select(`*`)
+        .select(`*, operadores(*)`)
         .eq('status', 'forconfirm')
         .order('created_at', { ascending: false })
         .range(0, 50)

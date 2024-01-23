@@ -3,57 +3,98 @@ import supabase from "../../supabase";
 
 function useGetTanks() {
 
-    const [tanks, setTanks] = useState([])
-    const [tankLoading, setTankLoading] = useState(null)
-    const [tankError, setTankError] = useState(null)
+    const [tanks, setTanks] = useState([]);
+    const [tankLoading, setTankLoading] = useState(null);
+    const [tankError, setTankError] = useState(null);
+
+    const [detailTank, setDetailTank] = useState([]);
+    const [errorDetail, setErrorDetail] = useState(null);
+    const [loadingDetail, setLoadingDetail] = useState(null);
 
     const getTanks = async () => {
 
         setTankLoading(true)
+
         const { error, data } = await supabase
-            .from('tanques_detalles')
-            .select(`*`)
+            .from('registros_detalles_entradas')
+            .select(`status, numero_tanque`)
+            .eq('status', 'almacenado')
 
-        if (!error) {
-            const tanksWhitDetailsStatus = data.map(async (tanque) => {
-                const { data: dataDetails, error: errorDetails } = await supabase
-                    .from('registros_detalles_entradas')
-                    .select('status, numero_tanque ')
-                    .eq('numero_tanque', tanque.tanque)
-
-                if (errorDetails) {
-                    setTankError(errorDetails)
-                } else {
-                    const registros = data.map((registro) => ({ ...registro, status: dataDetails[0]?.status }))
-                    setTanks(registros)
-                }
-            })
-
-            try {
-                await Promise.all(tanksWhitDetailsStatus);
-            } catch (error) {
-                setTankError(error)
-
-            }
-            setTankLoading(false);
-        } else {
+        if (error) {
             setTankError(error);
             setTankLoading(false);
         }
+
+        const setFilterRepeat = new Set();
+        for (let item of data) {
+            setFilterRepeat.add(item)
+        }
+
+        setTanks([...setFilterRepeat])
+        setTankLoading(false)
+
+
     }
 
-    const tanksReady = tanks.length >= 1 ? tanks.filter((tanque) => tanque.status === 'almacenado') : [];
+    const getTanksReadyToOutput = async() => {
+        setTankLoading(true)
 
-    const rowTanks = tanks.length >= 1 ? tanks.map((tanque) => ({
-        id: tanque.tanque,
-        col1: tanque.tanque,
-        col2: tanque.status ? tanque.status : 'error',
-        col3: tanque.reparaciones_internas ? tanque.reparaciones_internas : '0',
-        col4: tanque.reparaciones_externas ? tanque.reparaciones_externas : '0',
-        col5: tanque.reingresos ? tanque.reingresos : 'error'
-    })) : [];
+        const { error, data } = await supabase
+            .from('registros_detalles_entradas')
+            .select(`status, numero_tanque, id`)
+            .eq('carga', 'tanque')
+            .eq('status', 'liberado')
 
-    return { getTanks, tanks, tanksReady, rowTanks, tankLoading, tankError }
+        if (error) {
+            setTankError(error);
+            setTankLoading(false);
+        }
+
+        setTankLoading(false);
+        setTanks(data);
+    }
+
+    const getAllTanks = async () => {
+
+        setTankLoading(true)
+
+        const { error, data } = await supabase
+            .from('registros_detalles_entradas')
+            .select(`status, numero_tanque, id`)
+            .eq('carga', 'tanque')
+            .neq('status', 'forconfirm')
+
+        if (error) {
+            setTankError(error);
+            setTankLoading(false);
+        }
+
+        setTankLoading(false);
+        setTanks(data);
+    }
+
+    const getDetailsForTank = async (numero_tanque) => {
+        try {
+            setLoadingDetail(true)
+            const { error, data } = await supabase
+                .from('tanques_detalles')
+                .select('*')
+                .eq('tanque', numero_tanque)
+
+            if (error) {
+                setDetailTank(error.message)
+            }
+
+            setDetailTank(data);
+            setLoadingDetail(false);
+
+        } catch (error) {
+            setLoadingDetail(false)
+        }
+    }
+
+
+    return { getTanks, getAllTanks, getDetailsForTank, getTanksReadyToOutput, tanks, tankLoading, tankError, detailTank, errorDetail, loadingDetail }
 
 }
 

@@ -12,18 +12,7 @@ function useGetEIR(typeRegister) {
 
         const { data, error } = await supabase
             .from('registros_detalles_entradas')
-            .select(` *,
-                        id,
-                        entrada_id,
-                        carga,
-                        tracto,
-                        numero_tanque,
-                        status,
-                        numero_pipa,
-                        transportistas (*),
-                        operadores (*),
-                        clientes(*)
-                    )
+            .select(` *, transportistas (*), clientes(*) 
                 `)
             .eq('status', 'eir')
             .order('created_at', { ascending: false })
@@ -38,7 +27,6 @@ function useGetEIR(typeRegister) {
             }
         } else {
             setTimeout(() => {
-                // const newData = filterInputRegistersForStatus(data, 'eir');
                 setData(data)
                 setLoading(false)
                 localStorage.setItem('checklist_EIR_pendientes', JSON.stringify(data))

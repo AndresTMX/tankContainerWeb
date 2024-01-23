@@ -41,7 +41,7 @@ function useUpdateRegister(updater) {
                     if (dataRepeat.length === 0) {
                         const { data: dataDetailTank, error: errorAddDetailTank } = await supabase
                             .from('tanques_detalles')
-                            .insert({ tanque: registro.numero_tanque })
+                            .insert({ tanque: registro.numero_tanque , tipo: registro.tipo})
                             .select()
 
                         if (errorAddDetailTank) {
@@ -97,21 +97,11 @@ function useUpdateRegister(updater) {
 
             //actualizar registros para confirmar la salida
             const { error: errorUpdateRegister } = await supabase.from('registros')
-                .update({ checkIn: currenDateFormatTz, status: 'finalizado' })
+                .update({ checkOut: currenDateFormatTz, status: 'finalizado' })
                 .eq('id', idRegister)
 
             if (errorUpdateRegister) {
                 throw new Error(`Error al intentar confirmar la entrada del registro, error: ${errorUpdateRegister.message}`)
-            }
-
-            //actualizar los detalles del registro de entrada
-            const { error: errorUpdateRegisterUpdate } = await supabase
-                .from('registros_detalles_entradas')
-                .update({ id_salida: idRegister })
-                .eq('registro_id', data.id)
-
-            if (errorUpdateRegisterUpdate) {
-                throw new Error(`Error al actualizar el estatus del registro de entrada, error:${errorUpdateStatus}`)
             }
 
             //actualizar los detalles del registro de salida

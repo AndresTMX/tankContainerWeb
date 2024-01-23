@@ -42,7 +42,7 @@ function Calidad() {
 
             <CustomTabPanel value={tab} index={1}>
                <Box>
-                  <Typography>Liberaciones</Typography>
+                  <Typography>Lavados</Typography>
                </Box>
             </CustomTabPanel>
 

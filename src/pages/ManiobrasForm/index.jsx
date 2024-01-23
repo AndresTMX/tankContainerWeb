@@ -14,7 +14,8 @@ import {
     Fade,
     Container,
 } from "@mui/material";
-import { AddTankManiobra } from "../../components/AddTankManiobra";
+import { AddDataTanks } from "../../components/AddNewTanks"
+import { Notification } from "../../components/Notification";
 //icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 //hooks
@@ -47,6 +48,9 @@ function ManiobrasForm() {
         typePipa,
         cliente,
         dataClient,
+        economico,
+        placas,
+        typeTank,
     } = statesFormRegister;
 
     const {
@@ -54,12 +58,15 @@ function ManiobrasForm() {
         handleChangeTracto,
         handleChangueTypeChargue,
         handleChangueOperator,
+        validateNumTank,
         routerRegisters,
         setDataPipa,
         setTypePipa,
-        toggleTank,
         setDataTank,
+        setTypeTank,
         selectClient,
+        setEconomico,
+        setPlacas,
         setDataClient,
     } = functionsFormRegister;
 
@@ -140,7 +147,7 @@ function ManiobrasForm() {
                     alignItems="center"
                 >
                     <IconButton
-                    onClick={() => navigate('/maniobras')}
+                        onClick={() => navigate('/maniobras')}
                     >
                         <ArrowBackIcon sx={{ color: 'white' }} />
                     </IconButton>
@@ -244,7 +251,7 @@ function ManiobrasForm() {
                                 flexDirection={isMovile ? "column" : "row"}
                             >
 
-                                <FormControl sx={{ width: isMovile ? '100%' : '150px' }}>
+                                <FormControl sx={{ width: isMovile ? '100%' : '30%' }}>
                                     <InputLabel id="select_type_charge">Tipo de carga</InputLabel>
                                     <Select
                                         required
@@ -257,7 +264,7 @@ function ManiobrasForm() {
                                     </Select>
                                 </FormControl>
 
-                                <FormControl sx={{ width: isMovile ? '100%' : '200px' }}>
+                                <FormControl sx={{ width: isMovile ? '100%' : '30%' }}>
                                     <InputLabel id="select_transportista">Linea transportista</InputLabel>
                                     <Select
                                         required
@@ -271,19 +278,10 @@ function ManiobrasForm() {
                                     </Select>
                                 </FormControl>
 
-                                <FormControl sx={{ width: isMovile ? '100%' : '200px' }}>
-                                    <TextField
-                                        required
-                                        id='numero_tracto'
-                                        label='Número de tracto'
-                                        value={tracto}
-                                        onChange={handleChangeTracto}
-                                    />
-                                </FormControl>
-
-                                <FormControl sx={{ width: isMovile ? '100%' : '260px' }}>
+                                <FormControl sx={{ width: isMovile ? '100%' : '30%' }}>
                                     <InputLabel id="select_operador">Operador</InputLabel>
                                     <Select
+                                        fullWidth
                                         required
                                         value={operator}
                                         label="Operador"
@@ -295,6 +293,48 @@ function ManiobrasForm() {
                                     </Select>
                                 </FormControl>
 
+                            </Stack>
+                        </Stack>
+                    </Paper>
+
+                    {/* informacion de tractocamion */}
+                    <Paper elevation={2} sx={{ padding: '20px' }}>
+                        <Stack gap="10px" width="100%">
+                            <Typography>Información del tractocamión</Typography>
+                            <Stack
+                                gap="10px"
+                                width="100%"
+                                flexDirection={isMovile ? "column" : "row"}
+                            >
+                                <FormControl sx={{ width: isMovile ? '100%' : '200px' }}>
+                                    <TextField
+                                        required
+                                        id='numero_tracto'
+                                        label='Número de tracto'
+                                        value={tracto}
+                                        onChange={handleChangeTracto}
+                                    />
+                                </FormControl>
+
+                                <FormControl sx={{ width: isMovile ? '100%' : '200px' }}>
+                                    <TextField 
+                                    required
+                                    id='numero_placas'
+                                    label='Número de placas'
+                                    value={placas}
+                                    onChange={(e) => setPlacas(e.target.value)}
+                                    />
+                                </FormControl>
+
+                                <FormControl sx={{ width: isMovile ? '100%' : '200px' }}>
+                                    <TextField 
+                                    required
+                                    id='numero_economico'
+                                    label='Número económico'
+                                    value={economico}
+                                    onChange={(e) => setEconomico(e.target.value)}
+                                    />
+                                </FormControl>
                             </Stack>
                         </Stack>
                     </Paper>
@@ -312,10 +352,11 @@ function ManiobrasForm() {
                             >
 
                                 {(typeChargue === 'tanque') &&
-                                    <AddTankManiobra
-                                        dataTank={dataTank}
-                                        setDataTank={setDataTank}
-                                        toggleTank={toggleTank}
+                                    <AddDataTanks
+                                    dataTank={dataTank}
+                                    typeTank={typeTank}
+                                    setDataTank={setDataTank}
+                                    setTypeTank={setTypeTank}
                                     />
                                 }
 
@@ -523,6 +564,8 @@ function ManiobrasForm() {
                     </Container>
                 </Fade>
             </Modal>
+
+            <Notification />
         </Box>
     );
 }

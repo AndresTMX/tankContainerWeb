@@ -5,7 +5,6 @@ function useGetRegisters(typeRegister) {
 
     const [data, setData] = useState([]);
     const [error, setError] = useState(null);
-    console.log("🚀 ~ useGetRegisters ~ error:", error)
     const [loading, setLoading] = useState(null);
     const [updateForce, setUpdateForce] = useState(false)
 
@@ -16,7 +15,7 @@ function useGetRegisters(typeRegister) {
         setLoading(true);
         const { data, error } = await supabase
             .from('registros')
-            .select(`*`)
+            .select(`*, operadores(*)`)
             .eq('type', typeRegister)
             .is('checkIn', null)
             .order('created_at', { ascending: false })
@@ -38,21 +37,7 @@ function useGetRegisters(typeRegister) {
         setLoading(true);
         const { data, error } = await supabase
             .from('registros')
-            .select(`
-            *,
-            registros_detalles_entradas (
-                *,
-                transportistas (
-                    id,
-                    name
-                ),
-                operadores (
-                    id,
-                    nombre,
-                    contacto
-                )
-            )
-        `)
+            .select(` *, operadores(*), registros_detalles_salidas(*)`)
             .eq('type', typeRegister)
             .is('checkIn', null)
             .order('created_at', { ascending: false })

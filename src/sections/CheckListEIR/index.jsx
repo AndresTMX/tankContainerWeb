@@ -12,13 +12,11 @@ import { InputImage } from "../../components/InputImage";
 import { InputText } from "../../components/InputText";
 //icons
 import ChatIcon from '@mui/icons-material/Chat';
-import AddIcon from '@mui/icons-material/Add';
 //button download pdf
 import { ButtonDowloand } from "../../PDFs/components/ButtonDowloand";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { GlobalContext } from "../../Context/GlobalContext";
-import { useCustomers } from "../../Hooks/Customers/useCustomers";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 
 function CheckListEIR({ step, setStep, item, selectItem, toggleModalPDF }) {
@@ -722,13 +720,10 @@ export function StepFor({ nextStepBar, item, selectItem, state }) {
   }
 
   const optionsStatus = [
-    { id: 'prelavado', nombre: 'prelavado' },
     { id: 'almacenado', nombre: 'almacenaje' },
     { id: 'interna', nombre: 'reparacion interna' },
     { id: 'externa', nombre: 'reparacion externa' },
   ]
-
-  const toggleModalCustomer = () => setModalCustomer(!modalCustomer)
 
 
   return (
@@ -738,19 +733,12 @@ export function StepFor({ nextStepBar, item, selectItem, state }) {
         <form onSubmit={onSumbit}>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} >
 
-            <Stack width={'100%'} alignItems={'flex-end'}>
-              <Button
-                size="small"
-                color="primary"
-                variant="contained"
-                endIcon={<AddIcon />}
-                onClick={toggleModalCustomer}
-              >
-                nuevo cliente
-              </Button>
-            </Stack>
-
-            <TextField disabled value={item.cliente}/>
+            <TextField
+              disabled
+              fullWidth
+              helperText='Cliente'
+              value={item.clientes.cliente}
+            />
 
             <SelectSimple
               type={'obj'}
@@ -794,13 +782,6 @@ export function StepFor({ nextStepBar, item, selectItem, state }) {
         </form>
 
       </Paper>
-
-      <ModalAddCustomer
-        modal={modalCustomer}
-        createCustomer={createCustomer}
-        updateCustomers={updateCustomers}
-        toggleModal={toggleModalCustomer}
-      />
     </>
   )
 }
@@ -808,7 +789,6 @@ export function StepFor({ nextStepBar, item, selectItem, state }) {
 export function StepFinal({ nextStepBar, toggleModalPDF, item, state, selectItem }) {
 
   const { maniobrasCheckList } = state;
-  const { customerId } = useCustomers(item.cliente_id);
   const flatCheckList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
 
   function filterChecklist(checklist, valueFilter) {
@@ -820,10 +800,6 @@ export function StepFinal({ nextStepBar, toggleModalPDF, item, state, selectItem
   const faltantes = filterChecklist(flatCheckList, 'Faltante');
   const respaldo = filterChecklist(flatCheckList, 'Respaldo');
   const abollados = filterChecklist(flatCheckList, 'Abollado');
-
-  useEffect(() => {
-    selectItem({ ...item, cliente: customerId.cliente })
-  }, [customerId])
 
   return (
     <>
@@ -872,7 +848,7 @@ export function StepFinal({ nextStepBar, toggleModalPDF, item, state, selectItem
             <TextGeneral
               width={'100%'}
               label={"Nombre del cliente"}
-              text={customerId ? customerId?.cliente : '...'}
+              text={item.clientes.cliente}
             />
 
             <TextGeneral

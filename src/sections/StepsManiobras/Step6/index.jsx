@@ -4,7 +4,6 @@ import { PrelavadoContext } from "../../../Context/PrelavadoContext";
 import { actionTypes } from "../../../Reducers/PrelavadoReducer";
 //components 
 import { Typography, Stack, Paper, FormGroup, Divider, IconButton, Button, Container, Modal, Fade } from "@mui/material";
-import { ButtonsNavigationCheck } from "../../ButtonsNavigationCheck";
 import { InputCheck } from "../../../components/InputCheck";
 import { InputImage } from "../../../components/InputImage";
 import { InputText } from "../../../components/InputText";
@@ -16,7 +15,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import ChatIcon from '@mui/icons-material/Chat';
 
 
-function Step6({ step, nextStep, previusStep }) {
+function Step6({ step, setStep }) {
 
     const IsSmall = useMediaQuery('(max-width:700px)');
     const [state, dispatch] = useContext(PrelavadoContext);
@@ -63,7 +62,7 @@ function Step6({ step, nextStep, previusStep }) {
         const inputsEmpty = ValidateInputs()
 
         if (inputsEmpty) {
-            nextStep(7)
+            setStep(7)
         }
 
     }
@@ -107,16 +106,16 @@ function Step6({ step, nextStep, previusStep }) {
                                 }}
                             >
                                 <Stack width={IsSmall ? '100%' : '50%'}>
-                                    <Typography textAlign={IsSmall?'center':'start'}>{item.question}</Typography>
+                                    <Typography textAlign={IsSmall ? 'center' : 'start'}>{item.question}</Typography>
                                 </Stack>
 
                                 <Stack
-                                    flexDirection='row' 
-                                    gap='20px' 
-                                    flexWrap={'wrap'} 
-                                    alignItems='center' 
-                                    justifyContent={ IsSmall? 'space-around': 'center'} 
-                                    width={ IsSmall? '100%':'200px'} 
+                                    flexDirection='row'
+                                    gap='20px'
+                                    flexWrap={'wrap'}
+                                    alignItems='center'
+                                    justifyContent={IsSmall ? 'space-around' : 'center'}
+                                    width={IsSmall ? '100%' : '200px'}
                                 >
                                     <Stack flexDirection='column' alignItems='center' >
                                         <strong>Si</strong>
@@ -129,12 +128,12 @@ function Step6({ step, nextStep, previusStep }) {
                                     </Stack>
                                 </Stack>
 
-                                <Stack 
-                                flexDirection='row' 
-                                alignItems='center' 
-                                justifyContent={IsSmall? 'center': 'flex-end'}
-                                gap={IsSmall ? '40px' : '10px'}
-                                width={ IsSmall? '100%':'200px'} 
+                                <Stack
+                                    flexDirection='row'
+                                    alignItems='center'
+                                    justifyContent={IsSmall ? 'center' : 'flex-end'}
+                                    gap={IsSmall ? '40px' : '10px'}
+                                    width={IsSmall ? '100%' : '200px'}
                                 >
                                     <IconButton
                                         onClick={() => SelectQuestionComent(index)}
@@ -150,10 +149,28 @@ function Step6({ step, nextStep, previusStep }) {
 
                             </Stack>
                         ))}
-                        <ButtonsNavigationCheck
-                            step={step}
-                            nextStep={SaveChanguesOnGloablState}
-                            previusStep={() => previusStep(5)} />
+
+                        <Stack
+                            flexDirection='row'
+                            justifyContent='space-between'
+                            width='100%'
+                            gap='20px'
+                        >
+
+                            <Button
+                                variant="contained"
+                                color="warning"
+                                onClick={() => setStep(5)}>
+                                anterior
+                            </Button>
+
+                            <Button
+                                variant="contained"
+                                onClick={SaveChanguesOnGloablState}>
+                                siguiente
+                            </Button>
+                        </Stack>
+
                     </FormGroup>
 
                 </ContainerScroll>

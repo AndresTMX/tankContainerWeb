@@ -1,27 +1,30 @@
-import { Box, Paper, Button, IconButton, Chip, Stack, Divider } from "@mui/material";
+import { Box, Paper, Button, IconButton, Chip, Stack, Divider, Typography } from "@mui/material";
 import { TextGeneral } from "../TextGeneral";
 //icons
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 //helpers
-import { dateMXFormat, datetimeMXFormat, tiempoTranscurrido } from "../../Helpers/date";
+import { dateMXFormat, datetimeMXFormat, tiempoTranscurrido, dateInText, timepoParaX, dateTextShort } from "../../Helpers/date";
 //context
 import { useContext } from "react";
 import { PrelavadoContext } from "../../Context/PrelavadoContext";
 import { actionTypes } from "../../Reducers/PrelavadoReducer";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useChecklistPrelavado } from "../../Hooks/Prelavado/useChecklistPrelavado";
 
 function ItemWashing({ data, updater, step, setStep }) {
 
     const [state, dispatch] = useContext(PrelavadoContext);
 
-    const IsSmall = useMediaQuery('(max-width:900px)');
+    const IsSmall = useMediaQuery('(max-width:815px)');
     const IsMovile = useMediaQuery('(max-width:500px)');
 
-    const { completeChecklist } = useChecklistPrelavado(updater);
+    const { status, program_date, tentativeEnd, registros_detalles_entradas } = data || {};
+
+    const { carga, clientes, numero_pipa, numero_tanque, tipo, registros } = registros_detalles_entradas || {};
+
+    const { checkIn, checkOut } = registros || {};
 
     const onWashing = () => {
         dispatch({
@@ -46,142 +49,117 @@ function ItemWashing({ data, updater, step, setStep }) {
         })
     }
 
-    const completeWashing = async () => {
-
-        const arrrayObjects = Object.values(state.checklist)
-
-        const arrayColection = arrrayObjects.map((item, index) => {
-            let array = [];
-
-            const data = Object.values(item).flat()
-
-            for (let element of data) {
-
-                if (typeof element === 'string') {
-                    element = { cubierta: item.type }
-                }
-
-                array.push(element)
-            }
-
-            return array
-
-        });
-
-        const questionsFlat = arrayColection.flat();
-
-        const dataChecklist = {
-            registro_detalle_entrada_id: data.id,
-            numero_tanque: data.numero_tanque,
-            numero_pipa: data.numero_pipa,
-            data: questionsFlat,
-        }
-
-        await completeChecklist(data.id, dataChecklist)
-        CancelChecklist();
-
-    }
+    const AMPM = datetimeMXFormat(program_date).split(':')[0] < 12 ? 'AM' : 'PM';
 
     return (
         <>
-            <Paper elevation={3}>
-                <Stack
-                    padding='15px'
-                    spacing='10px'
+            <Paper
+                sx={{ display: 'flex', flexDirection: 'column', padding: '15px', gap: '10px' }} elevation={3}>
+
+                {/* Cabecera de item*/}
+                {(!state.selectCheck) && <Stack
+                    justifyContent='space-between'
+                    flexDirection='row'
+                    flexWrap='wrap'
+                    gap='10px'
                 >
-                    {/* Cabecera */}
+
                     <Stack
+                        gap='10px'
+                        flexWrap='wrap'
                         flexDirection='row'
                         justifyContent='space-between'
-                        flexWrap='wrap'
-                        gap='10px'
+                        width={IsSmall ? 'auto' : '100%'}
                     >
 
-                        <Stack flexDirection='row' gap='10px' flexWrap='wrap'>
+                        <Stack flexDirection='row' gap='10px' flexWrap='wrap' >
+
                             <Chip
                                 icon={<CalendarTodayIcon />}
-                                label={dateMXFormat(data.registros.checkIn)}
+                                label={` Entregar el ${dateTextShort(tentativeEnd)}`}
                                 color='info'
                                 size="small"
                             />
 
                             <Chip
                                 icon={<AccessTimeIcon />}
-                                label={datetimeMXFormat(data.registros.checkIn)}
+                                label={`${datetimeMXFormat(tentativeEnd)} ${AMPM}`}
                                 color='info'
                                 size="small"
                             />
 
                             <Chip
                                 icon={<AccessTimeIcon />}
-                                label={tiempoTranscurrido(data.registros.checkIn)}
+                                label={`${timepoParaX(tentativeEnd)} para entrega`}
                                 color='info'
                                 size="small"
                             />
-                            
+
                         </Stack>
 
-                        <Stack flexDirection='row' paddingRight='10px' gap='10px' width={IsMovile ? '100%' : 'auto'}>
-                            {(!state.selectCheck) &&
-                                <Button
-                                    fullWidth={IsMovile}
-                                    onClick={onWashing}
-                                    variant="contained"
-                                    color="primary"
-                                    size="small"
-                                >
-                                    Check
-                                </Button>}
-
-                            {(state.selectCheck) &&
-                                <Button
-                                    disabled={step != 8 ? true : false}
-                                    fullWidth={IsSmall}
-                                    onClick={completeWashing}
-                                    variant="contained"
-                                    color="primary"
-                                    size="small"
-                                >
-                                    completar
-                                </Button>}
-
-                            {(state.selectCheck) &&
-                                <IconButton
-                                    fullWidth={IsSmall}
-                                    onClick={CancelChecklist}
-                                    variant="contained"
-                                    color="error"
-                                    size="small"
-                                >
-                                    <DoDisturbIcon />
-                                </IconButton>}
-                        </Stack>
+                        <Button
+                            fullWidth={IsSmall}
+                            onClick={onWashing}
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                        >
+                            Checklist
+                        </Button>
 
                     </Stack>
 
-                    <Stack flexDirection={IsMovile ? 'column' : 'row'} justifyContent='start' gap='15px'>
+                </Stack>}
+
+
+                {/* Informacion */}
+                <Stack flexDirection={IsSmall ? 'column' : 'row'} justifyContent='space-around' gap='15px'>
+
+                    <TextGeneral
+                        label='Cliente'
+                        text={clientes?.cliente}
+                    />
+
+                    <Divider orientation={IsSmall ? "horizontal" : "vertical"} flexItem />
+
+                    {carga === 'tanque' &&
                         <TextGeneral
-                            label='Tipo de lavado'
-                            text={data.carga}
-                        />
+                            label='Tipo de tanque'
+                            text={tipo}
+                        />}
 
-                        <Divider orientation={IsMovile ? "horizontal" : "vertical"} flexItem />
+                    {carga === 'tanque' &&
+                        <Divider orientation={IsSmall ? "horizontal" : "vertical"} flexItem />}
 
-                        {(data.carga != 'pipa') &&
-                            <TextGeneral
-                                label='Numero de tanque'
-                                text={`${data.numero_tanque}`}
-                            />}
 
-                        {(data.carga != 'pipa') && <Divider orientation={IsMovile ? "horizontal" : "vertical"} flexItem />}
-
-                        <TextGeneral
-                            label='N° de tracto'
-                            text={data.tracto}
-                        />
+                    <Stack>
+                        <Typography variant='subtitle2'>{`Número de ${carga}`}</Typography>
+                        <Typography variant='button'>{numero_tanque || numero_pipa}</Typography>
                     </Stack>
+
+
+                    {(!state.selectCheck) && <Divider orientation={IsSmall ? "horizontal" : "vertical"} flexItem />}
+
+                    {(!state.selectCheck) &&
+                        <Stack>
+                            <Typography variant='subtitle2'>Cita de lavado</Typography>
+                            <Typography variant='button'>{` ${dateTextShort(program_date)}  ${datetimeMXFormat(program_date)} ${AMPM}`}</Typography>
+                        </Stack>}
+
+                    {(state.selectCheck) &&
+                        <Button
+                            endIcon={<DoDisturbIcon />}
+                            onClick={CancelChecklist}
+                            variant="contained"
+                            color="error"
+                            size="small"
+                        >
+                            Cancelar
+                        </Button>
+                    }
 
                 </Stack>
+
             </Paper>
         </>
     );

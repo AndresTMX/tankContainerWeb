@@ -15,16 +15,19 @@ function useFormRegister() {
 
   const [dataPipa, setDataPipa] = useState({ pipa1: "", pipa2: "" });
   const [typeChargue, setTypeChargue] = useState("");
+  const [economico, setEconomico] = useState("");
+  const [placas, setPlacas] = useState("");
   const [dataClient, setDataClient] = useState([]);
   const [operator, setOperator] = useState("");
-  const [dataTank, setDataTank] = useState([]);
+  const [dataTank, setDataTank] = useState({ tanque1: '', tanque2: '', tanque3: '', tanque4: '' });
+  const [typeTank, setTypeTank] = useState({ tanque1: '', tanque2: '', tanque3: '', tanque4: '' })
   const [typePipa, setTypePipa] = useState('');
   const [cliente, setCliente] = useState('');
   const [tracto, setTracto] = useState("");
   const [select, setSelet] = useState("");
 
   const selectClient = (event, clientes) => {
-    const customers = JSON.parse(localStorage.getItem('customers'))||[];
+    const customers = JSON.parse(localStorage.getItem('customers')) || [];
     const customerSelected = customers.filter((customer) => customer.id === event.target.value);
     setDataClient(customerSelected[0]);
     setCliente(event.target.value);
@@ -59,35 +62,6 @@ function useFormRegister() {
     }
   }
 
-  const validateTank = () => {
-    if (dataTank.length < 1) {
-      dispatchGlobal({
-        type: actionTypes.setNotification,
-        payload: 'No puedes enviar este registro sin tanques'
-      })
-      return false
-    } else {
-      return true
-    }
-  }
-
-  const toggleTank = (tank) => {
-
-    const newState = dataTank.length >= 1 ? [...dataTank] : [];
-    const index = dataTank.findIndex((item) => item === tank);
-    const repeat = dataTank.find((item) => item === tank)
-
-    if (index < 1 && repeat === undefined && validateNumTank()) {
-      newState.push(tank);
-    }
-
-    if (index >= 0 && repeat) {
-      newState.splice(index, 1);
-    }
-
-    setDataTank(newState)
-
-  }
 
   const clearInputs = () => {
     setSelet("");
@@ -114,36 +88,34 @@ function useFormRegister() {
   const routeTank = async () => {
     let registers = [];
 
-    if (typeChargue === "tanque" && validateTank()) {
+    const arrayTanks = Object.values(dataTank);
+    const arrayTypes = Object.values(typeTank);
 
-      dataTank.map((value, index) => {
-        if (value != "") {
-          registers.push({
-            tracto: tracto.trim(),
-            carga: typeChargue,
-            operador_id: operator,
-            transportista_id: select,
-            cliente_id: cliente,
-            numero_tanque: value.toLowerCase().trim(),
-          });
-        }
-      });
+    arrayTanks.map((register, index) => {
+      if (register.trim() != '') {
+        registers.push({
+          carga: typeChargue,
+          transportista_id: select,
+          cliente_id: cliente,
+          tipo: arrayTypes[index],
+          numero_tanque: register.numero_tanque || register.toLowerCase().trim(),
+        });
+      }
+    })
 
-      await sendInputRegistersTank(registers)
-      clearInputs()
-    }
+    await sendInputRegistersTank(registers, economico, placas, tracto, operator)
+    clearInputs()
   }
+
 
   const routeEmptyTank = async () => {
     const data = {
-      tracto: tracto.trim(),
       carga: 'vacio',
-      operador_id: operator,
       transportista_id: select,
       cliente_id: cliente,
       numero_tanque: null,
     }
-    await sendInputRegisterEmptyTracto(data)
+    await sendInputRegisterEmptyTracto(data, economico, placas, tracto, operator)
     clearInputs()
   }
 
@@ -155,9 +127,7 @@ function useFormRegister() {
     dataObjects.map((item) => {
       if (item != '') {
         registers.push({
-          tracto: tracto.trim(),
           carga: typeChargue,
-          operador_id: operator,
           transportista_id: select,
           cliente_id: cliente,
           numero_pipa: item,
@@ -165,7 +135,7 @@ function useFormRegister() {
       }
     })
 
-    await sendInputRegistersPipa(registers)
+    await sendInputRegistersPipa(registers, economico, placas, tracto, operator)
     clearInputs()
   }
 
@@ -193,6 +163,9 @@ function useFormRegister() {
     typePipa,
     cliente,
     dataClient,
+    typeTank,
+    economico,
+    placas,
   };
 
   const functionsFormRegister = {
@@ -203,10 +176,14 @@ function useFormRegister() {
     setDataTank,
     setDataPipa,
     selectClient,
+    setTypeTank,
+    setEconomico,
+    setPlacas,
     routerRegisters,
+    setTypeChargue,
     setTypePipa,
     setDataClient,
-    toggleTank,
+    validateNumTank,
   };
 
   return { statesFormRegister, functionsFormRegister };

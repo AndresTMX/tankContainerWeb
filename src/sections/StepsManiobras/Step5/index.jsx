@@ -8,14 +8,13 @@ import { ContainerScroll } from "../../../components/ContainerScroll";
 import { InputImage } from "../../../components/InputImage";
 import { InputText } from "../../../components/InputText";
 import { InputCheck } from "../../../components/InputCheck";
-import { ButtonsNavigationCheck } from "../../ButtonsNavigationCheck";
 //hooks
 import { useCheckList } from "../../../Hooks/useChecklistPrelavado";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //icons
 import ChatIcon from '@mui/icons-material/Chat';
 
-function Step5({ step, nextStep, previusStep }) {
+function Step5({ step, setStep }) {
 
     const IsSmall = useMediaQuery('(max-width:700px)');
     const [state, dispatch] = useContext(PrelavadoContext);
@@ -95,11 +94,11 @@ function Step5({ step, nextStep, previusStep }) {
                     </FormGroup>
 
                     {cuviertaValvula?.type === 'cabinet' && (
-                        <ChceckListCabinet step={step} nextStep={nextStep} previusStep={previusStep} />
+                        <ChceckListCabinet step={step} setStep={setStep} />
                     )}
 
                     {cuviertaValvula?.type === 'bucket' && (
-                        <ChceckListBucket step={step} nextStep={nextStep} previusStep={previusStep} />
+                        <ChceckListBucket step={step} setStep={setStep} />
                     )}
                 </ContainerScroll>
 
@@ -114,7 +113,7 @@ function Step5({ step, nextStep, previusStep }) {
 
 export { Step5 };
 
-export function ChceckListCabinet({ step, nextStep, previusStep }) {
+export function ChceckListCabinet({ step, setStep }) {
 
     const IsSmall = useMediaQuery('(max-width:700px)');
 
@@ -159,7 +158,7 @@ export function ChceckListCabinet({ step, nextStep, previusStep }) {
         dispatch({ type: actionTypes.setManiobrasCheck, payload: newState })
         const inputsEmpty = ValidateInputs()
         if (inputsEmpty) {
-            nextStep(6)
+            setStep(6)
         }
     }
 
@@ -236,10 +235,25 @@ export function ChceckListCabinet({ step, nextStep, previusStep }) {
                             ))}
                         </FormGroup>
 
-                        <ButtonsNavigationCheck
-                            step={step}
-                            nextStep={SaveChanguesOnGloablState}
-                            previusStep={() => previusStep(2)} />
+                        <Stack
+                            flexDirection='row'
+                            justifyContent='space-between'
+                            gap='20px'
+                        >
+
+                            <Button
+                                variant="contained"
+                                color="warning"
+                                onClick={() => setStep(2)}>
+                                anterior
+                            </Button>
+
+                            <Button
+                                variant="contained"
+                                onClick={SaveChanguesOnGloablState}>
+                                siguiente
+                            </Button>
+                        </Stack>
 
                     </Stack>
                 </Fade>
@@ -289,7 +303,7 @@ export function ChceckListCabinet({ step, nextStep, previusStep }) {
     );
 }
 
-export function ChceckListBucket({ step, nextStep, previusStep }) {
+export function ChceckListBucket({ step, setStep }) {
 
     const IsSmall = useMediaQuery('(max-width:700px)');
 
@@ -334,7 +348,7 @@ export function ChceckListBucket({ step, nextStep, previusStep }) {
         dispatch({ type: actionTypes.setManiobrasCheck, payload: newState })
         const inputsEmpty = ValidateInputs()
         if (inputsEmpty) {
-            nextStep(6)
+            setStep(6)
         }
     }
 
@@ -410,10 +424,25 @@ export function ChceckListBucket({ step, nextStep, previusStep }) {
                             ))}
                         </FormGroup>
 
-                        <ButtonsNavigationCheck
-                            step={step}
-                            nextStep={SaveChanguesOnGloablState}
-                            previusStep={() => previusStep(2)} />
+                        <Stack
+                            flexDirection='row'
+                            justifyContent='space-between'
+                            gap='20px'
+                        >
+
+                            <Button
+                                variant="contained"
+                                color="warning"
+                                onClick={() => setStep(2)}>
+                                anterior
+                            </Button>
+
+                            <Button
+                                variant="contained"
+                                onClick={SaveChanguesOnGloablState}>
+                                siguiente
+                            </Button>
+                        </Stack>
 
                     </Stack>
                 </Fade>

@@ -18,6 +18,8 @@ import { dividirArrayPorPropiedad } from "../../Helpers/transformRegisters";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { usePreWashingInspect } from "../../Hooks/Calidad/usePrewashingInspect";
+import { useGetCheckListPrelavado } from "../../Hooks/Prelavado/useGetChecklists";
+import { JsonRequestError } from "@fullcalendar/core";
 
 function ListPrelavadosPending() {
 
@@ -117,18 +119,13 @@ export function ItemPrelavadoChecklist({ prelavado, updater, type }) {
 
 function ItemPendiente({ prelavado, updater }) {
 
-    const {
-        data,
-        status,
-        user_id,
-        created_at,
-        iteraciones,
-        numero_pipa,
-        numero_tanque,
-        registro_detalle_entrada_id,
-    } = prelavado;
+    const { program_date, registros_detalles_entradas, id_detalle_entrada } = prelavado || {};
 
-    const prelavadosInJson = JSON.parse(data);
+    const { carga, clientes, numero_pipa, numero_tanque, status, lavado, created_at } = registros_detalles_entradas || {};
+
+    const { cliente } = clientes || {};
+
+    const { checklist, error, loading } = useGetCheckListPrelavado(id_detalle_entrada)
 
     const [viewPrelavados, setViewPrelavados] = useState(false);
     const [viewChecklist, setViewChecklist] = useState(false);
@@ -137,6 +134,8 @@ function ItemPendiente({ prelavado, updater }) {
     const toggleChecklist = () => setViewChecklist(!viewChecklist);
 
     const isMovile = useMediaQuery('(max-width:500px)')
+
+    const retornos = !loading ? checklist.length - 1 : '...cargando';
 
     return (
         <>
@@ -151,7 +150,7 @@ function ItemPendiente({ prelavado, updater }) {
                     elevation={4} sx={{ padding: '20px', width: '100%', display: 'flex', flexDirection: 'column', gap: '15px' }}>
                     <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
 
-                        <Stack flexDirection={'row'} alignItems={'center'} justifyContent={isMovile? 'space-around': 'flex-start'} gap={'10px'} flexWrap={'wrap'}>
+                        <Stack flexDirection={'row'} alignItems={'center'} justifyContent={isMovile ? 'space-around' : 'flex-start'} gap={'10px'} flexWrap={'wrap'}>
                             <Chip
                                 size='small'
                                 color='warning'
@@ -161,7 +160,7 @@ function ItemPendiente({ prelavado, updater }) {
                             <Chip
                                 size='small'
                                 color='info'
-                                label={`Retornos : ${iteraciones}`}
+                                label={`Retornos : ${retornos} `}
                                 sx={{ width: isMovile ? '40%' : 'auto' }}
                             />
                             {isMovile &&
@@ -212,11 +211,11 @@ function ItemPendiente({ prelavado, updater }) {
                             width={isMovile ? '100%' : 'auto'}
                         >
                             <Stack>
-                                <Typography variant='caption'>
-                                    {numero_tanque != null ? 'Tanque ' : 'Pipa '}
+                                <Typography textTransform='capitalize' variant='caption'>
+                                    {carga}
                                 </Typography>
-                                <Typography variant='button'>
-                                    {numero_tanque != null ? numero_tanque : numero_pipa}
+                                <Typography textTransform='uppercase' variant='button'>
+                                    {numero_tanque || numero_pipa}
                                 </Typography>
                             </Stack>
                         </Stack>
@@ -256,7 +255,7 @@ function ItemPendiente({ prelavado, updater }) {
             <ModalVisualizePrelavados
                 modal={viewPrelavados}
                 toggleModal={togglePrelavados}
-                prelavados={prelavadosInJson}
+                prelavados={checklist}
             />
 
             <CheckListCalidadPrelavado
@@ -418,8 +417,7 @@ export function ModalVisualizePrelavados({ modal, toggleModal, prelavados, }) {
         setTab(newValue)
     }
 
-    const totalQuestions = prelavados.length > 0 ? prelavados.flat() : [];
-    const allChecklist = dividirArrayPorPropiedad(totalQuestions, 'cubierta')
+    const allCheckListInJson = prelavados.map((prelavado) => ({ ...prelavado, data: JSON.parse(prelavado.data) }))
 
     return (
         <>
@@ -445,18 +443,18 @@ export function ModalVisualizePrelavados({ modal, toggleModal, prelavados, }) {
                                     variant={IsSmall ? "scrollable" : ''}
                                     scrollButtons="auto"
                                 >
-                                    {allChecklist.map((prelavado, index) => (
-                                        <Tab key={index} label={`Prelavado ${index + 1}`} />
+                                    {allCheckListInJson.map((prelavado, index) => (
+                                        <Tab key={prelavado.id} label={`Prelavado ${index + 1}`} />
                                     ))}
                                 </Tabs>
                             </Box>
 
-                            {prelavados.length >= 1 &&
-                                allChecklist.map((prelavado, index) => (
+                            {allCheckListInJson.length >= 1 &&
+                                allCheckListInJson.map((prelavado, index) => (
                                     <CustomTabPanel key={`panel_${index}`} index={index} value={tab} >
                                         <ContainerScroll height={'400px'} >
                                             <Stack width={'100%'} gap={'8px'} alignItems={'center'}>
-                                                {prelavado.map((question, index) => (
+                                                {prelavado.data.map((question, index) => (
                                                     <CheckListInspect
                                                         key={`checklist_${index}`}
                                                         question={question}

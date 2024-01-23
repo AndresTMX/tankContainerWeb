@@ -25,12 +25,11 @@ function usePreWashing() {
             setLoadingWashing(true)
             setErrorWashing(null)
             const { data, error } = await supabase
-                .from('registros_detalles_entradas')
-                .select(`
-                 *,
-                 registros(*)
-                 `)
-                .eq('status', 'prelavado')
+                .from('lavados')
+                .select(` *, registros_detalles_entradas(*, clientes(*), registros(*))`)
+                .eq('status', 'pending')
+                .order('tentativeEnd', { ascending: false })
+
 
             if (error) {
                 throw new Error(`Error al consultar lavados pendientes, error: ${error.message}`)

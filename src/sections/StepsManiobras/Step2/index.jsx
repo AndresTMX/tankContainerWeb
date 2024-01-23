@@ -11,14 +11,13 @@ import { useCheckList } from "../../../Hooks/useChecklistPrelavado";
 import { InputImage } from "../../../components/InputImage";
 import { InputText } from "../../../components/InputText";
 import { InputCheck } from "../../../components/InputCheck";
-import { ButtonsNavigationCheck } from "../../ButtonsNavigationCheck";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 //icons
 import ChatIcon from '@mui/icons-material/Chat';
 
-function Step2({ step, nextStep, previusStep }) {
+function Step2({ step, setStep }) {
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
     const [state, dispatch] = useContext(PrelavadoContext);
@@ -89,11 +88,11 @@ function Step2({ step, nextStep, previusStep }) {
         }
 
         if (sanitaria3AInput === 'si' && inputsEmpty & sanitaria3AInput != cierre3Input) {
-            nextStep(3)
+            setStep(3)
         }
 
         if (cierre3Input === 'si' && inputsEmpty & sanitaria3AInput != cierre3Input) {
-            nextStep(4)
+            setStep(4)
         }
 
     }
@@ -113,7 +112,7 @@ function Step2({ step, nextStep, previusStep }) {
 
                 <ContainerScroll height='55vh'>
 
-                    <Typography variant="h6" sx={{marginBottom:'20px'}}>Revisión de empaques de valvula de descarga</Typography>
+                    <Typography variant="h6" sx={{ marginBottom: '20px' }}>Revisión de empaques de valvula de descarga</Typography>
 
                     <FormGroup
                         sx={{
@@ -138,30 +137,30 @@ function Step2({ step, nextStep, previusStep }) {
                                             width: '100%',
                                             backgroundColor: 'white',
                                             padding: '20px',
-                                            maxWidth:'85vw'
+                                            maxWidth: '85vw'
                                         }}
                                     >
                                         <Stack width={IsSmall ? '100%' : '50%'} alignItems={IsSmall ? 'center' : 'start'}>
-                                            <Typography textAlign={IsSmall?'center':'start'} >{item.question}</Typography>
+                                            <Typography textAlign={IsSmall ? 'center' : 'start'} >{item.question}</Typography>
                                         </Stack>
 
-                                        <Stack 
-                                        flexDirection='row' 
-                                        gap='20px' 
-                                        flexWrap={'wrap'} 
-                                        alignItems='center' 
-                                        justifyContent={'center'} 
-                                        width={ IsSmall? '100%':'200px'} 
+                                        <Stack
+                                            flexDirection='row'
+                                            gap='20px'
+                                            flexWrap={'wrap'}
+                                            alignItems='center'
+                                            justifyContent={'center'}
+                                            width={IsSmall ? '100%' : '200px'}
                                         >
 
-                                            <Stack 
-                                            flexDirection='row' 
-                                            gap='20px' 
-                                            alignItems={IsSmall ? 'center' : 'start'} 
-                                            justifyContent={'space-around'} 
-                                            width={IsSmall? '400px':'100%'}
+                                            <Stack
+                                                flexDirection='row'
+                                                gap='20px'
+                                                alignItems={IsSmall ? 'center' : 'start'}
+                                                justifyContent={'space-around'}
+                                                width={IsSmall ? '400px' : '100%'}
                                             >
-                                               
+
                                                 <Stack flexDirection='column' alignItems='center' >
                                                     <strong>Si</strong>
                                                     <InputCheck value={item.value === 'si' ? true : false} onchangue={(e) => ChangueInput(index, 'si')} />
@@ -173,7 +172,7 @@ function Step2({ step, nextStep, previusStep }) {
                                                 </Stack>
                                             </Stack>
 
-                                            <Stack flexDirection='row' alignItems='center' justifyContent={'center'}  gap={IsSmall ? '40px' : '10px'} width={'100%'} maxWidth={'70vw'} >
+                                            <Stack flexDirection='row' alignItems='center' justifyContent={'center'} gap={IsSmall ? '40px' : '10px'} width={'100%'} maxWidth={'70vw'} >
                                                 <IconButton
                                                     onClick={() => SelectQuestionComent(index)}
                                                     variant="contained"
@@ -195,10 +194,10 @@ function Step2({ step, nextStep, previusStep }) {
 
                     </FormGroup>
 
-                    <ButtonsNavigationCheck
-                        step={step}
-                        nextStep={SaveChanguesOnGloablState}
-                        previusStep={() => previusStep(1)} />
+                    <Stack flexDirection='row' alignItems='center' justifyContent='space-between'>
+                        <Button variant="contained" color='warning' onClick={() => setStep(1)}>Anterior</Button>
+                        <Button variant="contained" color='primary' onClick={SaveChanguesOnGloablState} >Siguiente</Button>
+                    </Stack>
                 </ContainerScroll>
             </Box>
 

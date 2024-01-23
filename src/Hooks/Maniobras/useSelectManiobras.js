@@ -2,14 +2,16 @@ import { useState, useContext, useEffect } from "react";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 
-function useSelectManiobras(tanquesManiobras, tanksReady, tankLoading) {
+function useSelectManiobras(detallesRegister, tanksReady, tankLoading) {
 
     useEffect(() => {
+        const filterDetailsTypeTank = detallesRegister.filter((registro) => registro.carga === 'tanque' || registro.carga === 'pipa');
+        setCopyTanksManiobras(filterDetailsTypeTank)
         setCopyTanksFree(tanksReady)
     }, [tankLoading])
 
-    const [copyTanksFree, setCopyTanksFree] = useState(tanksReady)
-    const [copyTanksManiobras, setCopyTanksManiobras] = useState(tanquesManiobras);
+    const [copyTanksFree, setCopyTanksFree] = useState()
+    const [copyTanksManiobras, setCopyTanksManiobras] = useState();
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
     const [dataTank, setDataTank] = useState([])
@@ -30,12 +32,12 @@ function useSelectManiobras(tanquesManiobras, tanksReady, tankLoading) {
     }
 
     const toggleTank = (tank) => {
-
+      
         const newState = copyTanksManiobras.length >= 1 ? [...copyTanksManiobras] : [];
         const newStateTanksReady = copyTanksFree.length >= 1 ? [...copyTanksFree] : [];
-        const index = copyTanksManiobras.findIndex((item) => item.tanque === tank.tanque);
-        const indexTanksReady = copyTanksFree.findIndex((item) => item.tanque === tank.tanque);
-        const repeat = copyTanksManiobras.find((item) => item.tanque === tank.tanque)
+        const index = copyTanksManiobras.findIndex((item) => item === tank);
+        const indexTanksReady = copyTanksFree.findIndex((item) => item === tank);
+        const repeat = copyTanksManiobras.find((item) => item === tank)
 
         if (index < 1 && repeat === undefined && validateNumTank()) {
             newState.push(tank)
@@ -52,11 +54,12 @@ function useSelectManiobras(tanquesManiobras, tanksReady, tankLoading) {
     }
 
     const deletTanksChargue = (tank) => {
+   
         const newStateTankReady = copyTanksFree.length >= 1 ? [...copyTanksFree] : [];
         const newStateTanksManiobras = copyTanksManiobras.length >= 1 ? [...copyTanksManiobras] : [];
-        const indexInTanksManiobras = copyTanksManiobras.findIndex((item) => item.tanque === tank.tanque);
+        const indexInTanksManiobras = copyTanksManiobras.findIndex((item) => item === tank);
 
-        if (copyTanksManiobras.length === 1) {
+        if (copyTanksManiobras.length === 0) {
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
                 payload: 'No puedes eliminar todos los tanques'

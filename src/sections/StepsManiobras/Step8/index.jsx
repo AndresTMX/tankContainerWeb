@@ -1,137 +1,121 @@
 import { useState, useContext } from "react";
 //context
+import { actionTypes } from "../../../Reducers/PrelavadoReducer";
 import { PrelavadoContext } from "../../../Context/PrelavadoContext";
 //components
-import { TextGeneral } from "../../../components/TextGeneral";
-import { Box, Stack, Button, Paper, Typography , Chip, Divider} from "@mui/material";
-//icons
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Box, Stack, Button, Paper, Typography, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { useChecklistPrelavado } from "../../../Hooks/Prelavado/useChecklistPrelavado";
 
-function Step8({previusStep}) {
+function Step8({ setStep, updater }) {
+
+    const [status, setStatus] = useState('')
+
+    const { completeChecklist } = useChecklistPrelavado();
 
     const [state, dispatch] = useContext(PrelavadoContext)
-    const { checklist } = state;
+    const { checklist, selectCheck } = state;
 
-    const TypeValvula3A = checklist.empaques?.checkList[3].value === 'si'? true: false;
-    const TypeValvulaCierre3 = checklist.empaques?.checkList[4].value === 'si'? true:false;
-    const TypeValvula = TypeValvula3A? 'Valvula 3A': 'Valvula Cierre 3';
+    const { id_detalle_entrada } = selectCheck || {};
+    const { numero_pipa, numero_tanque } = selectCheck.registros_detalles_entradas || {};
 
-    const TypeCubierataValvula = checklist.cuviertaValvula.type;
-    const ValvulasDescargaChecklist = checklist.valvulasDescarga?.checkList? checklist.valvulasDescarga.checkList:[];
-    const CheckListCubiertaValvula = checklist.cuviertaValvula?.checkList ? checklist.cuviertaValvula.checkList: [];
-    const TapaderaDomoCheckList = checklist.tapaderaDomo?.checkList ? checklist.tapaderaDomo.checkList:[];
-    const EmpaquesTapaderaSuperior = checklist.empaques?.checkList? checklist.empaques.checkList: [];
-    //si es 3A
-    const cambiosValvula3A = checklist?.valvula3A? checklist.valvula3A.checklist.filter((question) => question.value != null):[]
+    const Submit = async (e) => {
+        e.preventDefault();
 
-    //si es cierre 3
+        const arrrayObjects = Object.values(checklist)
 
-    
-    return ( 
+        const arrayColection = arrrayObjects.map((item, index) => {
+            let array = [];
+
+            const data = Object.values(item).flat()
+
+            for (let element of data) {
+
+                if (typeof element === 'string') {
+                    element = {
+                        question: 'Tipo de cubierta',
+                        value: item.type,
+                        preview: ''
+                    }
+                }
+
+                array.push(element)
+            }
+
+            return array
+        });
+
+        const questionsFlat = arrayColection.flat();
+
+        const dataChecklist = {
+            registro_detalle_entrada_id: id_detalle_entrada,
+            numero_tanque: numero_tanque,
+            numero_pipa: numero_pipa,
+            data: questionsFlat,
+        }
+
+        await completeChecklist(id_detalle_entrada, dataChecklist, status);
+        setStep(1);
+        dispatch({ type: actionTypes.setSelectCheck, payload: false });
+        dispatch({ type: actionTypes.setCheckList, payload: { cuviertaValvula: { type: '' } } });
+        updater()
+
+    }
+
+    return (
         <>
-        <Paper 
-        elevation={4}
-        sx={{
-            display:'flex',
-            flexDirection:'column',
-            gap:'20px',
-            padding:'20px'
-        }}>
-
-            <Stack flexDirection='row' alignItems='center' gap='10px'>
-            <Typography variant="h6">
-                Check list de inspección completado
-            </Typography>
-            <CheckCircleIcon sx={{color:'green'}}/>
-            </Stack>
-
-            <Stack>
-                <Button variant="contained" color="primary">Descargar documento</Button>
-            </Stack>
-
-            <Typography variant="subtitle1">
-                Recapitulación
-            </Typography>
-
-            <Stack>
-
-                <Paper 
+            <Paper
+                elevation={4}
                 sx={{
-                    padding:'10px',
-                    backgroundColor:'whitesmoke',
-                    width:'100%'
+                    display: 'flex',
+                    padding: '20px',
+                    flexDirection: 'column',
+                    gap: '20px',
                 }}>
-                   
 
-                   <Stack>
-                    <strong>Tipo de valvula</strong>
-                    <span>{TypeValvula}</span>
-                    <Divider orientation={'horizontal'} flexItem />
-                   </Stack>
+                <form onSubmit={Submit}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
 
-                   {TypeValvula === 'Valvula 3A' && <Box sx={{display:'flex', flexDirection:'column', gap:'10px'}}>
-                   <strong>Cambios de empaques</strong>
-                   <Stack gap='5px' width='150px'>
-                            {cambiosValvula3A.map((item) => (
-                                <TextGeneral key={item.part} label={item.part} text={item.value} />
-                            ))}   
-                   </Stack>
-                    <Divider orientation={'horizontal'} flexItem />
-                   </Box>}
+                        <Typography>Siguiente paso</Typography>
 
-                   <Box sx={{display:'flex', flexDirection:'column', gap:'10px'}}>
-                   <strong>Estado de la cubierta</strong>
-                   <TextGeneral text={TypeCubierataValvula} label={'Tipo de cubierta'}/>
-                   <Stack gap='5px' width='150px'>
-                            {CheckListCubiertaValvula.map((item) => (
-                                <TextGeneral key={item.question} label={item.question} text={item.value} />
-                            ))}   
-                   </Stack>
-                    <Divider orientation={'horizontal'} flexItem />
-                   </Box>
+                        <FormControl fullWidth>
+                            <InputLabel>Status</InputLabel>
+                            <Select
+                                required
+                                label='Status'
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value)}
+                            >
+                                <MenuItem value='lavado'>Lavado</MenuItem>
+                                <MenuItem value='almacenado'>Almacenado</MenuItem>
+                                <MenuItem value='interna'>Reparacion interna</MenuItem>
+                                <MenuItem value='externa'>Reparación externa</MenuItem>
+                            </Select>
+                        </FormControl>
 
-                   <Box sx={{display:'flex', flexDirection:'column', gap:'10px'}}>
-                   <strong>Cambios de empaque tapadera superior</strong>
-                   <Stack gap='5px'>
-                            {EmpaquesTapaderaSuperior.map((item) => (
-                                <TextGeneral key={item.question} label={item.question} text={item.value} />
-                            ))}   
-                   </Stack>
-                    <Divider orientation={'horizontal'} flexItem />
-                   </Box>
+                        <Stack flexDirection='row' justifyContent='space-between'>
 
-                   <Box sx={{display:'flex', flexDirection:'column', gap:'10px'}}>
-                   <strong>Empaques de la valvula de descarga </strong>
-                   <Stack gap='5px'>
-                            {ValvulasDescargaChecklist.map((item) => (
-                                <TextGeneral key={item.question} label={item.question} text={item.value} color="warning"/>
-                            ))}   
-                   </Stack>
-                   </Box>
+                            <Button
+                                variant="contained"
+                                color="warning"
+                                onClick={() => setStep(7)}
+                            >
+                                regresar
+                            </Button>
 
-                   <Box sx={{display:'flex', flexDirection:'column', gap:'10px'}}>
-                   <strong>Estado de la cubierta tapa superior </strong>
-                   <Stack gap='5px'>
-                            {TapaderaDomoCheckList.map((item) => (
-                                <TextGeneral key={item.question} label={item.question} text={item.value} color="warning"/>
-                            ))}   
-                   </Stack>
-                   </Box>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                            >
+                                Completar checklist
+                            </Button>
+                        </Stack>
+                    </Box>
+                </form>
 
-                </Paper>
-
-            </Stack>
-
-            <Button 
-            variant="contained"
-            color="warning"
-            onClick={() => previusStep(7)}>
-            anterior</Button>
-
-
-        </Paper>
+            </Paper>
         </>
-     );
+    );
 }
 
-export {Step8};
+export { Step8 };

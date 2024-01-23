@@ -8,6 +8,7 @@ import { Vigilancia } from "./pages/Vigilancia";
 import { Maniobras } from "./pages/Maniobras";
 import { Reparaciones } from "./pages/Reparaciones";
 import { ManiobrasForm } from "./pages/ManiobrasForm";
+import { Programacion } from "./pages/Programacion";
 import { Prelavado } from "./pages/Prelavado";
 import { Calidad } from "./pages/Calidad";
 import { Lavado } from "./pages/Lavado";
@@ -125,6 +126,17 @@ function Router() {
                         <Reparaciones />
                       </UI>
                     </ReparacionesProvider>
+                  </RouteProtect>
+                }
+              />
+
+              <Route
+                path="/programacion"
+                element={
+                  <RouteProtect>
+                    <UI>
+                        <Programacion />
+                    </UI>
                   </RouteProtect>
                 }
               />

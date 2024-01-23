@@ -18,7 +18,7 @@ function useRegisterForDetails(idDetail) {
 
             const { data, error } = await supabase
                 .from('registros')
-                .select('*')
+                .select('*, operadores(*)')
                 .eq('id', idDetail)
                 .order('created_at', { ascending: false })
 

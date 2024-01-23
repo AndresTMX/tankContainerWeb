@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 //components
-import { Box, Stack, Fade, Paper, Chip, Modal, Typography, Alert } from "@mui/material";
+import { Box, Stack, Fade, Paper, Chip,  Typography, Alert } from "@mui/material";
 import { DetailsCheckList } from "../../components/DetailsCheckList";
 import { CheckListEIR } from "../../sections/CheckListEIR";
 import { NotConexionState } from "../NotConectionState";
@@ -228,10 +228,9 @@ export function ModalCheckListEIR({ stateModal, setStep, step, changueTypeRegist
                 <Paper
                     elevation={4}
                     sx={{
-                        width: '95vw',
+                        width: '100%',
                         maxWidth: '800px',
                         padding: '15px',
-                        overflowX: 'hidden'
                     }}
                 >
                     <Box
@@ -241,11 +240,11 @@ export function ModalCheckListEIR({ stateModal, setStep, step, changueTypeRegist
                             gap: '10px',
                             width: '100%',
                             maxWidth: '800px',
-
                         }}
                     >
                         <DetailsCheckList
                             step={step}
+                            setStep={setStep}
                             item={item}
                             selectItem={selectItem}
                             changueTypeRegister={changueTypeRegister}

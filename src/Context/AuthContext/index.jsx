@@ -17,12 +17,12 @@ function AuthProvider({ children }) {
         email,
         password,
       });
-      if(!error){
-      setKey(data.user.id);
-      const session = JSON.stringify(data.user);
-      sessionStorage.setItem(data.user.id, session);
-      setLoading(false)
-      navigate("/admin")
+      if (!error) {
+        setKey(data.user.id);
+        const session = JSON.stringify(data.user);
+        sessionStorage.setItem(data.user.id, session);
+        setLoading(false)
+        navigate("/admin")
       }
     } catch (error) {
       console.log(error);
@@ -32,8 +32,8 @@ function AuthProvider({ children }) {
   const logOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      if(!error){
-      navigate("/")
+      if (!error) {
+        navigate("/")
       }
     } catch (error) {
       console.log(error);
@@ -52,7 +52,7 @@ function AuthProvider({ children }) {
       setLoading(false);
     }
 
-    if(error){
+    if (error) {
       navigate("/");
       setLoading(false);
     }
@@ -97,7 +97,8 @@ function RouteProtect({ children }) {
         "/calidad",
         "/lavado",
         "/create_maniobra",
-        "/maniobras/pendiente"
+        "/maniobras/pendiente",
+        "/programacion"
       ],
     },
     {
@@ -113,7 +114,8 @@ function RouteProtect({ children }) {
         "/calidad",
         "/lavado",
         "/create_maniobra",
-        "/maniobras/pendiente"
+        "/maniobras/pendiente",
+        "/programacion"
 
       ],
     },
@@ -153,7 +155,7 @@ function RouteProtect({ children }) {
     );
   }
 
-  if(!session){
+  if (!session) {
     navigate("/")
   }
 

@@ -12,8 +12,8 @@ function useDetailsForManiobra(idManiobra, type) {
     const tableDetails = type === 'entrada' ? 'registros_detalles_entradas' : 'registros_detalles_salidas';
     const columnFilter = type === 'entrada' ? 'entrada_id' : 'salida_id';
     const consultSelect = type === 'entrada' ?
-        `*, operadores (id, nombre, correo, contacto ), transportistas (id, name), clientes (*)` :
-        `*, registros (*) , operadores (id, nombre, correo, contacto ), transportistas (id, name), clientes (*)`
+        `*, transportistas (id, name), clientes (*)` :
+        `*, registros (*) , transportistas (id, name), clientes (*)`
 
     const getDetailsForManiobra = async () => {
         try {

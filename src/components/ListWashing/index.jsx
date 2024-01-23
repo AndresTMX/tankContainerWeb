@@ -1,9 +1,9 @@
 //components
+import { ItemWashing } from "../ItemWashing";
 import { Box, Stack, Alert } from "@mui/material";
+import { NotConexionState } from "../NotConectionState";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import { ItemLoadingState } from "../../components/ItemLoadingState";
-import { ItemWashing } from "../ItemWashing";
-import { NotConexionState } from "../NotConectionState";
 
 function ListWashing({ washingList, loadignWashing, errorWashing }) {
 
@@ -23,7 +23,7 @@ function ListWashing({ washingList, loadignWashing, errorWashing }) {
 
                 {(!loadignWashing && errorWashing) &&
                     <Box sx={{ width: '100%' }}  >
-                        <Alert sx={{ width: '100%' }} severity="error">{errorWashing.message.troString()}</Alert>
+                        <Alert sx={{ width: '100%' }} severity="error">{errorWashing.troString()}</Alert>
                     </Box>
                 }
 

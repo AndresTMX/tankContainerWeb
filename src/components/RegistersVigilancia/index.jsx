@@ -17,9 +17,7 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 //helpers
-import { transformRegisters } from "../../Helpers/transformRegisters";
 import { datetimeMXFormat, dateMXFormat } from "../../Helpers/date";
-import { DetailsSharp } from "@mui/icons-material";
 
 function RegistersVigilancia({ data, error, loading, search, resultsSearch, errorSearch, loadingSearch, updater }) {
 
@@ -93,15 +91,15 @@ function RegistersVigilancia({ data, error, loading, search, resultsSearch, erro
 
 export { RegistersVigilancia };
 
-function ItemVigilancia({ register , updater}) {
+function ItemVigilancia({ register, updater }) {
 
     const IsSmall = useMediaQuery("(max-width:900px)");
 
     const { checkOutRegisterWhitId, checkRegisterWhitId } = useUpdateRegister(updater);
 
-    const { checkIn, created_at, type: typeRegister, status: statusRegister, id: idRegister } = register || {};
+    const { checkIn, created_at, placas, numero_economico, tracto, operadores, type: typeRegister, status: statusRegister, id: idRegister } = register || {};
     const { details, detailManiobras, loading, error, updateDetails } = useDetailsForManiobra(idRegister, typeRegister)
-    const { carga, tracto, operadores, transportistas, status, clientes } = details[0] || {};
+    const { carga, transportistas, status, clientes } = details[0] || {};
     const { nombre, contacto } = operadores || {};
     const { name: linea } = transportistas || {};
     const { cliente, id: idCliente } = clientes || {};
@@ -181,6 +179,7 @@ function ItemVigilancia({ register , updater}) {
 
                         </Stack>
 
+
                         <Stack>
 
                             {(typeRegister === 'entrada') &&
@@ -210,18 +209,36 @@ function ItemVigilancia({ register , updater}) {
 
                     <Stack
                         bgcolor='whitesmoke'
-                        flexDirection='row'
-                        alignItems='center'
+                        flexDirection={IsSmall ? 'column' : 'row'}
+                        alignItems='start'
                         gap='10px'
                         padding='10px'
                     >
-                        <Typography variant="subtitle2">
-                            Cliente
-                        </Typography>
+                        <TextGeneral width={'50px'} label="Tracto" text={tracto} />
+                        <Divider
+                            orientation={IsSmall ? "horizontal" : "vertical"}
+                            flexItem
+                        />
 
-                        <Typography variant="subtitle">
-                            {cliente}
-                        </Typography>
+                        <TextGeneral width={'150px'} text={placas} label="Placas" />
+                        <Divider
+                            orientation={IsSmall ? "horizontal" : "vertical"}
+                            flexItem
+                        />
+                        <TextGeneral width={'150px'} label="Número económico" text={numero_economico} />
+                        <Divider
+                            orientation={IsSmall ? "horizontal" : "vertical"}
+                            flexItem
+                        />
+                        <Stack flexDirection="row" gap="10px">
+                            <TextGeneral
+                                width={'100px'}
+                                label="Operador"
+                                text={`${nombre?.split(" ").slice(0, 2)[0]} ${nombre?.split(" ").slice(0, 2)[1]} `} />
+                            <IconButton color="info" onClick={toggleModalOperator}>
+                                <InfoIcon />
+                            </IconButton>
+                        </Stack>
                     </Stack>
 
                     <Box
@@ -244,42 +261,29 @@ function ItemVigilancia({ register , updater}) {
                             alignItems={IsSmall ? "start" : "center"}
                             gap="10px"
                         >
+
+                            <Stack width='200px'>
+                                <Typography variant="subtitle2">
+                                    Cliente
+                                </Typography>
+
+                                <Typography variant="subtitle">
+                                    {cliente}
+                                </Typography>
+                            </Stack>
+
+                            <Divider
+                                orientation={IsSmall ? "horizontal" : "vertical"}
+                                flexItem
+                            />
+
                             <TextGeneral width={'200px'} text={linea} label="Linea" />
                             <Divider
                                 orientation={IsSmall ? "horizontal" : "vertical"}
                                 flexItem
                             />
-                            <TextGeneral width={'50px'} label="Tracto" text={tracto} />
-                            <Divider
-                                orientation={IsSmall ? "horizontal" : "vertical"}
-                                flexItem
-                            />
+
                             <TextGeneral width={'100px'} label="Tipo de carga" text={carga} />
-                        </Stack>
-
-
-                        <Divider
-                            orientation={IsSmall ? "horizontal" : "vertical"}
-                            flexItem
-                        />
-
-                        <Stack
-                            width={'100%'}
-                            flexDirection={"row"}
-                            alignItems={"center"}
-                            justifyContent="space-between"
-                            gap="10px"
-                        >
-
-                            <Stack flexDirection="row" gap="10px">
-                                <TextGeneral
-                                    width={'100px'}
-                                    label="Operador"
-                                    text={`${nombre?.split(" ").slice(0, 2)[0]} ${nombre?.split(" ").slice(0, 2)[1]} `} />
-                                <IconButton color="info" onClick={toggleModalOperator}>
-                                    <InfoIcon />
-                                </IconButton>
-                            </Stack>
                         </Stack>
                     </Box>
 
@@ -308,7 +312,7 @@ function ItemVigilancia({ register , updater}) {
                                         }}
                                     >
                                         <Stack flexDirection={'row'} gap='5px'>
-                                            <Typography>{`${index + 1} ° `}</Typography>
+                                            <Typography>{`${index + 1} °  ${detail?.tipo} `}</Typography>
                                             <Typography variant="button">{detail.numero_tanque || detail.numero_pipa}</Typography>
                                         </Stack>
 
@@ -321,29 +325,6 @@ function ItemVigilancia({ register , updater}) {
                         </Stack>
                     )}
                 </Stack>
-
-                {/* <Modal open={modalConfirm}>
-                    <Container>
-                        <Box>
-                            <Paper>
-                                <Typography>Desea confirmar la {typeRegister} de este registro</Typography>
-
-                                <Stack>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => { }}
-                                    >Confirmar</Button>
-                                    <Button
-                                        variant="contained"
-                                        color="error"
-                                        onClick={() => { }}
-                                    >cancelar</Button>
-                                </Stack>
-                            </Paper>
-                        </Box>
-                    </Container>
-                </Modal> */}
 
                 <ModalInfoOperator
                     nombre={nombre}

@@ -16,7 +16,7 @@ import { tiempoTranscurrido, dateMXFormat, datetimeMXFormat } from "../../Helper
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { actionTypes } from "../../Reducers/ManiobrasReducer";
 
-function DetailsCheckList({ changueTypeRegister, step , selectItem, item, toggleModalCheck, }) {
+function DetailsCheckList({ changueTypeRegister, step , selectItem, item, toggleModalCheck, setStep }) {
 
   const IsSmall = useMediaQuery('(max-width:900px)');
   const IsExtraSmall = useMediaQuery('(max-width:450px)');
@@ -280,6 +280,7 @@ function DetailsCheckList({ changueTypeRegister, step , selectItem, item, toggle
   const [modal, setModal] = useState(false);
 
   const clearSelect = () => {
+    setStep(1)
     selectItem({})
     toggleModalCheck()
     dispatch({ type: actionTypes.setManiobrasCheck, payload: { pageOne: pageOne, pageTwo: pageTwo, pageThree: pageThree } })
@@ -312,6 +313,7 @@ function DetailsCheckList({ changueTypeRegister, step , selectItem, item, toggle
     }
 
     await sendCheckList(data, flatCheckList, item)
+    setStep(1)
     selectItem({})
     toggleModalCheck()
     changueTypeRegister("realizados")

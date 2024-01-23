@@ -40,11 +40,9 @@ function usePostCheckList() {
                 }
             }
 
-            const updateStatus = item.status;
-
             const { errorUpdate } = await supabase.from('registros_detalles_entradas')
-                .update({ status: updateStatus })
-                .eq('entrada_id', idRegistro)
+                .update({ status: item.status })
+                .eq('id', item.id)
 
             if (errorUpdate) {
                 throw new Error(`Error: ${errorUpdate}`)

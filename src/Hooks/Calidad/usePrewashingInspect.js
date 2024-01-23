@@ -22,10 +22,10 @@ function usePreWashingInspect(typeInspect) {
             setLoading(true)
             setError(null)
             const { data, error } = await supabase
-                .from('prelavado_checklist')
-                .select(`*`)
-                .eq('status', 'pendiente')
-                .order('created_at', { ascending: false })
+                .from('lavados')
+                .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
+                .eq('status', 'programado')
+                .order('tentativeEnd', { ascending: false })
                 .range(0, 100)
             if (error) {
                 throw new Error(`Error al consultar prelavados por inspeccionar, error: ${error.message}`)
@@ -52,11 +52,10 @@ function usePreWashingInspect(typeInspect) {
             setLoading(true)
             setError(null)
             const { data, error } = await supabase
-                .from('prelavados_revisiones')
-                .select(`*, 
-                registros_detalles_entradas(*),
-                users_data(*)`)
-                .order('created_at', { ascending: false })
+                .from('lavados')
+                .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
+                .eq('status', 'asignado')
+                .order('tentativeEnd', { ascending: false })
                 .range(0, 100)
             if (error) {
                 throw new Error(`Error al consultar prelavados inspeccionados, error: ${error.message}`)
@@ -93,7 +92,7 @@ function usePreWashingInspect(typeInspect) {
 
     useEffect(() => {
         routerFetch()
-    }, [ typeInspect ,update])
+    }, [typeInspect, update])
 
     return { inspect, error, loading, cache, updater }
 

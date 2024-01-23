@@ -7,14 +7,13 @@ import { Typography, Stack, Paper, FormGroup, Divider, IconButton, Button, Conta
 import { InputImage } from "../../../components/InputImage";
 import { InputText } from "../../../components/InputText";
 import { InputCheck } from "../../../components/InputCheck";
-import { ButtonsNavigationCheck } from "../../ButtonsNavigationCheck";
 //hooks
 import { useCheckList } from "../../../Hooks/useChecklistPrelavado";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //icons
 import ChatIcon from '@mui/icons-material/Chat';
 
-function Step4({ step, nextStep, previusStep }) {
+function Step4({ step, setStep }) {
 
     const IsSmall = useMediaQuery('(max-width:850px)');
     const [state, dispatch] = useContext(PrelavadoContext);
@@ -45,12 +44,12 @@ function Step4({ step, nextStep, previusStep }) {
 
         const inputQuestion = listCheck[0].value;
 
-        if(inputQuestion === 'si'){
-            nextStep(5)
-        }else{
+        if (inputQuestion === 'si') {
+            setStep(5)
+        } else {
             setMessage(2)
         }
-        
+
     }
 
     return (
@@ -69,22 +68,25 @@ function Step4({ step, nextStep, previusStep }) {
                             gap: '50px',
                             padding: '20px'
                         }}>
-                        <Typography variant='subtitle1' padding='10px'>
+                        <Typography variant='body1' padding='10px'>
                             Abra el pie de la válvula y asegúrese de que el cable remoto de emergencia ubicado en un lado del tanque funcione correctamente cerrando la válvula cuando se jala.
                         </Typography>
 
-                        <Stack
-                            flexDirection='row'
-                            justifyContent='space-around'
-                            gap='20px'
-                        >
-
-                            <ButtonsNavigationCheck
-                                step={step}
-                                nextStep={() => setMessage(1)}
-                                previusStep={() => previusStep(2)} />
-
+                        <Stack flexDirection='row' alignItems='center' width='100%' justifyContent='space-around'>
+                            <Button
+                                onClick={() => setStep(2)}
+                                variant='contained'
+                                color='warning'>
+                                Anterior
+                            </Button>
+                            <Button
+                                onClick={() => setMessage(1)}
+                                variant='contained'
+                                color='primary'>
+                                Siguiente
+                            </Button>
                         </Stack>
+
                     </Paper>
                 </Fade>
             )}
@@ -126,30 +128,30 @@ function Step4({ step, nextStep, previusStep }) {
                                             width: '100%',
                                             backgroundColor: 'white',
                                             padding: '20px',
-                                            maxWidth:'85vw'
+                                            maxWidth: '85vw'
                                         }}
                                     >
                                         <Stack width={IsSmall ? '100%' : '50%'} alignItems={IsSmall ? 'center' : 'start'}>
-                                            <Typography textAlign={IsSmall?'center':'start'} >{item.question}</Typography>
+                                            <Typography textAlign={IsSmall ? 'center' : 'start'} >{item.question}</Typography>
                                         </Stack>
 
-                                        <Stack 
-                                        flexDirection='row' 
-                                        gap='20px' 
-                                        flexWrap={'wrap'} 
-                                        alignItems='center' 
-                                        justifyContent={'center'} 
-                                        width={ IsSmall? '100%':'200px'} 
+                                        <Stack
+                                            flexDirection='row'
+                                            gap='20px'
+                                            flexWrap={'wrap'}
+                                            alignItems='center'
+                                            justifyContent={'center'}
+                                            width={IsSmall ? '100%' : '200px'}
                                         >
 
-                                            <Stack 
-                                            flexDirection='row' 
-                                            gap='20px' 
-                                            alignItems={IsSmall ? 'center' : 'start'} 
-                                            justifyContent={'space-around'} 
-                                            width={IsSmall? '400px':'100%'}
+                                            <Stack
+                                                flexDirection='row'
+                                                gap='20px'
+                                                alignItems={IsSmall ? 'center' : 'start'}
+                                                justifyContent={'space-around'}
+                                                width={IsSmall ? '400px' : '100%'}
                                             >
-                                               
+
                                                 <Stack flexDirection='column' alignItems='center' >
                                                     <strong>Si</strong>
                                                     <InputCheck value={item.value === 'si' ? true : false} onchangue={(e) => ChangueInput(index, 'si')} />
@@ -161,7 +163,7 @@ function Step4({ step, nextStep, previusStep }) {
                                                 </Stack>
                                             </Stack>
 
-                                            <Stack flexDirection='row' alignItems='center' justifyContent={'center'}  gap={IsSmall ? '40px' : '10px'} width={'100%'} maxWidth={'70vw'} >
+                                            <Stack flexDirection='row' alignItems='center' justifyContent={'center'} gap={IsSmall ? '40px' : '10px'} width={'100%'} maxWidth={'70vw'} >
                                                 <IconButton
                                                     onClick={() => SelectQuestionComent(index)}
                                                     variant="contained"
@@ -180,10 +182,20 @@ function Step4({ step, nextStep, previusStep }) {
                             ))}
                         </FormGroup>
 
-                        <ButtonsNavigationCheck
-                            step={step}
-                            nextStep={SaveChanguesOnGloablState}
-                            previusStep={() => setMessage(0)} />
+                        <Stack flexDirection='row' alignItems='center' width='100%' justifyContent='space-between'>
+                            <Button
+                                onClick={() => setMessage(0)}
+                                variant='contained'
+                                color='primary'>
+                                Anterior
+                            </Button>
+                            <Button
+                                onClick={SaveChanguesOnGloablState}
+                                variant='contained'
+                                color='warning'>
+                                Siguiente
+                            </Button>
+                        </Stack>
 
                     </Paper>
                 </Fade>
@@ -202,7 +214,7 @@ function Step4({ step, nextStep, previusStep }) {
                             gap: '50px',
                             padding: '20px'
                         }}>
-                        <Typography variant="h5">
+                        <Typography variant="body1">
                             {'Remplácelo con una tuerca cuadrada (square notch top ring) proporcionado por agmark.'}
                         </Typography>
 
@@ -216,13 +228,13 @@ function Step4({ step, nextStep, previusStep }) {
                                 variant="contained"
                                 color="warning"
                                 onClick={() => setMessage(1)}>
-                                volver a checklist
+                                anterior
                             </Button>
 
                             <Button
                                 variant="contained"
-                                onClick={() => nextStep(5)}>
-                                Ok
+                                onClick={() => setStep(5)}>
+                                siguiente
                             </Button>
                         </Stack>
                     </Paper>

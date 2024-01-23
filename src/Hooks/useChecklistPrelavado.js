@@ -5,9 +5,11 @@ import { actionTypes } from "../Reducers/PrelavadoReducer";
 import { GlobalContext } from "../Context/GlobalContext";
 
 function useCheckList(listInputs) {
+
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
     const [state, dispatch] = useContext(PrelavadoContext)
     const { checklist } = state;
+    
     const [listCheck, SetListCheck] = useState(listInputs);
     const [indexQuestion, setIndexQuestion] = useState(0);
     const [modalComent, setModalComent] = useState(false);

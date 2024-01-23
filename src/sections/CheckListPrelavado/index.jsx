@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Box, Slide } from "@mui/material";
 import { StepBarProgress } from "../StepsManiobras/StepBarProgress";
 import { Step1 } from "../StepsManiobras/Step1";
@@ -10,15 +9,7 @@ import { Step6 } from "../StepsManiobras/Step6";
 import { Step7 } from "../StepsManiobras/Step7";
 import { Step8 } from "../StepsManiobras/Step8";
 
-function CheckListPrelavado({step,setStep}) {
-
-    const nextStep = (newStep) => {
-        setStep(newStep)
-    }
-
-    const previusStep = (newStep) => {
-        setStep(newStep)
-    }
+function CheckListPrelavado({ step, setStep, updater }) {
 
     return (
         <>
@@ -27,7 +18,6 @@ function CheckListPrelavado({step,setStep}) {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    maxWidth: '700px'
                 }}>
 
                 <StepBarProgress step={step} numSteps={9} />
@@ -36,12 +26,12 @@ function CheckListPrelavado({step,setStep}) {
                     <Slide
                         direction='right'
                         in={step === 1 ? true : false}
-                        timeout={500}
+                        timeout={300}
                         mountOnEnter
                         unmountOnExit
                     >
                         <Box>
-                            <Step1 nextStep={nextStep} />
+                            <Step1 setStep={setStep} />
                         </Box>
                     </Slide>
                 )}
@@ -55,7 +45,7 @@ function CheckListPrelavado({step,setStep}) {
                         unmountOnExit
                     >
                         <Box sx={{ width: '100%' }}>
-                            <Step2 step={step} nextStep={nextStep} previusStep={previusStep} />
+                            <Step2 step={step} setStep={setStep} />
                         </Box>
                     </Slide>
                 )}
@@ -69,7 +59,7 @@ function CheckListPrelavado({step,setStep}) {
                         unmountOnExit
                     >
                         <Box sx={{ width: '100%' }}>
-                            <Step3 step={step} nextStep={nextStep} previusStep={previusStep} />
+                            <Step3 step={step} setStep={setStep} />
                         </Box>
                     </Slide>
                 )}
@@ -83,7 +73,7 @@ function CheckListPrelavado({step,setStep}) {
                         unmountOnExit
                     >
                         <Box sx={{ width: '100%' }}>
-                            <Step4 step={step} nextStep={nextStep} previusStep={previusStep} />
+                            <Step4 step={step} setStep={setStep} />
                         </Box>
                     </Slide>
                 )}
@@ -97,7 +87,7 @@ function CheckListPrelavado({step,setStep}) {
                         unmountOnExit
                     >
                         <Box sx={{ width: '100%' }}>
-                            <Step5 step={step} nextStep={nextStep} previusStep={previusStep} />
+                            <Step5 step={step} setStep={setStep} />
                         </Box>
                     </Slide>
                 )}
@@ -111,7 +101,7 @@ function CheckListPrelavado({step,setStep}) {
                         unmountOnExit
                     >
                         <Box sx={{ width: '100%' }}>
-                            <Step6 step={step} nextStep={nextStep} previusStep={previusStep} />
+                            <Step6 step={step} setStep={setStep} />
                         </Box>
                     </Slide>
                 )}
@@ -125,7 +115,7 @@ function CheckListPrelavado({step,setStep}) {
                         unmountOnExit
                     >
                         <Box sx={{ width: '100%' }}>
-                            <Step7 step={step} nextStep={nextStep} previusStep={previusStep} />
+                            <Step7 step={step} setStep={setStep} />
                         </Box>
                     </Slide>
                 )}
@@ -139,7 +129,7 @@ function CheckListPrelavado({step,setStep}) {
                         unmountOnExit
                     >
                         <Box sx={{ width: '100%' }}>
-                            <Step8 step={step} nextStep={nextStep} previusStep={previusStep} />
+                            <Step8 step={step} setStep={setStep} updater={updater}/>
                         </Box>
                     </Slide>
                 )}

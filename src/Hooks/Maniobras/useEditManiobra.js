@@ -2,11 +2,157 @@ import { useContext } from "react";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import supabase from "../../supabase";
+import { TableCostDetails } from "../../PDFs/components/TableCostDetails";
 
 
 function useEditManiobra(updaterregisters) {
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
+
+    //controladores de edicion de carga independiente en registros de entrada
+
+    const editRegisterGeneral = async (idRegister, updates) => {
+        try {
+
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: true
+            })
+
+            const { data, error } = await supabase
+                .from('registros')
+                .update({ ...updates })
+                .eq('id', idRegister)
+
+            if (error) {
+                throw new Error(`Error al actualizar el registro general, error: ${error.message}`)
+            }
+
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            })
+
+            // updaterregisters()
+
+        } catch (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            })
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: error.message
+            })
+        }
+    }
+
+    const addNewCarga = async ( detalles ) => {
+        try {
+
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: true
+            })
+
+            const { data, error } = await supabase
+                .from('registros_detalles_entradas')
+                .insert({ ...detalles })
+                .select()
+
+            if (error) {
+                throw new Error(`Error al registrar nueva carga, error: ${error.message}`)
+            }
+
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            })
+
+            updaterregisters()
+
+        } catch (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            })
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: error.message
+            })
+        }
+    }
+
+    const editRegisterCarga = async ( idRegister, newRegister) => {
+        try {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: true
+            })
+
+            const { data, error } = await supabase
+                .from('registros_detalles_entradas')
+                .update({ ...newRegister })
+                .eq('id', idRegister)
+
+            if (error) {
+                throw new Error(`Error al editar carga, error: ${error.message}`)
+            }
+
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            })
+
+        } catch (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            })
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: error.message
+            })
+        }
+    }
+
+    const deleteRegisterCarga = async (idDetalleCarga, typeRegister) => {
+        try {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: true
+            })
+
+            const { data, error } = await supabase
+                .from('registros_detalles_entradas')
+                .delete()
+                .eq('id', idDetalleCarga)
+
+            if (error) {
+                throw new Error(`Error al eliminar una carga, error:${error.message}`)
+            }
+
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            })
+
+            updaterregisters()
+
+        
+        } catch (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            })
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: error.message
+            })
+        }
+    }
+    
+    //----------------------------------------------------------------------------///
 
     const changueStatusToWashing = async (idRegister) => {
 
@@ -65,39 +211,32 @@ function useEditManiobra(updaterregisters) {
     }
 
     const editManiobraTypeTank = async (typeRegister, oldDataTanks, newDataTanks, updates, idRegister) => {
-
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: true
-        })
-
-        const tablaDetalles = typeRegister != 'salida' ? 'registros_detalles_entradas' : 'registros_detalles_salidas';
-
-        //eliminar registros antiguos
         try {
-            const { errorDelete } = await supabase.from(tablaDetalles).delete().eq('registro_id', idRegister);
-
-            if (errorDelete) {
-                throw new Error('Error al eliminar registros anteriores')
-            }
-        } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
 
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
-                payload: false
+                payload: true
             })
-        }
 
-        //agregar nuevos registos de entrada
-        const newRegisters = newDataTanks.map(async (tanque) => {
-            try {
+            const tablaDetalles = typeRegister != 'salida' ? 'registros_detalles_entradas' : 'registros_detalles_salidas';
+            const idDetalles = typeRegister != 'salida' ? { entrada_id: idRegister } : { salida_id: idRegister };
+            const nameFieldId = typeRegister != 'salida' ? 'entrada_id' : 'salida_id';
+
+            //eliminar registros antiguos
+            const { errorDelete } = await supabase
+                .from(tablaDetalles)
+                .delete()
+                .eq(nameFieldId, idRegister);
+
+            if (errorDelete) {
+                throw new Error(`Error al eliminar registros anteriores, error: ${errorDelete.message}`)
+            }
+
+            //agregar nuevos registos de entrada
+            const newRegisters = newDataTanks.map(async (tanque) => {
                 const { errorAdd } = await supabase.from(tablaDetalles)
                     .insert({
-                        registro_id: idRegister,
+                        ...idDetalles,
                         carga: 'tanque',
                         tracto: updates.tracto,
                         operador_id: updates.operador,
@@ -107,100 +246,31 @@ function useEditManiobra(updaterregisters) {
                     })
 
                 if (errorAdd) {
-                    throw new Error(`Error al intentar registrar el tanque ${tanque.tanque}`)
+                    throw new Error(`Error al intentar registrar el tanque ${errorAdd.message}`)
                 }
-            } catch (error) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: error.message
-                })
-            }
-        });
 
-        try {
-            await Promise.all(newRegisters)
-        } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            })
-        }
+            });
 
-        //actualizar los tanques incluidos en los nuevos registros
-        const updatesTanksForNewRegister = newDataTanks.map(async (tanque) => {
             try {
-                const { error } = await supabase.from('tanques')
-                    .update({ status: 'forconfirm' })
-                    .eq('tanque', tanque.tanque)
-
-                if (error) {
-                    throw new Error(`Error al intentar actualizar el estatus del tanque ${tanque.tanque}`)
-                }
+                await Promise.all(newRegisters)
             } catch (error) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: error.message
-                })
+                throw new Error(error.message)
+            }
+
+            setTimeout(() => {
                 dispatchGlobal({
                     type: actionTypesGlobal.setLoading,
                     payload: false
-                })
-            }
-        });
+                });
 
-        try {
-            await Promise.all(updatesTanksForNewRegister);
-        } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            })
-        }
-
-        //actualizar los tanques descartados para estar listos
-        const updatesTankDiscard = oldDataTanks.map(async (tanque) => {
-            try {
-                const { error } = await supabase.from('tanques')
-                    .update({ status: 'ready' })
-                    .eq('tanque', tanque.tanque)
-
-                if (error) {
-                    throw new Error(`Error al actualizar tanque descartado ${tanque.tanque}`)
-                }
-            } catch (error) {
                 dispatchGlobal({
                     type: actionTypesGlobal.setNotification,
-                    payload: error.message
+                    payload: 'Registros actualizados con exito'
                 })
-                dispatchGlobal({
-                    type: actionTypesGlobal.setLoading,
-                    payload: false
-                })
-            }
-        });
 
-        try {
-            await Promise.all(updatesTankDiscard);
+            }, 1500)
+
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            })
-        }
-
-        setTimeout(() => {
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
                 payload: false
@@ -208,47 +278,40 @@ function useEditManiobra(updaterregisters) {
 
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
-                payload: 'Registros actualizados con exito'
+                payload: error.message
             })
-
-        }, 1500)
+        }
     }
 
     const editManiobraTypePipa = async (typeRegister, newDataPipes, updates, idRegister) => {
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: true
-        })
-
-        const tablaDetalles = typeRegister != 'salida' ? 'registros_detalles_entradas' : 'registros_detalles_salidas';
-
-        //eliminar registros anteriores
         try {
-            const { errorDelete } = await supabase.from(tablaDetalles).delete().eq('registro_id', idRegister);
-
-            if (errorDelete) {
-                throw new Error('Error al eliminar registros anteriores')
-            }
-        } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
-
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
-                payload: false
+                payload: true
             })
-        }
 
-        //crear nuevos registros
-        const arrayPipas = Object.values(newDataPipes);
-        const arrayPipasFiltered = arrayPipas.filter((pipa) => pipa.trim() != '');
-        const newRegisters = arrayPipasFiltered.map(async (pipa) => {
-            try {
+            const tablaDetalles = typeRegister != 'salida' ? 'registros_detalles_entradas' : 'registros_detalles_salidas';
+            const idDetalles = typeRegister != 'salida' ? { entrada_id: idRegister } : { salida_id: idRegister };
+            const nameFieldId = typeRegister != 'salida' ? 'entrada_id' : 'salida_id';
+
+            //eliminar registros anteriores
+            const { errorDelete } = await supabase
+                .from(tablaDetalles)
+                .delete()
+                .eq(nameFieldId, idRegister);
+
+            if (errorDelete) {
+                throw new Error(`Error al eliminar registros anteriores, error: ${errorDelete.message}`)
+            }
+
+            //crear nuevos registros
+            const arrayPipas = Object.values(newDataPipes);
+            const arrayPipasFiltered = arrayPipas.filter((pipa) => pipa.trim() != '');
+
+            const newRegisters = arrayPipasFiltered.map(async (pipa) => {
                 const { error } = await supabase.from(tablaDetalles)
                     .insert({
-                        registro_id: idRegister,
+                        ...idDetalles,
                         carga: 'pipa',
                         tracto: updates.tracto,
                         operador_id: updates.operador,
@@ -258,37 +321,31 @@ function useEditManiobra(updaterregisters) {
                     })
 
                 if (error) {
-                    throw new Error(`Error al subir la pipa ${pipa}`)
+                    throw new Error(`Error crear nuevos registros de pipa , error: ${error.message}`)
                 }
-            } catch (error) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: error.message
-                })
 
+            })
+
+            //subir nuevos registros 
+            try {
+                await Promise.all(newRegisters)
+            } catch (error) {
+                throw new Error(error.message)
+            }
+
+            setTimeout(() => {
                 dispatchGlobal({
                     type: actionTypesGlobal.setLoading,
                     payload: false
+                });
+
+                dispatchGlobal({
+                    type: actionTypesGlobal.setNotification,
+                    payload: 'Registros actualizados con exito'
                 })
-            }
-        })
 
-        //subir nuevos registros 
-        try {
-            await Promise.all(newRegisters)
+            }, 1500)
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
-
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            })
-        }
-
-        setTimeout(() => {
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
                 payload: false
@@ -296,135 +353,82 @@ function useEditManiobra(updaterregisters) {
 
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
-                payload: 'Registros actualizados con exito'
+                payload: error.message
             })
-
-        }, 1500)
-
+        }
     }
 
     const editManiobrasTypeEmpty = async (typeRegister, updates, idRegister, newType, newDataPipes, newDataTanks) => {
+        try {
 
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: true
-        })
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: true
+            })
 
-        const tablaDetalles = typeRegister != 'salida' ? 'registros_detalles_entradas' : 'registros_detalles_salidas';
+            const tablaDetalles = typeRegister != 'salida' ? 'registros_detalles_entradas' : 'registros_detalles_salidas';
+            const idDetalles = typeRegister != 'salida' ? { entrada_id: idRegister } : { salida_id: idRegister };
+            const nameFieldId = typeRegister != 'salida' ? 'entrada_id' : 'salida_id';
 
-        if (newType === 'tanque') {
+            if (newType === 'tanque') {
 
-            //eliminar registros antiguos
-            try {
-                const { errorDelete } = await supabase.from(tablaDetalles).delete().eq('registro_id', idRegister);
+                //eliminar registros antiguos
+                const { errorDelete } = await supabase
+                    .from(tablaDetalles)
+                    .delete()
+                    .eq(nameFieldId, idRegister);
 
                 if (errorDelete) {
-                    throw new Error('Error al eliminar registros anteriores')
+                    throw new Error(`Error al eliminar registros anteriores, error: ${errorDelete.message}`)
                 }
-            } catch (error) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: error.message
-                })
 
-                dispatchGlobal({
-                    type: actionTypesGlobal.setLoading,
-                    payload: false
-                })
-            }
 
-            //agregar nuevos registos de entrada
-            const newRegisters = newDataTanks.map(async (tanque) => {
-                try {
+                //agregar nuevos registos de entrada
+                const newRegisters = newDataTanks.map(async (tanque) => {
                     const { errorAdd } = await supabase.from(tablaDetalles)
                         .insert({
-                            registro_id: idRegister,
+                            ...idDetalles,
                             carga: 'tanque',
                             tracto: updates.tracto,
-                            operador_id: updates.operador,
                             transportista_id: updates.transportista,
                             numero_tanque: tanque.tanque,
                             status: 'forconfirm'
                         })
 
                     if (errorAdd) {
-                        throw new Error(`Error al intentar registrar el tanque ${tanque.tanque}`)
+                        throw new Error(`Error al intentar registrar los nuevos tanques ${errorAdd.message}`)
                     }
-                } catch (error) {
-                    dispatchGlobal({
-                        type: actionTypesGlobal.setNotification,
-                        payload: error.message
-                    })
-                }
-            });
 
-            try {
-                await Promise.all(newRegisters)
-            } catch (error) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: error.message
-                })
-                dispatchGlobal({
-                    type: actionTypesGlobal.setLoading,
-                    payload: false
-                })
-            }
+                });
 
-            //actualizar los tanques incluidos en los nuevos registros
-            const updatesTanksForNewRegister = newDataTanks.map(async (tanque) => {
                 try {
-                    const { error } = await supabase.from('tanques')
-                        .update({ status: 'forconfirm' })
-                        .eq('tanque', tanque.tanque)
-
-                    if (error) {
-                        throw new Error(`Error al intentar actualizar el estatus del tanque ${tanque.tanque}`)
-                    }
+                    await Promise.all(newRegisters)
                 } catch (error) {
-                    dispatchGlobal({
-                        type: actionTypesGlobal.setNotification,
-                        payload: error.message
-                    })
-                    dispatchGlobal({
-                        type: actionTypesGlobal.setLoading,
-                        payload: false
-                    })
+                    throw new Error(error.message)
                 }
-            });
 
-            try {
-                await Promise.all(updatesTanksForNewRegister);
-            } catch (error) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: error.message
-                })
-                dispatchGlobal({
-                    type: actionTypesGlobal.setLoading,
-                    payload: false
-                })
             }
 
-        }
+            if (newType === 'pipa') {
 
-        if (newType === 'pipa') {
+                //eliminar registros anteriores
+                const { errorDelete } = await supabase
+                    .from(tablaDetalles)
+                    .delete()
+                    .eq(nameFieldId, idRegister);
 
-            //eliminar registros anteriores
-            const { errorDelete } = await supabase.from(tablaDetalles).delete().eq('registro_id', idRegister);
+                if (errorDelete) {
+                    throw new Error(`Error al eliminar registros anteriores, error: ${errorDelete.message}`)
+                }
 
-            if (errorDelete) {
-                throw new Error('Error al eliminar registros anteriores')
-            }
+                //crear nuevos registros de pipa
+                const arrayPipas = Object.values(newDataPipes);
+                const arrayPipasFiltered = arrayPipas.filter((pipa) => pipa.trim() != '');
 
-            //crear nuevos registros de pipa
-            const arrayPipas = Object.values(newDataPipes);
-            const arrayPipasFiltered = arrayPipas.filter((pipa) => pipa.trim() != '');
-            const newRegisters = arrayPipasFiltered.map(async (pipa) => {
-                try {
+                const newRegisters = arrayPipasFiltered.map(async (pipa) => {
                     const { error } = await supabase.from(tablaDetalles)
                         .insert({
-                            registro_id: idRegister,
+                            ...idDetalles,
                             carga: 'pipa',
                             tracto: updates.tracto,
                             operador_id: updates.operador,
@@ -434,55 +438,44 @@ function useEditManiobra(updaterregisters) {
                         })
 
                     if (error) {
-                        throw new Error(`Error al subir la pipa ${pipa}`)
+                        throw new Error(`Error crear registros de pipa, error: ${error.message}`)
                     }
+
+                });
+
+                //subir nuevos registros 
+                try {
+                    await Promise.all(newRegisters)
                 } catch (error) {
-                    dispatchGlobal({
-                        type: actionTypesGlobal.setNotification,
-                        payload: error.message
-                    })
-
-                    dispatchGlobal({
-                        type: actionTypesGlobal.setLoading,
-                        payload: false
-                    })
+                    throw new Error(`Error al crear registros de pipa , error: ${error.message}`)
                 }
-            });
+            }
 
-            //subir nuevos registros 
-            try {
-                await Promise.all(newRegisters)
-            } catch (error) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: error.message
-                })
+            if (newType === '') {
 
+                const { error } = await supabase.from(tablaDetalles)
+                    .update({ operador_id: updates.operador, transportista_id: updates.transportista, tracto: updates.tracto })
+                    .eq(nameFieldId, idRegister)
+
+                if (error) {
+                    throw new Error(`Error al actualizar el registro vacio con el tracto ${error.message}`)
+                }
+
+            }
+
+            setTimeout(() => {
                 dispatchGlobal({
                     type: actionTypesGlobal.setLoading,
                     payload: false
-                })
-            }
-        }
+                });
 
-        if (newType === '') {
-            try {
-                const { error } = await supabase.from(tablaDetalles)
-                    .update({ operador_id: updates.operador, transportista_id: updates.transportista, tracto: updates.tracto })
-                    .eq('registro_id', idRegister)
-
-                if (error) {
-                    throw new Error(`Error al actualizar el registro vacio con el tracto ${updates.tracto}`)
-                }
-            } catch (error) {
                 dispatchGlobal({
                     type: actionTypesGlobal.setNotification,
-                    payload: error.message
+                    payload: 'Registros actualizados con exito'
                 })
-            }
-        }
 
-        setTimeout(() => {
+            }, 1500)
+        } catch (error) {
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
                 payload: false
@@ -490,10 +483,9 @@ function useEditManiobra(updaterregisters) {
 
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
-                payload: 'Registros actualizados con exito'
+                payload: error.message
             })
-
-        }, 1500)
+        }
     }
 
     const routerFetch = async (typeChargue, newType, typeRegister, oldDataTanks, newDataTanks, newDataPipes, updates, idRegister) => {
@@ -522,7 +514,7 @@ function useEditManiobra(updaterregisters) {
 
     }
 
-    return { routerFetch, changueStatusToWashing }
+    return { routerFetch, changueStatusToWashing, editRegisterGeneral, addNewCarga, editRegisterCarga, deleteRegisterCarga }
 
 }
 

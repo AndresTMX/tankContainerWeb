@@ -4,18 +4,17 @@ import { PrelavadoContext } from "../../../Context/PrelavadoContext";
 import { actionTypes } from "../../../Reducers/PrelavadoReducer";
 //components
 import { Typography, Stack, Paper, FormGroup, Divider, IconButton, Button, Container, Modal, Fade } from "@mui/material";
-import { InputImage } from "../../../components/InputImage";
-import { InputText } from "../../../components/InputText";
-import { InputCheck } from "../../../components/InputCheck";
-import { ButtonsNavigationCheck } from "../../ButtonsNavigationCheck";
 import { ContainerScroll } from "../../../components/ContainerScroll";
+import { InputImage } from "../../../components/InputImage";
+import { InputCheck } from "../../../components/InputCheck";
+import { InputText } from "../../../components/InputText";
 //hooks
 import { useCheckList } from "../../../Hooks/useChecklistPrelavado";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //icons
 import ChatIcon from '@mui/icons-material/Chat';
 
-function Step7({ step, nextStep, previusStep }) {
+function Step7({ step, setStep }) {
 
     const IsSmall = useMediaQuery('(max-width:700px)');
     const [state, dispatch] = useContext(PrelavadoContext);
@@ -70,7 +69,7 @@ function Step7({ step, nextStep, previusStep }) {
         const inputsEmpty = ValidateInputs();
 
         if (inputsEmpty) {
-            nextStep(8)
+            setStep(8)
         }
 
     }
@@ -113,15 +112,15 @@ function Step7({ step, nextStep, previusStep }) {
                                 }}
                             >
                                 <Stack width={'100%'} alignItems={'center'}>
-                                   <Typography textAlign={IsSmall?'center':'start'} >{item.question}</Typography>
+                                    <Typography textAlign={IsSmall ? 'center' : 'start'} >{item.question}</Typography>
                                 </Stack>
 
-                                <Stack 
-                                flexDirection='row' 
-                                gap='20px' 
-                                alignItems={'center'} 
-                                justifyContent={'space-around'} 
-                                width={'100%'}
+                                <Stack
+                                    flexDirection='row'
+                                    gap='20px'
+                                    alignItems={'center'}
+                                    justifyContent={'space-around'}
+                                    width={'100%'}
                                 >
                                     <Stack flexDirection='column' alignItems='center' >
                                         <strong>Si</strong>
@@ -149,10 +148,28 @@ function Step7({ step, nextStep, previusStep }) {
 
                             </Stack>
                         ))}
-                    <ButtonsNavigationCheck
-                        step={step}
-                        nextStep={SaveChanguesOnGloablState}
-                        previusStep={() => previusStep(6)} />
+
+                        <Stack
+                            gap='20px'
+                            width='100%'
+                            flexDirection='row'
+                            justifyContent='space-between'
+                        >
+                            <Button
+                                color='warning'
+                                onClick={() => setStep(7)}
+                                variant="contained">
+                                Anterior
+                            </Button>
+                            <Button
+                                onClick={SaveChanguesOnGloablState}
+                                color='primary'
+                                variant="contained"
+                                >
+                                Siguiente
+                            </Button>
+                        </Stack>
+
                     </FormGroup>
 
                 </ContainerScroll>

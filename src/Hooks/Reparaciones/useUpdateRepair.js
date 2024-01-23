@@ -53,12 +53,12 @@ function useUpdateRepair() {
 
     const completeRepair = async (updates, idRepair) => {
 
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: true
-        });
-
         try {
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: true
+            });
+
             const repairsWhitEvidences = await sendImagesReparation(updates.repairs);
 
             const updatesRepairs = {
@@ -68,29 +68,33 @@ function useUpdateRepair() {
 
             const updatesInJson = JSON.stringify(updatesRepairs)
 
-            await updateRepair({status:'completado', data:updatesInJson, checkOut:new Date() }, idRepair)
+            await updateRepair({ status: 'completado', data: updatesInJson, checkOut: new Date() }, idRepair)
 
+            const {error} = await supabase
+            .from('registros_detalles_entradas')
+            .update({status: updates.status})
+            .eq('id', idRepair)
+
+            dispatchGlobal({
+                type: actionTypesGlobal.setLoading,
+                payload: false
+            });
+
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'reparacion terminada, evidencias cargadas'
+            })
         } catch (error) {
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
                 payload: false
             });
+
             dispatchGlobal({
                 type: actionTypesGlobal.setNotification,
                 payload: error.message
-            });
+            })
         }
-
-
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: false
-        });
-
-        dispatchGlobal({
-            type: actionTypesGlobal.setNotification,
-            payload: 'reparacion terminada, evidencias cargadas'
-        })
 
     }
 

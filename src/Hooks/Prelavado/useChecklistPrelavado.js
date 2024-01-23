@@ -1,12 +1,9 @@
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
-import { AuthContext } from "../../Context/AuthContext";
 import { GlobalContext } from "../../Context/GlobalContext";
-import { useContext, useState } from "react";
+import { AuthContext } from "../../Context/AuthContext";
 import supabase from "../../supabase";
-import { dividirArray } from "../../Helpers/transformRegisters";
+import { useContext } from "react";
 import { sendImageCloudinary } from "../../cloudinary";
-import { dateMXFormat } from "../../Helpers/date";
-import { dividirArrayPorPropiedad } from "../../Helpers/transformRegisters";
 
 function useChecklistPrelavado(updaterFunction) {
 
@@ -16,82 +13,6 @@ function useChecklistPrelavado(updaterFunction) {
     //cloudinary data
     const preset = 'mvtjch9n';
     const folderName = 'prelavado_checklist';
-
-    /*/
-    Funcion que recupera el numero de iteraciones realizadas 
-    y los datos de los checklist realizados en un lavado 
-    /*/
-    const validateIterationCheckList = async (idRegister) => {
-        try {
-            const { data, error } = await supabase
-                .from('prelavado_checklist')
-                .select(`iteraciones, data`)
-                .eq('registro_detalle_entrada_id', idRegister)
-
-            if (error) {
-                throw new Error(`Error al validar las iteraciones del checklist, \n error: ${error.message}`)
-            }
-
-            return { data, error }
-        } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
-        }
-    }
-
-    /*/
-    Funcion que actualiza la columna donde se almacenan los datos 
-    del checklist
-    /*/
-    const updateDataChecklist = async (idRegister, dataValidate, dataChecklist) => {
-
-        try {
-            const iteraciones = dataValidate?.length ? dataValidate[0].iteraciones + 1 : 0;
-
-            let mergeChecklist
-            let newDataInString
-
-            const oldDataChecklist = JSON.parse(dataValidate[0].data);
-            const currentChecklistInJson = JSON.parse(dataChecklist.data);
-
-            if (iteraciones > 1) {
-                oldDataChecklist.push(currentChecklistInJson);
-                mergeChecklist = oldDataChecklist
-                newDataInString = JSON.stringify(mergeChecklist);
-            } else {
-                mergeChecklist = [...oldDataChecklist, ...currentChecklistInJson];
-                const newDataInJson = dividirArrayPorPropiedad(mergeChecklist, 'cubierta');
-                newDataInString = JSON.stringify(newDataInJson);
-            }
-
-            //actualizar el campo data agregando el nuevo checklist y las iteraciones sumandole 1
-            const { error: errorUpdate } = await supabase
-                .from('prelavado_checklist')
-                .update({ data: newDataInString, iteraciones: iteraciones, status:'pendiente' })
-                .eq('registro_detalle_entrada_id', idRegister)
-
-            if (errorUpdate) {
-                throw new Error(`Error al actualizar checklist, \n error: ${error.message}`)
-            }
-
-            if (!errorUpdate) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: `checlist guardado, iteracion: ${iteraciones}`
-                })
-            }
-
-        } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
-        }
-
-
-    }
 
     /*/
     Funcion que envia el checklist en la primera iteracion
@@ -106,15 +27,13 @@ function useChecklistPrelavado(updaterFunction) {
                 })
 
             if (error) {
-                throw new Error(error.message)
+                throw new Error(`Error al crear checklist de prelavado, error: ${error.message}`)
             }
 
-            if (!error) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: 'checklist guardado'
-                })
-            }
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'checklist guardado'
+            })
 
         } catch (error) {
             dispatchGlobal({
@@ -132,7 +51,7 @@ function useChecklistPrelavado(updaterFunction) {
         try {
 
             //recuperar imagenes con preguntas        
-            const imagesWhitQuestion = dataChecklist.filter((question) => question?.question && question.image != '');
+            const imagesWhitQuestion = dataChecklist.filter((question) => question?.question && question.preview != '');
 
             //extraer las imagenes y cambiarles el nombre
             const imagesWhitName = imagesWhitQuestion.map((question, index) => {
@@ -197,52 +116,107 @@ function useChecklistPrelavado(updaterFunction) {
     Funcion que se encarga de recibir el checklist y ejecutar 
     funciones auxiliares segun el numero de iteracion del prelavado
     /*/
-    const completeChecklist = async (idRegister, dataChecklist) => {
+    const completeChecklist = async (idRegister, dataChecklist, newStatus) => {
 
         try {
 
-            //subir las imagenes anexadas y regresar data en string
-            const checklistWhitUrlInString = await sendImagesChecklist(dataChecklist.data)
+            const { registro_detalle_entrada_id, numero_tanque, numero_pipa, data } = dataChecklist;
 
-            if (checklistWhitUrlInString === undefined) {
-                throw new Error(`Error al obtener los url del las imagenes`)
-            }
+            //verificar si el checklist contiene imagenes
+            const checkListWhitImages = data.filter((item) => item.preview != '');
 
-            //recounstruir el objeto con la nueva data del checklist
-            const checklistDataWhitImages = {
-                registro_detalle_entrada_id: dataChecklist.registro_detalle_entrada_id,
-                numero_tanque: dataChecklist.numero_tanque,
-                numero_pipa: dataChecklist.numero_pipa,
-                data: checklistWhitUrlInString,
-            }
+            if (checkListWhitImages.length) {
 
-            //verificar la existencia de un checklist con el mismo id de detalles de entrada 
-            const { data: dataValidate, error: errorValidate } = await validateIterationCheckList(idRegister);
+                //subir las imagenes anexadas y regresar data en string
+                const checklistWhitUrlInString = await sendImagesChecklist(data)
 
-            if (errorValidate) {
-                throw new Error(errorValidate)
-            }
-            //recuperar las veces que se ha repetido este proceso
-            const iteraciones = dataValidate?.length ? dataValidate[0].iteraciones + 1 : 0;
-            //si se ha repetido mas de una vez
-            if (iteraciones >= 1) {
-                await updateDataChecklist(idRegister, dataValidate, checklistDataWhitImages);
-            } else {
+                if (checklistWhitUrlInString === undefined) {
+                    throw new Error(`Error al obtener los url del las imagenes`)
+                }
+                //recounstruir el objeto con la nueva data del checklist
+                const checklistDataWhitImages = {
+                    ...dataChecklist,
+                    data: checklistWhitUrlInString,
+                }
+
                 await sendChecklistPrelavado(checklistDataWhitImages);
+
+            } else {
+
+                await sendChecklistPrelavado({ ...dataChecklist, data: JSON.stringify(data) });
             }
 
-            const { error } = await supabase
-                .from('registros_detalles_entradas')
-                .update({ status: 'almacenado' })
-                .eq('id', idRegister);
 
-            if (error) {
-                throw new Error(`Error al actualizar el estatus del registro \nerror: ${error.message}`)
+            if (newStatus === 'interna' || newStatus === 'externa') {
+                //crear reparacion del tipo deseado
+
+                const { error: errorCreateReaparation } = await supabase
+                    .from('reparaciones')
+                    .insert({ id_detalle_registro: idRegister, tipo_reparacion: newStatus })
+
+                if (errorCreateReaparation) {
+                    throw new Error(`Error al crear raparación ${newStatus} `)
+                }
+
+                const { error: errorUpdateStatus } = await supabase
+                    .from('registros_detalles_entradas')
+                    .update({ status: 'reparacion' })
+
+                if (errorUpdateStatus) {
+                    throw new Error(`Error al actualizar el registro ${errorUpdateStatus.message} `)
+                }
+
             }
 
-            setTimeout(() => {
-                updaterFunction()
-            }, 1000)
+            if (newStatus === 'lavado') {
+
+                const { error } = await supabase
+                    .from('registros_detalles_entradas')
+                    .update({ status: newStatus })
+                    .eq('id', idRegister);
+
+                if (error) {
+                    await supabase.from('registros_detalles_entradas').update({ status: 'prelavado' }).eq('id', idRegister);
+                    throw new Error(`Error al actualizar el estatus del registro \nerror: ${error.message}`)
+                }
+
+                const { error: errorUpdateWashing } = await supabase
+                    .from('lavados')
+                    .update({ status: 'programado' })
+                    .eq('id_detalle_entrada', idRegister)
+
+                if (errorUpdateWashing) {
+                    await supabase.from('registros_detalles_entradas').update({ status: 'prelavado' }).eq('id', idRegister)
+                    await supabase.from('lavados').update({ status: 'pending' }).eq('id_detalle_entrada', idRegister)
+                    throw new Error(`Error al actualizar el estatus del registro \nerror: ${error.message}`)
+                }
+
+            }
+
+            if (newStatus === 'almacenado') {
+
+                const { error } = await supabase
+                    .from('registros_detalles_entradas')
+                    .update({ status: 'almacenado-prelavado' })
+                    .eq('id', idRegister);
+
+                if (error) {
+                    await supabase.from('registros_detalles_entradas').update({ status: 'prelavado' }).eq('id', idRegister);
+                    throw new Error(`Error al actualizar el estatus del registro \nerror: ${error.message}`)
+                }
+
+                const { error: errorUpdateWashing } = await supabase
+                    .from('lavados')
+                    .update({ status: 'almacenado-prelavado' })
+                    .eq('id_detalle_entrada', idRegister)
+
+                if (errorUpdateWashing) {
+                    await supabase.from('registros_detalles_entradas').update({ status: 'prelavado' }).eq('id', idRegister)
+                    await supabase.from('lavados').update({ status: 'pending' }).eq('id_detalle_entrada', idRegister)
+                    throw new Error(`Error al actualizar el estatus del registro \nerror: ${error.message}`)
+                }
+
+            }
 
         } catch (error) {
             dispatchGlobal({

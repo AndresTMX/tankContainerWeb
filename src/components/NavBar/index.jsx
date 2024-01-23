@@ -26,6 +26,7 @@ function NavBar() {
     const pages = [
         { to: '/vigilancia', text: 'Vigilancia' },
         { to: '/maniobras', text: 'Maniobras' },
+        { to: '/programacion', text: 'Programación' },
         { to: '/reparaciones', text: 'Reparación' },
         { to: '/prelavado', text: 'Prelavado' },
         { to: '/calidad', text: 'Calidad' },
@@ -63,7 +64,7 @@ function NavBar() {
                     <Box
                     sx={{
                         mr: 2,
-                        display: { xs: 'none', md: 'flex' },
+                        display: { xs: 'none', md: 'none', xxl:'flex'  },
                         flexGrow: 1,
                         fontFamily: 'monospace',
                         fontWeight: 700,

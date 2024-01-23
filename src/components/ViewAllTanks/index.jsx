@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { Container, Box, Paper, Chip, Button, Stack, Tab, Tabs, Typography, Modal, IconButton, TextField, InputLabel, Select, MenuItem, FormControl } from "@mui/material";
+import { Container, Box, Paper, Chip, Button, Stack, Tab, Tabs, Typography, Modal, IconButton, TextField, InputLabel, Select, MenuItem, FormControl, Divider, Skeleton } from "@mui/material";
 import { CustomTabPanel } from "../CustomTabPanel";
 import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
 import { ContainerScroll } from "../ContainerScroll";
@@ -11,7 +11,9 @@ import { useAddTanks } from "../../Hooks/Maniobras/useAddTanks";
 function ViewAllTanks() {
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-    const { getTanks, tanks, rowTanks, tankError, tankLoading } = useGetTanks();
+
+    const { getAllTanks, tanks, tankError, tankLoading } = useGetTanks()
+
     const { updateTankStatus, deleteTanks, updateTanksRepair } = useAddTanks();
 
     const [tab, setTab] = useState(0);
@@ -22,13 +24,13 @@ function ViewAllTanks() {
     const tanksSelected = tanks.length >= 1 ? tanks.filter((tanque) => selectTank.includes(tanque.tanque)) : [];
     const [tankEditing, setTankEditing] = useState(tanksSelected);
 
-    useEffect(() => {
-        getTanks();
-    }, [editTank, deleteModal])
+    // useEffect(() => {
+    //     getTanks();
+    // }, [editTank, deleteModal])
 
-    useEffect(() => {
-        setTankEditing(tanksSelected)
-    }, [editTank])
+    // useEffect(() => {
+    //     setTankEditing(tanksSelected)
+    // }, [editTank])
 
     const ToggleTab = (event, newValue) => {
         setTab(newValue)
@@ -117,26 +119,13 @@ function ViewAllTanks() {
     return (
         <>
 
-                <Box sx={{width:'100%' }}>
-                    <Paper sx={{width:'90vw', maxWidth:'1000px', justifyContent:'center', display:'flex'}}>
-                        <ContainerScroll background={'white'} height={'75vh'}>
-
-                            <DataGrid
-                                rows={rowTanks}
-                                columns={columns}
-                                checkboxSelection
-                                disableSelectionOnClick
-                                onRowSelectionModelChange={(rowModesModel) => setSelectTank(rowModesModel)}
-                                slots={{
-                                    toolbar: HeaderTable
-                                }}
-                                slotProps={{
-                                    toolbar: { toggleEdit, toggleDelet }
-                                }}
-                            />
-                        </ContainerScroll>
-                    </Paper>
-                </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', }}>
+                <Paper sx={{ width: '95vw', maxWidth: '1000px', justifyContent: 'center', display: 'flex' }}>
+                    <ContainerScroll background={'white'} height={'auto'} maxHeight={'70vh'}>
+                        <TableIsotanques />
+                    </ContainerScroll>
+                </Paper>
+            </Box>
 
             <Modal open={editTank}>
                 <Box
@@ -513,4 +502,120 @@ export function ItemEditTank({ tanque, internas, externas, OnEditTank }) {
             </Stack>
         </Stack>
     )
+}
+
+export function TableIsotanques({ }) {
+
+    const { getAllTanks, tanks, tankError, tankLoading } = useGetTanks();
+
+    useEffect(() => {
+        getAllTanks();
+    }, [])
+
+    return (
+        <>
+            <Box sx={{ overflowY: 'auto', borderRadius: '4px' }}>
+                <Stack
+                    flexDirection='row'
+                    alignItems='center'
+                    justifyContent='flex-start'
+                    bgcolor='#0092ba'
+                    padding='20px'
+                    width='100%'
+                    minWidth='750px'
+                    gap='10px'
+                    color='white'
+                >
+                    <Typography width='80px' variant="button">
+                        Tanque
+                    </Typography>
+                    <Divider flexItem orientation='vertical' />
+
+                    <Typography width='150px' variant="button">
+                        Estado
+                    </Typography>
+                    <Divider flexItem orientation='vertical' />
+
+                    <Typography textAlign='center' width='200px' variant="button">
+                        Reparaciones Internas
+                    </Typography>
+                    <Divider flexItem orientation='vertical' />
+
+                    <Typography textAlign='center' width='200px' variant="button">
+                        Reparaciones Externas
+                    </Typography>
+                    <Divider flexItem orientation='vertical' />
+
+                    <Typography textAlign='center' width='100px' variant="button">
+                        Reingresos
+                    </Typography>
+                </Stack>
+
+                <Stack>
+                    {tanks.map((tanque, index) => (
+                        <ItemDetailsTanque
+                            key={`${tanque.numero_tanque}_${index}`}
+                            numero_tanque={tanque.numero_tanque}
+                            status={tanque.status}
+                        />
+                    ))}
+                </Stack>
+            </Box>
+        </>
+    )
+}
+
+export function ItemDetailsTanque({ numero_tanque, status }) {
+
+    const { getDetailsForTank, detailTank, errorDetail, loadingDetail, } = useGetTanks();
+
+    const { reparaciones_internas, reparaciones_externas, reingresos } = detailTank[0] || {};
+
+    useEffect(() => {
+        getDetailsForTank(numero_tanque);
+    }, [])
+
+    return (
+        <Paper>
+
+            {(!loadingDetail && !errorDetail) &&
+                <Stack
+                    flexDirection='row'
+                    alignItems='center'
+                    justifyContent='flex-start'
+                    bgcolor='whitesmoke'
+                    padding='20px'
+                    width='100%'
+                    minWidth='750px'
+                    gap='10px'
+                >
+                    <Typography textTransform='uppercase' width='80px' variant='subtitle'>
+                        {numero_tanque}
+                    </Typography>
+
+                    <Typography width='150px' variant='subtitle'>
+                        <Chip label={ status === 'interna' || status === 'externa'? `reparación ${status}` : status }/>
+                    </Typography>
+
+                    <Typography textAlign='center' width='200px' variant='subtitle'>
+                        {reparaciones_internas | 0}
+                    </Typography>
+
+                    <Typography textAlign='center' width='200px' variant='subtitle'>
+                        {reparaciones_externas | 0}
+                    </Typography>
+
+                    <Typography textAlign='center' width='100px' variant='subtitle'>
+                        {reingresos}
+                    </Typography>
+                </Stack>}
+
+
+            {(loadingDetail && !errorDetail) &&
+                <Skeleton variant='text' width='100%' height='50px' />
+            }
+        </Paper>
+    )
+
+
 }

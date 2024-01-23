@@ -63,11 +63,11 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
 
     const { register, loading, error } = useRegisterForDetails(entrada_id)
 
-    const { checkIn, created_at } = register;
+    const { checkIn, created_at, operadores, tracto  } = register;
 
     const IsSmall = useMediaQuery('(max-width:850px)');
 
-    const { carga, tracto, numero_tanque, transportistas, operadores, clientes } = data;
+    const { carga, numero_tanque, transportistas, clientes } = data;
 
     const { contacto, correo, nombre } = operadores || {};
 

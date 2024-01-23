@@ -1,128 +1,79 @@
-import { useEffect, useState, useContext } from "react";
-import { Stack, TextField, IconButton, Button } from "@mui/material";
-import { ContainerScroll } from "../ContainerScroll";
-//icons
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-import SaveAsIcon from '@mui/icons-material/SaveAs';
-import AddIcon from '@mui/icons-material/Add';
-//context
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
+import { Stack, TextField, Select, MenuItem, FormControl, Box, InputLabel, } from "@mui/material";
 
-function AddNewTanks({ dataTank, setDataTank }) {
-
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-    const [newTanks, setNewTanks] = useState([''])
-    const [update, setUpdate] = useState(false)
-
-    useEffect(() => {
-        const newState = new Set()
-        for (let element of newTanks) {
-            newState.add(element)
-        }
-        setDataTank([...newState])
-    }, [update]);
-
-    const addField = () => {
-
-        if (newTanks.length === 4) {
-            alert('no puedes agregar mas de 4 tanques a un tracto')
-        } else {
-            const newState = [...newTanks]
-            newState.push('')
-            setNewTanks(newState)
-        }
-    }
-
-    const saveField = () => {
-        setUpdate(!update)
-    }
-
-    const deleteField = (index) => {
-        const newState = [...newTanks]
-        newState.splice(index, 1)
-        setNewTanks(newState)
-        setUpdate(!update)
-
-    }
-
-    const onChangueField = (index, value) => {
-        const newState = [...newTanks]
-        newState[index] = value
-        setNewTanks(newState)
-    }
-
-    const validateExist = (index) => {
-        return dataTank[index]
-    }
-
-    const length = newTanks.length;
+function AddDataTanks({ dataTank, typeTank, setDataTank, setTypeTank }) {
 
     return (
         <>
 
-            <Stack gap='8px'>
+            <Stack
+                justifyContent='space-around'
+                flexDirection='row'
+                flexWrap='wrap'
+                gap='8px'>
 
-                <Stack flexDirection={'row'} justifyContent={'space-between'}>
-                    <Button
-                        variant="contained"
-                        onClick={addField}
-                        endIcon={<AddIcon />
-                        }>
-                        Agregar otro
-                    </Button>
+                <InputTank
+                    stateTank={dataTank.tanque1}
+                    stateType={typeTank.tanque1}
+                    onChangeTank={(value) => setDataTank({ ...dataTank, tanque1: value })}
+                    onChangeType={(value) => setTypeTank({ ...typeTank, tanque1: value })}
+                />
 
-                </Stack>
+                <InputTank
+                    stateTank={dataTank.tanque2}
+                    stateType={typeTank.tanque2}
+                    onChangeTank={(value) => setDataTank({ ...dataTank, tanque2: value })}
+                    onChangeType={(value) => setTypeTank({ ...typeTank, tanque2: value })}
+                />
 
-                {
-                    newTanks.map((element, index) => (
-                        <InputTank
-                            key={index}
-                            index={index}
-                            value={element}
-                            validateExist={validateExist}
-                            onChange={onChangueField}
-                            deleteField={deleteField}
-                            saveField={saveField}
-                            length={length}
-                        />
-                    ))
-                }
+                <InputTank
+                    stateTank={dataTank.tanque3}
+                    stateType={typeTank.tanque3}
+                    onChangeTank={(value) => setDataTank({ ...dataTank, tanque3: value })}
+                    onChangeType={(value) => setTypeTank({ ...typeTank, tanque3: value })}
+                />
+
+                <InputTank
+                    stateTank={dataTank.tanque4}
+                    stateType={typeTank.tanque4}
+                    onChangeTank={(value) => setDataTank({ ...dataTank, tanque4: value })}
+                    onChangeType={(value) => setTypeTank({ ...typeTank, tanque4: value })}
+                />
+
             </Stack>
         </>
     );
 }
 
-export { AddNewTanks };
+export { AddDataTanks };
 
-function InputTank({ value, onChange, index, deleteField, saveField, validateExist, length }) {
-
-    const buttonSave = validateExist(index);
+export function InputTank({ stateTank, stateType, onChangeTank, onChangeType }) {
 
     return (
-        <Stack flexDirection='row' alignItems='center' gap='5px'>
-            <TextField
-                id={`addTank_${index}`}
-                sx={{ maxWidth: '89%' }}
-                fullWidth
-                value={value}
-                onChange={(e) => onChange(index, e.target.value)} />
+        <Box sx={{ display: 'flex', flexDirection: 'row', gap: '2px', width:'350px', justifyContent:'space-around' }}>
 
-            <IconButton
-                color="info"
-                disabled={buttonSave}
-                onClick={saveField}
-            >
-                <SaveAsIcon fontSize="large" />
-            </IconButton>
+            <FormControl sx={{width:'30%'}}>
+                <InputLabel>Tipo</InputLabel>
+                <Select
+                    sx={{ width: '100%' }}
+                    label='Tipo'
+                    value={stateType}
+                    onChange={(e) => onChangeType(e.target.value)}
+                >
+                    <MenuItem value='AGMU'>AGMU</MenuItem>
+                    <MenuItem value='AFIU'>AFIU</MenuItem>
+                    <MenuItem value='DYOU'>DYOU</MenuItem>
+                </Select>
+            </FormControl>
 
-            <IconButton
-                color="error"
-                onClick={() => deleteField(index)}
-            >
-                <RemoveCircleIcon fontSize="large" />
-            </IconButton>
-        </Stack>
+            <FormControl sx={{width:'70%'}}>
+                <TextField
+                    sx={{ width: '100%' }}
+                    value={stateTank}
+                    onChange={(e) => onChangeTank(e.target.value)}
+                    label='Número de tanque'
+                />
+            </FormControl>
+
+        </Box>
     )
 }

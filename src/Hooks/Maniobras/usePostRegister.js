@@ -19,7 +19,7 @@ function usePostRegister(updaterRegisters) {
     FUNCIONES PARA AGREGAR REGISTROS DE ENTRADA
     /*/
 
-    const sendInputRegistersTank = async (data) => {
+    const sendInputRegistersTank = async (data, economico, placas, tracto, operator) => {
 
         try {
             dispatchGlobal({
@@ -33,6 +33,10 @@ function usePostRegister(updaterRegisters) {
                 .insert({
                     user_id: session.id,
                     type: 'entrada',
+                    numero_economico: economico,
+                    operador_id: operator,
+                    placas: placas,
+                    tracto: tracto
                 })
                 .select()
 
@@ -88,7 +92,7 @@ function usePostRegister(updaterRegisters) {
 
     }
 
-    const sendInputRegistersPipa = async (data) => {
+    const sendInputRegistersPipa = async (data, economico, placas, tracto, operator) => {
         try {
 
             dispatchGlobal({
@@ -99,7 +103,15 @@ function usePostRegister(updaterRegisters) {
             //registro de entrada general
             const { data: dataRegister, error: errorRegiser } = await supabase
                 .from(tableRegisters)
-                .insert({ user_id: session.id, type: 'entrada' })
+                .insert({
+                    user_id: session.id,
+                    type: 'entrada',
+                    numero_economico: economico,
+                    operador_id: operator,
+                    placas: placas,
+                    tracto: tracto
+
+                })
                 .select()
 
             if (errorRegiser) {
@@ -148,14 +160,21 @@ function usePostRegister(updaterRegisters) {
         }
     }
 
-    const sendInputRegisterEmptyTracto = async (register) => {
+    const sendInputRegisterEmptyTracto = async (register, economico, placas, tracto, operator) => {
         try {
             dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
             //registro general de entrada
             const { data: dataRegister, error: errorRegister } = await supabase
                 .from(tableRegisters)
-                .insert({ user_id: session.id, type: 'entrada' })
+                .insert({
+                    user_id: session.id,
+                    type: 'entrada',
+                    numero_economico: economico,
+                    operador_id: operator,
+                    placas: placas,
+                    tracto: tracto
+                })
                 .select()
 
             if (errorRegister) {
@@ -197,7 +216,7 @@ function usePostRegister(updaterRegisters) {
     FUNCION PARA RETORNAR TRACTO VACIO
     /*/
 
-    const returnEmpty = async (idRegister, registros) => {
+    const returnEmpty = async (idRegister, registros, economico, placas, tracto, operator) => {
         try {
 
             dispatchGlobal({
@@ -206,17 +225,13 @@ function usePostRegister(updaterRegisters) {
             });
 
             const idTransportista = registros[0].transportista_id;
-            const idOperador = registros[0].operador_id;
             const idCliente = registros[0].clientes.id;
             const typeCarga = registros[0].carga;
-            const tracto = registros[0].tracto;
 
             const dataOutputRegister = {
                 carga: 'vacio',
-                tracto: tracto,
                 numero_tanque: null,
                 cliente_id: idCliente,
-                operador_id: idOperador,
                 transportista_id: idTransportista,
             }
 
@@ -233,10 +248,18 @@ function usePostRegister(updaterRegisters) {
             //Se crea un nuevo registro general de salida 
             const { data: dataRegister, error: errorAddRegister } = await supabase
                 .from('registros')
-                .insert({ user_id: session.id, type: 'salida' })
+                .insert({
+                    user_id: session.id,
+                    type: 'salida',
+                    numero_economico: economico,
+                    operador_id: operator,
+                    placas: placas,
+                    tracto: tracto
+                })
                 .select()
 
             if (errorAddRegister) {
+                await supabase.from('registros').update({ status: 'confirm', checkOut: null }).eq('id', idRegister)
                 throw new Error(`Error al agregar nuevo registro de salida, error: ${errorAddRegister.message}`)
             }
 

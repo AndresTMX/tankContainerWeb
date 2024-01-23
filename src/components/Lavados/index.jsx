@@ -1,22 +1,19 @@
-import { useState } from "react";
-import { Container, Box, Paper, Stack, Alert, Chip, Typography, Button, Modal, IconButton } from "@mui/material";
+import { useState, useContext } from "react";
+import { Paper, Stack, Chip, Typography, Button, Alert } from "@mui/material";
 //estados genericos
 import { NotConexionState } from "../NotConectionState";
 import { ItemLoadingState } from "../ItemLoadingState";
 //componentes
 import { ContainerScroll } from "../ContainerScroll";
-import { ItemQuestion } from "../../sections/CheckListCalidadPrelavado";
-//hooks
+import { EvaluationWashing } from "../EvaluationWashing";
 import { useWashing } from "../../Hooks/Lavado/useWashing";
-import { useManagmentWashing } from "../../Hooks/Lavado/useManagmentWashing";
 //helpers
 import { dateMXFormat, datetimeMXFormat, tiempoTranscurrido } from "../../Helpers/date";
 //icons
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import ShowerIcon from '@mui/icons-material/Shower';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
-import ClearIcon from '@mui/icons-material/Clear';
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+
 
 
 function Lavados({ typeWashing }) {
@@ -60,6 +57,7 @@ function Lavados({ typeWashing }) {
                             <ItemLavados
                                 key={lavado.id}
                                 lavado={lavado}
+                                updateList={updateList}
                                 typeWashing={typeWashing}
                             />
                         ))
@@ -84,12 +82,12 @@ function Lavados({ typeWashing }) {
 
 export { Lavados };
 
-function ItemLavados({ lavado, typeWashing }) {
+function ItemLavados({ lavado, typeWashing, updateList }) {
 
     return (
         <>
             {typeWashing === 'pendiente' &&
-                <LavadoPendiente lavado={lavado} />
+                <LavadoPendiente lavado={lavado} updateList={updateList} />
             }
 
             {typeWashing === 'realizado' &&
@@ -99,58 +97,14 @@ function ItemLavados({ lavado, typeWashing }) {
     );
 }
 
-function LavadoPendiente({ lavado }) {
-
-    const { sendRevision } = useManagmentWashing();
+function LavadoPendiente({ lavado, updateList }) {
 
     const [modal, setModal] = useState(false);
-    const toggleModal = () => {
-        setModal(!modal)
-        setRevision(questions);
-    }
+    const toggleModal = () => setModal(!modal)
 
     const { created_at, data, status, tipo_lavado, registros_detalles_entradas } = lavado;
 
     const { carga, numero_pipa, numero_tanque, tracto } = registros_detalles_entradas || {};
-
-    const questions = [
-        {
-            question: 'Residuos en escotilla y válvulas',
-            value: '',
-        },
-        {
-            question: 'Legibilidad de datos seriales y revisiones',
-            value: '',
-        },
-        {
-            question: 'Residuos dentro del tanque',
-            value: '',
-        },
-        {
-            question: 'Corrosión dentro del tanque o en escotilla',
-            value: '',
-        },
-        {
-            question: 'Condiciones generales de válvulas',
-            value: '',
-        },
-        {
-            question: 'Ausencia de juntas y empaques',
-            value: '',
-        },
-        {
-            question: 'Portasellos',
-            value: '',
-        },
-    ]
-
-    const [revision, setRevision] = useState(questions);
-
-    const changueValue = (index, value) => {
-        const copy = [...revision];
-        copy[index].value = value;
-        setRevision(copy);
-    };
 
     return (
         <>
@@ -204,7 +158,7 @@ function LavadoPendiente({ lavado }) {
                     >
                         <Stack>
                             <Typography variant='caption'>{numero_tanque ? 'Tanque' : 'Pipa'}</Typography>
-                            <Typography variant='body2'>{numero_tanque || numero_pipa}</Typography>
+                            <Typography textTransform='uppercase' variant='body2'>{numero_tanque || numero_pipa}</Typography>
                         </Stack>
 
                         <Stack>
@@ -226,7 +180,7 @@ function LavadoPendiente({ lavado }) {
                             variant='contained'
                             endIcon={<ManageSearchIcon />}
                         >
-                            revision externa
+                            Iniciar lavado
                         </Button>
 
                         {/* <Button
@@ -244,87 +198,12 @@ function LavadoPendiente({ lavado }) {
                 </Stack>
             </Paper>
 
-            <Modal open={modal}>
-                <Container
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        minHeight: '100vh',
-                        paddingTop: '5%',
-                        width: '100vw',
-                    }}>
-
-                    <Paper
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            padding: '20px',
-                            width: '100%',
-                            maxWidth: '700px',
-
-                        }}
-                    >
-
-                        <Stack
-                            flexDirection={'row'}
-                            alignItems={'center'}
-                            justifyContent={'space-between'}
-                        >
-                            <Typography variant="button">
-                                Revision externa
-                            </Typography>
-
-                            <IconButton
-                                onClick={toggleModal}
-                            >
-                                <ClearIcon color='error' />
-                            </IconButton>
-                        </Stack>
-
-                        <RevisionLavado
-                            revision={revision}
-                            changueValue={changueValue}
-                        />
-
-                        <Stack paddingTop={'10px'}>
-                            <Button
-                                onClick={() => sendRevision(revision)}
-                                color="primary"
-                                variant="contained"
-
-                            >
-                                Enviar revision
-                            </Button>
-                        </Stack>
-
-                    </Paper>
-
-                </Container>
-            </Modal>
+            <EvaluationWashing
+                lavado={lavado}
+                modal={modal}
+                updateList={updateList}
+                toggleModal={toggleModal} />
 
         </>
     )
 }
-
-function RevisionLavado({ revision, changueValue }) {
-
-    return (
-        <>
-            <ContainerScroll height={'350px'}>
-                <Stack gap='8px'>
-                    {revision.map((question, index) => (
-                        <ItemQuestion
-                            key={question.question}
-                            question={question}
-                            index={index}
-                            toggleCheck={changueValue}
-                        />
-                    ))}
-                </Stack>
-            </ContainerScroll>
-
-        </>
-    );
-}
-

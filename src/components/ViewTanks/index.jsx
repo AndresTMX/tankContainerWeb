@@ -1,4 +1,4 @@
-import { Paper, Button, Stack, Typography, IconButton, Divider, Fade } from "@mui/material";
+import { Paper, Button, Stack, Typography, IconButton, Divider, Fade, Box } from "@mui/material";
 import { TextGeneral } from "../TextGeneral";
 import { ContainerScroll } from "../ContainerScroll";
 import { ViewAndSelectTanks } from "../ViewAndSelectTanks";
@@ -21,16 +21,18 @@ function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
     const IsMovile = useMediaQuery("(max-width:500px)");
 
     useEffect(() => {
-        getTanks();
+        getTanksReadyToOutput();
     }, [details])
 
-    const { carga, tracto, operadores, transportistas, status, transportista_id, operador_id , idRegister} = details[0] || {};
+    const { carga, tracto, operadores, transportistas, clientes, status, transportista_id, operador_id, idRegister } = details[0] || {};
     const { nombre, contacto } = operadores || {};
     const { name: linea, } = transportistas || {};
+    const { cliente, } = clientes || {};
 
     const { addOutputRegisterForManiobra } = useAddOutputManiobra();
-    const { tanksReady, tankLoading, tankError, getTanks } = useGetTanks();
-    const { copyTanksFree, copyTanksManiobras, toggleTank, deletTanksChargue, dataTank, colorItemTank } = useSelectManiobras(detailManiobras, tanksReady, tankLoading);
+    const { tanks, tankLoading, tankError, getTanksReadyToOutput } = useGetTanks();
+
+    const { copyTanksFree, copyTanksManiobras, toggleTank, deletTanksChargue, dataTank, colorItemTank } = useSelectManiobras(detailManiobras, tanks, tankLoading);
 
     const addContainers = async () => {
 
@@ -40,7 +42,7 @@ function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
             registers.push({
                 carga: 'tanque',
                 tracto: tracto,
-                operador: operador_id ,
+                operador: operador_id,
                 numero_tanque: tanque.numero_tanque,
                 transportista: transportista_id,
             })
@@ -55,11 +57,14 @@ function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
 
     return (
         <>
-            <Paper sx={{ padding: '20px', width: '90vw', maxWidth: '700px' }}>
+            <Box sx={{ width: '90vw', maxWidth: '700px', }}>
 
-
-
-                <Stack spacing={1}>
+                <Paper
+                    spacing={1}
+                    sx={{
+                        padding: '20px'
+                    }}
+                >
 
                     <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
                         <Typography variant='subtitle1'>Nuevo registro de salida</Typography>
@@ -68,15 +73,25 @@ function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
                         </IconButton>
                     </Stack>
 
-                    <ContainerScroll background={'white'} height={'250px'}>
-                        <Paper sx={{ bgcolor: 'whitesmoke' }}>
+                    <ContainerScroll background={'white'} height={'250px'} >
+                        <Paper sx={{ display: 'flex', padding: '10px', flexDirection: 'column', gap: '10px' }}>
+                            <Stack flexDirection='row' gap='20px' alignItems='center' bgcolor='whitesmoke' padding="10px">
+                                <Typography variant="subtitle2">
+                                    Cliente
+                                </Typography>
+                                <Typography>
+                                    {cliente}
+                                </Typography>
+                            </Stack>
+
                             <Stack
-                                padding={'10px'}
+                                gap="10px"
+                                padding="10px"
                                 width={'100%'}
+                                bgcolor='whitesmoke'
+                                alignItems={IsSmall ? "start" : "center"}
                                 flexDirection={IsSmall ? "column" : "row"}
                                 justifyContent={IsSmall ? "flex-start" : "space-around"}
-                                alignItems={IsSmall ? "start" : "center"}
-                                gap="10px"
                             >
 
                                 <TextGeneral width={'200px'} text={linea} label="Linea" />
@@ -97,7 +112,10 @@ function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
                                     flexItem
                                 />
 
-                                <TextGeneral width={'100px'} label="Operador" text={`${nombre?.split(" ").slice(0, 2)[0]} ${nombre?.split(" ").slice(0, 2)[1]} `} />
+                                <TextGeneral
+                                    width={'100px'}
+                                    label="Operador"
+                                    text={`${nombre?.split(" ").slice(0, 2)[0]} ${nombre?.split(" ").slice(0, 2)[1]} `} />
 
                             </Stack>
                         </Paper>
@@ -113,12 +131,12 @@ function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
                             </Typography>
                             <Typography
                                 variant='caption'
-                            >{`${copyTanksManiobras.length} / 4`}
+                            >{`${copyTanksManiobras?.length} / 4`}
                             </Typography>
                         </Stack>
 
                         <Stack spacing={'5px'} marginTop={'10px'}>
-                            {copyTanksManiobras.map((tanque) => (
+                            {copyTanksManiobras?.map((tanque) => (
                                 <ItemTank
                                     key={tanque.tanque}
                                     tanque={tanque}
@@ -139,7 +157,12 @@ function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
                         colorItemTank={colorItemTank}
                     />
 
-                    <Stack flexDirection={IsMovile ? 'column' : 'row'} gap={'10px'} justifyContent={'space-between'}>
+                    <Stack
+                        gap='5px'
+                        padding='10px'
+                        flexDirection={IsMovile ? 'column' : 'row'}
+                        justifyContent={'space-between'}
+                    >
                         <Button
                             onClick={addContainers}
                             size="small"
@@ -158,8 +181,8 @@ function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
 
                     </Stack>
 
-                </Stack>
-            </Paper>
+                </Paper>
+            </Box>
         </>
     );
 }

@@ -22,11 +22,11 @@ function useWashing(type) {
             setLavados([])
             setError(null)
 
-            const { error, data } = await supabase
-                .from('prelavados_revisiones')
-                .select('*, registros_detalles_entradas(carga, tracto, numero_tanque, numero_pipa, status)')
-                .eq('status', 'pendiente')
-                .order('created_at', { ascending: false })
+            const { data, error } = await supabase
+                .from('lavados')
+                .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
+                .eq('status', 'asignado')
+                .order('tentativeEnd', { ascending: false })
 
             if (error) {
                 throw new Error(`Error al consultar lavados pendientes , error: ${error.message}`)
@@ -53,11 +53,11 @@ function useWashing(type) {
             setLavados([])
             setError(null)
 
-            const { error, data } = await supabase
-                .from('prelavados_revisiones')
-                .select('*, registros_detalles_entradas(carga, tracto, numero_tanque, numero_pipa, status)')
-                .eq('status', 'realizado')
-                .order('created_at', { ascending: false })
+            const { data, error } = await supabase
+                .from('lavados')
+                .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
+                .eq('status', 'lavado')
+                .order('tentativeEnd', { ascending: false })
 
             if (error) {
                 throw new Error(`Error al consultar lavados realizados , error: ${error.message}`)

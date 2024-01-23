@@ -1,7 +1,7 @@
 import { Typography, Button, Stack, Paper } from "@mui/material";
 import { ContainerScroll } from "../../../components/ContainerScroll";
 
-function Step1({ nextStep }) {
+function Step1({ setStep }) {
     return (
         <>
             <ContainerScroll height={'auto'}>
@@ -27,11 +27,11 @@ function Step1({ nextStep }) {
                         alignItems='center'>
                         <Button
                             fullWidth
-                            onClick={() => nextStep(2)}
+                            onClick={() => setStep(2)}
                             sx={{ maxWidth: '250px' }}
                             variant="contained"
                             color="primary"
-                            >
+                        >
                             Ok
                         </Button>
                     </Stack>

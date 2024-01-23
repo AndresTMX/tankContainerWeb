@@ -32,8 +32,6 @@ function Prelavado() {
 
    const { selectCheck } = state
 
-   // const { } = useSearcher()
-
    const mockDataContainers = [
       {
          id: 0,
@@ -276,7 +274,7 @@ function Prelavado() {
 
    return (
       <>
-         <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0px', overflowX: 'hidden', minHeight: '100vh' }}>
+         <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0px', overflowX: 'hidden', minHeight: '90vh' }}>
 
             <Tabs value={tab} onChange={ToggleTab}>
                <Tab label="Agenda de lavados" />
@@ -286,7 +284,7 @@ function Prelavado() {
 
             <CustomTabPanel value={tab} index={0}>
                <Container>
-                  <Fade in={tab === 0 ? true : false} timeout={500}>
+                  {/* <Fade in={tab === 0 ? true : false} timeout={500}>
                      <Box
                         sx={{
                            display: 'flex',
@@ -297,14 +295,14 @@ function Prelavado() {
                            <WashingAgend />
                         </Paper>
                      </Box>
-                  </Fade>
+                  </Fade> */}
                </Container>
             </CustomTabPanel>
 
             <CustomTabPanel value={tab} index={1}>
                {!state.selectCheck &&
-                  <Box sx={{ width: '90vw', maxWidth: '750px'}}>
-                     <Fade in={tab === 1 ? true : false} timeout={500}>
+                  <Box sx={{ width: '90vw', maxWidth: '750px' }}>
+                     <Fade in={!state.selectCheck} timeout={300}>
                         <Box
                            sx={{
                               gap: '10px',
@@ -346,11 +344,7 @@ function Prelavado() {
                                        color={'warning'}
                                        label="pendientes"
                                     />
-                                    {/* <Chip
-                                       onClick={() => changueTypeWashing("lavado")}
-                                       color={type === "lavado" ? "success" : "default"}
-                                       label="realizados"
-                                    /> */}
+
 
                                  </Stack>
 
@@ -377,11 +371,28 @@ function Prelavado() {
                         </Box>
                      </Fade>
                   </Box>}
+
+               {selectCheck && (
+                  <Paper
+                     elevation={4}
+                     sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        width: 'auto',
+                        maxWidth: '95vw',
+                        padding: '10px',
+                     }}>
+                     <Box sx={{ padding: isMovile ? '0px' : '15px', width: '90vw', maxWidth: '800px' }}>
+                        <ItemWashing data={selectCheck} updater={updater} step={step} setStep={setStep} />
+                        <CheckListPrelavado step={step} setStep={setStep} updater={updater} />
+                     </Box>
+                  </Paper>
+               )}
             </CustomTabPanel>
 
             <CustomTabPanel value={tab} index={2}>
                <Container>
-                  <Fade in={tab === 2 ? true : false} timeout={500}>
+                  <Fade in={tab === 2 ? true : false} timeout={300}>
                      <Box
                         sx={{
                            display: 'flex',
@@ -396,25 +407,6 @@ function Prelavado() {
                </Container>
             </CustomTabPanel>
 
-            {selectCheck && (
-               <Paper
-                  elevation={4}
-                  sx={{
-                     display: 'flex',
-                     justifyContent: 'center',
-                     width: '700px',
-                     maxWidth: '95vw',
-                     padding: '10px',
-                  }}>
-                  <Box sx={{ padding: isMovile ? '0px' : '15px', width: '90vw', maxWidth: '750px'  }}>
-                     <Stack>
-                        <ItemWashing data={selectCheck} updater={updater} step={step} setStep={setStep} />
-                        <CheckListPrelavado step={step} setStep={setStep} />
-                     </Stack>
-                  </Box>
-               </Paper>
-            )}
-
          </Container>
 
          <LoadingState duration={1000} />
@@ -426,3 +418,4 @@ function Prelavado() {
 }
 
 export { Prelavado };
+

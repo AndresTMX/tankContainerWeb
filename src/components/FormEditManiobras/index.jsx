@@ -1,246 +1,329 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 //componentes
-import { Box, Stack, Typography, Paper, IconButton, Button, } from "@mui/material";
-import { ViewAndDeletTanks, ViewAndSelectTanks } from "../ViewAndSelectTanks";
-import { InputText } from "../../components/InputText";
-import { SelectSimple } from "../SelectSimple";
+import { Box, Stack, Typography, Paper, IconButton, Button, TextField, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 //icons
 import CloseIcon from '@mui/icons-material/Close';
-//helpers
-import { transformRegisters } from "../../Helpers/transformRegisters";
 //hooks
+import { useFormRegister } from "../../Hooks/Maniobras/useFormRegister";
 import { useEditManiobra } from "../../Hooks/Maniobras/useEditManiobra";
-import { useSelectManiobras } from "../../Hooks/Maniobras/useSelectManiobras";
-import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useReadyToChargue } from "../../Hooks/tanksManagment/useReadyToChargue";
+//icons
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { ContainerScroll } from "../ContainerScroll";
 
-function FormEditManiobras({ data, toggleModal, updater }) {
+function FormEditManiobras({ register, detalles, toggleModal, updaterDetails, updaterRegisters }) {
 
-    useEffect(() => {
-        getTanks()
-    }, [data])
+    const { checkIn, created_at, numero_economico, operadores, placas, tracto, type: typeRegister, status: statusRegister, id: idRegister } = register || {};
 
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-    const { tanks, tanksReady, tankLoading, tankError, getTanks } = useGetTanks();
-
-    const {
-        typeRegister,
-        linea,
-        tanques,
-        operador,
-        transportista,
-        tanquesManiobras,
-        tracto,
-        numeroTanques,
-        typeChargue,
-    } = transformRegisters(data);
+    const { carga, transportistas, status, clientes } = detalles[0] || {};
+    const { nombre, contacto, id: operadorId } = operadores || {};
+    const { name: linea, id: transportistaId } = transportistas || {};
+    const { cliente, id: idCliente } = clientes || {};
 
     const IsMovile = useMediaQuery("(max-width:700px)")
+    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
+    const { routerFetch, editRegisterGeneral, editRegisterCarga } = useEditManiobra(updaterRegisters);
+    const { statesFormRegister, functionsFormRegister } = useFormRegister();
 
-    const { routerFetch } = useEditManiobra();
-    const { colorItemTank, toggleTank, deletTanksChargue, dataTank, copyTanksFree, copyTanksManiobras } = useSelectManiobras(tanquesManiobras, tanksReady, tankLoading)
+    const { typeChargue, dataTank, dataPipa, typePipa, typeTank } = statesFormRegister || {};
 
-    const [newType, setNewType] = useState('');
-    const [idTracto, setIdTracto] = useState('');
-    const [typePipa, setTypePipa] = useState('');
-    const [nameOperador, setNameOperador] = useState('');
-    const [nameTransporter, setNameTransporter] = useState('');
-    const [dataPipa, setDataPipa] = useState({ pipa1: "", pipa2: "" });
+    const { setTypeChargue, setDataTank, setDataPipa, setTypeTank, setTypePipa } = functionsFormRegister || {};
+
     const cacheOperadores = JSON.parse(localStorage.getItem('operadores'));
     const cacheTransportistas = JSON.parse(localStorage.getItem('transportistas'));
 
-    const nameOperadores = cacheOperadores.map((operador) => ({
-        nombre: operador.nombre,
-        id: operador.id
-    }));
+    //controlador de datos de ingreso
+    const [editableRegister, setEditableRegister] = useState(true);
+    const [dataRegister, setDataRegister] = useState({
+        operador_id: operadorId,
+        numero_economico: numero_economico,
+        placas: placas,
+        tracto: tracto,
+    })
 
-    const nameTransportistas = cacheTransportistas.map((transporter) => ({
-        nombre: transporter.name,
-        id: transporter.id
-    }));
-
-    const SendChangues = async () => {
-        try {
-
-            if(newType === 'tanque' && copyTanksManiobras.length === 0){
-                throw new Error(`No puedes cambiar la maniobra al tipo tanque sin agregar tanques`)
-            }
-
-            if(newType === 'pipa' && typePipa === '' ){
-                throw new Error(`No puedes cambiar la maniobra al tipo pipa sin agregar pipas`)
-            }
-
-            if(newType === 'pipa' && typePipa === 'sencilla' && dataPipa.pipa1.trim() === ""){
-                throw new Error(`No puedes cambiar la maniobra al tipo pipa sin agregar pipas`)
-            }
-
-            if(newType === 'pipa' && typePipa === 'doble' && dataPipa.pipa1.trim() === "" && dataPipa.pipa2.trim() === ""){
-                throw new Error(`No puedes cambiar la maniobra al tipo pipa sin agregar pipas`)
-            }
-
-            const updates = {
-                tracto: idTracto != '' ? idTracto : tracto,
-                operador: nameOperador != '' ? nameOperador : operador.id,
-                transportista: nameTransporter != '' ? nameTransporter : transportista.id,
-            }
-
-            routerFetch(typeChargue, newType, typeRegister, copyTanksFree, copyTanksManiobras, dataPipa, updates, data.id)
-            setTimeout(() => {
-                toggleModal(false)
-                updater()
-            }, 1500)
-
-        } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
-        }
-
-
+    const saveChangueRegister = async () => {
+        await editRegisterGeneral(idRegister, dataRegister)
+        toggleModal()
+        updaterRegisters()
     }
 
     return (
         <>
-            <Paper elevation={3}>
-                <Box display={'flex'} flexDirection={'column'} width={'90vw'} maxWidth={'700px'} padding={'20px'} gap={'8px'}>
+            <Paper
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    width: '90vw',
+                    maxWidth: '700px',
+                    padding: '20px',
+                    gap: '8px',
+                    height: 'fit-content'
+                }}>
+                <Stack
+                    flexDirection={'row'}
+                    alignItems={'center'}
+                    justifyContent={'space-between'}
+                >
+                    <Typography>
+                        Edicion del registro
+                    </Typography>
+                    <IconButton onClick={() => toggleModal(false)}>
+                        <CloseIcon color="error" />
+                    </IconButton>
+                </Stack>
 
-                    <Stack
-                        flexDirection={'row'}
-                        alignItems={'center'}
-                        justifyContent={'space-between'}
-                    >
-                        <Typography>
-                            Edicion del registro
-                        </Typography>
-                        <IconButton onClick={() => toggleModal(false)}>
-                            <CloseIcon color="error" />
-                        </IconButton>
-                    </Stack>
+                <Stack alignItems='center' width='100%' flexDirection='row' gap='10px' flexWrap='wrap'>
 
-                    <Stack alignItems={'center'} flexDirection={IsMovile ? 'column' : 'row'} >
+                    {/* //si el registro tiene carga vacia y es de tipo salida sin confirmar */}
+                    {(carga === 'vacio' && typeRegister === 'salida') &&
+                        <ChangueTypeManiobra />
+                    }
 
-                        <SelectSimple
-                            title={'Nuevo operador'}
-                            value={nameOperador}
-                            options={nameOperadores}
-                            width={'100%'}
-                            required={true}
-                            type={'obj'}
-                            onChange={(e) => setNameOperador(e.target.value)}
-                        />
-
-                        <SelectSimple
-                            title={'Nueva linea transportista'}
-                            value={nameTransporter}
-                            options={nameTransportistas}
-                            width={'100%'}
-                            required={true}
-                            type={'obj'}
-                            onChange={(e) => setNameTransporter(e.target.value)}
-                        />
-
-                        {typeChargue === 'vacio' &&
-                            <SelectSimple
-                                title={'Nuevo tipo de registro'}
-                                value={newType}
-                                options={['tanque', 'pipa']}
-                                width={'100%'}
-                                onChange={(e) => setNewType(e.target.value)}
-                            />
-                        }
-
-                        <InputText
-                            label={'Nuevo numero de tracto'}
-                            value={idTracto}
-                            width={'100%'}
-                            required={true}
-                            onChangue={(e) => setIdTracto(e.target.value)}
-                        />
-
-                    </Stack>
-
-                    {(typeChargue === 'tanque' || newType === 'tanque') &&
-                        <ViewAndDeletTanks
-                            dataTank={copyTanksManiobras}
-                            deleteTank={deletTanksChargue}
-                        />}
-
-                    {(typeChargue === 'tanque' || newType === 'tanque') &&
-                        <ViewAndSelectTanks
-                            tankChargue={copyTanksManiobras}
-                            colorItemTank={colorItemTank}
-                            tanksReady={copyTanksFree}
-                            tankLoading={tankLoading}
-                            toggleTank={toggleTank}
-                            tankError={tankError}
-                            dataTank={dataTank}
-                        />}
-
-                    {(typeChargue === 'pipa' || newType === 'pipa') &&
-                        <Stack
-                            alignItems={'center'}
-                            flexDirection={IsMovile ? 'column' : 'row'}
-                            width={'100%'}
-                            gap={'10px'}
+                    {/* //si el registro es de tipo entrada y tiene tanques o pipas sin confirmar */}
+                    {(carga === 'tanque' || carga === 'pipa' && typeRegister === 'entrada') &&
+                        <Paper
+                            elevation={1}
+                            sx={{
+                                bgcolor: 'whitesmoke',
+                                padding: '10px',
+                                width: '100%'
+                            }}
                         >
+                            <Stack width='100%' flexDirection='row' gap='10px' justifyContent='flex-end'>
+                                <IconButton>
+                                    <EditIcon
+                                        color={!editableRegister ? 'error' : 'action'}
+                                        onClick={() => setEditableRegister(!editableRegister)} />
+                                </IconButton>
 
-                            <SelectSimple
-                                required={true}
-                                width={'100%'}
-                                title={'Tipo de pipa'}
-                                value={typePipa}
-                                options={['sencilla', 'doble']}
-                                onChange={(e) => setTypePipa(e.target.value)}
-                            />
+                                <IconButton>
+                                    <SaveIcon
+                                        color={!editableRegister ? 'info' : 'default'}
+                                        onClick={saveChangueRegister} />
+                                </IconButton>
+                            </Stack>
 
-                            {typePipa != '' &&
-                                <InputText
-                                    required={true}
-                                    width={'100%'}
-                                    label='Pipa 1'
-                                    value={dataPipa.pipa1}
-                                    onChangue={(e) => setDataPipa({ ...dataPipa, pipa1: e.target.value })}
-                                />}
+                            <Stack flexDirection='row' flexWrap='wrap' gap='5px' width='100%'>
 
-                            {typePipa === 'doble' &&
-                                <InputText
-                                    required={true}
-                                    width={'100%'}
-                                    label='Pipa 2'
-                                    value={dataPipa.pipa2}
-                                    onChangue={(e) => setDataPipa({ ...dataPipa, pipa2: e.target.value })}
-                                />}
-                        </Stack>}
 
-                    <Stack
-                        flexDirection={'row'}
-                        justifyContent={'space-between'}
-                        gap={'10px'}>
+                                <FormControl
+                                    sx={{ width: '200px' }}
+                                >
+                                    <InputLabel>Operador</InputLabel>
+                                    <Select
+                                        label='Operador'
+                                        disabled={editableRegister}
+                                        value={dataRegister.operador_id}
+                                        onChange={(e) => setDataRegister({ ...dataRegister, operador_id: e.target.value })}
+                                    >
+                                        {cacheOperadores.map((operador) => (
+                                            <MenuItem key={operador.id} value={operador.id}>{operador.nombre}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
 
-                        <Button
-                            onClick={SendChangues}
-                            size='small'
-                            variant='contained'
-                            color='primary'
-                        >Guardar
-                        </Button>
+                                <TextField
+                                    value={dataRegister.tracto}
+                                    variant='outlined'
+                                    sx={{ width: '169px' }}
+                                    disabled={editableRegister}
+                                    helperText='N° de Tractocamión'
+                                    onChange={(e) => setDataRegister({ ...dataRegister, tracto: e.target.value })}
+                                />
 
-                        <Button
-                            onClick={() => toggleModal(false)}
-                            size='small'
-                            variant='contained'
-                            color='error'
-                        >descartar
-                        </Button>
-                    </Stack>
+                                <TextField
+                                    value={dataRegister.placas}
+                                    variant='outlined'
+                                    helperText='Placas'
+                                    disabled={editableRegister}
+                                    onChange={(e) => setDataRegister({ ...dataRegister, placas: e.target.value })}
 
-                </Box>
+                                />
+
+                                <TextField
+                                    value={dataRegister.numero_economico}
+                                    variant='outlined'
+                                    sx={{ width: '169px' }}
+                                    disabled={editableRegister}
+                                    helperText='N° de económico'
+                                    onChange={(e) => setDataRegister({ ...dataRegister, numero_economico: e.target.value })}
+                                />
+
+                            </Stack>
+
+                        </Paper>}
+
+                </Stack>
+
+                {/* //si el registro es de tipo entrada y tiene tanques o pipas sin confirmar */}
+                {(carga === 'tanque' || carga === 'pipa' && typeRegister === 'entrada') &&
+                    <Paper
+                        elevation={1}
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            bgcolor: 'whitesmoke',
+                            padding: '10px',
+                            gap: '10px',
+                            width: '100%'
+                        }}
+                    >
+
+                        <ContainerScroll height={'150px'}>
+                            <Stack gap='10px'>
+                                {detalles.map((detalle, index) => (
+                                    <ItemEditable
+                                        key={index}
+                                        detalle={detalle}
+                                        updater={updaterDetails}
+                                        typeRegister={typeRegister}
+                                        detallesLength={detalles.length}
+                                    />
+                                ))}
+                            </Stack>
+                        </ContainerScroll>
+                    </Paper>}
+
+
+                {/* <Stack
+                    flexDirection={'row'}
+                    justifyContent={'space-between'}
+                    gap={'10px'}>
+
+                    <Button
+                        onClick={SendChangues}
+                        size='small'
+                        variant='contained'
+                        color='primary'
+                    >Guardar
+                    </Button>
+
+                    <Button
+                        onClick={() => toggleModal(false)}
+                        size='small'
+                        variant='contained'
+                        color='error'
+                    >descartar
+                    </Button>
+                </Stack> */}
+
             </Paper>
         </>
     );
 }
 
 export { FormEditManiobras };
+
+function ItemEditable({ detalle, updater, typeRegister, detallesLength }) {
+
+    const { tipo, numero_tanque, numero_pipa, id, carga } = detalle || {};
+
+    const { editRegisterCarga, deleteRegisterCarga } = useEditManiobra(updater)
+
+    const [editable, setEditable] = useState(true);
+    const [details, setDetails] = useState({ tipo: tipo, numero_tanque: numero_tanque, numero_pipa: numero_pipa })
+
+    const onChange = (value) => {
+        if (carga === 'tanque') {
+            setDetails({ ...details, numero_tanque: value })
+        }
+
+        if (carga === 'pipa') {
+            setDetails({ ...details, numero_pipa: value })
+        }
+    }
+
+    const saveChangueDetail = async () => {
+        await editRegisterCarga(id, details)
+        setEditable(!editable)
+        updater()
+    }
+
+    const deleteValue = async () => {
+        deleteRegisterCarga(id)
+    }
+
+    return (
+        <>
+            <Stack flexDirection='row' alignItems='center' >
+                {carga === 'tanque' &&
+                    <FormControl sx={{ width: '150px' }}>
+                        <InputLabel>Tipo</InputLabel>
+                        <Select
+                            label='Tipo'
+                            disabled={editable}
+                            value={details.tipo}
+                            onChange={(e) => setDetails({ ...details, tipo: e.target.value })}
+                        >
+                            <MenuItem value='AGMU'>AGMU</MenuItem>
+                            <MenuItem value='AFIU'>AFIU</MenuItem>
+                            <MenuItem value='DYOU'>DYOU</MenuItem>
+                        </Select>
+                    </FormControl>}
+                <TextField
+                    fullWidth
+                    disabled={editable}
+                    value={details.numero_tanque || details.numero_pipa}
+                    onChange={(e) => onChange(e.target.value)} />
+                <Stack flexDirection='row' alignItems='center'>
+
+                    {!editable && <IconButton
+                        onClick={saveChangueDetail}
+                    >
+                        <SaveIcon color='info' />
+                    </IconButton>}
+
+                    <IconButton
+                        onClick={() => setEditable(!editable)}
+                    >
+                        <EditIcon color="info" />
+                    </IconButton>
+
+                    <IconButton
+                        disabled={detallesLength === 1 ? true : false}
+                        onClick={deleteValue}
+                    >
+                        <DeleteIcon color={detallesLength === 1 ? "default" : "error"} />
+                    </IconButton>
+                </Stack>
+            </Stack>
+        </>
+    )
+}
+
+function ChangueTypeManiobra({ }) {
+
+
+    const [typeChargue, setTypeChargue] = useState('');
+    const [data, setData] = useState([]);
+
+    const { loading, data: dataItems, error } = useReadyToChargue(typeChargue);
+    console.log("🚀 ~ ChangueTypeManiobra ~ dataItems:", dataItems)
+
+
+    return (
+        <>
+            <Box>
+
+                <FormControl>
+                    <InputLabel>Tipo de registro</InputLabel>
+                    <Select
+                        sx={{ width: '169px' }}
+                        onChange={(e) => setTypeChargue(e.target.value)}
+                        label='Tipo de registro'
+                    >
+                        <MenuItem value='tanque'>Tanque</MenuItem>
+                        <MenuItem value='pipa'>Pipa</MenuItem>
+                    </Select>
+                </FormControl>
+
+
+
+            </Box>
+        </>
+    )
+}

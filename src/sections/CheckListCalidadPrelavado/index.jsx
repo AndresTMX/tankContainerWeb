@@ -23,14 +23,23 @@ import ClearIcon from "@mui/icons-material/Clear";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { GlobalContext } from "../../Context/GlobalContext";
+import { useGetTypeWashing } from "../../Hooks/Calidad/useGetTypesWashing";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { useManagmentInspection } from "../../Hooks/Calidad/useManagmentInspection";
+//DatePicker components
+import dayjs from "dayjs";
+import { DateTimePicker } from "@mui/x-date-pickers";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 
 function CheckListCalidadPrelavado({ modal, toggleModal, prelavado, updater }) {
 
+    const isSmall = useMediaQuery('(max-width:720px)');
+    const { data, error, loading } = useGetTypeWashing();
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-    const { sendInspectPrewashing, returnToPrewashing } = useManagmentInspection(updater)
-
+    const { sendInspectPrewashing, returnToPrewashing } = useManagmentInspection(updater);
+    const defaultDate = dayjs();
 
     const questionsChecklist = [
         {
@@ -82,13 +91,17 @@ function CheckListCalidadPrelavado({ modal, toggleModal, prelavado, updater }) {
         },
     ];
 
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useState(3);
     const [cargasPrevias, setCargasPrevias] = useState({
         carga1: "",
+        date1: defaultDate,
         carga2: "",
+        date2: defaultDate,
         carga3: "",
+        date3: defaultDate,
     });
     const [typeWashing, setTypeWashing] = useState("");
+    const [newStatus, setNewStatus] = useState("")
     const [questions, setQuestions] = useState(questionsChecklist);
     const [component, setComponent] = useState(questionsComponent);
 
@@ -189,19 +202,24 @@ function CheckListCalidadPrelavado({ modal, toggleModal, prelavado, updater }) {
 
     const routerPostFuction = (e) => {
 
-        const { registro_detalle_entrada_id } = prelavado;
+        const { id_detalle_entrada, registros_detalles_entradas, id: idWashing } = prelavado;
+
+        const { numero_tanque, numero_pipa, carga } = registros_detalles_entradas || {};
 
         const evaluacionString = evaluacion ? 'aprobado' : 'reprobado';
+
+        const cargasPreviasInString = JSON.stringify(cargasPrevias);
 
         const routes = {
             aprobado: () => {
                 e.preventDefault();
-                const data = JSON.stringify([ ...questions, ...component ]);
-                sendInspectPrewashing({ registro_detalle_entrada_id, data: data, tipo_lavado: typeWashing })
+                const data = JSON.stringify([...questions, ...component]);
+                const newRegister = { registro_detalle_entrada_id: id_detalle_entrada, data: data }
+                sendInspectPrewashing(newRegister, idWashing, typeWashing, cargasPreviasInString, numero_tanque, numero_pipa, carga)
                 closeModal()
             },
             reprobado: () => {
-                returnToPrewashing(registro_detalle_entrada_id)
+                returnToPrewashing(id_detalle_entrada)
                 closeModal();
             }
         }
@@ -231,12 +249,10 @@ function CheckListCalidadPrelavado({ modal, toggleModal, prelavado, updater }) {
                             flexDirection: "column",
                             width: "100%",
                             maxWidth: "700px",
-                            paddingTop: "5%",
+                            paddingTop: "2%",
                         }}
                     >
-                        <Paper
-                            sx={{ display: "flex", flexDirection: "column", padding: "20px" }}
-                        >
+                        <Paper sx={{ display: "flex", flexDirection: "column", padding: "20px" }}>
                             <Stack
                                 width={"100%"}
                                 alignItems={"center"}
@@ -299,61 +315,151 @@ function CheckListCalidadPrelavado({ modal, toggleModal, prelavado, updater }) {
                             )}
 
                             {step === 3 && (
-                                <Stack gap="8px" padding="10px">
+                                <Stack gap="8px" padding="10px" sx={{ overflow: 'auto', maxHeight: '70vh' }}>
                                     <Alert severity={evaluacion ? "success" : "error"}>
                                         Inspección {!evaluacion ? "reprobada" : "aprobada"}
                                     </Alert>
 
                                     {!evaluacion && (
                                         <Typography padding="15px" variant="body2">
-                                            El tanque ó pipa en cuestion regresará a la etapa de
-                                            prelavado para repetir el proceso, una vez que termine
-                                            regresara a lista de inspección para repetir este
-                                            checklist.
+                                            El tanque ó pipa en cuestion regresará a la etapa
+                                            seleccionada para repetir el proceso de lavado desde
+                                            el punto determinado.
                                         </Typography>
                                     )}
 
                                     {evaluacion && (
                                         <form onSubmit={(e) => routerPostFuction(e)}>
                                             <Stack gap="15px">
-                                                <TextField
-                                                    required
-                                                    id="carga_previa_1"
-                                                    label="Carga previa #1"
-                                                    value={cargasPrevias.carga1}
-                                                    onChange={(e) =>
-                                                        setCargasPrevias({
-                                                            ...cargasPrevias,
-                                                            carga1: e.target.value,
-                                                        })
-                                                    }
-                                                />
+                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                    <DemoContainer
+                                                        components={[
+                                                            'DateTimePicker',
+                                                        ]}
+                                                    >
+                                                        <FormControl
+                                                            sx={{
+                                                                display: 'flex',
+                                                                flexDirection: 'row',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'space-between',
+                                                                flexWrap: 'wrap',
+                                                                width: '100%',
+                                                                gap: '5px',
+                                                            }}
+                                                        >
+                                                            <TextField
+                                                                sx={{ width: isSmall ? '100%' : '49%' }}
+                                                                required
+                                                                id="carga_previa_1"
+                                                                label="Carga previa #1"
+                                                                value={cargasPrevias.carga1}
+                                                                onChange={(e) =>
+                                                                    setCargasPrevias({
+                                                                        ...cargasPrevias,
+                                                                        carga1: e.target.value,
+                                                                    })
+                                                                }
+                                                            />
 
-                                                <TextField
-                                                    required
-                                                    id="carga_previa_2"
-                                                    label="Carga previa #2"
-                                                    value={cargasPrevias.carga2}
-                                                    onChange={(e) =>
-                                                        setCargasPrevias({
-                                                            ...cargasPrevias,
-                                                            carga2: e.target.value,
-                                                        })
-                                                    }
-                                                />
 
-                                                <TextField
-                                                    required
-                                                    id="carga_previa_3"
-                                                    label="Carga previa #3"
-                                                    value={cargasPrevias.carga3}
-                                                    onChange={(e) =>
-                                                        setCargasPrevias({
-                                                            ...cargasPrevias,
-                                                            carga3: e.target.value,
-                                                        })
-                                                    }
-                                                />
+                                                            <DateTimePicker
+                                                                sx={{ width: isSmall ? '100%' : '49%', }}
+                                                                required
+                                                                value={cargasPrevias.date1}
+                                                                onChange={(newValue) =>
+                                                                    setCargasPrevias({
+                                                                        ...cargasPrevias,
+                                                                        date1: newValue
+                                                                    })}
+                                                            />
+
+
+                                                        </FormControl>
+
+                                                        <FormControl
+                                                            sx={{
+                                                                display: 'flex',
+                                                                flexDirection: 'row',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'space-between',
+                                                                flexWrap: 'wrap',
+                                                                width: '100%',
+                                                                gap: '5px',
+                                                            }}
+                                                        >
+                                                            <TextField
+                                                                sx={{ width: isSmall ? '100%' : '49%' }}
+                                                                required
+                                                                id="carga_previa_2"
+                                                                label="Carga previa #2"
+                                                                value={cargasPrevias.carga2}
+                                                                onChange={(e) =>
+                                                                    setCargasPrevias({
+                                                                        ...cargasPrevias,
+                                                                        carga2: e.target.value,
+                                                                    })
+                                                                }
+                                                            />
+
+
+                                                            <DateTimePicker
+                                                                sx={{ width: isSmall ? '100%' : '49%', }}
+                                                                required
+                                                                value={cargasPrevias.date2}
+                                                                onChange={(newValue) =>
+                                                                    setCargasPrevias({
+                                                                        ...cargasPrevias,
+                                                                        date2: newValue
+                                                                    })}
+                                                            />
+
+
+                                                        </FormControl>
+
+                                                        <FormControl
+                                                            sx={{
+                                                                display: 'flex',
+                                                                flexDirection: 'row',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'space-between',
+                                                                flexWrap: 'wrap',
+                                                                width: '100%',
+                                                                gap: '5px',
+                                                            }}
+                                                        >
+                                                            <TextField
+                                                                sx={{ width: isSmall ? '100%' : '49%' }}
+                                                                required
+                                                                id="carga_previa_3"
+                                                                label="Carga previa #3"
+                                                                value={cargasPrevias.carga3}
+                                                                onChange={(e) =>
+                                                                    setCargasPrevias({
+                                                                        ...cargasPrevias,
+                                                                        carga3: e.target.value,
+                                                                    })
+                                                                }
+                                                            />
+
+
+                                                            <DateTimePicker
+                                                                sx={{ width: isSmall ? '100%' : '49%', }}
+                                                                required
+                                                                value={cargasPrevias.date3}
+                                                                onChange={(newValue) =>
+                                                                    setCargasPrevias({
+                                                                        ...cargasPrevias,
+                                                                        date3: newValue
+                                                                    })}
+                                                            />
+
+
+                                                        </FormControl>
+
+                                                    </DemoContainer>
+                                                </LocalizationProvider>
+
 
                                                 <FormControl>
                                                     <InputLabel>Tipo de lavado</InputLabel>
@@ -363,17 +469,18 @@ function CheckListCalidadPrelavado({ modal, toggleModal, prelavado, updater }) {
                                                         value={typeWashing}
                                                         onChange={(e) => setTypeWashing(e.target.value)}
                                                     >
-                                                        <MenuItem value="lavado 1">lavado 1</MenuItem>
-                                                        <MenuItem value="lavado 2">lavado 2</MenuItem>
-                                                        <MenuItem value="lavado 3">lavado 3</MenuItem>
+                                                        {data.map((lavado) => (
+                                                            <MenuItem
+                                                                key={lavado.id}
+                                                                value={lavado.id}>
+                                                                {lavado.lavado}
+                                                            </MenuItem>
+                                                        ))}
                                                     </Select>
                                                 </FormControl>
 
 
-                                                <Button
-                                                    type="submit"
-                                                    variant="contained"
-                                                    color="primary">
+                                                <Button type="submit" variant="contained" color="primary">
                                                     lavar
                                                 </Button>
 
@@ -382,12 +489,30 @@ function CheckListCalidadPrelavado({ modal, toggleModal, prelavado, updater }) {
                                     )}
 
                                     {!evaluacion && (
-                                        <Button
-                                            onClick={routerPostFuction}
-                                            variant="contained"
-                                            color="error">
-                                            Repetir prelavado
-                                        </Button>
+                                        <form>
+                                            <Stack flexDirection='column' gap='10px' alignItems='flex-end'>
+
+                                                <FormControl fullWidth>
+                                                    <InputLabel>Nuevo estatus</InputLabel>
+                                                    <Select
+                                                        label='Nuevo estatus'
+                                                        value={newStatus}
+                                                        onChange={(e) => setNewStatus(e.target.value)}
+                                                    >
+                                                        <MenuItem value="prelavado">Prelavado</MenuItem>
+                                                        <MenuItem value="interna">Reparación interna</MenuItem>
+                                                        <MenuItem value="externa">Reparación externa</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+
+                                                <Button
+                                                    onClick={routerPostFuction}
+                                                    variant="contained"
+                                                    color="error">
+                                                    Enviar
+                                                </Button>
+                                            </Stack>
+                                        </form>
                                     )}
 
                                 </Stack>
@@ -429,7 +554,7 @@ function CheckListCalidadPrelavado({ modal, toggleModal, prelavado, updater }) {
 
 function ItemQuestion({ question, index, toggleCheck }) {
     const IsSmall = useMediaQuery("(max-width:700px)");
-    
+
     return (
         <Paper sx={{ padding: "10px" }}>
             <Box>
