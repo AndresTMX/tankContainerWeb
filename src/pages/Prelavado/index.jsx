@@ -7,7 +7,6 @@ import { currentDate } from "../../Helpers/date";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { LoadingState } from "../../components/LoadingState";
 import { Notification } from "../../components/Notification"
-import { FormWashing } from "../../components/FormWashing";
 import { Searcher } from "../../components/Searcher";
 import { ItemWashing } from "../../components/ItemWashing";
 //calendar experimental

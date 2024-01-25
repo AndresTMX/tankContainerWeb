@@ -1,5 +1,22 @@
-import { useState, useContext, useEffect } from "react";
-import { Container, Box, Paper, Stack, Typography, Button, Modal, IconButton, InputAdornment, Card, CardMedia, CardContent, CardActions, Alert, Select, MenuItem, FormControl, InputLabel, TextField } from "@mui/material";
+import { useState, useRef, useContext, useEffect } from "react";
+import {
+    Container,
+    Box,
+    Paper,
+    Stack,
+    Typography,
+    Button,
+    Modal,
+    IconButton,
+    InputAdornment,
+    Alert,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    TextField,
+    Chip,
+} from "@mui/material";
 import { ItemQuestion } from "../../sections/CheckListCalidadPrelavado";
 import { ContainerScroll } from "../ContainerScroll";
 //hooks
@@ -8,19 +25,19 @@ import { actionTypes } from "../../Reducers/GlobalReducer";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { useCreateConditionsWashing } from "../../Hooks/Lavado/useCreateConditionsWashing";
 //icons
-import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
-import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import ClearIcon from '@mui/icons-material/Clear';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { useSaniticeValue } from "../../Hooks/Lavado/useSaniticeValue";
+import SaveIcon from '@mui/icons-material/Save';
+import { useSanitization } from "../../Hooks/Lavado/useSanitization";
 
 function EvaluationWashing({ modal, toggleModal, lavado, updateList }) {
 
     const { id: lavadoId, id_detalle_entrada } = lavado || {};
 
-    // useEffect(() => {
-    //     setRevision(questions)
-    //     setStep(1)
-    // }, [modal])
+    useEffect(() => {
+        setRevision(questions)
+        setStep(1)
+    }, [modal])
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
@@ -197,13 +214,19 @@ function RevisionLavado({ revision, changueValue, submitChecklist }) {
     );
 }
 
-function EvaluacionResults({ step, setStep }) {
+export function EvaluacionResults({ previusStep, data, sendForm }) {
 
     const [select, setSelect] = useState('')
 
+    const submitForm = (e) => {
+        e.preventDefault();
+        sendForm()
+
+    }
+
     return (
         <>
-            <form>
+            <form onSubmit={submitForm}>
                 <Paper sx={{ display: 'flex', flexDirection: 'column', background: 'whitesmoke', gap: '15px', padding: '15px' }} >
 
                     <Paper>
@@ -225,7 +248,7 @@ function EvaluacionResults({ step, setStep }) {
                         </Select>
                     </FormControl>
 
-                    <Button variant="contained" color='primary' fullWidth >Enviar</Button>
+                    <Button variant="contained" color='primary' type='submit' fullWidth >Enviar</Button>
 
                     <Stack
                         justifyContent='flex-start'
@@ -236,7 +259,7 @@ function EvaluacionResults({ step, setStep }) {
                     >
 
                         <Button
-                            onClick={() => setStep(1)}
+                            onClick={previusStep}
                             color="warning"
                             variant="contained"
                         >
@@ -252,12 +275,9 @@ function EvaluacionResults({ step, setStep }) {
 }
 
 function ConditionsWashing({ step, setStep, conditions, setConditions, updateList, toggleModal }) {
-console.log("🚀 ~ ConditionsWashing ~ conditions:", conditions)
 
     const isMovile = useMediaQuery('(max-width:600px');
     const { sendConditionWashing } = useCreateConditionsWashing();
-
-    const {  } = conditions;
 
     const OnWashingOne = (event, callback) => {
         event.preventDefault();
@@ -277,10 +297,15 @@ console.log("🚀 ~ ConditionsWashing ~ conditions:", conditions)
 
     }
 
-    const toggleSubmit = () => {
+    const formSubmit = async () => {
+        const dataInString = JSON.stringify(conditions);
+        const { lavado_id, id_detalle_entrada, numero_bahia } = conditions || {};
+        const newRegister = { lavado_id, id_detalle_entrada, bahia: numero_bahia, data: dataInString };
+
+        await sendConditionWashing(newRegister, () => updateList())
         toggleModal()
-        updateList()
     }
+
 
     return (
         <>
@@ -572,7 +597,7 @@ console.log("🚀 ~ ConditionsWashing ~ conditions:", conditions)
             }
 
             {(step === 6) &&
-                <form onSubmit={(e) => OnWashingOne(e, () => sendConditionWashing(conditions, () =>  toggleSubmit() ))}>
+                <form onSubmit={(e) => OnWashingOne(e, () => formSubmit())}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', background: 'white', padding: '10px', gap: '10px' }}>
 
                         <Typography>Sanitizante</Typography>
@@ -638,3 +663,208 @@ console.log("🚀 ~ ConditionsWashing ~ conditions:", conditions)
         </>
     )
 }
+
+export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, idWashing }) {
+
+    const { error, value, newConcentration } = useSaniticeValue()
+    const { completeSanitization } = useSanitization()
+
+    const { concentracion } = value[0] || {};
+
+    const [step, setStep] = useState(1);
+
+    const [concentration, setConcentration] = useState(concentracion);
+    const [sellos, setSellos] = useState([])
+
+    const onChangueConcentration = (e) => {
+        setConcentration(e.target.value)
+    }
+
+    useEffect(() => { setConcentration(concentracion) }, [value])
+
+    const submitStepOne = (e) => {
+        e.preventDefault();
+        setStep(2)
+    }
+
+    const submitStepTwo = (e) => {
+        e.preventDefault();
+
+        const formulario = e.target;
+        const formData = new FormData(formulario);
+
+        const valuesForm = [];
+
+        for (const [campo, valor] of formData.entries()) {
+            if (valor != '') {
+                valuesForm.push({ [campo]: valor });
+            }
+        }
+
+        setSellos(valuesForm)
+        setStep(3)
+    }
+
+    const SubmitRegister = async (e) => {
+        e.preventDefault();
+        const sellosInString = JSON.stringify(sellos);
+        const newRegister = { sellos: sellosInString, concentracion: concentracion }
+        await completeSanitization(newRegister, idRegister, idWashing, () => { updateList(), toggleModal() })
+    }
+
+
+
+    return (
+        <>
+            <Modal open={modal}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        paddingTop: '2%',
+                        width: '100%',
+                        minHeight: '100vh',
+                        alignItems: 'center',
+                    }}>
+                    <Paper
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            padding: '10px',
+                            gap: '10px',
+                            width: '95vw',
+                            maxWidth: '700px'
+                        }}>
+
+                        <Stack flexDirection='row' alignItems='center' justifyContent='space-between' width='100%'>
+                            <Typography>Sanitización y asignación de sellos</Typography>
+
+                            <IconButton onClick={toggleModal} color="error">
+                                <ClearIcon />
+                            </IconButton>
+                        </Stack>
+
+                        {(step === 1) &&
+                            <form onSubmit={submitStepOne} style={{ width: '100%' }}>
+                                <Box display='flex' flexDirection='column' alignItems='start' width='100%' gap='10px' >
+
+                                    <Chip
+                                        color="info"
+                                        label={'Ultima concentracion guardada: ' + concentracion} />
+
+                                    <FormControl sx={{ width: '100%' }}>
+                                        <TextField
+                                            fullWidth
+                                            required
+                                            label='Concentración de solución'
+                                            value={concentration}
+                                            onChange={(e) => onChangueConcentration(e)} />
+
+                                    </FormControl>
+
+                                    <Stack flexDirection='row' alignItems='center' justifyContent='space-between' width='100%'>
+                                        <Button
+                                            endIcon={<SaveIcon />}
+                                            onClick={() => newConcentration(concentration)}
+                                            size='small'
+                                            variant="outlined">
+                                            guardar concentración
+                                        </Button>
+
+                                        <Button
+                                            type="submit"
+                                            size='small'
+                                            variant="contained">
+                                            siguiente
+                                        </Button>
+
+                                    </Stack>
+                                </Box>
+                            </form>
+                        }
+
+                        {(step === 2) &&
+                            <form onSubmit={submitStepTwo} style={{ width: '100%' }}>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '100%' }}>
+                                    <ContainerScroll height='300px'>
+                                        <Stack gap='10px' width='100%'>
+                                            <TextField fullWidth required label='sello #1' id="sello-1" name="sello-1" />
+                                            <TextField fullWidth label='sello #2' id="sello-2" name="sello-2" />
+                                            <TextField fullWidth label='sello #3' id="sello-3" name="sello-3" />
+                                            <TextField fullWidth label='sello #4' id="sello-4" name="sello-4" />
+                                            <TextField fullWidth label='sello #5' id="sello-5" name="sello-5" />
+                                            <TextField fullWidth label='sello #6' id="sello-6" name="sello-6" />
+                                            <TextField fullWidth label='sello #7' id="sello-7" name="sello-7" />
+                                            <TextField fullWidth label='sello #8' id="sello-8" name="sello-8" />
+                                            <TextField fullWidth label='sello #9' id="sello-9" name="sello-9" />
+                                            <TextField fullWidth label='sello #10' id="sello-10" name="sello-10" />
+                                        </Stack>
+                                    </ContainerScroll>
+                                    <Stack flexDirection='row' alignItems='center' justifyContent='space-between'>
+                                        <Button
+                                            onClick={() => setStep(1)}
+                                            variant="contained"
+                                            color='warning'>
+                                            anterior
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            variant="contained"
+                                            color='primary'>
+                                            asignar sellos
+                                        </Button>
+                                    </Stack>
+                                </Box>
+                            </form>
+                        }
+
+                        {(step === 3) &&
+                            <form onSubmit={SubmitRegister} style={{ width: '100%' }}>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '100%' }}>
+
+                                    <Stack padding='10px'>
+                                        <Typography variant="subtitle2">Concentración</Typography>
+                                        <Typography padding='15px' >{concentracion}</Typography>
+                                    </Stack>
+
+                                    <Box padding='10px'>
+                                        <Typography padding='5px' variant="subtitle2">Sellos asignados</Typography>
+                                        <Stack flexDirection='row' alignItems='center' flexWrap='wrap' gap='10px' padding='15px' bgcolor='whitesmoke'>
+                                            {sellos.map((obj, index) => (
+                                                <Chip key={index} label={obj[Object.keys(obj)[0]]} color='info' />
+                                            ))}
+                                        </Stack>
+                                    </Box>
+
+                                    <Stack flexDirection='row' alignItems='center' justifyContent='space-between'>
+                                        <Button
+                                            variant="contained"
+                                            color='warning'
+                                            onClick={() => setStep(2)}
+                                            type='submit'
+                                            size="small"
+                                        >
+                                            anterior
+                                        </Button>
+
+                                        <Button
+                                            variant="contained"
+                                            type='submit'
+                                            size="small"
+                                        >
+                                            Enviar
+                                        </Button>
+                                    </Stack>
+
+                                </Box>
+                            </form>
+                        }
+
+                    </Paper>
+                </Box>
+            </Modal>
+        </>
+    )
+}
+

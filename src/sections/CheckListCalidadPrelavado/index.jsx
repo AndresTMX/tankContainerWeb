@@ -91,7 +91,7 @@ function CheckListCalidadPrelavado({ modal, toggleModal, prelavado, updater }) {
         },
     ];
 
-    const [step, setStep] = useState(3);
+    const [step, setStep] = useState(1);
     const [cargasPrevias, setCargasPrevias] = useState({
         carga1: "",
         date1: defaultDate,

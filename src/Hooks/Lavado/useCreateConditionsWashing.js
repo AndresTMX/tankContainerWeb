@@ -19,7 +19,7 @@ function useCreateConditionsWashing() {
                 throw new Error(`Error al guardar condiciones de lavado, error: ${errorSendWashing.message}`)
             }
 
-            //actualizar el registro general a lavado
+            //actualizar el registro de lavado a lavado
             const { errorUpdateStatus } = await supabase
                 .from('lavados')
                 .update({ status: 'lavado' })
@@ -27,6 +27,16 @@ function useCreateConditionsWashing() {
 
             if (errorUpdateStatus) {
                 throw new Error(`Error al guardar condiciones de lavado, error: ${errorUpdateStatus.message}`)
+            }
+
+            //actualizar el registro general a lavado
+            const { errorUpdateGeneral } = await supabase
+                .from('registros_detalles_entradas')
+                .update({ status: 'lavado' })
+                .eq('id', newRegister.id_detalle_entrada)
+
+            if (errorUpdateGeneral) {
+                throw new Error(`Error al actualizar registro general, error: ${errorUpdateStatus.message}`)
             }
 
             callback();

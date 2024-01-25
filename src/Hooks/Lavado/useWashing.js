@@ -16,6 +16,8 @@ function useWashing(type) {
 
     const updateList = () => setUpdate(!update);
 
+    const consultValues = ['asignado', 'sanitizado']
+
     const getPendingWashing = async () => {
         try {
             setLoading(true)
@@ -25,7 +27,7 @@ function useWashing(type) {
             const { data, error } = await supabase
                 .from('lavados')
                 .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
-                .eq('status', 'asignado')
+                .in('status', consultValues)
                 .order('tentativeEnd', { ascending: false })
 
             if (error) {

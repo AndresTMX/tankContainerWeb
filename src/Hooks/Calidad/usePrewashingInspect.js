@@ -16,6 +16,16 @@ function usePreWashingInspect(typeInspect) {
 
     const updater = () => setUpdate(!update);
 
+    function filtrarPorIdDetalleEntrada(arrayDeObjetos) {
+        // Crea un nuevo array con los objetos que tienen id_detalle_entrada diferentes
+        const resultadoFiltrado = arrayDeObjetos.filter((objeto, indice, arreglo) => {
+            // Verifica si el id_detalle_entrada es diferente en comparación con otros objetos
+            return arreglo.findIndex((otroObjeto) => otroObjeto.id_detalle_entrada === objeto.id_detalle_entrada) === indice;
+        });
+    
+        return resultadoFiltrado;
+    }
+
     const getInspectPending = async () => {
         try {
             setInspect([])
@@ -25,6 +35,7 @@ function usePreWashingInspect(typeInspect) {
                 .from('lavados')
                 .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
                 .eq('status', 'programado')
+                .not('id_tipo_lavado', 'is', null)
                 .order('tentativeEnd', { ascending: false })
                 .range(0, 100)
             if (error) {
@@ -32,9 +43,10 @@ function usePreWashingInspect(typeInspect) {
             }
 
             setTimeout(() => {
-                setInspect(data);
+                const filterForOne = filtrarPorIdDetalleEntrada(data);
+                setInspect(filterForOne);
                 setLoading(false);
-                localStorage.setItem(nameCache, JSON.stringify(data))
+                localStorage.setItem(nameCache, JSON.stringify(filterForOne))
             }, 1000)
 
         } catch (error) {
@@ -52,10 +64,10 @@ function usePreWashingInspect(typeInspect) {
             setLoading(true)
             setError(null)
             const { data, error } = await supabase
-                .from('lavados')
+                .from('prelavados_revisiones')
                 .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
-                .eq('status', 'asignado')
-                .order('tentativeEnd', { ascending: false })
+                // .eq('status', 'asignado')
+                .order('created_at', { ascending: false })
                 .range(0, 100)
             if (error) {
                 throw new Error(`Error al consultar prelavados inspeccionados, error: ${error.message}`)

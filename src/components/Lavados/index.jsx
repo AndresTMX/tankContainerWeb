@@ -1,20 +1,22 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { Paper, Stack, Chip, Typography, Button, Alert } from "@mui/material";
 //estados genericos
 import { NotConexionState } from "../NotConectionState";
 import { ItemLoadingState } from "../ItemLoadingState";
 //componentes
 import { ContainerScroll } from "../ContainerScroll";
+import { SaniticeWashing } from "../EvaluationWashing";
 import { EvaluationWashing } from "../EvaluationWashing";
 import { useWashing } from "../../Hooks/Lavado/useWashing";
 //helpers
-import { dateMXFormat, datetimeMXFormat, tiempoTranscurrido } from "../../Helpers/date";
+import { dateMXFormat, datetimeMXFormat, tiempoTranscurrido, timepoParaX, dateTextShort, } from "../../Helpers/date";
 //icons
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-
-
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 
 function Lavados({ typeWashing }) {
 
@@ -45,6 +47,7 @@ function Lavados({ typeWashing }) {
                             <ItemLavados
                                 key={lavado.id}
                                 lavado={lavado}
+                                updateList={updateList}
                                 typeWashing={typeWashing}
                             />
                         ))
@@ -84,15 +87,23 @@ export { Lavados };
 
 function ItemLavados({ lavado, typeWashing, updateList }) {
 
+    const { status } = lavado || {};
+
     return (
         <>
-            {typeWashing === 'pendiente' &&
+            {status === 'asignado' &&
                 <LavadoPendiente lavado={lavado} updateList={updateList} />
             }
 
-            {typeWashing === 'realizado' &&
-                <Typography>pendiente</Typography>
+            {status === 'lavado' &&
+                <Typography>lavado aprobrado por sanitizar</Typography>
             }
+
+            {status === 'sanitizado' &&
+                <ItemSanitizado lavado={lavado} updateList={updateList} />
+            }
+
+
         </>
     );
 }
@@ -207,3 +218,100 @@ function LavadoPendiente({ lavado, updateList }) {
         </>
     )
 }
+
+function ItemSanitizado({ lavado, updateList }) {
+
+    const [modal, setModal] = useState(false);
+    const toggleModal = () => setModal(!modal)
+
+    const { created_at, tentativeEnd, data, status, tipo_lavado, registros_detalles_entradas, id: idWashing } = lavado;
+
+    const { carga, numero_pipa, numero_tanque, tracto, tipo, id: idRegister } = registros_detalles_entradas || {};
+
+
+    return (
+        <>
+            <Paper
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    padding: '15px',
+                    gap: '10px'
+                }}
+            >
+                <Stack
+                    flexWrap={'wrap'}
+                    flexDirection={'row'}
+                    alignItems={'center'}
+                    gap={'10px'}
+                >
+                    <Chip
+                        color='warning'
+                        size='small'
+                        icon={<FiberManualRecordIcon style={{ color: '#ab5005' }} />}
+                        label={'por sanitizar'}
+                    />
+
+                    <Chip
+                        color='info'
+                        size='small'
+                        icon={<CalendarTodayIcon />}
+                        label={'Entregar antes del ' + dateTextShort(tentativeEnd)}
+                    />
+
+                </Stack>
+
+                <Stack
+                    flexDirection={'row'}
+                    alignItems={'center'}
+                    justifyContent={'space-between'}
+                    gap={'20px'}
+                >
+
+                    <Stack
+                        gap={'20px'}
+                        flexDirection={'row'}
+                        alignItems={'center'}
+                    >
+                        <Stack>
+                            <Typography variant='caption'>{numero_tanque ? 'Tanque' : 'Pipa'}</Typography>
+                            <Typography textTransform='uppercase' variant='body2'>{tipo || ''}  {numero_tanque || numero_pipa}</Typography>
+                        </Stack>
+
+
+                    </Stack>
+
+                    <Stack
+                        gap={'10px'}
+                        flexDirection={'row'}
+                        alignItems={'center'}
+                        justifyContent={'flex-end'}
+                    >
+                        <Button
+                            onClick={toggleModal}
+                            size='small'
+                            color='primary'
+                            variant='contained'
+                            endIcon={<PlayCircleIcon />}
+                        >
+                            sanitizar
+                        </Button>
+
+                    </Stack>
+
+
+                </Stack>
+            </Paper>
+
+            <SaniticeWashing
+                modal={modal}
+                idWashing={idWashing}
+                idRegister={idRegister}
+                updateList={updateList}
+                toggleModal={toggleModal}
+            />
+        </>
+    )
+}
+
+

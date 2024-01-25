@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Container, Box, Paper, Typography, Chip, Stack, Button, Alert, Modal, Tab, Tabs, IconButton, Card, CardMedia, } from "@mui/material";
 import { CheckListCalidadPrelavado } from "../../sections/CheckListCalidadPrelavado";
 import { NotConexionState } from "../NotConectionState";
-import { ContainerScroll } from "../ContainerScroll";
 import { ItemLoadingState } from "../ItemLoadingState";
+import { ContainerScroll } from "../ContainerScroll";
 import { CustomTabPanel } from "../CustomTabPanel";
 //icons
 import HistoryIcon from '@mui/icons-material/History';
@@ -14,12 +14,10 @@ import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import ClearIcon from '@mui/icons-material/Clear';
 //helpers
 import { dateMXFormat, datetimeMXFormat, tiempoTranscurrido } from "../../Helpers/date";
-import { dividirArrayPorPropiedad } from "../../Helpers/transformRegisters";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { usePreWashingInspect } from "../../Hooks/Calidad/usePrewashingInspect";
 import { useGetCheckListPrelavado } from "../../Hooks/Prelavado/useGetChecklists";
-import { JsonRequestError } from "@fullcalendar/core";
 
 function ListPrelavadosPending() {
 
@@ -282,7 +280,7 @@ function ItemRevisado({ prelavado, updater }) {
     const { carga, numero_pipa, numero_tanque, status, } =
         registros_detalles_entradas ? registros_detalles_entradas : {};
 
-    const prelavadosInJson = JSON.parse(data);
+    const prelavadosInJson = data? JSON.parse(data): {};
 
     const [modal, setModal] = useState(false)
 

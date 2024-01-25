@@ -58,13 +58,13 @@ function Lavado() {
                   </Box>
                </Paper>
 
-               <Lavados typeWashing={typeWashing}/>
+               <Lavados typeWashing={typeWashing} />
 
             </Stack>
 
          </Box>
 
-         <Notification/>
+         <Notification />
       </>
    );
 }
