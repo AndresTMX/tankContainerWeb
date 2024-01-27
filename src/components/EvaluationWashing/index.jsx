@@ -32,7 +32,6 @@ import { useSanitization } from "../../Hooks/Lavado/useSanitization";
 
 function EvaluationWashing({ modal, toggleModal, lavado, updateList }) {
 
-    const { id: lavadoId, id_detalle_entrada } = lavado || {};
 
     useEffect(() => {
         setRevision(questions)
@@ -40,7 +39,6 @@ function EvaluationWashing({ modal, toggleModal, lavado, updateList }) {
     }, [modal])
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-
     const questions = [
         {
             question: 'Residuos en escotilla y válvulas',
@@ -74,7 +72,6 @@ function EvaluationWashing({ modal, toggleModal, lavado, updateList }) {
 
     const [step, setStep] = useState(1);
     const [revision, setRevision] = useState(questions);
-    const [conditions, setConditions] = useState({ lavado_id: lavadoId, id_detalle_entrada });
 
     const changueValue = (index, value) => {
         const copy = [...revision];
@@ -159,10 +156,9 @@ function EvaluationWashing({ modal, toggleModal, lavado, updateList }) {
                             <ConditionsWashing
                                 step={step}
                                 setStep={setStep}
+                                lavado={lavado}
                                 updateList={updateList}
-                                conditions={conditions}
                                 toggleModal={toggleModal}
-                                setConditions={setConditions}
                             />}
 
                     </Paper>
@@ -274,10 +270,15 @@ export function EvaluacionResults({ previusStep, data, sendForm }) {
     )
 }
 
-function ConditionsWashing({ step, setStep, conditions, setConditions, updateList, toggleModal }) {
+function ConditionsWashing({ step, setStep, lavado, updateList, toggleModal }) {
 
     const isMovile = useMediaQuery('(max-width:600px');
+    const movile = useMediaQuery('(max-width:800px)');
+
+
+    const { id: lavadoId, id_detalle_entrada } = lavado || {};
     const { sendConditionWashing } = useCreateConditionsWashing();
+    const [conditions, setConditions] = useState({ numero_bahia: '' });
 
     const OnWashingOne = (event, callback) => {
         event.preventDefault();
@@ -299,12 +300,13 @@ function ConditionsWashing({ step, setStep, conditions, setConditions, updateLis
 
     const formSubmit = async () => {
         const dataInString = JSON.stringify(conditions);
-        const { lavado_id, id_detalle_entrada, numero_bahia } = conditions || {};
-        const newRegister = { lavado_id, id_detalle_entrada, bahia: numero_bahia, data: dataInString };
+        const { numero_bahia } = conditions || {};
+        const newRegister = { bahia: numero_bahia, condiciones_lavado: dataInString };
 
-        await sendConditionWashing(newRegister, () => updateList())
+        await sendConditionWashing(newRegister, lavadoId, id_detalle_entrada, () => updateList())
         toggleModal()
     }
+
 
 
     return (
@@ -334,7 +336,7 @@ function ConditionsWashing({ step, setStep, conditions, setConditions, updateLis
                                         name='enjuague_temperatura_1'
                                         label='temperatura'
                                         InputProps={{
-                                            endAdornment: <InputAdornment position='end'>F°</InputAdornment>,
+                                            endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
                                         }}
                                     />
 
@@ -375,7 +377,7 @@ function ConditionsWashing({ step, setStep, conditions, setConditions, updateLis
                                         name='desengrasante_temperatura'
                                         label='temperatura'
                                         InputProps={{
-                                            endAdornment: <InputAdornment position='end'>F°</InputAdornment>,
+                                            endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
                                         }}
                                     />
 
@@ -418,7 +420,7 @@ function ConditionsWashing({ step, setStep, conditions, setConditions, updateLis
                                         name='limpiador_temperatura'
                                         label='temperatura'
                                         InputProps={{
-                                            endAdornment: <InputAdornment position='end'>F°</InputAdornment>,
+                                            endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
                                         }}
                                     />
 
@@ -485,7 +487,7 @@ function ConditionsWashing({ step, setStep, conditions, setConditions, updateLis
                                 name='temperatura_enjuague_2'
                                 label='temperatura'
                                 InputProps={{
-                                    endAdornment: <InputAdornment position='end'>F°</InputAdornment>,
+                                    endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
                                 }}
                             />
 
@@ -547,7 +549,7 @@ function ConditionsWashing({ step, setStep, conditions, setConditions, updateLis
                                 name='temperatura_enjuague_3'
                                 label='temperatura'
                                 InputProps={{
-                                    endAdornment: <InputAdornment position='end'>F°</InputAdornment>,
+                                    endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
                                 }}
                             />
 
@@ -600,39 +602,162 @@ function ConditionsWashing({ step, setStep, conditions, setConditions, updateLis
                 <form onSubmit={(e) => OnWashingOne(e, () => formSubmit())}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', background: 'white', padding: '10px', gap: '10px' }}>
 
-                        <Typography>Sanitizante</Typography>
+                        <Typography>Recapitulación</Typography>
 
-                        <Stack flexDirection={isMovile ? 'column' : 'row'} alignItems='center' gap='10px'>
-                            <TextField
-                                sx={{ width: isMovile ? '100%' : '33%' }}
-                                id='sanitizante_temperatura'
-                                name='sanitizante_temperatura'
-                                label='temperatura'
-                                InputProps={{
-                                    endAdornment: <InputAdornment position='end'>F°</InputAdornment>,
-                                }}
-                            />
+                        <ContainerScroll height='400px'>
+                            <Stack gap='10px'>
+                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                    <Typography>Enjuague 1</Typography>
+                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                        <TextField
+                                            disabled
+                                            label='Temperatura'
+                                            value={conditions.enjuague_temperatura_1}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                            }}
+                                        />
+                                        <TextField
+                                            disabled
+                                            label='Presión'
+                                            value={conditions.enjuague_presion_1}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                            }}
+                                        />
+                                        <TextField
+                                            disabled
+                                            label='Tiempo'
+                                            value={conditions.enjuague_tiempo_1}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                            }}
+                                        />
+                                    </Stack>
+                                </Box>
 
-                            <TextField
-                                sx={{ width: isMovile ? '100%' : '33%' }}
-                                id='sanitizante_presion'
-                                name='sanitizante_presion'
-                                label='presion'
-                                InputProps={{
-                                    endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
-                                }}
-                            />
+                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                    <Typography>Solución desengrasante</Typography>
+                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                        <TextField
+                                            disabled
+                                            label='Temperatura'
+                                            value={conditions.desengrasante_temperatura}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                            }}
+                                        />
+                                        <TextField
+                                            disabled
+                                            label='Presión'
+                                            value={conditions.desengrasante_presion}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                            }}
+                                        />
+                                        <TextField
+                                            disabled
+                                            label='Tiempo'
+                                            value={conditions.desengrasante_tiempo}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                            }}
+                                        />
+                                    </Stack>
+                                </Box>
 
-                            <TextField
-                                sx={{ width: isMovile ? '100%' : '33%' }}
-                                id='sanitizante_tiempo'
-                                name='sanitizante_tiempo'
-                                label='tiempo'
-                                InputProps={{
-                                    endAdornment: <InputAdornment position='end'>min</InputAdornment>,
-                                }}
-                            />
-                        </Stack>
+                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                    <Typography>Solución limpiadora</Typography>
+                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                        <TextField
+                                            disabled
+                                            label='Temperatura'
+                                            value={conditions.limpiador_temperatura}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                            }}
+                                        />
+                                        <TextField
+                                            disabled
+                                            label='Presión'
+                                            value={conditions.limpiador_presion}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                            }}
+                                        />
+                                        <TextField
+                                            disabled
+                                            label='Tiempo'
+                                            value={conditions.limpiador_tiempo}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                            }}
+                                        />
+                                    </Stack>
+                                </Box>
+
+                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                    <Typography>Enjuague 2</Typography>
+                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                        <TextField
+                                            disabled
+                                            label='Temperatura'
+                                            value={conditions.temperatura_enjuague_2}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                            }}
+                                        />
+                                        <TextField
+                                            disabled
+                                            label='Presión'
+                                            value={conditions.presion_enjuague_2}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                            }}
+                                        />
+                                        <TextField
+                                            disabled
+                                            label='Tiempo'
+                                            value={conditions.timepo_enjuague_2}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                            }}
+                                        />
+                                    </Stack>
+                                </Box>
+
+                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                    <Typography>Enjuague 3</Typography>
+                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                        <TextField
+                                            disabled
+                                            label='Temperatura'
+                                            value={conditions.temperatura_enjuague_3}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                            }}
+                                        />
+                                        <TextField
+                                            disabled
+                                            label='Presión'
+                                            value={conditions.presion_enjuague_3}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                            }}
+                                        />
+                                        <TextField
+                                            disabled
+                                            label='Tiempo'
+                                            value={conditions.tiempo_enjuague_3}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                            }}
+                                        />
+                                    </Stack>
+                                </Box>
+
+                            </Stack>
+                        </ContainerScroll>
 
                     </Box>
 
@@ -664,8 +789,9 @@ function ConditionsWashing({ step, setStep, conditions, setConditions, updateLis
     )
 }
 
-export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, idWashing }) {
+export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, idWashing, dataConditions }) {
 
+    const movile = useMediaQuery('(max-width:800px)');
     const { error, value, newConcentration } = useSaniticeValue()
     const { completeSanitization } = useSanitization()
 
@@ -674,6 +800,7 @@ export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, id
     const [step, setStep] = useState(1);
 
     const [concentration, setConcentration] = useState(concentracion);
+    const [conditions, setConditions] = useState({ sanitizacion_temperatura: '', sanitizacion_presion: '', sanitizacion_tiempo: '' })
     const [sellos, setSellos] = useState([])
 
     const onChangueConcentration = (e) => {
@@ -705,11 +832,18 @@ export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, id
         setStep(3)
     }
 
+    const updateAndToggle = () => {
+        toggleModal()
+        updateList()
+    }
+
     const SubmitRegister = async (e) => {
         e.preventDefault();
+        const newConditions = { ...conditions, ...dataConditions }
         const sellosInString = JSON.stringify(sellos);
-        const newRegister = { sellos: sellosInString, concentracion: concentracion }
-        await completeSanitization(newRegister, idRegister, idWashing, () => { updateList(), toggleModal() })
+        const newConditionsString = JSON.stringify(newConditions)
+        const newRegister = { sellos: sellosInString, concentracion: concentracion, condiciones_lavado: newConditionsString }
+        await completeSanitization(newRegister, idRegister, idWashing, newConditionsString, updateAndToggle())
     }
 
 
@@ -748,6 +882,42 @@ export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, id
                         {(step === 1) &&
                             <form onSubmit={submitStepOne} style={{ width: '100%' }}>
                                 <Box display='flex' flexDirection='column' alignItems='start' width='100%' gap='10px' >
+
+                                    <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                        <Typography>Condiciones de sanitización</Typography>
+                                        <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                            <TextField
+                                                id='sanitizado_temperatura'
+                                                required
+                                                label='Temperatura'
+                                                onChange={(e) => setConditions({ ...conditions, sanitizacion_temperatura: e.target.value })}
+                                                value={conditions.sanitizacion_temperatura}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                                }}
+                                            />
+                                            <TextField
+                                                id='sanitizado_presion'
+                                                required
+                                                label='Presión'
+                                                onChange={(e) => setConditions({ ...conditions, sanitizacion_presion: e.target.value })}
+                                                value={conditions.sanitizacion_presion}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                                }}
+                                            />
+                                            <TextField
+                                                id='sanitizado_timepo'
+                                                required
+                                                label='Tiempo'
+                                                onChange={(e) => setConditions({ ...conditions, sanitizacion_tiempo: e.target.value })}
+                                                value={conditions.sanitizacion_tiempo}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                                }}
+                                            />
+                                        </Stack>
+                                    </Box>
 
                                     <Chip
                                         color="info"
@@ -789,16 +959,18 @@ export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, id
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '100%' }}>
                                     <ContainerScroll height='300px'>
                                         <Stack gap='10px' width='100%'>
-                                            <TextField fullWidth required label='sello #1' id="sello-1" name="sello-1" />
-                                            <TextField fullWidth label='sello #2' id="sello-2" name="sello-2" />
-                                            <TextField fullWidth label='sello #3' id="sello-3" name="sello-3" />
-                                            <TextField fullWidth label='sello #4' id="sello-4" name="sello-4" />
-                                            <TextField fullWidth label='sello #5' id="sello-5" name="sello-5" />
-                                            <TextField fullWidth label='sello #6' id="sello-6" name="sello-6" />
-                                            <TextField fullWidth label='sello #7' id="sello-7" name="sello-7" />
-                                            <TextField fullWidth label='sello #8' id="sello-8" name="sello-8" />
-                                            <TextField fullWidth label='sello #9' id="sello-9" name="sello-9" />
-                                            <TextField fullWidth label='sello #10' id="sello-10" name="sello-10" />
+                                            <Typography>Sellos en domo</Typography>
+                                            <TextField fullWidth required label='sello #1' id="sello-domo-1" name="sello-domo-1" />
+                                            <TextField fullWidth label='sello #2' id="sello-domo-2" name="sello-domo-2" />
+                                            <TextField fullWidth label='sello #3' id="sello-domo-3" name="sello-domo-3" />
+                                            <TextField fullWidth label='sello #4' id="sello-domo-4" name="sello-domo-4" />
+                                            <TextField fullWidth label='sello #5' id="sello-domo-5" name="sello-domo-5" />
+                                            <Typography>Sellos en valvula superior</Typography>
+                                            <TextField fullWidth label='sello #6' id="sello-inderior-1" name="sello-superior-1" />
+                                            <TextField fullWidth label='sello #7' id="sello-inderior-2" name="sello-superior-2" />
+                                            <TextField fullWidth label='sello #8' id="sello-inderior-3" name="sello-superior-3" />
+                                            <TextField fullWidth label='sello #9' id="sello-inderior-4" name="sello-superior-4" />
+                                            <TextField fullWidth label='sello #10' id="sello-inderior-5" name="sello-superior-5" />
                                         </Stack>
                                     </ContainerScroll>
                                     <Stack flexDirection='row' alignItems='center' justifyContent='space-between'>

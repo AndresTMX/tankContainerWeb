@@ -312,7 +312,7 @@ function ItemVigilancia({ register, updater }) {
                                         }}
                                     >
                                         <Stack flexDirection={'row'} gap='5px'>
-                                            <Typography>{`${index + 1} °  ${detail?.tipo} `}</Typography>
+                                            <Typography>{`${index + 1} °  ${detail?.tipo || ''} `}</Typography>
                                             <Typography variant="button">{detail.numero_tanque || detail.numero_pipa}</Typography>
                                         </Stack>
 

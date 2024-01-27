@@ -21,21 +21,37 @@ function useSendToSanitization() {
             })
 
             //subir imagen de url y devolver string url image
-            const { preview, image, coments, value } = dataUrl || {};
-            const formData = new FormData();
-            formData.append('folder', folderName);
-            formData.append('upload_preset', `${preset}`)
-            formData.append('file', image);
-            const response = await sendImageCloudinary(formData);
+            const { valueDome, coments, previewDome, imageDome, valueValve, previewValve, imageValve } = dataUrl || {};
 
-            if (!response.url) {
-                throw new Error(`Error al subir al subir la imagen, imposible recuperar url, url: ${response.url}`)
+            const images = [imageDome, imageValve];
+            const urls = []
+
+            const dataURL = [
+                { position:'dome', image: imageDome, value: valueDome},
+                { position:'valve', image: imageValve, value: valueValve},
+            ]
+
+            for (let item of dataURL) {
+
+                if (item.image != '') {
+                    const formData = new FormData();
+                    formData.append('folder', folderName);
+                    formData.append('upload_preset', `${preset}`)
+                    formData.append('file', item.image);
+                    const response = await sendImageCloudinary(formData);
+
+                    if (!response.url) {
+                        throw new Error(`Error al subir al subir la imagen, imposible recuperar url, url: ${response.url}`)
+                    }
+
+                    urls.push({ ...item, image: response.url })
+                }
+
             }
 
             const url = {
-                image: response.url,
-                coments: coments,
-                value: value
+                ...urls,
+                coments: coments
             }
 
             const urlInString = JSON.stringify(url);

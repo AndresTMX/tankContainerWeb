@@ -9,6 +9,9 @@ import { useGetLiberations } from "../../Hooks/Calidad/useGetLiberations";
 import { dateTextShort } from "../../Helpers/date";
 import { useState } from "react";
 import { ClearIcon } from "@mui/x-date-pickers";
+//pdfAssets
+import { ViewerDocument } from "../../PDFs/components/Viewer";
+import { Certificado } from "../../PDFs/plantillas/Certificado";
 
 function ListLiberations() {
 
@@ -128,10 +131,12 @@ function ItemLiberado({ lavado, updaterList }) {
 
                 <Stack flexDirection='row' alignItems='center' gap='10px' flexWrap='wrap'>
                     <Chip
+                        size='small'
                         color='info'
                         label={status}
                     />
                     <Chip
+                        size='small'
                         color='info'
                         label={'Fecha de entrega: ' + dateTextShort(tentativeEnd)}
                     />
@@ -164,6 +169,12 @@ function ItemLiberado({ lavado, updaterList }) {
             </Paper>
 
             <ModalViewURL modal={modalUrl} toggleModal={toggleUrl} url={URL} />
+
+            <ViewerDocument stateModal={modalCert} ToggleModal={toggleCert}>
+                <Certificado />
+            </ViewerDocument>
+
+
         </>
     )
 }
@@ -172,7 +183,10 @@ function ModalViewURL({ modal, toggleModal, url }) {
 
     const jsonURL = JSON.parse(url);
 
-    const { value, image, coments } = jsonURL || {};
+    const { coments } = jsonURL || {};
+
+    const urlDome = jsonURL[0];
+    const urlValvule = jsonURL[1];
 
     return (
         <>
@@ -209,17 +223,39 @@ function ModalViewURL({ modal, toggleModal, url }) {
                         </Stack>
 
                         <Card sx={{ bgcolor: 'whitesmoke' }}>
-                            <CardMedia
-                                component='img'
-                                height="194"
-                                src={image}
-                                alt={`tanque`}
+                            <Stack>
+                                {urlDome.image != '' &&
+                                    <CardMedia
+                                        component='img'
+                                        height="194"
+                                        src={urlDome.image}
+                                        alt={`tanque`}
 
-                            />
+                                    />}
 
+                                {urlValvule.image != '' &&
+                                    <CardMedia
+                                        component='img'
+                                        height="194"
+                                        src={urlValvule.image}
+                                        alt={`tanque`}
+
+                                    />}
+
+
+                            </Stack>
                             <CardContent>
 
-                                <Typography variant="subtitle2">Valores de referencia: {value}</Typography>
+                                {(urlDome.value != '') &&
+                                    <Typography variant="subtitle2">
+                                        Valores de url en domo: {urlDome.value}
+                                    </Typography>}
+
+                                {(urlValvule.value != '') &&
+                                    <Typography variant="subtitle2">
+                                        Valores de url en valvula: {urlValvule.value}
+                                    </Typography>}
+
 
                                 <Typography>Comentarios</Typography>
                                 <Typography variant="body2" color="text.secondary">

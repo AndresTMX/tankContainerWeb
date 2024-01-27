@@ -15,6 +15,7 @@ import {
     CardMedia,
     CardActions,
     IconButton,
+    InputAdornment,
 } from "@mui/material";
 import { ContainerScroll } from "../ContainerScroll";
 import { ItemLoadingState } from "../ItemLoadingState";
@@ -24,7 +25,6 @@ import { EvaluacionResults } from "../EvaluationWashing";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useSendToSanitization } from "../../Hooks/Calidad/useSendToSanitzation";
 import { useGetWashingForAprobe } from "../../Hooks/Calidad/useGetWashingForAprobe";
-import { useGetConditionsWashing } from "../../Hooks/Calidad/useGetConditionsWashing";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes } from "../../Reducers/GlobalReducer";
 //helpers
@@ -33,7 +33,7 @@ import { dateTextShort } from "../../Helpers/date";
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import LaunchIcon from '@mui/icons-material/Launch';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
-import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
 
@@ -118,13 +118,10 @@ export { ListWashingForAprobe };
 
 function ItemWashingForAprobe({ lavado, updaterList }) {
 
-    const { registros_detalles_entradas, status, tentativeEnd, tipos_lavado, id: idLavado } = lavado || {};
+    const { registros_detalles_entradas, status, tentativeEnd, bahia, condiciones_lavado, tipos_lavado, id: idLavado } = lavado || {};
     const { carga, numero_tanque, numero_pipa, tipo, id: idRegistro } = registros_detalles_entradas || {};
     const { description, duration, lavado: tipoLavado } = tipos_lavado || {};
 
-    const { conditions, loadin, error } = useGetConditionsWashing(idLavado)
-
-    const { bahia, created_at, data, users_data } = conditions[0] || {};
 
     //condiciones de lavado
     const [modalConditions, setModalContions] = useState(false);
@@ -191,7 +188,7 @@ function ItemWashingForAprobe({ lavado, updaterList }) {
             </Paper>
 
             <ConditionsWashing
-                data={data}
+                conditionsString={condiciones_lavado}
                 modal={modalConditions}
                 toggleModal={toggleModalConditions} />
 
@@ -205,9 +202,9 @@ function ItemWashingForAprobe({ lavado, updaterList }) {
     )
 }
 
-function ConditionsWashing({ data, modal, toggleModal }) {
+function ConditionsWashing({ conditionsString, modal, toggleModal }) {
 
-    const conditions = data ? JSON.parse(data) : {};
+    const conditions = JSON.parse(conditionsString);
 
     const movile = useMediaQuery('(max-width:800px)');
 
@@ -243,15 +240,27 @@ function ConditionsWashing({ data, modal, toggleModal }) {
                                         <TextField
                                             disabled
                                             label='Temperatura'
-                                            value={conditions.enjuague_temperatura_1} />
+                                            value={conditions.enjuague_temperatura_1}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                            }}
+                                        />
                                         <TextField
                                             disabled
                                             label='Presión'
-                                            value={conditions.enjuague_presion_1} />
+                                            value={conditions.enjuague_presion_1}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                            }}
+                                        />
                                         <TextField
                                             disabled
                                             label='Tiempo'
-                                            value={conditions.enjuague_tiempo_1} />
+                                            value={conditions.enjuague_tiempo_1}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                            }}
+                                        />
                                     </Stack>
                                 </Box>
 
@@ -261,15 +270,27 @@ function ConditionsWashing({ data, modal, toggleModal }) {
                                         <TextField
                                             disabled
                                             label='Temperatura'
-                                            value={conditions.desengrasante_temperatura} />
+                                            value={conditions.desengrasante_temperatura}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                            }}
+                                        />
                                         <TextField
                                             disabled
                                             label='Presión'
-                                            value={conditions.desengrasante_presion} />
+                                            value={conditions.desengrasante_presion}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                            }}
+                                        />
                                         <TextField
                                             disabled
                                             label='Tiempo'
-                                            value={conditions.desengrasante_tiempo} />
+                                            value={conditions.desengrasante_tiempo}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                            }}
+                                        />
                                     </Stack>
                                 </Box>
 
@@ -279,15 +300,27 @@ function ConditionsWashing({ data, modal, toggleModal }) {
                                         <TextField
                                             disabled
                                             label='Temperatura'
-                                            value={conditions.limpiador_temperatura} />
+                                            value={conditions.limpiador_temperatura}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                            }}
+                                        />
                                         <TextField
                                             disabled
                                             label='Presión'
-                                            value={conditions.limpiador_presion} />
+                                            value={conditions.limpiador_presion}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                            }}
+                                        />
                                         <TextField
                                             disabled
                                             label='Tiempo'
-                                            value={conditions.limpiador_tiempo} />
+                                            value={conditions.limpiador_tiempo}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                            }}
+                                        />
                                     </Stack>
                                 </Box>
 
@@ -297,15 +330,27 @@ function ConditionsWashing({ data, modal, toggleModal }) {
                                         <TextField
                                             disabled
                                             label='Temperatura'
-                                            value={conditions.temperatura_enjuague_2} />
+                                            value={conditions.temperatura_enjuague_2}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                            }}
+                                        />
                                         <TextField
                                             disabled
                                             label='Presión'
-                                            value={conditions.presion_enjuague_2} />
+                                            value={conditions.presion_enjuague_2}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                            }}
+                                        />
                                         <TextField
                                             disabled
                                             label='Tiempo'
-                                            value={conditions.timepo_enjuague_2} />
+                                            value={conditions.timepo_enjuague_2}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                            }}
+                                        />
                                     </Stack>
                                 </Box>
 
@@ -315,33 +360,27 @@ function ConditionsWashing({ data, modal, toggleModal }) {
                                         <TextField
                                             disabled
                                             label='Temperatura'
-                                            value={conditions.temperatura_enjuague_3} />
+                                            value={conditions.temperatura_enjuague_3}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                            }}
+                                        />
                                         <TextField
                                             disabled
                                             label='Presión'
-                                            value={conditions.presion_enjuague_3} />
+                                            value={conditions.presion_enjuague_3}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                            }}
+                                        />
                                         <TextField
                                             disabled
                                             label='Tiempo'
-                                            value={conditions.tiempo_enjuague_3} />
-                                    </Stack>
-                                </Box>
-
-                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
-                                    <Typography>Solución Sanitizante</Typography>
-                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
-                                        <TextField
-                                            disabled
-                                            label='Temperatura'
-                                            value={conditions.temperatura_enjuague_3} />
-                                        <TextField
-                                            disabled
-                                            label='Presión'
-                                            value={conditions.presion_enjuague_3} />
-                                        <TextField
-                                            disabled
-                                            label='Tiempo'
-                                            value={conditions.tiempo_enjuague_3} />
+                                            value={conditions.tiempo_enjuague_3}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                            }}
+                                        />
                                     </Stack>
                                 </Box>
 
@@ -388,15 +427,15 @@ function WashingTest({ modal, toggleModal, idLavado, idRegistro, updaterList }) 
         },
 
     ]
-    const [step, setStep] = useState(3)
+    const [step, setStep] = useState(1)
     const [revision, setRevision] = useState(questionsTest)
-    const [url, setUrl] = useState({ value: '', coments: '', preview: '', image: '' });
+    const [url, setUrl] = useState({ valueDome: '', coments: '', previewDome: '', imageDome: '', valueValve: '', previewValve: '', imageValve: '' });
     const { sendToSanitization } = useSendToSanitization();
 
     useEffect(() => {
         setStep(1)
         setRevision(questionsTest)
-    }, [modal])
+    }, [modal]) 
 
     const changueValue = (index, value) => {
         const copy = [...revision];
@@ -406,13 +445,13 @@ function WashingTest({ modal, toggleModal, idLavado, idRegistro, updaterList }) 
 
     const submitForm = async (e) => {
         e.preventDefault();
-        if (url.value != '' && url.image != '') {
+        if (url.valueDome != '' && url.previewDome != '') {
             await sendToSanitization(idLavado, idRegistro, url)
             updaterList()
             toggleModal()
         }
 
-        if (url.value === '' || url.image === '') {
+        if (url.valueDome === '' || url.imageDome === '') {
             dispatchGlobal({
                 type: actionTypes.setNotification,
                 payload: 'Adjunta evidencias para continuar'
@@ -437,8 +476,8 @@ function WashingTest({ modal, toggleModal, idLavado, idRegistro, updaterList }) 
                             display: 'flex',
                             flexDirection: 'column',
                             padding: '20px',
-                            width: '100%',
-                            maxWidth: '700px',
+                            width: '700px',
+                            maxWidth: '95vw',
 
                         }}
                     >
@@ -531,10 +570,18 @@ function Test({ setStep, revision, changueValue }) {
 
 function EvidenceURL({ url, setUrl, submitForm }) {
 
-    const onChangueImage = (e) => {
+    const { valueDome, coments, previewDome, imageDome, valueValve, previewValve, imageValve } = url || {};
+
+    const onChangueDomeImage = (e) => {
         const file = e.target.files[0];
         const urlImage = URL.createObjectURL(file);
-        setUrl({ ...url, image: file, preview: urlImage });
+        setUrl({ ...url, imageDome: file, previewDome: urlImage });
+    }
+
+    const onChangueValveImage = (e) => {
+        const file = e.target.files[0];
+        const urlImage = URL.createObjectURL(file);
+        setUrl({ ...url, imageValve: file, previewValve: urlImage });
     }
 
     return (
@@ -553,35 +600,121 @@ function EvidenceURL({ url, setUrl, submitForm }) {
                     <Stack
                         width='100%'
                         flexDirection='row'
-                        alignItems={url.preview === '' ? 'center' : 'flex-start'}
-                        justifyContent={url.preview === '' ? 'flex-start' : 'space-between'} >
-                        <Typography textAlign='start'>Anexa evidencias de la prueba URL</Typography>
-                        {(url.preview != '') &&
-                            <IconButton onClick={() => setUrl({ ...url, image: '', preview: '' })} >
-                                <DeleteIcon color="error" />
-                            </IconButton>}
+                    >
+                        <Typography textAlign='start'>Anexa evidencias de las pruebas URL</Typography>
                     </Stack>
 
-                    {(url.preview != '') &&
-                        <CardMedia
-                            component="img"
-                            height="140"
-                            image={url.preview}
-                            alt="prueba_url"
-                        />}
+                    <Stack flexDirection='row' gap='10px' height='150px'>
+                        {(previewDome != '') ?
+                            <Box>
+                                <CardMedia
+                                    component="img"
+                                    height="140px"
+                                    alt="prueba_url"
+                                    image={previewDome}
+                                    sx={{ width: '140px' }}
+                                />
+                                <IconButton
+                                    sx={{ position: 'relative', top: '-40px', right: '0px', zIndex: '2', }}
+                                    onClick={() => setUrl({ ...url, imageDome: '', previewDome: '' })} >
+                                    <DeleteIcon color="error" />
+                                </IconButton>
+                            </Box> :
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    height: '140px',
+                                    width: '140px',
+                                    alignItems: 'center',
+                                    bgcolor: 'whitesmoke',
+                                    justifyContent: 'center',
+                                    border: 1,
+                                    borderColor: '#cbcbcb',
+                                    borderRadius: '4px',
+                                }} >
 
-                    {(url.preview === '') &&
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                height: '140px',
-                                width: '140px',
-                                alignItems: 'center',
-                                bgcolor: 'whitesmoke',
-                                justifyContent: 'center',
-                            }} >
-                            <InsertPhotoIcon color='action' fontSize='large' />
-                        </Box>}
+                                <label style={{ position: 'absolute' }} htmlFor={`url-input-1`} >
+                                    <IconButton
+                                        size='large'
+                                        color='info'
+                                        variant="contained"
+                                        component="span"
+                                    >
+                                        <AddPhotoAlternateIcon />
+                                    </IconButton>
+                                </label>
+
+                                <input
+                                    type="file"
+                                    id='url-input-1'
+                                    accept="image/*"
+                                    name='image_url-1'
+                                    style={{ display: "none", width: '140px', height: '140px' }}
+                                    onChange={(e) => onChangueDomeImage(e)}
+                                />
+                            </Box>
+                        }
+
+                        {(previewValve != '') ?
+                            <Box>
+                                <CardMedia
+                                    component="img"
+                                    height="140px"
+                                    alt="prueba_url"
+                                    image={previewValve}
+                                    sx={{ width: '140px' }}
+                                />
+                                <IconButton
+                                    sx={{ position: 'relative', top: '-40px', right: '0px', zIndex: '2', }}
+                                    onClick={() => setUrl({ ...url, imageValve: '', previewValve: '' })} >
+                                    <DeleteIcon color="error" />
+                                </IconButton>
+                            </Box>
+
+                            :
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    height: '140px',
+                                    width: '140px',
+                                    alignItems: 'center',
+                                    bgcolor: 'whitesmoke',
+                                    justifyContent: 'center',
+                                    border: 1,
+                                    borderColor: '#cbcbcb',
+                                    borderRadius: '4px',
+                                }} >
+                                {(previewValve != '') &&
+                                    <IconButton
+                                        sx={{ position: 'relative', top: '50px', right: '45px', zIndex: '2', }}
+                                        onClick={() => setUrl({ ...url, imageValve: '', previewValve: '' })} >
+                                        <DeleteIcon color="error" />
+                                    </IconButton>}
+
+                                <label style={{ position: 'absolute' }} htmlFor={`url-input-2`}>
+                                    <IconButton
+                                        size='large'
+                                        color='info'
+                                        variant="contained"
+                                        component="span"
+                                    >
+                                        <AddPhotoAlternateIcon />
+                                    </IconButton>
+                                </label>
+
+                                <input
+                                    type="file"
+                                    id='url-input-2'
+                                    accept="image/*"
+                                    name='image_url-2'
+                                    style={{ display: "none", width: '140px', height: '140px' }}
+                                    onChange={(e) => onChangueValveImage(e)}
+                                />
+
+                            </Box>
+                        }
+                    </Stack>
+
 
                     <CardContent
                         sx={{
@@ -597,9 +730,16 @@ function EvidenceURL({ url, setUrl, submitForm }) {
 
                         <TextField
                             sx={{ width: '100%', padding: '5px', borderRadius: '4px', }}
-                            label='valores'
+                            label='valores de url de domo'
                             required
-                            onChange={(e) => setUrl({ ...url, value: e.target.value })}
+                            onChange={(e) => setUrl({ ...url, valueDome: e.target.value })}
+                            value={url.value}
+                        />
+
+                        <TextField
+                            sx={{ width: '100%', padding: '5px', borderRadius: '4px', }}
+                            label='valores de url de valvula de descarga'
+                            onChange={(e) => setUrl({ ...url, valueValve: e.target.value })}
                             value={url.value}
                         />
 
@@ -618,30 +758,10 @@ function EvidenceURL({ url, setUrl, submitForm }) {
                         sx={{
                             display: 'flex',
                             flexDirection: 'row',
-                            justifyContent: 'space-between',
+                            justifyContent: 'flex-end',
                             alignItems: 'center',
                             width: '100%'
                         }}>
-
-                        <input
-                            type="file"
-                            accept="image/*"
-                            id={`url-input`}
-                            name='image_url'
-                            style={{ display: "none" }}
-                            onChange={(e) => onChangueImage(e)}
-                        />
-                        <label htmlFor={`url-input`}>
-                            <Button
-                                size="small"
-                                color='warning'
-                                variant="contained"
-                                component="span"
-                                startIcon={<AddAPhotoIcon />}
-                            >
-                                Adjuntar evidencia
-                            </Button>
-                        </label>
 
                         <Button variant="contained" size="small" type="submit" >
                             Enviar a sanitización
@@ -655,6 +775,4 @@ function EvidenceURL({ url, setUrl, submitForm }) {
         </>
     )
 }
-
-
 

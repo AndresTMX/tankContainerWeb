@@ -7,23 +7,14 @@ function useCreateConditionsWashing() {
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
-    const sendConditionWashing = async (newRegister, callback) => {
+    const sendConditionWashing = async (newRegister, idLavado, idDetalle, callback) => {
         try {
-
-            //enviar el nuevo registro de condiciones de lavado
-            const { error: errorSendWashing } = await supabase
-                .from('condiciones_lavado')
-                .insert({ ...newRegister })
-
-            if (errorSendWashing) {
-                throw new Error(`Error al guardar condiciones de lavado, error: ${errorSendWashing.message}`)
-            }
 
             //actualizar el registro de lavado a lavado
             const { errorUpdateStatus } = await supabase
                 .from('lavados')
-                .update({ status: 'lavado' })
-                .eq('id', newRegister.lavado_id)
+                .update({ ...newRegister, status: 'lavado' })
+                .eq('id', idLavado)
 
             if (errorUpdateStatus) {
                 throw new Error(`Error al guardar condiciones de lavado, error: ${errorUpdateStatus.message}`)
@@ -33,7 +24,7 @@ function useCreateConditionsWashing() {
             const { errorUpdateGeneral } = await supabase
                 .from('registros_detalles_entradas')
                 .update({ status: 'lavado' })
-                .eq('id', newRegister.id_detalle_entrada)
+                .eq('id', idDetalle)
 
             if (errorUpdateGeneral) {
                 throw new Error(`Error al actualizar registro general, error: ${errorUpdateStatus.message}`)

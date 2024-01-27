@@ -113,9 +113,11 @@ function LavadoPendiente({ lavado, updateList }) {
     const [modal, setModal] = useState(false);
     const toggleModal = () => setModal(!modal)
 
-    const { created_at, data, status, tipo_lavado, registros_detalles_entradas } = lavado;
+    const { created_at, data, status, tipos_lavado, registros_detalles_entradas } = lavado || {};
 
     const { carga, numero_pipa, numero_tanque, tracto } = registros_detalles_entradas || {};
+
+    const { lavado: lavado_asignado } = tipos_lavado || {};
 
     return (
         <>
@@ -174,7 +176,7 @@ function LavadoPendiente({ lavado, updateList }) {
 
                         <Stack>
                             <Typography variant='caption'>Lavado asignado</Typography>
-                            <Typography variant='body2'>{tipo_lavado}</Typography>
+                            <Typography variant='body2'>{lavado_asignado}</Typography>
                         </Stack>
                     </Stack>
 
@@ -193,15 +195,6 @@ function LavadoPendiente({ lavado, updateList }) {
                         >
                             Iniciar lavado
                         </Button>
-
-                        {/* <Button
-                            size='small'
-                            color='primary'
-                            variant='contained'
-                            endIcon={<ShowerIcon />}
-                        >
-                            Lavar
-                        </Button> */}
 
                     </Stack>
 
@@ -224,10 +217,10 @@ function ItemSanitizado({ lavado, updateList }) {
     const [modal, setModal] = useState(false);
     const toggleModal = () => setModal(!modal)
 
-    const { created_at, tentativeEnd, data, status, tipo_lavado, registros_detalles_entradas, id: idWashing } = lavado;
-
+    const { created_at, tentativeEnd, data, status, tipo_lavado, registros_detalles_entradas, id: idWashing, condiciones_lavado } = lavado;
     const { carga, numero_pipa, numero_tanque, tracto, tipo, id: idRegister } = registros_detalles_entradas || {};
 
+    const dataConditions = JSON.parse(condiciones_lavado);
 
     return (
         <>
@@ -309,6 +302,7 @@ function ItemSanitizado({ lavado, updateList }) {
                 idRegister={idRegister}
                 updateList={updateList}
                 toggleModal={toggleModal}
+                dataConditions={dataConditions}
             />
         </>
     )

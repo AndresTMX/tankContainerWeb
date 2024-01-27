@@ -60,7 +60,7 @@ function Calidad() {
 
          <Notification />
 
-         <LoadingState />
+         <LoadingState duration={1000} />
       </>
    );
 }

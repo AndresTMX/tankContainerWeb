@@ -171,10 +171,9 @@ function useEditManiobra(updaterregisters) {
                 throw new Error(`Error al intentar actualizar el registro, error: ${errorUpdateRegister.message}`)
             }
 
-
             //actualizar los detalles del registro
             const { error: errorUpdateDetails } = await supabase.from('registros_detalles_entradas')
-                .update({ status: 'prelavado' })
+                .update({ status: 'almacenado' })
                 .eq('entrada_id', idRegister)
 
             if (errorUpdateDetails) {

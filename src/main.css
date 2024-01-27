@@ -30,34 +30,37 @@
 
   /* Estilos generales para la barra de desplazamiento en Firefox */
 html {
-  scrollbar-width: thin;
-  scrollbar-color: #888 #f1f1f1;
-  overflow-X: hidden;
+  scrollbar-width:thin;
+  scrollbar-color: #afafaf whitesmoke;
+  overflow-X: hidden;  
 }
+
 
 /* Estilo del pulgar de la barra de desplazamiento en Firefox */
-html:hover {
+/* html:hover {
   scrollbar-color: #555 #f1f1f1;
-}
+} */
 
 /* Estilos generales para la barra de desplazamiento */
-::-webkit-scrollbar {
-  height: 6px;
-  width: 6px; /* Ancho de la barra de desplazamiento */
-}
+/* ::-webkit-scrollbar {
+  height: 3px;
+  width: 3px; 
+} */
 
 /* Estilo del riel de la barra de desplazamiento */
-::-webkit-scrollbar-track {
-  background-color: #f1f1f1; /* Color de fondo del riel */
-}
+/* ::-webkit-scrollbar-track {
+  background-color: #f1f1f1; 
+} */
 
 /* Estilo del pulgar de la barra de desplazamiento */
-::-webkit-scrollbar-thumb {
-  background-color: #047391; /* Color del pulgar */
-  border-radius: 6px; /* Bordes redondeados del pulgar */
-}
+/* ::-webkit-scrollbar-thumb {
+  background-color: #047391;
+  border-radius: 6px; 
+} */
 
 /* Cambiar el estilo de la barra de desplazamiento en hover */
-::-webkit-scrollbar-thumb:hover {
+html::-webkit-scrollbar-thumb:hover {
   background-color: #0092ba;
 }
+
+

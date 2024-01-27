@@ -26,7 +26,7 @@ function useWashing(type) {
 
             const { data, error } = await supabase
                 .from('lavados')
-                .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
+                .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), tipos_lavado(*)`)
                 .in('status', consultValues)
                 .order('tentativeEnd', { ascending: false })
 
@@ -57,7 +57,7 @@ function useWashing(type) {
 
             const { data, error } = await supabase
                 .from('lavados')
-                .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
+                .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), tipos_lavado(*)`)
                 .eq('status', 'lavado')
                 .order('tentativeEnd', { ascending: false })
 

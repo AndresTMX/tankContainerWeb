@@ -35,7 +35,7 @@ function usePreWashingInspect(typeInspect) {
                 .from('lavados')
                 .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
                 .eq('status', 'programado')
-                .not('id_tipo_lavado', 'is', null)
+                .is('id_tipo_lavado', null)
                 .order('tentativeEnd', { ascending: false })
                 .range(0, 100)
             if (error) {
@@ -66,7 +66,7 @@ function usePreWashingInspect(typeInspect) {
             const { data, error } = await supabase
                 .from('prelavados_revisiones')
                 .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
-                // .eq('status', 'asignado')
+                .eq('status', 'programado')
                 .order('created_at', { ascending: false })
                 .range(0, 100)
             if (error) {

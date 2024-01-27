@@ -45,8 +45,8 @@ function useRegistersProgramer() {
         const { error, data } = await supabase
             .from('lavados')
             .select(`* , registros_detalles_entradas(*, clientes(*), transportistas(*) )`)
-            .eq('status', 'programado')
-            .order('created_at', { ascending: false })
+            .eq('status', 'pending')
+            .order('tentativeEnd', { ascending: true })
 
         if (error) {
             throw new Error(`Error al recuperar registros de tanques almacenados, error: ${error.message}`)

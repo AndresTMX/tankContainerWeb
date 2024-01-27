@@ -156,7 +156,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                                     variant="contained"
                                     color="info"
                                 >
-                                    pasar a prelavado
+                                    almacenar
                                 </Button>}
 
                             {(carga != 'pipa' && statusRegister === 'confirm' && detailManiobras.length === 0) &&
