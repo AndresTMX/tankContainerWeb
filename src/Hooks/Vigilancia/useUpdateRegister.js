@@ -13,8 +13,6 @@ function useUpdateRegister(updater) {
         try {
 
             const detalles = data;
-            const carga = data[0].carga;
-
             //actualizar registros para confirmar la entrada
             const { error: errorUpdateRegister } = await supabase.from('registros')
                 .update({ checkIn: currenDateFormatTz, status: 'confirm' })
@@ -24,49 +22,51 @@ function useUpdateRegister(updater) {
                 throw new Error(`Error al intentar confirmar la entrada del registro, error: ${errorUpdateRegister.message}`)
             }
 
-            if (carga === 'tanque') {
-                //verificar existencia de los tanques en la base y aumentar los reingresos de ser necesario
-                const updateReingresos = detalles.map(async (registro) => {
+            //verificar existencia de los tanques en la base y aumentar los reingresos de ser necesario
+            const updateReingresos = detalles.map(async (registro) => {
+            console.log("🚀 ~ updateReingresos ~ registro:", registro)
 
-                    const { data: dataRepeat, error: errorRepeat } = await supabase
-                        .from('tanques_detalles')
-                        .select('tanque, reingresos')
-                        .eq('tanque', registro.numero_tanque)
+                const numero_carga = registro.numero_tanque || registro.numero_pipa;
 
-                    if (errorRepeat) {
-                        throw new Error(`Error al consultar repeticion, error: ${errorRepeat.message}`)
-                    }
+                const { data: dataRepeat, error: errorRepeat } = await supabase
+                    .from('tanques_detalles')
+                    .select('tanque, reingresos')
+                    .eq('tanque', numero_carga)
 
-                    //si no hay tanques registrados con ese numero de tanque crear registro
-                    if (dataRepeat.length === 0) {
-                        const { data: dataDetailTank, error: errorAddDetailTank } = await supabase
-                            .from('tanques_detalles')
-                            .insert({ tanque: registro.numero_tanque , tipo: registro.tipo})
-                            .select()
-
-                        if (errorAddDetailTank) {
-                            throw new Error(`Error al crear detalles del tanque, error: ${errorAddDetailTank.message}`)
-                        }
-                    } else {
-                        const { error: errorUpdateReingreso } = await supabase
-                            .from('tanques_detalles')
-                            .update({ reingresos: dataRepeat[0].reingresos + 1 })
-                            .eq('tanque', registro.numero_tanque)
-
-                        if (errorUpdateReingreso) {
-                            throw new Error(`Error al generar reingreso, error: ${errorUpdateReingreso.message}`)
-                        }
-                    }
-
-
-                })
-
-                try {
-                    await Promise.all(updateReingresos)
-                } catch (error) {
-                    throw new Error(`Error al actualizar reingresos, error: ${error.message}`)
+                if (errorRepeat) {
+                    throw new Error(`Error al consultar repeticion, error: ${errorRepeat.message}`)
                 }
+
+                //si no hay tanques registrados con ese numero de tanque crear registro
+                if (dataRepeat.length === 0) {
+                    const { data: dataDetailTank, error: errorAddDetailTank } = await supabase
+                        .from('tanques_detalles')
+                        .insert({ tanque: numero_carga, tipo: registro.tipo||'pipa' })
+                        .select()
+
+                    if (errorAddDetailTank) {
+                        throw new Error(`Error al crear detalles del tanque, error: ${errorAddDetailTank.message}`)
+                    }
+                } else {
+                    const { error: errorUpdateReingreso } = await supabase
+                        .from('tanques_detalles')
+                        .update({ reingresos: dataRepeat[0].reingresos + 1 })
+                        .eq('tanque', registro.numero_carga)
+
+                    if (errorUpdateReingreso) {
+                        throw new Error(`Error al generar reingreso, error: ${errorUpdateReingreso.message}`)
+                    }
+                }
+
+
+            })
+
+            try {
+                await Promise.all(updateReingresos)
+            } catch (error) {
+                throw new Error(`Error al actualizar reingresos, error: ${error.message}`)
             }
+
 
             //actualiza el registro de entrada
             const { error: errorUpdateStatus } = await supabase.from('registros_detalles_entradas')

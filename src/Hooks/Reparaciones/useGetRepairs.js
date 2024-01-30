@@ -20,10 +20,7 @@ function useGetRepairs(typeRegister) {
 
         const { data, error } = await supabase
             .from(tableReparaciones)
-            .select(`*,
-        users_data(*),
-        registros_detalles_entradas(*)
-        `)
+            .select(`*,users_data(*), registros_detalles_entradas(*, registros(*))`)
             .eq('status', typeRegister)
             .eq('tipo_reparacion', 'interna')
             .order('checkIn', { ascending: false })

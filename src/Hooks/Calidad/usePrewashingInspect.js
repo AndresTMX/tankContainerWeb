@@ -66,7 +66,7 @@ function usePreWashingInspect(typeInspect) {
             const { data, error } = await supabase
                 .from('prelavados_revisiones')
                 .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
-                .eq('status', 'programado')
+                .eq('status', 'aprobado')
                 .order('created_at', { ascending: false })
                 .range(0, 100)
             if (error) {

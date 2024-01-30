@@ -15,7 +15,7 @@ function Step8({ setStep, updater }) {
     const [state, dispatch] = useContext(PrelavadoContext)
     const { checklist, selectCheck } = state;
 
-    const { id_detalle_entrada } = selectCheck || {};
+    const { id_detalle_entrada, id:idLavado } = selectCheck || {};
     const { numero_pipa, numero_tanque } = selectCheck.registros_detalles_entradas || {};
 
     const Submit = async (e) => {
@@ -53,7 +53,7 @@ function Step8({ setStep, updater }) {
             data: questionsFlat,
         }
 
-        await completeChecklist(id_detalle_entrada, dataChecklist, status);
+        await completeChecklist(id_detalle_entrada, idLavado, dataChecklist, status);
         setStep(1);
         dispatch({ type: actionTypes.setSelectCheck, payload: false });
         dispatch({ type: actionTypes.setCheckList, payload: { cuviertaValvula: { type: '' } } });

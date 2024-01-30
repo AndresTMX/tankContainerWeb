@@ -274,8 +274,9 @@ function ModalPrograming({ modal, toggleModal, item, changueTypeRegister }) {
             id_detalle_entrada: item.id
         }
         await createProgram(newWashing, item.id)
-        changueTypeRegister('programados')
-
+        setTimeout(() => {
+            changueTypeRegister('programados')
+        }, 1000)
     }
 
     return (

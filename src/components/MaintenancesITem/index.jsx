@@ -25,7 +25,9 @@ function MaintenancesItem({ maintance, selectItem, typeRepair, }) {
 
     const statusColor = status === 'completado' ? 'success' : status === 'proceso' ? 'primary' : 'warning'
 
-    const { numero_tanque, tracto, carga } = registros_detalles_entradas;
+    const { numero_tanque, carga, tipo } = registros_detalles_entradas;
+
+    const { tracto } = registros_detalles_entradas.registros || {};
 
     const ToggleInfo = () => {
         setModal({ ...modal, modal1: !modal.modal1 })
@@ -55,8 +57,8 @@ function MaintenancesItem({ maintance, selectItem, typeRepair, }) {
                             <Chip size="small" label={dayEndTransform ? dayEndTransform : dateTransform} color="info" icon={<AccessTimeIcon />} />
                             <Chip size="small" label={time} color="info" icon={<RestoreIcon />} />
                         </Stack>
-                        <Stack flexDirection={'row'} gap={'10px'} width={IsExtraSmall? '100%' : 'auto'}>
-                            {(typeRepair === 'pendiente') &&
+                        <Stack flexDirection={'row'} gap={'10px'} width={IsExtraSmall ? '100%' : 'auto'}>
+                            {(typeRepair === 'pending') &&
                                 <Button
                                     fullWidth
                                     size="small"
@@ -66,7 +68,7 @@ function MaintenancesItem({ maintance, selectItem, typeRepair, }) {
                                     iniciar reparación
                                 </Button>}
 
-                            {(typeRepair === 'proceso') &&
+                            {(typeRepair === 'proces') &&
                                 <Button
                                     fullWidth
                                     size="small"
@@ -76,7 +78,7 @@ function MaintenancesItem({ maintance, selectItem, typeRepair, }) {
                                     completar reparación
                                 </Button>}
 
-                            {(typeRepair === 'completado') &&
+                            {(typeRepair === 'complet') &&
                                 <Button
                                     fullWidth
                                     size="small"
@@ -100,7 +102,7 @@ function MaintenancesItem({ maintance, selectItem, typeRepair, }) {
                         />
                         <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
                         <TextGeneral
-                            label='N° tracto'
+                            label={`N° de ${carga}`}
                             text={tracto}
                         />
                         <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
@@ -108,6 +110,15 @@ function MaintenancesItem({ maintance, selectItem, typeRepair, }) {
                             label='N° tanque'
                             text={numero_tanque}
                         />
+                        {tipo != null &&
+                            <>
+                                <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />
+                                <TextGeneral
+                                    label='Tipo'
+                                    text={tipo}
+                                />
+                            </>
+                        }
                         {/* {status != 'pendiente' && <Divider orientation={IsExtraSmall ? 'horizontal' : 'vertical'} flexItem />} */}
                     </Stack>
 

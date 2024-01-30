@@ -15,7 +15,6 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 
 function Lavados({ typeWashing }) {

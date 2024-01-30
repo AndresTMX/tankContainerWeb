@@ -29,6 +29,9 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { useSaniticeValue } from "../../Hooks/Lavado/useSaniticeValue";
 import SaveIcon from '@mui/icons-material/Save';
 import { useSanitization } from "../../Hooks/Lavado/useSanitization";
+import supabase from "../../supabase";
+//helpers
+import { currenDateFormatTz } from "../../Helpers/date";
 
 function EvaluationWashing({ modal, toggleModal, lavado, updateList }) {
 
@@ -79,26 +82,32 @@ function EvaluationWashing({ modal, toggleModal, lavado, updateList }) {
         setRevision(copy);
     };
 
-    const submitChecklist = () => {
-        let emptyValues = revision.filter((question) => question.value.trim() === '');
-        let negativeValues = revision.filter((question) => question.value === 'no');
+    const submitChecklist = async () => {
+        try {
+            let emptyValues = revision.filter((question) => question.value.trim() === '');
+            let negativeValues = revision.filter((question) => question.value === 'no');
 
-        if (emptyValues.length > 1) {
+            if (emptyValues.length > 1) {
+                throw new Error('Termina la revisión para continuar')
+            }
+
+            if (negativeValues.length > 0 && emptyValues.length === 0) {
+                setStep(2)
+            }
+
+            if (negativeValues.length === 0 && emptyValues.length === 0) {
+                setStep(3)
+                const { error } = await supabase.from('lavados').update({ dateInit: currenDateFormatTz }).eq('id', lavado.id)
+                if (error) {
+                    throw new Error(`Error al iniciar el lavado, error: ${error.message}`)
+                }
+            }
+        } catch (error) {
             dispatchGlobal({
                 type: actionTypes.setNotification,
-                payload: 'Termina la revisión para continuar'
+                payload: error.message
             })
         }
-
-        if (negativeValues.length > 0 && emptyValues.length === 0) {
-            setStep(2)
-        }
-
-        if (negativeValues.length === 0 && emptyValues.length === 0) {
-            setStep(3)
-        }
-
-
     }
 
     return (
@@ -299,10 +308,9 @@ function ConditionsWashing({ step, setStep, lavado, updateList, toggleModal }) {
     }
 
     const formSubmit = async () => {
-        const dataInString = JSON.stringify(conditions);
         const { numero_bahia } = conditions || {};
+        const dataInString = JSON.stringify(conditions);
         const newRegister = { bahia: numero_bahia, condiciones_lavado: dataInString };
-
         await sendConditionWashing(newRegister, lavadoId, id_detalle_entrada, () => updateList())
         toggleModal()
     }
@@ -832,18 +840,15 @@ export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, id
         setStep(3)
     }
 
-    const updateAndToggle = () => {
-        toggleModal()
-        updateList()
-    }
-
     const SubmitRegister = async (e) => {
         e.preventDefault();
         const newConditions = { ...conditions, ...dataConditions }
         const sellosInString = JSON.stringify(sellos);
         const newConditionsString = JSON.stringify(newConditions)
         const newRegister = { sellos: sellosInString, concentracion: concentracion, condiciones_lavado: newConditionsString }
-        await completeSanitization(newRegister, idRegister, idWashing, newConditionsString, updateAndToggle())
+        await completeSanitization(newRegister, idRegister, idWashing, newConditionsString)
+        toggleModal()
+        updateList()
     }
 
 

@@ -19,7 +19,7 @@ function useGetLiberations() {
         try {
             const { data, error } = await supabase
                 .from('lavados')
-                .select('*, registros_detalles_entradas(*, registros(*), clientes(*), transportistas(*)), tipos_lavado(*)')
+                .select('*, registros_detalles_entradas(*, registros(*), clientes(*), transportistas(*) ), tipos_lavado(*)')
                 .eq('status', 'sellado')
                 .order('tentativeEnd', { ascending: false })
                 .limit(100)

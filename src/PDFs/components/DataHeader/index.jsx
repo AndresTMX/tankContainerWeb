@@ -51,7 +51,7 @@ function DataHeader({ data }) {
 
                     <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> Entrada: </Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.dayInput}</Text>
+                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{dateMXFormat(data?.checkIn)}</Text>
                     </View>
 
                     <View style={style.BoxData}>
@@ -66,12 +66,12 @@ function DataHeader({ data }) {
 
                     <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> Cliente: </Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.cliente}</Text>
+                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data?.clientes?.cliente}</Text>
                     </View>
 
                     <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> No° de unidad :</Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.tracto}</Text>
+                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data?.registros?.tracto}</Text>
                     </View>
 
 

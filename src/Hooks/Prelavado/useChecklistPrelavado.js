@@ -116,7 +116,7 @@ function useChecklistPrelavado(updaterFunction) {
     Funcion que se encarga de recibir el checklist y ejecutar 
     funciones auxiliares segun el numero de iteracion del prelavado
     /*/
-    const completeChecklist = async (idRegister, dataChecklist, newStatus) => {
+    const completeChecklist = async (idRegister, idLavado, dataChecklist, newStatus) => {
 
         try {
 
@@ -148,19 +148,31 @@ function useChecklistPrelavado(updaterFunction) {
 
 
             if (newStatus === 'interna' || newStatus === 'externa') {
-                //crear reparacion del tipo deseado
 
+                //cambiar status de lavado a cancelado
+                const { error: errorUpdateStatusWashing } = await supabase
+                    .from('lavados')
+                    .update({ status: 'cancelado' })
+                    .eq('id', idLavado)
+
+                if (errorUpdateStatusWashing) {
+                    throw new Error(`Error al crear nueva reparación ${newStatus} , error: ${errorUpdateStatusWashing.message}`)
+                }
+
+                //crear reparacion del tipo deseado
                 const { error: errorCreateReaparation } = await supabase
                     .from('reparaciones')
                     .insert({ id_detalle_registro: idRegister, tipo_reparacion: newStatus })
 
                 if (errorCreateReaparation) {
+                    await supabase.from('lavados').update({ status: 'almacenado-prelavado' }).eq('id', idLavado)
                     throw new Error(`Error al crear raparación ${newStatus} `)
                 }
 
                 const { error: errorUpdateStatus } = await supabase
                     .from('registros_detalles_entradas')
                     .update({ status: 'reparacion' })
+                    .eq('id', idRegister)
 
                 if (errorUpdateStatus) {
                     throw new Error(`Error al actualizar el registro ${errorUpdateStatus.message} `)
@@ -183,11 +195,11 @@ function useChecklistPrelavado(updaterFunction) {
                 const { error: errorUpdateWashing } = await supabase
                     .from('lavados')
                     .update({ status: 'programado' })
-                    .eq('id_detalle_entrada', idRegister)
+                    .eq('id', idLavado)
 
                 if (errorUpdateWashing) {
                     await supabase.from('registros_detalles_entradas').update({ status: 'prelavado' }).eq('id', idRegister)
-                    await supabase.from('lavados').update({ status: 'pending' }).eq('id_detalle_entrada', idRegister)
+                    await supabase.from('lavados').update({ status: 'pending' }).eq('id', idLavado)
                     throw new Error(`Error al actualizar el estatus del registro \nerror: ${error.message}`)
                 }
 
@@ -208,11 +220,11 @@ function useChecklistPrelavado(updaterFunction) {
                 const { error: errorUpdateWashing } = await supabase
                     .from('lavados')
                     .update({ status: 'almacenado-prelavado' })
-                    .eq('id_detalle_entrada', idRegister)
+                    .eq('id', idLavado)
 
                 if (errorUpdateWashing) {
                     await supabase.from('registros_detalles_entradas').update({ status: 'prelavado' }).eq('id', idRegister)
-                    await supabase.from('lavados').update({ status: 'pending' }).eq('id_detalle_entrada', idRegister)
+                    await supabase.from('lavados').update({ status: 'pending' }).eq('id', idLavado)
                     throw new Error(`Error al actualizar el estatus del registro \nerror: ${error.message}`)
                 }
 

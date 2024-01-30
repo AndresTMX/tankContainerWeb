@@ -2,12 +2,13 @@ import supabase from "../../supabase";
 import { useContext } from "react";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes } from "../../Reducers/GlobalReducer";
+import { currenDateFormatTz } from "../../Helpers/date";
 
 function useSanitization() {
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
-    const completeSanitization = async (sanitization, idRegister, idWashing, callback) => {
+    const completeSanitization = async (sanitization, idRegister, idWashing) => {
         try {
 
             //actualizar status de registro general
@@ -23,7 +24,7 @@ function useSanitization() {
             //actualizar registro y status de lavado
             const { error } = await supabase
                 .from('lavados')
-                .update({ ...sanitization, status: 'sellado' })
+                .update({ ...sanitization, status: 'sellado', dateEnd: currenDateFormatTz })
                 .eq('id', idWashing)
 
             if (error) {
@@ -31,7 +32,6 @@ function useSanitization() {
                 throw new Error(`Error al actualizar registro de lavado, error: ${error.message}`)
             }
 
-            callback()
         } catch (error) {
             dispatchGlobal({
                 type: actionTypes.setNotification,

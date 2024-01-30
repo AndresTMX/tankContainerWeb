@@ -2,16 +2,16 @@ import { useContext } from "react";
 import supabase from "../../supabase";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
-import { AuthContext } from "../../Context/AuthContext";
 
 function useManagmentInspection(updater) {
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-    const { key } = useContext(AuthContext);
 
 
     const sendInspectPrewashing = async (register, idWashing, typeWashing, cargasInString, numero_tanque, numero_pipa, carga) => {
         try {
+
+            const numero_carga = carga === 'tanque' ? numero_tanque : numero_pipa;
 
             //almacena el checklist de revision de prelavado 
             const { error, data: dataRevision } = await supabase
@@ -26,7 +26,7 @@ function useManagmentInspection(updater) {
             //asigna el tipo de lavado al lavado
             const { error: errorUpdateWashing } = await supabase
                 .from('lavados')
-                .update({ id_tipo_lavado: typeWashing, status:'asignado' , id_revision_prelavado: dataRevision[0].id})
+                .update({ id_tipo_lavado: typeWashing, status: 'asignado', id_revision_prelavado: dataRevision[0].id })
                 .eq('id', idWashing)
 
             if (errorUpdateWashing) {
@@ -49,16 +49,15 @@ function useManagmentInspection(updater) {
             }
 
             //mandar cargas previas a tanques_detalles si es un tanque
-            if (carga === 'tanque') {
-                const { error: errorCargasPrevias } = await supabase
-                    .from('tanques_detalles')
-                    .update({ cargas_previas: cargasInString })
-                    .eq('tanque', numero_tanque)
+            const { error: errorCargasPrevias } = await supabase
+                .from('tanques_detalles')
+                .update({ cargas_previas: cargasInString })
+                .eq('tanque', numero_carga)
 
-                if (errorCargasPrevias) {
-                    throw new Error(`Error al mandar cargas previas del lavado, error ${errorCargasPrevias.message}`)
-                }
+            if (errorCargasPrevias) {
+                throw new Error(`Error al mandar cargas previas del lavado, error ${errorCargasPrevias.message}`)
             }
+
 
             if (!error & !errorUpdateRegister) {
                 updater()
@@ -76,35 +75,62 @@ function useManagmentInspection(updater) {
         }
     }
 
-    const returnToPrewashing = async (id) => {
+    const returnToPrewashing = async (id, idLavado, status) => {
 
         try {
-            const { error } = await supabase
-                .from('registros_detalles_entradas')
-                .update({ status: 'prelavado' })
-                .eq('id', id)
 
-            if (error) {
-                throw new Error(`Error al retornar a prelavado, error: ${error.message}`)
+            if (status === "interna" || status === "externa") {
+
+                //actualiza el estatus del registro
+                const { error: errorUpdateRegister } = await supabase
+                    .from('registros_detalles_entradas')
+                    .update({ status: "reparacion" })
+                    .eq('id', id)
+
+                if (errorUpdateRegister) {
+                    throw new Error(`Error al actualizar los detalles del tanque, error: ${errorUpdateRegister.message}`)
+                }
+
+                //crea una nueva reparacion
+                const { error: errorCreateRepair } = await supabase
+                    .from('reparaciones')
+                    .insert({ id_detalle_registro: id, tipo_reparacion: status })
+
+                if (errorCreateRepair) {
+                    throw new Error(`Error al crear una reparación , error: ${errorUpdateRegister.message}`)
+                }
             }
 
-            const { error: errorUpdateChecklist } = await supabase
-                .from('prelavado_checklist')
-                .update({ status: 'rechazado' })
-                .eq('registro_detalle_entrada_id', id)
+            if (status === "prelavado") {
 
-            if (errorUpdateChecklist) {
-                throw new Error(`Error al actualizar checklist, error: ${errorUpdateChecklist.message}`)
+                //actualizar los detalles del registro
+                const { error } = await supabase
+                    .from('registros_detalles_entradas')
+                    .update({ status: 'prelavado' })
+                    .eq('id', id)
+
+                if (error) {
+                    throw new Error(`Error al retornar a prelavado, error: ${error.message}`)
+                }
+
+                //actualizar los detalles del lavado
+                const { error: errorUpdateWashing } = await supabase
+                    .from('lavados')
+                    .update({ status: 'pending' })
+                    .eq('id', idLavado)
+
+                if (errorUpdateWashing) {
+                    await supabase.from('registros_detalles_entradas').update({ status: 'programado' }).eq('id', id)
+                    throw new Error(`Error al actualizar registro de lavado, error: ${errorUpdateWashing.message}`)
+                }
+
             }
 
-            if (!error && !errorUpdateChecklist) {
-                updater()
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: 'Registro actualizado'
-                })
-            }
-
+            updater()
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: 'Registro actualizado'
+            })
 
         } catch (error) {
             dispatchGlobal({

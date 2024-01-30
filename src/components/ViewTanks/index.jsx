@@ -22,7 +22,7 @@ function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
 
     useEffect(() => {
         getTanksReadyToOutput();
-    }, [details])
+    }, [])
 
     const { carga, tracto, operadores, transportistas, clientes, status, transportista_id, operador_id, idRegister } = details[0] || {};
     const { nombre, contacto } = operadores || {};
@@ -31,6 +31,7 @@ function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
 
     const { addOutputRegisterForManiobra } = useAddOutputManiobra();
     const { tanks, tankLoading, tankError, getTanksReadyToOutput } = useGetTanks();
+    console.log("🚀 ~ ViewTanks ~ tanks:", tanks)
 
     const { copyTanksFree, copyTanksManiobras, toggleTank, deletTanksChargue, dataTank, colorItemTank } = useSelectManiobras(detailManiobras, tanks, tankLoading);
 

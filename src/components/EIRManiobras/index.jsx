@@ -213,7 +213,7 @@ function EIRManiobras() {
             />
 
             <ViewerDocument stateModal={viewPDF} ToggleModal={toggleModalPDF}>
-                <EIR maniobrasCheckList={checkList} dataDocument={item} />
+                <EIR maniobrasCheckList={checkList} dataDocument={{...item, folio}} />
             </ViewerDocument>
         </>
     );

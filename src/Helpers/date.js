@@ -52,5 +52,13 @@ export const dateTextShort = (date) => {
     return `${dia} ${splitData[2]} de ${splitData[1]}`
 }
 
+export const dateExpiration = (date) => {
+    const datemx = dateMX(date);
+    const year = datemx.$y;
+    const month = datemx.$M + 4;
+    const day = datemx.$D;
+    return `${day}/${month}/${year}`
+}
+
 
 

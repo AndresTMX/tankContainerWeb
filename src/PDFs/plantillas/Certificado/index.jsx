@@ -5,15 +5,16 @@ import { DateWashing } from "../../components/DateWashing";
 import { TablesCert } from "../../components/TablesCert";
 import { ImageCert2, FirmaCalidad, FirmaManiobras } from "../../../resourcesLinks";
 
-function Certificado({ }) {
+function Certificado({ dataCert }) {
 
+    const {  valoresFiltradosDomo, valoresFiltradosValvule } = dataCert;
 
     return (
         <Document>
             <SimplePageLetter>
                 <HeaderCert />
-                <DateWashing />
-                <TablesCert />
+                <DateWashing dataCerd={dataCert} />
+                <TablesCert sellosDome={valoresFiltradosDomo} sellosValvule={valoresFiltradosValvule} />
                 <View style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'start', gap: '10px', position: 'relative', top: '-40px' }}>
 
                     <View style={{ display: 'flex', flexDirection: 'row', gap: '5px', width: '100%' }}>

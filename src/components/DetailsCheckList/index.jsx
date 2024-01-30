@@ -272,7 +272,9 @@ function DetailsCheckList({ changueTypeRegister, step , selectItem, item, toggle
 
   const { maniobrasCheckList} = state;
 
-  const { carga, linea, numero_tanque, tracto, checkIn } = item;
+  const { carga, linea, numero_tanque,  checkIn } = item;
+
+  const { tracto } = item.registros || {};
 
   const complete = step === 5 ? true : false;
 

@@ -5,6 +5,7 @@ import { ContainerScroll } from "../ContainerScroll";
 import { LoadingState } from "../LoadingState";
 //hooks
 import { useGetLiberations } from "../../Hooks/Calidad/useGetLiberations";
+import { useGetPreviusChargue } from "../../Hooks/Calidad/useGetPreviusChargue";
 //helpers
 import { dateTextShort } from "../../Helpers/date";
 import { useState } from "react";
@@ -111,11 +112,20 @@ function ItemLiberation({ lavado, updaterList }) {
 
 function ItemLiberado({ lavado, updaterList }) {
 
-    const { status, URL, concentracion, program_date, registros_detalles_entradas, sellos, tentativeEnd, tipos_lavado } = lavado || {};
+    const { status, URL, dateInit, dateEnd, concentracion, program_date, registros_detalles_entradas, sellos, tentativeEnd, tipos_lavado, folio } = lavado || {};
 
-    const { carga, numero_tanque, numero_pipa, tipo, } = registros_detalles_entradas || {};
+    const { carga, numero_tanque, numero_pipa, tipo, transportistas, registros } = registros_detalles_entradas || {};
 
-    const { lavado: tipoLavado } = tipos_lavado || {};
+    const { cliente } = registros_detalles_entradas.clientes || {};
+
+    const { name: transportista } = transportistas || {};
+
+    const { checkIn, checkOut } = registros || {};
+
+    const { lavado: tipoLavado, num: numLavado, temperature, duration } = tipos_lavado || {};
+
+    //cargas previas
+    const { loading, error, info: cargas_previas } = useGetPreviusChargue(numero_tanque || numero_pipa);
 
     //url
     const [modalUrl, setModalUrl] = useState(false);
@@ -124,6 +134,18 @@ function ItemLiberado({ lavado, updaterList }) {
     // certificado
     const [modalCert, setModalCert] = useState(false);
     const toggleCert = () => setModalCert(!modalCert);
+
+    const urlString = JSON.parse(URL);
+    //sellos
+    const sellosJson = JSON.parse(sellos);
+    const sellosDomo = sellosJson.length >= 1 ? sellosJson.filter((item) => Object.keys(item)[0].includes('domo')) : [];
+    const sellosValvule = sellosJson.length >= 1 ? sellosJson.filter((item) => Object.keys(item)[0].includes('superior')) : [];
+    const valoresFiltradosDomo = sellosDomo.map(objeto => Object.values(objeto)[0])||[]
+    const valoresFiltradosValvule = sellosValvule.map(objeto => Object.values(objeto)[0])||[]
+
+
+    //informacion para el certificado
+    const dataCert = { dateInit, dateEnd, cliente, numero_tanque, numero_pipa, tipo, transportista, cargas_previas, folio, numLavado, temperature, urlString, checkIn, checkOut, duration, valoresFiltradosDomo, valoresFiltradosValvule }
 
     return (
         <>
@@ -171,7 +193,7 @@ function ItemLiberado({ lavado, updaterList }) {
             <ModalViewURL modal={modalUrl} toggleModal={toggleUrl} url={URL} />
 
             <ViewerDocument stateModal={modalCert} ToggleModal={toggleCert}>
-                <Certificado />
+                <Certificado dataCert={dataCert} />
             </ViewerDocument>
 
 
@@ -228,16 +250,16 @@ function ModalViewURL({ modal, toggleModal, url }) {
                                     <CardMedia
                                         component='img'
                                         height="194"
-                                        src={urlDome.image}
+                                        src={urlDome?.image}
                                         alt={`tanque`}
 
                                     />}
 
-                                {urlValvule.image != '' &&
+                                {urlValvule?.image != '' &&
                                     <CardMedia
                                         component='img'
                                         height="194"
-                                        src={urlValvule.image}
+                                        src={urlValvule?.image}
                                         alt={`tanque`}
 
                                     />}
@@ -246,14 +268,14 @@ function ModalViewURL({ modal, toggleModal, url }) {
                             </Stack>
                             <CardContent>
 
-                                {(urlDome.value != '') &&
+                                {(urlDome?.value != '') &&
                                     <Typography variant="subtitle2">
-                                        Valores de url en domo: {urlDome.value}
+                                        Valores de url en domo: {urlDome?.value}
                                     </Typography>}
 
-                                {(urlValvule.value != '') &&
+                                {(urlValvule?.value != '') &&
                                     <Typography variant="subtitle2">
-                                        Valores de url en valvula: {urlValvule.value}
+                                        Valores de url en valvula: {urlValvule?.value}
                                     </Typography>}
 
 

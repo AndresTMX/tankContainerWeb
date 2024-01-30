@@ -5,8 +5,7 @@ import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 function useSelectManiobras(detallesRegister, tanksReady, tankLoading) {
 
     useEffect(() => {
-        const filterDetailsTypeTank = detallesRegister.filter((registro) => registro.carga === 'tanque' || registro.carga === 'pipa');
-        setCopyTanksManiobras(filterDetailsTypeTank)
+        setCopyTanksManiobras(detallesRegister)
         setCopyTanksFree(tanksReady)
     }, [tankLoading])
 

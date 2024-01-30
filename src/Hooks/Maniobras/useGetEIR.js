@@ -9,11 +9,10 @@ function useGetEIR(typeRegister) {
 
     const getChecklistPending = async () => {
         setLoading(true)
-
+        setError(null)
         const { data, error } = await supabase
             .from('registros_detalles_entradas')
-            .select(` *, transportistas (*), clientes(*) 
-                `)
+            .select(` *, registros(*), transportistas (*), clientes(*) `)
             .eq('status', 'eir')
             .order('created_at', { ascending: false })
             .range(0, 50)
@@ -36,6 +35,7 @@ function useGetEIR(typeRegister) {
 
     const getCheckListFullfiled = async () => {
         setLoading(true)
+        setError(null)
         const { data, error } = await supabase
             .from('maniobras_checklist')
             .select(`

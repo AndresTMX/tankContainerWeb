@@ -1,9 +1,10 @@
 import { View, Text, } from "@react-pdf/renderer";
 
-function TablesCert() {
+function TablesCert({ sellosDome, sellosValvule }) {
+
     return (
         <>
-            <View style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between', alignItems: 'center', position:'relative', top:'-50px' }}>
+            <View style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between', alignItems: 'center', position: 'relative', top: '-50px' }}>
 
                 <View style={{ display: 'flex', flexDirection: 'column', width: '40%', border: 2, borderStyle: 'solid' }}>
                     <View style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
@@ -83,20 +84,24 @@ function TablesCert() {
                 <View style={{ display: 'flex', flexDirection: 'column', width: '55%', }}>
                     <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px' }}>DOME</Text>
                     <View style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
-                        <Text style={{ fontSize: '8px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7', border: 1, width: '20%' }}>R 1649187</Text>
-                        <Text style={{ fontSize: '8px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7', border: 1, width: '20%' }}>R 1649187</Text>
-                        <Text style={{ fontSize: '8px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7', border: 1, width: '20%' }}>R 1649187</Text>
-                        <Text style={{ fontSize: '8px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7', border: 1, width: '20%' }}>R 1649187</Text>
-                        <Text style={{ fontSize: '8px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7', border: 1, width: '20%' }}>R 1649187</Text>
+                        {sellosDome.map((item, index) => (
+                            <Text
+                                key={`${item}_${index}`}
+                                style={{ fontSize: '8px', textTransform: 'uppercase', padding: '2px', backgroundColor: '#b4c6e7', border: 1, width: '19%' }}>
+                                {item}
+                            </Text>
+                        ))}
                     </View>
 
                     <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px' }}>VALVE UP</Text>
                     <View style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
-                        <Text style={{ fontSize: '8px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7', border: 1, width: '20%' }}>R 1649187</Text>
-                        <Text style={{ fontSize: '8px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7', border: 1, width: '20%' }}>R 1649187</Text>
-                        <Text style={{ fontSize: '8px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7', border: 1, width: '20%' }}>R 1649187</Text>
-                        <Text style={{ fontSize: '8px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7', border: 1, width: '20%' }}>R 1649187</Text>
-                        <Text style={{ fontSize: '8px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7', border: 1, width: '20%' }}>R 1649187</Text>
+                        {sellosValvule.map((item, index) => (
+                            <Text
+                                key={`${item}_${index}`}
+                                style={{ fontSize: '8px', textTransform: 'uppercase', padding: '2px', backgroundColor: '#b4c6e7', border: 1, width: '19%' }}>
+                                {item}
+                            </Text>
+                        ))}
                     </View>
                 </View>
 

@@ -36,14 +36,13 @@ function useGetTanks() {
 
     }
 
-    const getTanksReadyToOutput = async() => {
+    const getTanksReadyToOutput = async () => {
         setTankLoading(true)
 
         const { error, data } = await supabase
-            .from('registros_detalles_entradas')
-            .select(`status, numero_tanque, id`)
-            .eq('carga', 'tanque')
-            .eq('status', 'liberado')
+            .from('lavados')
+            .select(`* , registros_detalles_entradas(*)`)
+            .eq('status', 'sellado')
 
         if (error) {
             setTankError(error);
@@ -51,7 +50,11 @@ function useGetTanks() {
         }
 
         setTankLoading(false);
-        setTanks(data);
+        const dataFilter = data.map((item) => ({
+            tanque: item.registros_detalles_entradas.numero_pipa || item.registros_detalles_entradas.numero_tanque,
+            numero_tanque: item.registros_detalles_entradas.numero_pipa || item.registros_detalles_entradas.numero_tanque,
+        }))
+        setTanks(dataFilter);
     }
 
     const getAllTanks = async () => {

@@ -130,7 +130,7 @@ function useFormRegister() {
           carga: typeChargue,
           transportista_id: select,
           cliente_id: cliente,
-          numero_pipa: item,
+          numero_pipa: item.trim().toLowerCase(),
         })
       }
     })

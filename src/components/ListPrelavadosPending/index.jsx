@@ -280,7 +280,7 @@ function ItemRevisado({ prelavado, updater }) {
     const { carga, numero_pipa, numero_tanque, status, } =
         registros_detalles_entradas ? registros_detalles_entradas : {};
 
-    const prelavadosInJson = data? JSON.parse(data): {};
+    // const prelavadosInJson = data? JSON.parse(data): {};
 
     const [modal, setModal] = useState(false)
 
@@ -360,7 +360,7 @@ function ItemRevisado({ prelavado, updater }) {
 
                 </Paper>
             </Box>
-
+{/* 
             <Modal open={modal}>
                 <Container sx={{ display: 'flex', flexDirection: 'column', paddingTop: '5%', minHeight: '100vh', width: '100vw', alignItems: 'center' }}>
                     <Paper sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '90vw', maxWidth: '700px' }}>
@@ -401,7 +401,7 @@ function ItemRevisado({ prelavado, updater }) {
 
                     </Paper>
                 </Container>
-            </Modal>
+            </Modal> */}
 
         </>
     )

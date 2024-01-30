@@ -34,6 +34,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 
 function CheckListCalidadPrelavado({ modal, toggleModal, prelavado, updater }) {
+console.log("🚀 ~ prelavado:", prelavado)
 
     const isSmall = useMediaQuery('(max-width:720px)');
     const { data, error, loading } = useGetTypeWashing();
@@ -214,12 +215,12 @@ function CheckListCalidadPrelavado({ modal, toggleModal, prelavado, updater }) {
             aprobado: () => {
                 e.preventDefault();
                 const data = JSON.stringify([...questions, ...component]);
-                const newRegister = { registro_detalle_entrada_id: id_detalle_entrada, data: data }
+                const newRegister = { registro_detalle_entrada_id: id_detalle_entrada, data: data, status:'aprobado' }
                 sendInspectPrewashing(newRegister, idWashing, typeWashing, cargasPreviasInString, numero_tanque, numero_pipa, carga)
                 closeModal()
             },
             reprobado: () => {
-                returnToPrewashing(id_detalle_entrada)
+                returnToPrewashing(id_detalle_entrada, idWashing, newStatus )
                 closeModal();
             }
         }

@@ -1,8 +1,14 @@
 import { View, Text, Image } from "@react-pdf/renderer";
 import { dateInText, currentDate } from "../../../Helpers/date";
 import { LogoJuiceProducts, ImageCert1 } from "../../../resourcesLinks";
+import { dateMXFormat, dateExpiration } from "../../../Helpers/date";
 
-function DateWashing() {
+function DateWashing({ dataCerd }) {
+
+    const { folio, numLavado, temperature, dateInit, dateEnd, cliente, numero_taque, numero_pipa, tipo, transportista, cargas_previas, urlString, checkIn, checkOut, duration } = dataCerd || {};
+
+    const numero_carga = `${numero_taque || numero_pipa} ${tipo != 'pipa' ? tipo : ''}`;
+
     return (
         <View style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between', }}>
 
@@ -29,19 +35,19 @@ function DateWashing() {
                     </View>
 
                     <View style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '70%' }}>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateInText(currentDate)}</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >AGMARK TANKER</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >AGMU 580317-6</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >Fletes y Materiales Forsis S.A. de C.V.</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateInText(dateInit)}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{cliente}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{numero_carga}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{transportista}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >CARTER KEASER</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >ORANGE JUICE CONCENTRATE</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >ORANGE JUICE CONCENTRATE</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >LEMON JUICE</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{cargas_previas.carga1}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{cargas_previas.carga2}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{cargas_previas.carga3}</Text>
 
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >DECEMBER 04 ST 2023 19:40</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >DECEMBER 04 ST 2023 20:20</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} > 40 MIN</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >07/12/2023 20:20</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateMXFormat(checkIn)}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{checkOut ? dateMXFormat(checkOut) : 'pending'}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{`${duration} MIN`}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateExpiration(dateEnd)}</Text>
                     </View>
 
                 </View>
@@ -54,7 +60,7 @@ function DateWashing() {
                     <Image src={LogoJuiceProducts} />
                 </View>
 
-                <View style={{ display: 'flex', flexDirection: 'row', gap: '5px', width: '100%', position:'relative', top:'-55px' }}>
+                <View style={{ display: 'flex', flexDirection: 'row', gap: '5px', width: '100%', position: 'relative', top: '-55px' }}>
 
                     <View style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '50%' }}>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px' }} >Service Order:</Text>
@@ -67,12 +73,12 @@ function DateWashing() {
                     </View>
 
                     <View style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '50%' }}>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >3071</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >2</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >75°</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{folio}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{numLavado}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{temperature}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '5px' }}> </Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >0</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >0</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{urlString[0].value || 0}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{urlString[1].value || 0}</Text>
                     </View>
 
                 </View>

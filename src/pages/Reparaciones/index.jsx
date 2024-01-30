@@ -16,12 +16,11 @@ import { LoadingState } from "../../components/LoadingState"
 //helpers
 import { filterSearchRepair } from "../../Helpers/searcher";
 
-
 function Reparaciones() {
 
     const IsSmall = useMediaQuery('(max-width:900px)')
     const IsExtraSmall = useMediaQuery('(max-width:700px)');
-    const [typeRepair, setTypeRepair] = useState('pendiente');
+    const [typeRepair, setTypeRepair] = useState('pending');
     const changueTypeRepair = (newRepair) => setTypeRepair(newRepair);
     const { repairs, loadingRepairs, errorRepairs, updateRepairs } = useGetRepairs(typeRepair);
     const { states, functions } = useSearcher(filterSearchRepair, repairs, typeRepair);
@@ -72,18 +71,18 @@ function Reparaciones() {
                                 <Stack flexDirection={'row'} gap={'10px'}>
                                     <Chip
                                         label={'pendientes'}
-                                        color={typeRepair === "pendiente" ? 'warning' : 'default'}
-                                        onClick={() => setTypeRepair('pendiente')}
+                                        color={typeRepair === "pending" ? 'warning' : 'default'}
+                                        onClick={() => setTypeRepair('pending')}
                                     />
                                     <Chip
                                         label={'proceso'}
-                                        color={typeRepair === "proceso" ? 'info' : 'default'}
-                                        onClick={() => setTypeRepair('proceso')}
+                                        color={typeRepair === "proces" ? 'info' : 'default'}
+                                        onClick={() => setTypeRepair('proces')}
                                     />
                                     <Chip
                                         label={'completados'}
-                                        color={typeRepair === "completado" ? 'success' : 'default'}
-                                        onClick={() => setTypeRepair('completado')}
+                                        color={typeRepair === "complet" ? 'success' : 'default'}
+                                        onClick={() => setTypeRepair('complet')}
                                     />
                                 </Stack>
                             </Stack>
