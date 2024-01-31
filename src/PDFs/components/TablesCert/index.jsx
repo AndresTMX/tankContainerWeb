@@ -1,6 +1,6 @@
 import { View, Text, } from "@react-pdf/renderer";
 
-function TablesCert({ sellosDome, sellosValvule }) {
+function TablesCert({ sellosDome, sellosValvule, typeWashing }) {
 
     return (
         <>
@@ -27,7 +27,7 @@ function TablesCert({ sellosDome, sellosValvule }) {
 
                     <View style={{ display: 'flex', flexDirection: 'row', width: '100%', borderTop: 1 }}>
                         <Text style={{ width: '20%', fontSize: '8px', borderRight: 1, padding: '4px' }}>
-                            NO
+                            {typeWashing === 'dry' ? 'YES' : 'NO'}
                         </Text>
                         <Text style={{ width: '80%', fontSize: '8px', padding: '4px' }}>
                             DRY

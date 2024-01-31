@@ -7,14 +7,14 @@ import { ImageCert2, FirmaCalidad, FirmaManiobras } from "../../../resourcesLink
 
 function Certificado({ dataCert }) {
 
-    const {  valoresFiltradosDomo, valoresFiltradosValvule } = dataCert;
+    const { valoresFiltradosDomo, valoresFiltradosValvule, typeWashing, numLavado } = dataCert;
 
     return (
         <Document>
             <SimplePageLetter>
                 <HeaderCert />
                 <DateWashing dataCerd={dataCert} />
-                <TablesCert sellosDome={valoresFiltradosDomo} sellosValvule={valoresFiltradosValvule} />
+                <TablesCert sellosDome={valoresFiltradosDomo} sellosValvule={valoresFiltradosValvule} typeWashing={typeWashing} />
                 <View style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'start', gap: '10px', position: 'relative', top: '-40px' }}>
 
                     <View style={{ display: 'flex', flexDirection: 'row', gap: '5px', width: '100%' }}>
@@ -23,10 +23,11 @@ function Certificado({ dataCert }) {
                     </View>
 
                     <Text style={{ fontSize: '8px', textAlign: 'center' }}>
-                        TANK CONTAINER VERACRUZ S.A DE C.V CERTIFIES THAT THE TANK MENTIONED HAS BEEN WASHED WITH POTABLE WATER, CLEANER SOLUTION
-                        ( BEVRO SHEEN 25 000- 40 000 PPM UKD ID CC2277721. COMP.: SODIUM HYDROXIDE), AND SANITIZER (OXONIA 2000 - 3000 PPM. COMP.:
-                        PERACETIC ACID / PEROXYACETIC ACID (PS) ). AFTER THE TANK´S INTERIOR CLEANING, THE VALVES AND PLASTIC-RINGS WERE WASHED AND
-                        CHECKED. THE TANK IS ODOR FREE AND STEAM OR GAS FREE, AS WELL AS ANY POLLUTING WASTE.
+                        {numLavado === 2 ?
+                            "   TANK CONTAINER VERACRUZ S.A DE C.V CERTIFIES THAT THE TANK MENTIONED HAS BEEN WASHED WITH POTABLE WATER, CLEANER SOLUTION (ULTRA KI 20,000-25,000 PPM COMP.: SODIUM HYDROXIDE AND SODIUM GLUCONATE), AND SANITIZER (CETIC 100 150 A 200 PPM COMP.: PERACETIC ACID AND PEROXIDE HIDROGEN).  AFTER THE TANK´S INTERIOR CLEANING, THE VALVES AND PLASTIC-RINGS WERE WASHED AND CHECKED.  THE TANK IS ODOR FREE AND STEAM OR GAS FREE, AS WELL AS ANY POLLUTING WASTE. "
+                            :
+                            "TANK CONTAINER VERACRUZ S.A DE C.V CERTIFIES THAT THE TANK MENTIONED HAS BEEN WASHED WITH POTABLE WATER, DEGREASER (DETERPROL 20,000-25,000 PPM COMP.: POTASIUM HYDROXIDE AND SODIUM HYPOCHLORITE), CLEANER SOLUTION (ULTRA KI 20,000-25,000 PPM COMP.: SODIUM HYDROXIDE AND SODIUM GLUCONATE), AND SANITIZER (CETIC 100 150 A 200 PPM COMP.: PERACETIC ACID AND PEROXIDE HIDROGEN). AFTER THE TANK´S INTERIOR CLEANING, THE VALVES AND PLASTIC-RINGS WERE WASHED AND CHECKED.  THE TANK IS ODOR FREE AND STEAM OR GAS FREE, AS WELL AS ANY POLLUTING WASTE. "
+                        }
                     </Text>
                 </View>
 

@@ -1,13 +1,15 @@
 import { View, Text, Image } from "@react-pdf/renderer";
 import { dateInText, currentDate } from "../../../Helpers/date";
-import { LogoJuiceProducts, ImageCert1 } from "../../../resourcesLinks";
+import { LogoJuiceProducts, ImageCert1, LogoKosher } from "../../../resourcesLinks";
 import { dateMXFormat, dateExpiration } from "../../../Helpers/date";
 
 function DateWashing({ dataCerd }) {
 
-    const { folio, numLavado, temperature, dateInit, dateEnd, cliente, numero_taque, numero_pipa, tipo, transportista, cargas_previas, urlString, checkIn, checkOut, duration } = dataCerd || {};
+    const { folio, numLavado, temperature, dateInit, dateEnd, cliente, numero_taque, numero_pipa, tipo, transportista, cargas_previas, urlString, checkIn, checkOut, duration, logo } = dataCerd || {};
 
     const numero_carga = `${numero_taque || numero_pipa} ${tipo != 'pipa' ? tipo : ''}`;
+
+    const renderLogo = logo === 'juice'? LogoJuiceProducts : LogoKosher;
 
     return (
         <View style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between', }}>
@@ -57,7 +59,7 @@ function DateWashing({ dataCerd }) {
             <View style={{ display: 'flex', flexDirection: 'column', width: '40%', alignItems: 'flex-end', }}>
 
                 <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', height: '100px', position: 'relative', top: '-60px' }}>
-                    <Image src={LogoJuiceProducts} />
+                    <Image src={renderLogo} />
                 </View>
 
                 <View style={{ display: 'flex', flexDirection: 'row', gap: '5px', width: '100%', position: 'relative', top: '-55px' }}>

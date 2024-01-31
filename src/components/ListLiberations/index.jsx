@@ -1,4 +1,4 @@
-import { Box, Paper, Chip, Stack, TextField, Typography, Alert, Button, Modal, IconButton, Card, CardMedia, CardContent } from "@mui/material";
+import { Box, Paper, Chip, Stack, TextField, Typography, Alert, Button, Modal, IconButton, Card, CardMedia, CardContent, FormControl, Select, MenuItem, InputLabel, } from "@mui/material";
 import { NotConexionState } from "../NotConectionState";
 import { ItemLoadingState } from "../ItemLoadingState";
 import { ContainerScroll } from "../ContainerScroll";
@@ -9,10 +9,12 @@ import { useGetPreviusChargue } from "../../Hooks/Calidad/useGetPreviusChargue";
 //helpers
 import { dateTextShort } from "../../Helpers/date";
 import { useState } from "react";
-import { ClearIcon } from "@mui/x-date-pickers";
+import ClearIcon from '@mui/icons-material/Clear';
 //pdfAssets
 import { ViewerDocument } from "../../PDFs/components/Viewer";
 import { Certificado } from "../../PDFs/plantillas/Certificado";
+//resources web
+import { LogoKosher, LogoJuiceProducts } from "../../resourcesLinks";
 
 function ListLiberations() {
 
@@ -140,12 +142,38 @@ function ItemLiberado({ lavado, updaterList }) {
     const sellosJson = JSON.parse(sellos);
     const sellosDomo = sellosJson.length >= 1 ? sellosJson.filter((item) => Object.keys(item)[0].includes('domo')) : [];
     const sellosValvule = sellosJson.length >= 1 ? sellosJson.filter((item) => Object.keys(item)[0].includes('superior')) : [];
-    const valoresFiltradosDomo = sellosDomo.map(objeto => Object.values(objeto)[0])||[]
-    const valoresFiltradosValvule = sellosValvule.map(objeto => Object.values(objeto)[0])||[]
+    const valoresFiltradosDomo = sellosDomo.map(objeto => Object.values(objeto)[0]) || []
+    const valoresFiltradosValvule = sellosValvule.map(objeto => Object.values(objeto)[0]) || []
 
+    //modal y logica de edicion de pdf
+    const [modalForm, setModalForm] = useState(false);
+    const toggleModalForm = () => setModalForm(!modalForm);
+
+    const [typeWashing, setTypeWashing] = useState('')
+    const [logo, setTypeLogo] = useState('')
 
     //informacion para el certificado
-    const dataCert = { dateInit, dateEnd, cliente, numero_tanque, numero_pipa, tipo, transportista, cargas_previas, folio, numLavado, temperature, urlString, checkIn, checkOut, duration, valoresFiltradosDomo, valoresFiltradosValvule }
+    const dataCert = {
+        dateInit,
+        dateEnd,
+        cliente,
+        numero_tanque,
+        numero_pipa,
+        tipo,
+        transportista,
+        cargas_previas,
+        folio,
+        numLavado,
+        temperature,
+        urlString,
+        checkIn,
+        checkOut,
+        duration,
+        valoresFiltradosDomo,
+        valoresFiltradosValvule,
+        typeWashing,
+        logo,
+    }
 
     return (
         <>
@@ -182,7 +210,7 @@ function ItemLiberado({ lavado, updaterList }) {
 
                         <Button variant="outlined" size="small" onClick={toggleUrl}>URL</Button>
 
-                        <Button variant="contained" size="small" onClick={toggleCert}>Generar certificado</Button>
+                        <Button variant="contained" size="small" onClick={toggleModalForm}>Generar certificado</Button>
 
                     </Stack>
 
@@ -191,6 +219,16 @@ function ItemLiberado({ lavado, updaterList }) {
             </Paper>
 
             <ModalViewURL modal={modalUrl} toggleModal={toggleUrl} url={URL} />
+
+            <ModalEditingDocument
+                logo={logo}
+                modal={modalForm}
+                toggleCert={toggleCert}
+                setTypeLogo={setTypeLogo}
+                typeWashing={typeWashing}
+                toggleModal={toggleModalForm}
+                setTypeWashing={setTypeWashing}
+            />
 
             <ViewerDocument stateModal={modalCert} ToggleModal={toggleCert}>
                 <Certificado dataCert={dataCert} />
@@ -288,6 +326,101 @@ function ModalViewURL({ modal, toggleModal, url }) {
 
                     </Paper>
                 </Box>
+            </Modal>
+        </>
+    )
+}
+
+function ModalEditingDocument({ modal, toggleModal, toggleCert, typeWashing, setTypeWashing, logo, setTypeLogo }) {
+
+    const onSubmit = (e) => {
+        e.preventDefault();
+        toggleCert();
+    }
+
+    return (
+        <>
+            <Modal open={modal}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                        minHeight: '100vh',
+                        width: '100%',
+                        paddingTop: '5%'
+                    }}
+                >
+                    <form onSubmit={onSubmit}>
+                        <Paper sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '10px', width: '95vw', maxWidth: '700px', }}>
+
+                            <Stack alignItems='flex-end' width='100%'>
+                                <IconButton
+                                    onClick={toggleModal}
+                                    color='error'>
+                                    <ClearIcon />
+                                </IconButton>
+                            </Stack>
+
+                            <Typography>Selecciona el logotipo deseado</Typography>
+
+                            <Stack flexDirection='row' gap='10px' width='100%' flexWrap='wrap' justifyContent='center' >
+
+                                <Box
+                                    onClick={(e) => setTypeLogo('kosher')}
+                                    sx={{ display: 'flex', width: '40%', position: 'relative', minWidth: '200px', height: '200px', alignItems: 'center', justifyContent: 'center', zIndex: 1, cursor: 'pointer' }}>
+                                    <Box sx={{
+                                        display: 'flex', zIndex: 2, position: 'absolute', height: '200px', width: '200px', transition: 'background-color 0.2s ease',
+                                        border: logo === 'kosher' ? 'solid' : 'none',
+                                        borderColor: logo === 'kosher' ? '#0288d1' : 'transparent',
+                                        borderRadius: '4px',
+                                        '&:hover': { background: '#80808061', animation: 'ease-in' },
+                                    }} />
+                                    <img height='100%' width='auto' src={LogoKosher} alt="logo-kosher" />
+                                </Box>
+
+                                <Box
+                                    onClick={(e) => setTypeLogo('juice')}
+                                    sx={{ display: 'flex', width: '40%', position: 'relative', minWidth: '200px', height: '200px', alignItems: 'center', justifyContent: 'center', zIndex: 1, cursor: 'pointer' }}>
+                                    <Box sx={{
+                                        display: 'flex', zIndex: 2, position: 'absolute', height: '200px', width: '200px', transition: 'background-color 0.2s ease',
+                                        border: logo === 'juice' ? 'solid' : 'none',
+                                        borderColor: logo === 'juice' ? '#0288d1' : 'transparent',
+                                        borderRadius: '4px',
+                                        '&:hover': { background: '#80808061', animation: 'ease-in' },
+                                    }} />
+                                    <img height='100%' width='auto' src={LogoJuiceProducts} alt="logo-juice" />
+                                </Box>
+
+                            </Stack>
+
+                            <Stack>
+                                <InputLabel>Selecciona el tipo de lavado</InputLabel>
+                                <FormControl>
+                                    <Select
+                                        required
+                                        fullWidth
+                                        defaultValue="dry"
+                                        value={typeWashing}
+                                        onChange={(e) => setTypeWashing(e.target.value)}
+                                    >
+                                        <MenuItem value={"dry"}>Dry</MenuItem>
+                                        <MenuItem value={"wt"}>Wet</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Stack>
+
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                            >Generar certificado
+                            </Button>
+
+                        </Paper>
+                    </form>
+                </Box>
+
             </Modal>
         </>
     )

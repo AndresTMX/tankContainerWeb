@@ -22,3 +22,5 @@ export const ImageCert2 = "https://res.cloudinary.com/dwiyxwcxj/image/upload/v17
 export const FirmaCalidad = "https://res.cloudinary.com/dwiyxwcxj/image/upload/v1706218424/resourcesWeb/firma-calidad_jhxpu5.png"
 
 export const FirmaManiobras = "https://res.cloudinary.com/dwiyxwcxj/image/upload/v1706218424/resourcesWeb/firma-maniobras_igdj03.png"
+
+export const LogoKosher = "https://res.cloudinary.com/dwiyxwcxj/image/upload/v1706628474/resourcesWeb/cosher-logo_yhpdpw.jpg"

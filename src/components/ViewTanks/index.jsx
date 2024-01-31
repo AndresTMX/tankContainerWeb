@@ -31,7 +31,6 @@ function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
 
     const { addOutputRegisterForManiobra } = useAddOutputManiobra();
     const { tanks, tankLoading, tankError, getTanksReadyToOutput } = useGetTanks();
-    console.log("🚀 ~ ViewTanks ~ tanks:", tanks)
 
     const { copyTanksFree, copyTanksManiobras, toggleTank, deletTanksChargue, dataTank, colorItemTank } = useSelectManiobras(detailManiobras, tanks, tankLoading);
 
@@ -58,7 +57,7 @@ function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
 
     return (
         <>
-            <Box sx={{ width: '90vw', maxWidth: '700px', }}>
+            <Box sx={{ width: '90vw', maxWidth: '700px' }}>
 
                 <Paper
                     spacing={1}

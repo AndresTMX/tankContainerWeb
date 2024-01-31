@@ -2,7 +2,7 @@ import { View, Document, Text, Image, } from "@react-pdf/renderer";
 import { currentDate, dateMXFormat } from "../../../Helpers/date";
 import { TankContainerLogo } from "../../../resourcesLinks"
 
-function HeaderCert({ }) {
+function HeaderCert() {
 
     return (
         <View style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '10px' }}>

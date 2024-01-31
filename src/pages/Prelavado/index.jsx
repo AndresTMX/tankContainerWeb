@@ -20,6 +20,7 @@ import { PrelavadoContext } from "../../Context/PrelavadoContext";
 import { ListWashing } from "../../components/ListWashing";
 //checklist
 import { CheckListPrelavado } from "../../sections/CheckListPrelavado";
+import { CheckListAgmark } from "../../sections/CheckListAgmark";
 
 function Prelavado() {
 
@@ -382,8 +383,9 @@ function Prelavado() {
                         padding: '10px',
                      }}>
                      <Box sx={{ padding: isMovile ? '0px' : '15px', width: '90vw', maxWidth: '800px' }}>
-                        <ItemWashing data={selectCheck} updater={updater} step={step} setStep={setStep} />
-                        <CheckListPrelavado step={step} setStep={setStep} updater={updater} />
+                        <ItemWashing data={selectCheck} updater={updater} step={step} setStep={setStep} type={'header'} />
+                        {/* <CheckListPrelavado step={step} setStep={setStep} updater={updater} /> */}
+                        <CheckListAgmark/>
                      </Box>
                   </Paper>
                )}
