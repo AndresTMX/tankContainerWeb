@@ -78,13 +78,13 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
 
                 <Stack gap="8px" flexDirection="column" padding="15px">
 
-                    {(carga === "tanque" && detailManiobras.length === 0) &&
+                    {(carga === "tanque" && detailManiobras.length === 0 && typeRegister === 'entrada') &&
                         <Alert sx={{ width: '100%' }} severity="info">
                             Puedes subir tanques a este tractocamion para generar una salida
                         </Alert>
                     }
 
-                    {(carga === "vacio" && statusRegister === 'confirm') &&
+                    {(carga === "vacio" && statusRegister === 'confirm' && typeRegister === 'entrada') &&
                         <Alert sx={{ width: '100%' }} severity="info">
                             Puedes subir tanques a este tractocamion para generar una salida
                         </Alert>
@@ -179,7 +179,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                                     retornar vacio
                                 </Button>}
 
-                            {(statusRegister === 'forconfirm') &&
+                            {(statusRegister === 'forconfirm' && typeRegister === 'entrada') &&
                                 <Button
                                     onClick={() => setEditData(true)}
                                     size="small"
@@ -404,6 +404,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                             paddingTop: '2%'
                         }}>
                         <ViewTanks
+                            register={register}
                             details={details}
                             toggle={setModalTanks}
                             detailManiobras={detailManiobras}

@@ -384,6 +384,47 @@ function ConditionsWashing({ conditionsString, modal, toggleModal }) {
                                     </Stack>
                                 </Box>
 
+                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                    <Typography>Sanitizado</Typography>
+                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                        <TextField
+                                            disabled
+                                            label='Temperatura'
+                                            value={conditions.sanitizado_temperatura}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                            }}
+                                        />
+                                        <TextField
+                                            disabled
+                                            label='Presión'
+                                            value={conditions.sanitizado_presion}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                            }}
+                                        />
+                                        <TextField
+                                            disabled
+                                            label='Tiempo'
+                                            value={conditions.sanitizado_tiempo}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                            }}
+                                        />
+                                    </Stack>
+                                </Box>
+
+                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                    <Typography>Concentración</Typography>
+                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                        <TextField
+                                            disabled
+                                            label='Concentracion de solución sanitizante'
+                                            value={conditions.concentracion}
+                                        />
+                                    </Stack>
+                                </Box>
+
                             </Stack>
                         </ContainerScroll>
 
@@ -435,7 +476,7 @@ function WashingTest({ modal, toggleModal, idLavado, idRegistro, updaterList }) 
     useEffect(() => {
         setStep(1)
         setRevision(questionsTest)
-    }, [modal]) 
+    }, [modal])
 
     const changueValue = (index, value) => {
         const copy = [...revision];
@@ -496,8 +537,7 @@ function WashingTest({ modal, toggleModal, idLavado, idRegistro, updaterList }) 
 
                         {(step === 1) && <Test setStep={setStep} revision={revision} changueValue={changueValue} />}
 
-                        {(step === 2) && <EvaluacionResults previusStep={() => setStep(1)}
-                            sendForm={() => { console.log('enviado') }} />}
+                        {(step === 2) && <EvaluacionResults previusStep={() => setStep(1)} sendForm={() => { console.log('enviado') }} />}
 
                         {(step === 3) && <EvidenceURL url={url} setUrl={setUrl} submitForm={submitForm} />}
 
@@ -764,7 +804,7 @@ function EvidenceURL({ url, setUrl, submitForm }) {
                         }}>
 
                         <Button variant="contained" size="small" type="submit" >
-                            Enviar a sanitización
+                            Liberar
                         </Button>
 
                     </CardActions>

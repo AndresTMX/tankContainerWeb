@@ -59,7 +59,7 @@ function useSendToSanitization() {
             //actualizar el registro general a sanitizando
             const { error: errorUpdateRegister } = await supabase
                 .from('registros_detalles_entradas')
-                .update({ status: 'sanitizado' })
+                .update({ status: 'sellado' })
                 .eq('id', idRegistroEntrada)
 
             if (errorUpdateRegister) {
@@ -69,7 +69,7 @@ function useSendToSanitization() {
             //actualizar el registro de lavado a sanitizado
             const { error: errorUpdateWashing } = await supabase
                 .from('lavados')
-                .update({ status: 'sanitizado', URL: urlInString })
+                .update({ status: 'sellado', URL: urlInString })
                 .eq('id', idLavado)
 
 
@@ -85,7 +85,7 @@ function useSendToSanitization() {
 
             dispatchGlobal({
                 type: actionTypes.setNotification,
-                payload: 'Enviado a sanitización'
+                payload: 'Enviado a sellado'
             })
 
         } catch (error) {

@@ -9,7 +9,9 @@ function DateWashing({ dataCerd }) {
 
     const numero_carga = `${numero_taque || numero_pipa} ${tipo != 'pipa' ? tipo : ''}`;
 
-    const renderLogo = logo === 'juice'? LogoJuiceProducts : LogoKosher;
+    const renderLogo = logo === 'juice' ? LogoJuiceProducts : LogoKosher;
+
+    const urls = Object.values(urlString);
 
     return (
         <View style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between', }}>
@@ -69,8 +71,14 @@ function DateWashing({ dataCerd }) {
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px' }} >WASH TYPE:</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px' }} >TEMP Wash:</Text>
                         <Text style={{ fontSize: '10px', fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', padding: '4px' }} >SWAB TEST</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px' }} >Dome</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px' }} >Valve</Text>
+                        {urls.map((prueba, index) => (
+                            <Text
+                                key={`${prueba.position}_${index}`}
+                                style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px' }}>
+                                {prueba.position}
+                            </Text>
+                        ))}
+
 
                     </View>
 
@@ -78,14 +86,19 @@ function DateWashing({ dataCerd }) {
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{folio}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{numLavado}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{temperature}</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '5px' }}> </Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{urlString[0].value || 0}</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{urlString[1].value || 0}</Text>
+                        <Text style={{ fontSize: '10px', fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', padding: '4px' }} >values</Text>
+                        {urls.map((prueba) => (
+                            <Text
+                                key={prueba.position}
+                                style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }}>
+                                {prueba.value}
+                            </Text>
+                        ))}
                     </View>
 
                 </View>
 
-                <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', height: '100px', position: 'relative', top: '-50px' }}>
+                <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', height: '100px', position: 'relative', top: '-64px' }}>
                     <Image src={ImageCert1} />
                 </View>
 

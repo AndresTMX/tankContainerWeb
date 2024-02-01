@@ -16,7 +16,7 @@ function useWashing(type) {
 
     const updateList = () => setUpdate(!update);
 
-    const consultValues = ['asignado', 'sanitizado']
+    const consultValues = ['asignado', 'sellado']
 
     const getPendingWashing = async () => {
         try {

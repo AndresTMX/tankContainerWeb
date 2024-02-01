@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { Box, Paper, Stack, Button, IconButton, Typography, Modal, Fade, Container, TextField } from "@mui/material";
 import { ModalAddCustomer } from "../../components/DataGridCustomers";
-import { StepBarProgress } from "../StepsManiobras/StepBarProgress";
+import { StepBarProgress } from "../StepBarProgress";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import { ManiobrasContext } from "../../Context/ManiobrasContext";
 import { useCheckList } from "../../Hooks/useChecklistManiobras";

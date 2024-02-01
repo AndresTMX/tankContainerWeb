@@ -1,17 +1,13 @@
-import { useContext } from "react";
 import supabase from "../../supabase";
-import { AuthContext } from "../../Context/AuthContext";
+import { useContext } from "react";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 
 function useAddOutputManiobra() {
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-    const { key } = useContext(AuthContext);
-    const session = JSON.parse(sessionStorage.getItem(key));
 
-
-    const addOutputRegisterForManiobra = async (idRegistro, dataTanques) => {
+    const addOutputRegisterForManiobra = async (idRegistro, dataTanques, placas, tracto, numero_economico, operador_id, transportista_id, clienteId) => {
 
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
@@ -20,7 +16,13 @@ function useAddOutputManiobra() {
             //crear un nuevo registro de salida 
             const { data: outputRegister, error: errorCreateOutputRegister } = await supabase
                 .from('registros')
-                .insert({ user_id: session.id, type: 'salida' })
+                .insert({
+                    type: 'salida',
+                    placas,
+                    tracto,
+                    numero_economico,
+                    operador_id,
+                })
                 .select()
 
             if (errorCreateOutputRegister) {
@@ -32,24 +34,25 @@ function useAddOutputManiobra() {
             //actualizar el registro de entrada a finalizado 
             const { errorRegiser } = await supabase
                 .from('registros')
-                .update({ status: 'finalized'})
+                .update({ status: 'finalized' })
                 .eq('id', idRegistro)
 
             if (errorRegiser) {
                 throw new Error(`Error al intentar actualizar el estatus del registro, error: ${errorRegiser.message}`)
             }
-            
+
             //agregear registros de detalles 
             const outputDetails = dataTanques.map(async (tanque) => {
                 const { data, error: errorAddDetailsOutput } = await supabase
                     .from('registros_detalles_salidas')
                     .insert({
-                        registro_id: dataId,
+                        salida_id: dataId,
                         carga: tanque.carga,
-                        tracto: tanque.tracto,
                         numero_tanque: tanque.numero_tanque,
-                        transportista_id: tanque.transportista,
-                        operador_id: tanque.operador,
+                        transportista_id: transportista_id,
+                        tipo: tanque.tipo,
+                        cliente_id: clienteId
+
                     })
                 if (errorAddDetailsOutput) {
                     throw new Error(`Error al crear los detalles de la salida del tanque ${errorAddDetailsOutput.message}`)
@@ -65,9 +68,9 @@ function useAddOutputManiobra() {
             //actualizar el estatus de los tanques 
             const updatesStatusTanques = dataTanques.map(async (tanque) => {
                 const { error: errorUpdateStatusTanks } = await supabase
-                    .from('tanques')
-                    .update({ status: 'finalized' })
-                    .eq('tanque', tanque.numero_tanque)
+                    .from('lavados')
+                    .update({ status: 'entregado' })
+                    .eq('id', tanque.idLavado)
 
                 if (errorUpdateStatusTanks) {
                     throw new Error(`Error al actualizar status de los tanques , error: ${errorUpdateStatusTanks.message}`)

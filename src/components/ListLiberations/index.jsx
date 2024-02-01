@@ -100,7 +100,7 @@ function ItemLiberation({ lavado, updaterList }) {
     return (
         <>
 
-            {(status === 'sellado') &&
+            {(status === 'liberado') &&
                 <ItemLiberado lavado={lavado} updaterList={updaterList} />
             }
 

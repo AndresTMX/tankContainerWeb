@@ -21,7 +21,7 @@ function useSaniticeValue() {
             setError(error.message)
         }
 
-        setValue(data)
+        setValue(data[0].concentracion)
     }
 
     const newConcentration = async (concentracion) => {

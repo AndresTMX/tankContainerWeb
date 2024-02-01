@@ -16,7 +16,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState } from "react";
 
 
-function ItemWashing({ data, updater, step, setStep, type }) {
+function ItemWashing({ data, type }) {
 
     const [state, dispatch] = useContext(PrelavadoContext);
 
@@ -37,18 +37,9 @@ function ItemWashing({ data, updater, step, setStep, type }) {
     }
 
     const CancelChecklist = () => {
-        setStep(1);
         dispatch({
             type: actionTypes.setSelectCheck,
             payload: false
-        })
-        dispatch({
-            type: actionTypes.setCheckList,
-            payload: {
-                cuviertaValvula: {
-                    type: ''
-                }
-            }
         })
     }
 
@@ -63,41 +54,26 @@ function ItemWashing({ data, updater, step, setStep, type }) {
     return (
         <>
             {type === 'header' && (
-                <Box sx={{ width: '100%' }}>
-                    <Accordion expanded={expand === 'panel1'} onChange={handleChange('panel1')}>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel1bh-content"
-                            id="panel1bh-header"
-                        >
-                            <Stack flexDirection='row' width='100%' gap='10px' justifyContent='space-between'>
+                <Paper elevation={3} sx={{ width: '100%', padding: '15px', justifyContent: 'space-between', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '10px' }}>
 
-                                <Typography> {carga != 'pipa' ? tipo : ''}  {numero_tanque || numero_pipa}</Typography>
+                    <Stack flexDirection='row' gap='10px' justifyContent='flex-start' flexWrap='wrap'>
+                        <Chip color="info" size="small" label={`${carga != 'pipa' ? tipo : ''}  ${numero_tanque || numero_pipa}`} />
+                        <Chip color="info" size="small" label={'Cliente:  ' + clientes.cliente} />
+                        <Chip color="info" size="small" label={'Llego el ' + dateTextShort(checkIn)} />
+                    </Stack>
 
-                                <Button
-                                    endIcon={<DoDisturbIcon />}
-                                    onClick={CancelChecklist}
-                                    variant='text'
-                                    color="error"
-                                    size="small"
-                                >
-                                    Cancelar
-                                </Button>
+                    <Button
+                        fullWidth={IsMovile}
+                        endIcon={<DoDisturbIcon />}
+                        onClick={CancelChecklist}
+                        variant='contained'
+                        color="error"
+                        size="small"
+                    >
+                        Cancelar
+                    </Button>
 
-                            </Stack>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography>
-                                Cliente {clientes.cliente}
-                            </Typography>
-
-                            <Typography>
-                                Arribo {clientes.cliente}
-                            </Typography>
-
-                        </AccordionDetails>
-                    </Accordion>
-                </Box>
+                </Paper>
             )}
 
             {!type && (

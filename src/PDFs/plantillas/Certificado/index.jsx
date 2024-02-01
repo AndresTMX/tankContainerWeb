@@ -11,7 +11,7 @@ function Certificado({ dataCert }) {
 
     return (
         <Document>
-            <SimplePageLetter>
+            <SimplePageLetter page={'1'} numPages={'1'}>
                 <HeaderCert />
                 <DateWashing dataCerd={dataCert} />
                 <TablesCert sellosDome={valoresFiltradosDomo} sellosValvule={valoresFiltradosValvule} typeWashing={typeWashing} />
@@ -55,7 +55,7 @@ function Certificado({ dataCert }) {
                     <Text style={{ fontSize: '8px', fontFamily: 'Helvetica-Bold' }}>
                         AGUSTIN MELGAR S/N COL. NIÑOS HEROES C.P. 92737 ALAMO, VER. CEL. 229 577 85 91
                     </Text>
-                    <Text style={{ fontSize: '8px', fontFamily: 'Helvetica-Bold' }} >email: ccalidad@tankcontainermexico.com</Text>
+                    <Text style={{ fontSize: '8px', fontFamily: 'Helvetica-Bold' }} >email: ccalidad@tankcontainer.com</Text>
                 </View>
             </SimplePageLetter>
         </Document>

@@ -5,7 +5,7 @@ import { NotConexionState } from "../NotConectionState";
 import { ItemLoadingState } from "../ItemLoadingState";
 //componentes
 import { ContainerScroll } from "../ContainerScroll";
-import { SaniticeWashing } from "../EvaluationWashing";
+import { SealItem } from "../EvaluationWashing";
 import { EvaluationWashing } from "../EvaluationWashing";
 import { useWashing } from "../../Hooks/Lavado/useWashing";
 //helpers
@@ -98,8 +98,8 @@ function ItemLavados({ lavado, typeWashing, updateList }) {
                 <Typography>lavado aprobrado por sanitizar</Typography>
             }
 
-            {status === 'sanitizado' &&
-                <ItemSanitizado lavado={lavado} updateList={updateList} />
+            {status === 'sellado' &&
+                <ItemForSealed lavado={lavado} updateList={updateList} />
             }
 
 
@@ -211,7 +211,7 @@ function LavadoPendiente({ lavado, updateList }) {
     )
 }
 
-function ItemSanitizado({ lavado, updateList }) {
+function ItemForSealed({ lavado, updateList }) {
 
     const [modal, setModal] = useState(false);
     const toggleModal = () => setModal(!modal)
@@ -241,7 +241,7 @@ function ItemSanitizado({ lavado, updateList }) {
                         color='warning'
                         size='small'
                         icon={<FiberManualRecordIcon style={{ color: '#ab5005' }} />}
-                        label={'por sanitizar'}
+                        label={'por sellar'}
                     />
 
                     <Chip
@@ -286,7 +286,7 @@ function ItemSanitizado({ lavado, updateList }) {
                             variant='contained'
                             endIcon={<PlayCircleIcon />}
                         >
-                            sanitizar
+                            asignar sellos
                         </Button>
 
                     </Stack>
@@ -295,7 +295,7 @@ function ItemSanitizado({ lavado, updateList }) {
                 </Stack>
             </Paper>
 
-            <SaniticeWashing
+            <SealItem
                 modal={modal}
                 idWashing={idWashing}
                 idRegister={idRegister}
@@ -306,5 +306,3 @@ function ItemSanitizado({ lavado, updateList }) {
         </>
     )
 }
-
-

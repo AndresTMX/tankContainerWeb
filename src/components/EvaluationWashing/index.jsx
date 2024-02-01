@@ -1,4 +1,4 @@
-import { useState, useRef, useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import {
     Container,
     Box,
@@ -28,13 +28,12 @@ import { useCreateConditionsWashing } from "../../Hooks/Lavado/useCreateConditio
 import ClearIcon from '@mui/icons-material/Clear';
 import { useSaniticeValue } from "../../Hooks/Lavado/useSaniticeValue";
 import SaveIcon from '@mui/icons-material/Save';
-import { useSanitization } from "../../Hooks/Lavado/useSanitization";
+import { useSealItem } from "../../Hooks/Lavado/useSealItem";
 import supabase from "../../supabase";
 //helpers
 import { currenDateFormatTz } from "../../Helpers/date";
 
 function EvaluationWashing({ modal, toggleModal, lavado, updateList }) {
-
 
     useEffect(() => {
         setRevision(questions)
@@ -289,6 +288,14 @@ function ConditionsWashing({ step, setStep, lavado, updateList, toggleModal }) {
     const { sendConditionWashing } = useCreateConditionsWashing();
     const [conditions, setConditions] = useState({ numero_bahia: '' });
 
+    const { error, value, newConcentration } = useSaniticeValue();
+
+    const [valueConcentracion, setConcentration] = useState(value);
+
+    useEffect(() => {
+        setConcentration(value)
+    }, [value])
+
     const OnWashingOne = (event, callback) => {
         event.preventDefault();
 
@@ -302,20 +309,20 @@ function ConditionsWashing({ step, setStep, lavado, updateList, toggleModal }) {
             valores[campo] = valor;
         }
 
-        setConditions({ ...conditions, ...valores })
+        setConditions({ ...conditions, ...valores, concentracion:valueConcentracion })
         callback();
 
     }
 
     const formSubmit = async () => {
         const { numero_bahia } = conditions || {};
+
         const dataInString = JSON.stringify(conditions);
+
         const newRegister = { bahia: numero_bahia, condiciones_lavado: dataInString };
         await sendConditionWashing(newRegister, lavadoId, id_detalle_entrada, () => updateList())
         toggleModal()
     }
-
-
 
     return (
         <>
@@ -607,6 +614,78 @@ function ConditionsWashing({ step, setStep, lavado, updateList, toggleModal }) {
             }
 
             {(step === 6) &&
+                <form onSubmit={(e) => OnWashingOne(e, () => setStep(7))}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', background: 'white', padding: '10px', gap: '10px', alignItems: 'start' }}>
+
+                        <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                            <Typography>Condiciones de sanitización</Typography>
+                            <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                <TextField
+                                    id='sanitizado_temperatura'
+                                    name='sanitizado_temperatura'
+                                    required
+                                    label='Temperatura'
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                    }}
+                                />
+                                <TextField
+                                    id='sanitizado_presion'
+                                    name='sanitizado_presion'
+                                    required
+                                    label='Presión'
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                    }}
+                                />
+                                <TextField
+                                    id='sanitizado_timepo'
+                                    name='sanitizado_tiempo'
+                                    required
+                                    label='Tiempo'
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                    }}
+                                />
+                            </Stack>
+                        </Box>
+
+                        <Chip
+                            color="info"
+                            label={'Ultima concentracion guardada: ' + valueConcentracion} />
+
+                        <FormControl sx={{ width: '100%' }}>
+                            <TextField
+                                fullWidth
+                                required
+                                label='Concentración de solución'
+                                value={valueConcentracion}
+                                onChange={(e) => setConcentration(e.target.value)} />
+
+                        </FormControl>
+
+                        <Stack flexDirection='row' alignItems='center' justifyContent='space-between' width='100%'>
+                            <Button
+                                endIcon={<SaveIcon />}
+                                onClick={() => newConcentration(valueConcentracion)}
+                                size='small'
+                                variant="outlined">
+                                guardar concentración
+                            </Button>
+
+                            <Button
+                                type="submit"
+                                size='small'
+                                variant="contained">
+                                siguiente
+                            </Button>
+
+                        </Stack>
+                    </Box>
+                </form>
+            }
+
+            {(step === 7) &&
                 <form onSubmit={(e) => OnWashingOne(e, () => formSubmit())}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', background: 'white', padding: '10px', gap: '10px' }}>
 
@@ -764,6 +843,47 @@ function ConditionsWashing({ step, setStep, lavado, updateList, toggleModal }) {
                                     </Stack>
                                 </Box>
 
+                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                    <Typography>Sanitizado</Typography>
+                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                        <TextField
+                                            disabled
+                                            label='Temperatura'
+                                            value={conditions.sanitizado_temperatura}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                            }}
+                                        />
+                                        <TextField
+                                            disabled
+                                            label='Presión'
+                                            value={conditions.sanitizado_presion}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                            }}
+                                        />
+                                        <TextField
+                                            disabled
+                                            label='Tiempo'
+                                            value={conditions.sanitizado_tiempo}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                            }}
+                                        />
+                                    </Stack>
+                                </Box>
+
+                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                    <Typography>Concentración</Typography>
+                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                        <TextField
+                                            disabled
+                                            label='Concentracion de solución sanitizante'
+                                            value={valueConcentracion}
+                                        />
+                                    </Stack>
+                                </Box>
+
                             </Stack>
                         </ContainerScroll>
 
@@ -797,32 +917,14 @@ function ConditionsWashing({ step, setStep, lavado, updateList, toggleModal }) {
     )
 }
 
-export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, idWashing, dataConditions }) {
+export function SealItem({ modal, toggleModal, updateList, idWashing }) {
 
     const movile = useMediaQuery('(max-width:800px)');
-    const { error, value, newConcentration } = useSaniticeValue()
-    const { completeSanitization } = useSanitization()
-
-    const { concentracion } = value[0] || {};
-
+    const { sealItem } = useSealItem()
     const [step, setStep] = useState(1);
-
-    const [concentration, setConcentration] = useState(concentracion);
-    const [conditions, setConditions] = useState({ sanitizacion_temperatura: '', sanitizacion_presion: '', sanitizacion_tiempo: '' })
     const [sellos, setSellos] = useState([])
 
-    const onChangueConcentration = (e) => {
-        setConcentration(e.target.value)
-    }
-
-    useEffect(() => { setConcentration(concentracion) }, [value])
-
     const submitStepOne = (e) => {
-        e.preventDefault();
-        setStep(2)
-    }
-
-    const submitStepTwo = (e) => {
         e.preventDefault();
 
         const formulario = e.target;
@@ -837,16 +939,13 @@ export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, id
         }
 
         setSellos(valuesForm)
-        setStep(3)
+        setStep(2)
     }
 
     const SubmitRegister = async (e) => {
         e.preventDefault();
-        const newConditions = { ...conditions, ...dataConditions }
         const sellosInString = JSON.stringify(sellos);
-        const newConditionsString = JSON.stringify(newConditions)
-        const newRegister = { sellos: sellosInString, concentracion: concentracion, condiciones_lavado: newConditionsString }
-        await completeSanitization(newRegister, idRegister, idWashing, newConditionsString)
+        await sealItem(idWashing, sellosInString)
         toggleModal()
         updateList()
     }
@@ -877,7 +976,7 @@ export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, id
                         }}>
 
                         <Stack flexDirection='row' alignItems='center' justifyContent='space-between' width='100%'>
-                            <Typography>Sanitización y asignación de sellos</Typography>
+                            <Typography>Asignación de sellos</Typography>
 
                             <IconButton onClick={toggleModal} color="error">
                                 <ClearIcon />
@@ -886,81 +985,6 @@ export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, id
 
                         {(step === 1) &&
                             <form onSubmit={submitStepOne} style={{ width: '100%' }}>
-                                <Box display='flex' flexDirection='column' alignItems='start' width='100%' gap='10px' >
-
-                                    <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
-                                        <Typography>Condiciones de sanitización</Typography>
-                                        <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
-                                            <TextField
-                                                id='sanitizado_temperatura'
-                                                required
-                                                label='Temperatura'
-                                                onChange={(e) => setConditions({ ...conditions, sanitizacion_temperatura: e.target.value })}
-                                                value={conditions.sanitizacion_temperatura}
-                                                InputProps={{
-                                                    endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
-                                                }}
-                                            />
-                                            <TextField
-                                                id='sanitizado_presion'
-                                                required
-                                                label='Presión'
-                                                onChange={(e) => setConditions({ ...conditions, sanitizacion_presion: e.target.value })}
-                                                value={conditions.sanitizacion_presion}
-                                                InputProps={{
-                                                    endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
-                                                }}
-                                            />
-                                            <TextField
-                                                id='sanitizado_timepo'
-                                                required
-                                                label='Tiempo'
-                                                onChange={(e) => setConditions({ ...conditions, sanitizacion_tiempo: e.target.value })}
-                                                value={conditions.sanitizacion_tiempo}
-                                                InputProps={{
-                                                    endAdornment: <InputAdornment position='end'>min</InputAdornment>,
-                                                }}
-                                            />
-                                        </Stack>
-                                    </Box>
-
-                                    <Chip
-                                        color="info"
-                                        label={'Ultima concentracion guardada: ' + concentracion} />
-
-                                    <FormControl sx={{ width: '100%' }}>
-                                        <TextField
-                                            fullWidth
-                                            required
-                                            label='Concentración de solución'
-                                            value={concentration}
-                                            onChange={(e) => onChangueConcentration(e)} />
-
-                                    </FormControl>
-
-                                    <Stack flexDirection='row' alignItems='center' justifyContent='space-between' width='100%'>
-                                        <Button
-                                            endIcon={<SaveIcon />}
-                                            onClick={() => newConcentration(concentration)}
-                                            size='small'
-                                            variant="outlined">
-                                            guardar concentración
-                                        </Button>
-
-                                        <Button
-                                            type="submit"
-                                            size='small'
-                                            variant="contained">
-                                            siguiente
-                                        </Button>
-
-                                    </Stack>
-                                </Box>
-                            </form>
-                        }
-
-                        {(step === 2) &&
-                            <form onSubmit={submitStepTwo} style={{ width: '100%' }}>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '100%' }}>
                                     <ContainerScroll height='300px'>
                                         <Stack gap='10px' width='100%'>
@@ -978,13 +1002,8 @@ export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, id
                                             <TextField fullWidth label='sello #10' id="sello-inderior-5" name="sello-superior-5" />
                                         </Stack>
                                     </ContainerScroll>
-                                    <Stack flexDirection='row' alignItems='center' justifyContent='space-between'>
-                                        <Button
-                                            onClick={() => setStep(1)}
-                                            variant="contained"
-                                            color='warning'>
-                                            anterior
-                                        </Button>
+                                    <Stack flexDirection='row' alignItems='center' justifyContent='flex-end'>
+            
                                         <Button
                                             type="submit"
                                             variant="contained"
@@ -996,14 +1015,9 @@ export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, id
                             </form>
                         }
 
-                        {(step === 3) &&
+                        {(step === 2) &&
                             <form onSubmit={SubmitRegister} style={{ width: '100%' }}>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '100%' }}>
-
-                                    <Stack padding='10px'>
-                                        <Typography variant="subtitle2">Concentración</Typography>
-                                        <Typography padding='15px' >{concentracion}</Typography>
-                                    </Stack>
 
                                     <Box padding='10px'>
                                         <Typography padding='5px' variant="subtitle2">Sellos asignados</Typography>
@@ -1019,7 +1033,6 @@ export function SaniticeWashing({ modal, toggleModal, updateList, idRegister, id
                                             variant="contained"
                                             color='warning'
                                             onClick={() => setStep(2)}
-                                            type='submit'
                                             size="small"
                                         >
                                             anterior

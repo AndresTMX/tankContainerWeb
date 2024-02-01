@@ -15,7 +15,7 @@ import { ItemTank } from "../ViewAndSelectTanks";
 //helpers
 import { useEffect } from "react";
 
-function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
+function ViewTanks({ register, toggle, details, detailManiobras, changueTypeManiobra }) {
 
     const IsSmall = useMediaQuery("(max-width:900px)");
     const IsMovile = useMediaQuery("(max-width:500px)");
@@ -24,10 +24,11 @@ function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
         getTanksReadyToOutput();
     }, [])
 
-    const { carga, tracto, operadores, transportistas, clientes, status, transportista_id, operador_id, idRegister } = details[0] || {};
+    const { tracto, operadores, placas, numero_economico, operador_id} = register
+    const { carga,  transportistas, clientes, transportista_id, entrada_id } = details[0] || {};
     const { nombre, contacto } = operadores || {};
     const { name: linea, } = transportistas || {};
-    const { cliente, } = clientes || {};
+    const { cliente, id:clienteId } = clientes || {};
 
     const { addOutputRegisterForManiobra } = useAddOutputManiobra();
     const { tanks, tankLoading, tankError, getTanksReadyToOutput } = useGetTanks();
@@ -42,13 +43,15 @@ function ViewTanks({ toggle, details, detailManiobras, changueTypeManiobra }) {
             registers.push({
                 carga: 'tanque',
                 tracto: tracto,
-                operador: operador_id,
                 numero_tanque: tanque.numero_tanque,
-                transportista: transportista_id,
+                tipo: tanque.tipo,
+                idLavado: tanque.id
             })
         })
 
-        await addOutputRegisterForManiobra(idRegister, registers)
+        console.log(registers)
+
+        await addOutputRegisterForManiobra(entrada_id, registers, placas, tracto, numero_economico, operador_id, transportista_id, clienteId)
         setTimeout(() => {
             changueTypeManiobra('pendiente')
             toggle(false)

@@ -42,7 +42,7 @@ function useGetTanks() {
         const { error, data } = await supabase
             .from('lavados')
             .select(`* , registros_detalles_entradas(*)`)
-            .eq('status', 'sellado')
+            .eq('status', 'liberado')
 
         if (error) {
             setTankError(error);
@@ -53,6 +53,8 @@ function useGetTanks() {
         const dataFilter = data.map((item) => ({
             tanque: item.registros_detalles_entradas.numero_pipa || item.registros_detalles_entradas.numero_tanque,
             numero_tanque: item.registros_detalles_entradas.numero_pipa || item.registros_detalles_entradas.numero_tanque,
+            tipo: item.registros_detalles_entradas.tipo,
+            id: item.id
         }))
         setTanks(dataFilter);
     }
