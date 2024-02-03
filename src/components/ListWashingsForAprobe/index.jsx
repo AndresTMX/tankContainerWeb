@@ -234,196 +234,224 @@ function ConditionsWashing({ conditionsString, modal, toggleModal }) {
                     >
                         <ContainerScroll height='400px'>
                             <Stack gap='10px'>
-                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
-                                    <Typography>Enjuague 1</Typography>
-                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
-                                        <TextField
-                                            disabled
-                                            label='Temperatura'
-                                            value={conditions.enjuague_temperatura_1}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
-                                            }}
-                                        />
-                                        <TextField
-                                            disabled
-                                            label='Presión'
-                                            value={conditions.enjuague_presion_1}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
-                                            }}
-                                        />
-                                        <TextField
-                                            disabled
-                                            label='Tiempo'
-                                            value={conditions.enjuague_tiempo_1}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
-                                            }}
-                                        />
-                                    </Stack>
-                                </Box>
 
-                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
-                                    <Typography>Solución desengrasante</Typography>
-                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
-                                        <TextField
-                                            disabled
-                                            label='Temperatura'
-                                            value={conditions.desengrasante_temperatura}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
-                                            }}
-                                        />
-                                        <TextField
-                                            disabled
-                                            label='Presión'
-                                            value={conditions.desengrasante_presion}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
-                                            }}
-                                        />
-                                        <TextField
-                                            disabled
-                                            label='Tiempo'
-                                            value={conditions.desengrasante_tiempo}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
-                                            }}
-                                        />
-                                    </Stack>
-                                </Box>
+                                {conditions?.enjuague_presion_1 &&
+                                    <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                        <Typography>Enjuague 1</Typography>
+                                        <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                            <TextField
+                                                disabled
+                                                label='Temperatura'
+                                                value={conditions.enjuague_temperatura_1}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                                }}
+                                            />
+                                            <TextField
+                                                disabled
+                                                label='Presión'
+                                                value={conditions.enjuague_presion_1}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                                }}
+                                            />
+                                            <TextField
+                                                disabled
+                                                label='Tiempo'
+                                                value={conditions.enjuague_tiempo_1}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                                }}
+                                            />
 
-                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
-                                    <Typography>Solución limpiadora</Typography>
-                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
-                                        <TextField
-                                            disabled
-                                            label='Temperatura'
-                                            value={conditions.limpiador_temperatura}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
-                                            }}
-                                        />
-                                        <TextField
-                                            disabled
-                                            label='Presión'
-                                            value={conditions.limpiador_presion}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
-                                            }}
-                                        />
-                                        <TextField
-                                            disabled
-                                            label='Tiempo'
-                                            value={conditions.limpiador_tiempo}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
-                                            }}
-                                        />
-                                    </Stack>
-                                </Box>
+                                        </Stack>
+                                    </Box>}
 
-                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
-                                    <Typography>Enjuague 2</Typography>
-                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
-                                        <TextField
-                                            disabled
-                                            label='Temperatura'
-                                            value={conditions.temperatura_enjuague_2}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
-                                            }}
-                                        />
-                                        <TextField
-                                            disabled
-                                            label='Presión'
-                                            value={conditions.presion_enjuague_2}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
-                                            }}
-                                        />
-                                        <TextField
-                                            disabled
-                                            label='Tiempo'
-                                            value={conditions.timepo_enjuague_2}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
-                                            }}
-                                        />
-                                    </Stack>
-                                </Box>
+                                {conditions?.desengrasante_tiempo &&
+                                    <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                        <Typography>Solución desengrasante</Typography>
+                                        <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                            <TextField
+                                                disabled
+                                                label='Temperatura'
+                                                value={conditions.desengrasante_temperatura}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                                }}
+                                            />
+                                            <TextField
+                                                disabled
+                                                label='Presión'
+                                                value={conditions.desengrasante_presion}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                                }}
+                                            />
+                                            <TextField
+                                                disabled
+                                                label='Tiempo'
+                                                value={conditions.desengrasante_tiempo}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                                }}
+                                            />
 
-                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
-                                    <Typography>Enjuague 3</Typography>
-                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
-                                        <TextField
-                                            disabled
-                                            label='Temperatura'
-                                            value={conditions.temperatura_enjuague_3}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
-                                            }}
-                                        />
-                                        <TextField
-                                            disabled
-                                            label='Presión'
-                                            value={conditions.presion_enjuague_3}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
-                                            }}
-                                        />
-                                        <TextField
-                                            disabled
-                                            label='Tiempo'
-                                            value={conditions.tiempo_enjuague_3}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
-                                            }}
-                                        />
-                                    </Stack>
-                                </Box>
+                                            <TextField
+                                                disabled
+                                                label='Concentración'
+                                                value={conditions.concentracion_desengrasante}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>PPM</InputAdornment>,
+                                                }}
+                                            />
 
-                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
-                                    <Typography>Sanitizado</Typography>
-                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
-                                        <TextField
-                                            disabled
-                                            label='Temperatura'
-                                            value={conditions.sanitizado_temperatura}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
-                                            }}
-                                        />
-                                        <TextField
-                                            disabled
-                                            label='Presión'
-                                            value={conditions.sanitizado_presion}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
-                                            }}
-                                        />
-                                        <TextField
-                                            disabled
-                                            label='Tiempo'
-                                            value={conditions.sanitizado_tiempo}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position='end'>min</InputAdornment>,
-                                            }}
-                                        />
-                                    </Stack>
-                                </Box>
+                                        </Stack>
+                                    </Box>}
 
-                                <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
-                                    <Typography>Concentración</Typography>
-                                    <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
-                                        <TextField
-                                            disabled
-                                            label='Concentracion de solución sanitizante'
-                                            value={conditions.concentracion}
-                                        />
-                                    </Stack>
-                                </Box>
+                                {conditions?.limpiador_tiempo &&
+                                    <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                        <Typography>Solución limpiadora</Typography>
+                                        <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                            <TextField
+                                                disabled
+                                                label='Temperatura'
+                                                value={conditions.limpiador_temperatura}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                                }}
+                                            />
+                                            <TextField
+                                                disabled
+                                                label='Presión'
+                                                value={conditions.limpiador_presion}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                                }}
+                                            />
+                                            <TextField
+                                                disabled
+                                                label='Tiempo'
+                                                value={conditions.limpiador_tiempo}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                                }}
+                                            />
+
+                                            <TextField
+                                                disabled
+                                                label='Concentración'
+                                                value={conditions.concentracion_limpiador}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>PPM</InputAdornment>,
+                                                }}
+                                            />
+
+
+                                        </Stack>
+                                    </Box>}
+
+                                {conditions?.temperatura_enjuague_2 &&
+                                    <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                        <Typography>Enjuague 2</Typography>
+                                        <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                            <TextField
+                                                disabled
+                                                label='Temperatura'
+                                                value={conditions.temperatura_enjuague_2}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                                }}
+                                            />
+                                            <TextField
+                                                disabled
+                                                label='Presión'
+                                                value={conditions.presion_enjuague_2}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                                }}
+                                            />
+                                            <TextField
+                                                disabled
+                                                label='Tiempo'
+                                                value={conditions.enjuague_tiempo_2}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                                }}
+                                            />
+                                        </Stack>
+                                    </Box>}
+
+                                {conditions?.temperatura_enjuague_3 &&
+                                    <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                        <Typography>Enjuague 3</Typography>
+                                        <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                            <TextField
+                                                disabled
+                                                label='Temperatura'
+                                                value={conditions.temperatura_enjuague_3}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                                }}
+                                            />
+                                            <TextField
+                                                disabled
+                                                label='Presión'
+                                                value={conditions.presion_enjuague_3}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                                }}
+                                            />
+                                            <TextField
+                                                disabled
+                                                label='Tiempo'
+                                                value={conditions.tiempo_enjuague_3}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                                }}
+                                            />
+
+                                        </Stack>
+                                    </Box>}
+
+                                {conditions?.sanitizado_temperatura &&
+                                    <Box display='flex' flexDirection='column' gap='10px' bgcolor='white' padding='10px' >
+                                        <Typography>Sanitizado</Typography>
+                                        <Stack gap='10px' flexDirection={movile ? 'column' : 'row'} width='100%'>
+                                            <TextField
+                                                disabled
+                                                label='Temperatura'
+                                                value={conditions.sanitizado_temperatura}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>C°</InputAdornment>,
+                                                }}
+                                            />
+                                            <TextField
+                                                disabled
+                                                label='Presión'
+                                                value={conditions.sanitizado_presion}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>PSI</InputAdornment>,
+                                                }}
+                                            />
+                                            <TextField
+                                                disabled
+                                                label='Tiempo'
+                                                value={conditions.sanitizado_tiempo}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>min</InputAdornment>,
+                                                }}
+                                            />
+
+                                            <TextField
+                                                disabled
+                                                label='Concentración'
+                                                value={conditions.concentracion}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position='end'>PPM</InputAdornment>,
+                                                }}
+                                            />
+                                        </Stack>
+                                    </Box>}
 
                             </Stack>
                         </ContainerScroll>

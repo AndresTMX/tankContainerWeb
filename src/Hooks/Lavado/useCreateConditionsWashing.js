@@ -2,6 +2,8 @@ import { useContext } from "react";
 import supabase from "../../supabase";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
+import { currenDateFormatTz } from "../../Helpers/date";
+
 
 function useCreateConditionsWashing() {
 
@@ -40,8 +42,59 @@ function useCreateConditionsWashing() {
         }
     }
 
+    const updateDateTimeWashing = async (lavado, checklist) => {
+        try {
 
-    return { sendConditionWashing }
+            const { id, id_detalle_entrada } = lavado;
+            const { cliente } = lavado.registros_detalles_entradas.clientes || {};
+
+
+            const { error, data } = await supabase
+                .from('lavados')
+                .update({ dateInit: currenDateFormatTz })
+                .eq('id', id)
+                .select();
+
+            if (error) {
+                throw new Error('Error al actualizar hora de inicio de lavado')
+            }
+
+            if (cliente === 'agmark') {
+                const { error: errorConsult, data: dataConsult } = await supabase
+                    .from('prelavado_checklist')
+                    .select()
+                    .eq('registro_detalle_entrada_id', id_detalle_entrada)
+
+                if (errorConsult) {
+                    throw new Error(`Error al optener datos de prelavado, error: ${errorConsult.message}`)
+                }
+
+                const oldChecklistInString = dataConsult[0].data;
+                const oldChecklistInJson = JSON.parse(oldChecklistInString);
+                const newChecklist = { ...oldChecklistInJson, ...checklist }
+                const newChecklistInString = JSON.stringify(newChecklist);
+
+                const { error: errorSendCheck } = await supabase
+                    .from('prelavado_checklist')
+                    .update({ data: newChecklistInString })
+                    .eq('id', dataConsult[0].id)
+
+                if (errorSendCheck) {
+                    throw new Error(`Error al actualizar el checklist de agmark , error: ${errorSendCheck.message}`)
+                }
+
+            }
+
+        } catch (error) {
+            dispatchGlobal({
+                type: actionTypesGlobal.setNotification,
+                payload: error.message
+            })
+        }
+    }
+
+
+    return { sendConditionWashing, updateDateTimeWashing }
 
 }
 
