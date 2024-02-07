@@ -281,7 +281,7 @@ function Prelavado() {
             <Tabs value={tab} onChange={ToggleTab}>
                <Tab label="Agenda de lavados" />
                <Tab label="Prelavados" />
-               <Tab label="Mapa de almacen" />
+               {/* <Tab label="Mapa de almacen" /> */}
             </Tabs>
 
             <CustomTabPanel value={tab} index={0}>
@@ -392,7 +392,7 @@ function Prelavado() {
                )}
             </CustomTabPanel>
 
-            <CustomTabPanel value={tab} index={2}>
+            {/* <CustomTabPanel value={tab} index={2}>
                <Container>
                   <Fade in={tab === 2 ? true : false} timeout={300}>
                      <Box
@@ -407,7 +407,7 @@ function Prelavado() {
                      </Box>
                   </Fade>
                </Container>
-            </CustomTabPanel>
+            </CustomTabPanel> */}
 
          </Container>
 

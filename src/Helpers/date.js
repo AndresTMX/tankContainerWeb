@@ -19,23 +19,21 @@ export const transformDate = (date) => dayjs(date);
 export const dateMX = (date) => transformDate(date).tz('America/Mexico_City');
 
 export const dateMXFormat = (date) => {
-    const datemx = dateMX(date);
+    const datemx = new dayjs(date).tz('America/Mexico_City');
     const year = datemx.$y;
-    const month = datemx.$M + 1;
+    const month = datemx.$M;
     const day = datemx.$D;
     return `${day}/${month}/${year}`
 }
 
 export const datetimeMXFormat = (date) => {
-    const datemx = transformDate(date);
-    const hora = datemx.$H;
-    const minutes = datemx.$m;
-    return `${hora}: ${minutes}`
+    const datemx = transformDate(date).tz('America/Mexico_City').format('h:mm A');
+    return datemx
 }
 
 export const currenDateFormatTz = dateMX(currentDate);
 
-export const tiempoTranscurrido = (date) => dayjs(date).fromNow(true)
+export const tiempoTranscurrido = (date) => dayjs(date).tz('America/Mexico_City').fromNow(true)
 
 export const timepoParaX = (date) => {
 
@@ -53,9 +51,9 @@ export const dateTextShort = (date) => {
 }
 
 export const dateExpiration = (date) => {
-    const datemx = dateMX(date);
+    const datemx = date.tz('America/Mexico_City');
     const year = datemx.$y;
-    const month = datemx.$M + 4;
+    const month = datemx.$M + 3;
     const day = datemx.$D;
     return `${day}/${month}/${year}`
 }

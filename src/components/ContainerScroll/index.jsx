@@ -15,6 +15,8 @@ function ContainerScroll({ children, height, background, colorBar, maxHeight }) 
         maxHeight: maxHeight ? maxHeight : null,
         paddingTop: '20px',
         paddingBottom: '20px',
+        paddingLeft:'5px',
+        paddingRight:'5gmailpx'
 
       }}
     >

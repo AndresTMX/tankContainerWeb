@@ -1,4 +1,4 @@
-import { Paper, Button, Chip, Stack, Divider, Typography, Accordion, AccordionSummary, AccordionDetails, Box } from "@mui/material";
+import { Paper, Button, Chip, Stack, Divider, Typography, Box } from "@mui/material";
 import { TextGeneral } from "../TextGeneral";
 //icons
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -43,8 +43,6 @@ function ItemWashing({ data, type }) {
         })
     }
 
-    const AMPM = datetimeMXFormat(program_date).split(':')[0] < 12 ? 'AM' : 'PM';
-
     const [expand, setExpand] = useState(false);
 
     const handleChange = (panel) => (event, isExpanded) => {
@@ -80,8 +78,7 @@ function ItemWashing({ data, type }) {
                 <Paper
                     sx={{ display: 'flex', flexDirection: 'column', padding: '15px', gap: '10px' }} elevation={3}>
 
-                    {/* Cabecera de item*/}
-                    {(!state.selectCheck) && <Stack
+                    <Stack
                         justifyContent='space-between'
                         flexDirection='row'
                         flexWrap='wrap'
@@ -107,7 +104,7 @@ function ItemWashing({ data, type }) {
 
                                 <Chip
                                     icon={<AccessTimeIcon />}
-                                    label={`${datetimeMXFormat(tentativeEnd)} ${AMPM}`}
+                                    label={`${datetimeMXFormat(tentativeEnd)}`}
                                     color='info'
                                     size="small"
                                 />
@@ -133,54 +130,32 @@ function ItemWashing({ data, type }) {
 
                         </Stack>
 
-                    </Stack>}
+                    </Stack>
 
+                    <Stack flexDirection={IsSmall? 'column': 'row'} gap={ IsSmall? '5px' : '10px'}>
+                        <Box>
+                            <Typography variant='subtitle2'>Cita de lavado</Typography>
+                            <Typography variant='button'>{` ${dateTextShort(program_date)}  ${datetimeMXFormat(program_date)}`}</Typography>
+                        </Box>
+
+                        <Divider flexItem />
+
+                        <Box>
+                            <Typography variant='subtitle2'>Cliente</Typography>
+                            <Typography variant='button'>{clientes?.cliente}</Typography>
+                        </Box>
+                    </Stack>
+
+                    <Divider flexItem />
 
                     {/* Informacion */}
-                    <Stack flexDirection={IsSmall ? 'column' : 'row'} justifyContent='space-around' gap='15px'>
-
-                        <TextGeneral
-                            label='Cliente'
-                            text={clientes?.cliente}
-                        />
-
-                        <Divider orientation={IsSmall ? "horizontal" : "vertical"} flexItem />
-
-                        {carga === 'tanque' &&
-                            <TextGeneral
-                                label='Tipo de tanque'
-                                text={tipo}
-                            />}
-
-                        {carga === 'tanque' &&
-                            <Divider orientation={IsSmall ? "horizontal" : "vertical"} flexItem />}
+                    <Stack flexDirection={IsSmall ? 'column' : 'row'} justifyContent='start' gap='15px'>
 
 
-                        <Stack>
-                            <Typography variant='subtitle2'>{`Número de ${carga}`}</Typography>
-                            <Typography variant='button'>{numero_tanque || numero_pipa}</Typography>
-                        </Stack>
-
-
-                        {(!state.selectCheck) && <Divider orientation={IsSmall ? "horizontal" : "vertical"} flexItem />}
-
-                        {(!state.selectCheck) &&
-                            <Stack>
-                                <Typography variant='subtitle2'>Cita de lavado</Typography>
-                                <Typography variant='button'>{` ${dateTextShort(program_date)}  ${datetimeMXFormat(program_date)} ${AMPM}`}</Typography>
-                            </Stack>}
-
-                        {(state.selectCheck) &&
-                            <Button
-                                endIcon={<DoDisturbIcon />}
-                                onClick={CancelChecklist}
-                                variant="contained"
-                                color="error"
-                                size="small"
-                            >
-                                Cancelar
-                            </Button>
-                        }
+                        <Box sx={{ display:'flex', flexDirection:'column'}}>
+                            <Typography variant='button'>{`${carga}`}</Typography>
+                            <Typography variant='body'>{` ${tipo ||''}  ${numero_tanque || numero_pipa}`}</Typography>
+                        </Box>
 
                     </Stack>
 

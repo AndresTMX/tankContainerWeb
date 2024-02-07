@@ -146,7 +146,7 @@ function ItemVigilancia({ register, updater }) {
                                     )
                                 }
                                 sx={{
-                                    maxWidth: "100px",
+                                    maxWidth: "120px",
                                     fontWeight: 500,
                                     padding: "5px",
                                 }}
@@ -158,7 +158,7 @@ function ItemVigilancia({ register, updater }) {
                                 label={dateMXFormat(created_at)}
                                 icon={<CalendarTodayIcon />}
                                 sx={{
-                                    width: "120px",
+                                    maxWidth: "120px",
                                     fontWeight: 500,
                                     padding: "5px",
                                 }}
@@ -170,7 +170,7 @@ function ItemVigilancia({ register, updater }) {
                                 label={datetimeMXFormat(created_at)}
                                 icon={<AccessTimeIcon />}
                                 sx={{
-                                    maxWidth: "90px",
+                                    maxWidth: "120px",
                                     fontWeight: 500,
                                     padding: "5px",
                                 }}

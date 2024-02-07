@@ -29,8 +29,10 @@ function NavBar() {
         { to: '/programacion', text: 'Programación' },
         { to: '/reparaciones', text: 'Reparación' },
         { to: '/prelavado', text: 'Prelavado' },
-        { to: '/calidad', text: 'Calidad' },
         { to: '/lavado', text: 'Lavado' },
+        { to: '/calidad', text: 'Calidad' },
+        { to: '/ubicaciones', text: 'Ubicaciones' },
+
     ];
     const settings = [
         {to:'/admin', text:'Admin', type: 'link'},

@@ -12,6 +12,7 @@ import { Programacion } from "./pages/Programacion";
 import { Prelavado } from "./pages/Prelavado";
 import { Calidad } from "./pages/Calidad";
 import { Lavado } from "./pages/Lavado";
+import { Layout } from "./pages/Layout";
 import { ErrorPage } from "./pages/Error";
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -135,7 +136,7 @@ function Router() {
                 element={
                   <RouteProtect>
                     <UI>
-                        <Programacion />
+                      <Programacion />
                     </UI>
                   </RouteProtect>
                 }
@@ -171,6 +172,17 @@ function Router() {
                   <RouteProtect>
                     <UI>
                       <Lavado />
+                    </UI>
+                  </RouteProtect>
+                }
+              />
+
+              <Route
+                path="/ubicaciones"
+                element={
+                  <RouteProtect>
+                    <UI>
+                      <Layout />
                     </UI>
                   </RouteProtect>
                 }

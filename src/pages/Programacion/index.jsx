@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Box, Stack, Button, Paper, Chip, Typography, Modal, Container, TextField, Select, MenuItem, FormControl, InputLabel, FormHelperText } from "@mui/material";
+import { Box, Stack, Button, Paper, Chip, Typography, Modal, Container, TextField, Divider, IconButton, InputAdornment, OutlinedInput, FormControl, InputLabel } from "@mui/material";
 //hooks
 import { useRegistersProgramer } from "../../Hooks/Programacion/useRegisters";
-import { useTypeWashing } from "../../Hooks/Lavado/useTypesWashing";
 import { usePostProgramation } from "../../Hooks/Programacion/PostProgramation";
+import { useTypeWashing } from "../../Hooks/Lavado/useTypesWashing";
+import useMediaQuery from "@mui/material/useMediaQuery";
 //custom components
 import { NotConexionState } from "../../components/NotConectionState";
 import { ItemLoadingState } from "../../components/ItemLoadingState";
@@ -11,10 +12,10 @@ import { ContainerScroll } from "../../components/ContainerScroll";
 import { Notification } from "../../components/Notification";
 import { LoadingState } from "../../components/LoadingState";
 //helpers
-import { dateInText, dateMXFormat, datetimeMXFormat, tiempoTranscurrido, timepoParaX } from "../../Helpers/date";
+import { dateInText, datetimeMXFormat, tiempoTranscurrido, timepoParaX } from "../../Helpers/date";
 //DatePicker components
 import dayjs from "dayjs";
-import { DatePicker, TimeField, DateTimePicker } from "@mui/x-date-pickers";
+import { DateTimePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
@@ -22,11 +23,15 @@ import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import AlarmIcon from '@mui/icons-material/Alarm';
+import SearchIcon from '@mui/icons-material/Search';
+//searcher
+import { useSearcherProgram } from "../../Hooks/Programacion/useSearcherProgram";
 
 
 function Programacion({ }) {
 
     const { registers, loading, error, typeRegister, changueTypeRegister } = useRegistersProgramer();
+    const { search, onChangueSearch, Searcher } = useSearcherProgram(registers)
 
     return (
         <>
@@ -59,12 +64,37 @@ function Programacion({ }) {
                         </Stack>
 
                         <Stack>
-                            <TextField />
+                            <FormControl variant="outlined" sx={{ width: '250px' }}>
+                                <InputLabel htmlFor="searcher-items-program">Buscar</InputLabel>
+                                <OutlinedInput
+                                    fullWidth
+                                    variant='outlined'
+                                    id='searcher-items-program'
+                                    label='Buscar'
+                                    value={search}
+                                    onChange={(e) => onChangueSearch(e)}
+                                    onKeyUp={(e) => {
+                                        if (e.key === 'Enter') {
+                                            Searcher()
+                                        }
+                                    }}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() => Searcher()}
+                                                edge="end"
+                                            >
+                                                <SearchIcon />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                />
+                            </FormControl>
                         </Stack>
                     </Paper>
 
                     <ContainerScroll height='74vh' background='whitesmoke'>
-                        <Stack gap='10px'>
+                        <Stack gap='10px' padding='0px'>
 
                             {(!loading && !error && typeRegister === 'almacenado') &&
                                 registers.map((register) => (
@@ -104,6 +134,8 @@ export { Programacion };
 
 function ItemPrograming({ registro, changueTypeRegister }) {
 
+    const movile = useMediaQuery('(max-width:720px)')
+
     const { carga, created_at, numero_pipa, numero_tanque, status, tracto, transportistas, registros, clientes } = registro || {};
     const { name: linea } = transportistas || {};
     const { cliente } = clientes || {};
@@ -123,26 +155,27 @@ function ItemPrograming({ registro, changueTypeRegister }) {
                     padding: '15px'
                 }}
             >
-                <Stack flexDirection='row' gap='10px'>
+                <Stack flexDirection='row' flexWrap='wrap' gap='10px'>
                     <Chip label={status} />
-                    <Chip label={dateMXFormat(checkIn)} />
+                    <Chip label={'hace ' + tiempoTranscurrido(checkIn)} />
+                    <Chip label={'Ingreso el ' + dateInText(checkIn)} />
                     <Chip label={datetimeMXFormat(checkIn)} />
-                    <Chip label={tiempoTranscurrido(checkIn)} />
                 </Stack>
 
-                <Stack flexDirection='row' gap='20px' justifyContent='space-between'>
-                    <Stack flexDirection='row' gap='20px'>
+                <Stack flexDirection={movile ? 'column' : 'row'} gap='20px' justifyContent='space-between'>
+                    <Stack flexDirection={movile ? 'column' : 'row'} gap='20px'>
                         <Box>
                             <Typography variant="subtitle2">Cliente</Typography>
                             <Typography>{cliente}</Typography>
                         </Box>
+                        <Divider />
                         <Box>
                             <Typography variant="subtitle2">{`N° ${carga}`}</Typography>
                             <Typography>{numero_tanque || numero_pipa}</Typography>
                         </Box>
                     </Stack>
 
-                    <Stack flexDirection='row' gap='10px' justifyContent='space-between'>
+                    <Stack flexDirection={movile ? 'column' : 'row'} gap='10px' justifyContent='space-between'>
                         <Button size="small" variant="outlined">Ver detalles</Button>
                         <Button
                             onClick={toggleModalProgram}
@@ -168,15 +201,13 @@ function ItemPrograming({ registro, changueTypeRegister }) {
 
 function ItemProgramWashing({ registro, changueTypeRegister }) {
 
+    const movile = useMediaQuery('(max-width:820px)')
+
     const { created_at, program_date, program_time, tentativeEnd, registros_detalles_entradas } = registro || {};
 
     const { carga, numero_pipa, numero_tanque, status, transportistas, clientes } = registros_detalles_entradas || {};
     const { name: linea } = transportistas || {};
     const { cliente } = clientes || {};
-
-    // const timeProgram = program_time?.split(':', 2);
-    // const AMPM = timeProgram[0] >= 12 ? 'PM' : 'AM' || '00:00';
-
 
     return (
         <>
@@ -186,19 +217,20 @@ function ItemProgramWashing({ registro, changueTypeRegister }) {
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '10px',
-                    padding: '15px'
+                    padding: movile ? '10px' : '15px'
                 }}
             >
                 <Stack flexDirection='row' gap='10px'>
                     <Chip color='warning' label={status} />
                 </Stack>
 
-                <Stack flexDirection='row' gap='30px' justifyContent='flex-start'>
+                <Stack flexDirection={movile ? 'column' : 'row'} gap={movile ? '15px' : '30px'} justifyContent='flex-start'>
 
                     <Box>
                         <Typography variant="subtitle2">{`N° ${carga}`}</Typography>
                         <Typography>{numero_tanque || numero_pipa}</Typography>
                     </Box>
+                    <Divider />
                     <Box>
                         <Typography variant="subtitle2">Cliente</Typography>
                         <Typography>{cliente}</Typography>
@@ -206,12 +238,13 @@ function ItemProgramWashing({ registro, changueTypeRegister }) {
 
                 </Stack>
 
-                <Stack flexDirection='row' alignItems='center' justifyContent='space-between' bgcolor='whitesmoke'>
+                <Stack flexDirection={movile ? 'column' : 'row'} alignItems='center' justifyContent='space-between' bgcolor='whitesmoke'>
 
                     <Stack
                         gap='10px'
-                        flexDirection='row'
-                        alignItems='center'
+                        width={movile ? '100%' : 'auto'}
+                        flexDirection={movile ? 'column' : 'row'}
+                        alignItems={movile ? 'start' : 'center'}
                         justifyContent='flex-start'
                         sx={{ padding: '10px', bgcolor: 'whitesmoke' }}>
                         <Box>
@@ -229,15 +262,19 @@ function ItemProgramWashing({ registro, changueTypeRegister }) {
 
                     </Stack>
 
-                    <Stack flexDirection={'row'}>
-                        <Box sx={{ padding: '10px', bgcolor: '#ed6c02', color: 'white', }}>
+                    <Stack
+                        width={movile ? '100%' : 'auto'}
+                        flexDirection={movile ? 'column' : 'row'}
+                        alignItems={movile ? 'start' : 'center'}>
+
+                        <Box sx={{ padding: '10px', bgcolor: '#ed6c02', color: 'white', width: movile ? '100%' : 'auto' }}>
                             <Typography variant="subtitle2">
                                 {<ScheduleIcon fontSize="10px" />} Tiempo para entrega </Typography>
                             <Typography>{timepoParaX(tentativeEnd)}</Typography>
                         </Box>
 
 
-                        <Box sx={{ padding: '10px', bgcolor: '#0288d1', color: 'white' }}>
+                        <Box sx={{ padding: '10px', bgcolor: '#0288d1', color: 'white', width: movile ? '100%' : 'auto' }}>
                             <Typography variant="subtitle2">
                                 {<AlarmIcon fontSize="10px" />}  Fecha de entrega tentativa</Typography>
                             <Typography>{dateInText(tentativeEnd)}</Typography>

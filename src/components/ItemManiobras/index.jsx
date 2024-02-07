@@ -121,7 +121,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                                 label={datetimeMXFormat(checkIn || created_at)}
                                 icon={<AccessTimeIcon />}
                                 sx={{
-                                    maxWidth: "90px",
+                                    maxWidth: "120px",
                                     fontWeight: 500,
                                     padding: "5px",
                                 }}
