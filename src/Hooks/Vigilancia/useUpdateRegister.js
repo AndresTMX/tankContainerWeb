@@ -24,7 +24,6 @@ function useUpdateRegister(updater) {
 
             //verificar existencia de los tanques en la base y aumentar los reingresos de ser necesario
             const updateReingresos = detalles.map(async (registro) => {
-            console.log("🚀 ~ updateReingresos ~ registro:", registro)
 
                 const numero_carga = registro.numero_tanque || registro.numero_pipa;
 

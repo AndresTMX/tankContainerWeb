@@ -40,7 +40,7 @@ function FormAddUser({ dataUser, setDataUser, createUser, toggleForm, modal }) {
                                                 width={IsSmall? '100%': ''}
                                                 title={'Rol'}
                                                 value={dataUser.rol}
-                                                options={['admin', 'developer', 'vigilante', 'Maniobrista', 'Reparador', 'Lavador', 'Gestor de calidad']}
+                                                options={['admin', 'developer', 'vigilante', 'maniobrista', 'reparador', 'lavador', 'gestor de calidad']}
                                                 required={true}
                                                 onChange={(e) => setDataUser({ ...dataUser, rol: e.target.value })}
                                             />

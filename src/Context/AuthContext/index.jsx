@@ -125,6 +125,32 @@ function RouteProtect({ children }) {
       rol: "vigilante",
       routes: ["/", "/vigilancia", "/perfil"],
     },
+    {
+      rol: "maniobrista",
+      routes: [
+        "/",
+        "/admin",
+        "/perfil",
+        "/maniobras",
+        "/reparaciones",
+        "/create_maniobra",
+        "/maniobras/pendiente",
+        "/programacion",
+      ],
+    },
+    {
+      rol: "gestor de calidad",
+      routes: [
+        "/",
+        "/admin",
+        "/perfil",
+        "/reparaciones",
+        "/prelavado",
+        "/calidad",
+        "/lavado",
+        "/programacion",
+      ],
+    },
   ];
 
   function asignedModules(routes, userRol, pathname) {

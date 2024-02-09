@@ -9,7 +9,7 @@ function ListWashing({ washingList, loadignWashing, errorWashing }) {
 
     return (
         <>
-            <ContainerScroll height='64vh'>
+            <ContainerScroll height='72vh'>
 
                 {(washingList.length === 0 && !errorWashing && !loadignWashing) &&
                     <Box sx={{ width: '100%' }}  >

@@ -1,5 +1,5 @@
 import supabase from "../../supabase";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 function useRegistersProgramer() {
 
@@ -14,14 +14,15 @@ function useRegistersProgramer() {
     const typeCache = typeRegister === "almacenado" ? 'tanques_registros_almacenados' : 'lavados_programados';
     const cache = JSON.parse(localStorage.getItem(typeCache) || '[]');
 
-    const changueTypeRegister = (newType) => setTypeRegister(newType)
+    const changueTypeRegister = (newType) => {
+        setRegisters([])
+        setTypeRegister(newType)
+    }
 
     const consultValues = ['almacenado', 'almacenado-prelavado']
 
     const getRegistersStored = async () => {
-        setRegisters([])
-        setError(null)
-        setLoading(true)
+
         const { error, data } = await supabase
             .from('registros_detalles_entradas')
             .select(`*, registros(*), clientes(*),transportistas(*)`)
@@ -39,9 +40,7 @@ function useRegistersProgramer() {
     }
 
     const getWahsingProgram = async () => {
-        setRegisters([])
-        setError(null)
-        setLoading(true)
+
         const { error, data } = await supabase
             .from('lavados')
             .select(`* , registros_detalles_entradas(*, clientes(*), transportistas(*) )`)
@@ -57,26 +56,31 @@ function useRegistersProgramer() {
         setLoading(false);
     }
 
-    const routerFetch = () => {
+    const memoizedFetchFunctions = useMemo(() => ({
+        almacenado: getRegistersStored,
+        programado: getWahsingProgram,
+    }), []);
 
+    const routerFetch = async () => {
         try {
-            const routes = {
-                almacenado: () => getRegistersStored(),
-                programado: () => getWahsingProgram(),
-            }
+            const routeFunction = memoizedFetchFunctions[typeRegister];
 
-            if (routes[typeRegister]) {
-                routes[typeRegister]()
+            if (routeFunction) {
+                await routeFunction();
             } else {
-                throw new Error(`Error de consulta, ruta ${typeRegister} no registrada`)
+                throw new Error(`Error de consulta, ruta ${typeRegister} no registrada`);
             }
         } catch (error) {
-            //notificacion de error 
+            console.error(error);
+            setError(error);
+        } finally {
+            setLoading(false);
         }
-
-    }
+    };
 
     useEffect(() => {
+        setLoading(true)
+        setError(null)
         routerFetch()
     }, [typeRegister])
 
