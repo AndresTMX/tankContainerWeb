@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { AddDataTanks } from "../../components/AddNewTanks"
 import { Notification } from "../../components/Notification";
+import UpdateIcon from '@mui/icons-material/Update';
 //icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 //hooks
@@ -73,9 +74,7 @@ function ManiobrasForm() {
     //hooks de clientes
     const { customers, updateCustomer, createCustomer, updateCustomers } = useCustomers();
     //hook de transportistas
-    const { transporters } = useGetTransporters();
-    //hook de operadores
-    const { states } = useGetOperators();
+    const { transporters, updateAllTransports, createNewTransporter } = useGetTransporters();
 
     //submit control
     const [modal, setModal] = useState(false);
@@ -112,6 +111,56 @@ function ManiobrasForm() {
         await createCustomer(dataClient)
         setModalAddCustomer(!modalAddCustomer)
         updateCustomers()
+    }
+
+    //hook de operadores
+    const { states, functions } = useGetOperators();
+    const { operators } = states;
+    const { createNewOperator, updateOperators } = functions;
+
+
+    //add operator control
+    const [modalOperador, setModalOperador] = useState(false)
+
+    const SubmitNewOperator = async (e) => {
+
+        e.preventDefault()
+
+        const target = e.target;
+
+        const form = new FormData(target);
+
+        const formValues = {}
+
+        for (const [name, value] of form.entries()) {
+            formValues[name] = value;
+        }
+
+        const { error } = await createNewOperator(formValues)
+
+        setModalOperador(!modalOperador)
+
+    }
+
+    //add transportes control
+    const [transporterModal, setTransporterModal] = useState(false);
+
+    const SubmitTransporter = async (e) => {
+        e.preventDefault()
+
+        const target = e.target;
+
+        const form = new FormData(target);
+
+        const formValues = {}
+
+        for (const [name, value] of form.entries()) {
+            formValues[name] = value;
+        }
+
+        const { error } = await createNewTransporter(formValues)
+            +
+            setTransporterModal(!transporterModal)
     }
 
     return (
@@ -243,7 +292,17 @@ function ManiobrasForm() {
                     <Paper elevation={2} sx={{ padding: '20px' }}>
                         <Stack gap="10px" width="100%">
 
-                            <Typography>Información de maniobra</Typography>
+                            <Stack flexDirection='row' alignITems='center' justifyContent='space-between' height='30px'>
+                                <Typography>Información de maniobra</Typography>
+                                <IconButton
+                                   color='info'
+                                    onClick={() => {
+                                        updateOperators()
+                                        updateAllTransports()
+                                    }}>
+                                    <UpdateIcon />
+                                </IconButton>
+                            </Stack>
 
                             <Stack
                                 gap="10px"
@@ -286,13 +345,33 @@ function ManiobrasForm() {
                                         value={operator}
                                         label="Operador"
                                         onChange={handleChangueOperator}>
-                                        {states.operators.map((operador) => (
+                                        {operators.map((operador) => (
                                             <MenuItem key={operador.id} value={operador.id}>{operador.nombre}</MenuItem>
 
                                         ))}
                                     </Select>
                                 </FormControl>
 
+                            </Stack>
+
+                            <Stack
+                                gap="10px"
+                                width="100%"
+                                flexDirection={isMovile ? "column" : "row"}>
+                                <Button
+                                    onClick={() => setModalOperador(!modal)}
+                                    variant="contained"
+                                    color='info'
+                                >
+                                    Nuevo operador
+                                </Button>
+                                <Button
+                                    onClick={() => setTransporterModal(!transporterModal)}
+                                    variant="contained"
+                                    color='info'
+                                >
+                                    Nueva linea
+                                </Button>
                             </Stack>
                         </Stack>
                     </Paper>
@@ -317,22 +396,22 @@ function ManiobrasForm() {
                                 </FormControl>
 
                                 <FormControl sx={{ width: isMovile ? '100%' : '200px' }}>
-                                    <TextField 
-                                    required
-                                    id='numero_placas'
-                                    label='Número de placas'
-                                    value={placas}
-                                    onChange={(e) => setPlacas(e.target.value)}
+                                    <TextField
+                                        required
+                                        id='numero_placas'
+                                        label='Número de placas'
+                                        value={placas}
+                                        onChange={(e) => setPlacas(e.target.value)}
                                     />
                                 </FormControl>
 
                                 <FormControl sx={{ width: isMovile ? '100%' : '200px' }}>
-                                    <TextField 
-                                    required
-                                    id='numero_economico'
-                                    label='Número económico'
-                                    value={economico}
-                                    onChange={(e) => setEconomico(e.target.value)}
+                                    <TextField
+                                        required
+                                        id='numero_economico'
+                                        label='Número económico'
+                                        value={economico}
+                                        onChange={(e) => setEconomico(e.target.value)}
                                     />
                                 </FormControl>
                             </Stack>
@@ -353,10 +432,10 @@ function ManiobrasForm() {
 
                                 {(typeChargue === 'tanque') &&
                                     <AddDataTanks
-                                    dataTank={dataTank}
-                                    typeTank={typeTank}
-                                    setDataTank={setDataTank}
-                                    setTypeTank={setTypeTank}
+                                        dataTank={dataTank}
+                                        typeTank={typeTank}
+                                        setDataTank={setDataTank}
+                                        setTypeTank={setTypeTank}
                                     />
                                 }
 
@@ -554,6 +633,106 @@ function ManiobrasForm() {
                                             variant="contained"
                                             color="error"
                                             onClick={() => setModalAddCustomer(!modalAddCustomer)}>
+                                            Cancelar
+                                        </Button>
+                                    </Stack>
+
+                                </Paper>
+                            </form>
+                        </Box>
+                    </Container>
+                </Fade>
+            </Modal>
+
+            <Modal open={modalOperador}>
+                <Fade in={modalOperador} timeout={300}>
+                    <Container>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+                            <form onSubmit={(e) => SubmitNewOperator(e)}>
+                                <Paper sx={{ display: 'flex', flexDirection: 'column', padding: '20px', gap: '20px', width: '400px', maxWidth: '90vw' }}>
+                                    <Typography variant="button">Nuevo Operador</Typography>
+
+                                    <Stack
+                                        gap="10px"
+                                        width="100%"
+                                    >
+
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id='nuevo-operador'
+                                                required
+                                                label="nombre"
+                                                name='nombre'
+                                            />
+                                        </FormControl>
+
+                                    </Stack>
+
+
+                                    <Stack gap='8px'>
+                                        <Button
+                                            type="submit"
+                                            fullWidth
+                                            variant="contained"
+                                            color="primary"
+                                        >
+                                            agregar
+                                        </Button>
+                                        <Button
+                                            fullWidth
+                                            variant="contained"
+                                            color="error"
+                                            onClick={() => setModalOperador(!modalOperador)}>
+                                            Cancelar
+                                        </Button>
+                                    </Stack>
+
+                                </Paper>
+                            </form>
+                        </Box>
+                    </Container>
+                </Fade>
+            </Modal>
+
+            <Modal open={transporterModal}>
+                <Fade in={transporterModal} timeout={300}>
+                    <Container>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+                            <form onSubmit={SubmitTransporter}>
+                                <Paper sx={{ display: 'flex', flexDirection: 'column', padding: '20px', gap: '20px', width: '400px', maxWidth: '90vw' }}>
+                                    <Typography variant="button">Nueva linea transportista</Typography>
+
+                                    <Stack
+                                        gap="10px"
+                                        width="100%"
+                                    >
+
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id='nueva-transportista'
+                                                required
+                                                label="name"
+                                                name='name'
+                                            />
+                                        </FormControl>
+
+                                    </Stack>
+
+
+                                    <Stack gap='8px'>
+                                        <Button
+                                            type="submit"
+                                            fullWidth
+                                            variant="contained"
+                                            color="primary"
+                                        >
+                                            agregar
+                                        </Button>
+                                        <Button
+                                            fullWidth
+                                            variant="contained"
+                                            color="error"
+                                            onClick={() => setTransporterModal(!transporterModal)}>
                                             Cancelar
                                         </Button>
                                     </Stack>

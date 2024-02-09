@@ -12,11 +12,7 @@ function useGetTransporters() {
     const [transporters, setTransporters] = useState([]);
 
     useEffect(() => {
-        if (!cache) {
-            getAllTransporters();
-        } else {
-            setTransporters(cache);
-        }
+        getAllTransporters();
     }, [updateTransporters])
 
     const getAllTransporters = async () => {
@@ -38,11 +34,29 @@ function useGetTransporters() {
     }
 
     const updateAllTransports = () => {
-            localStorage.removeItem(tableTransporters);
-            setUpdateTransporters(!updateTransporters);
+        localStorage.removeItem(tableTransporters);
+        setUpdateTransporters(!updateTransporters);
     }
 
-    return { loadingTransporters, errorTransporter, updateAllTransports, transporters }
+    const createNewTransporter = async(newTransporter) => {
+        try {
+            const { error } = await supabase
+            .from('transportistas')
+            .insert({ name: newTransporter.name })
+
+            if(error){
+                throw new Error(` Error al crear nueva linea, error: ${error.message}`)
+            }
+
+            return { error }
+
+        } catch (error) {
+            console.error(error)
+            setErrorTransporter(error.message)
+        }
+    }
+
+    return { loadingTransporters, errorTransporter, updateAllTransports, transporters, createNewTransporter }
 
 }
 

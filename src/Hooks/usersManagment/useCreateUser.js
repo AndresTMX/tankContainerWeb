@@ -6,7 +6,7 @@ import supabase from "../../supabase";
 function useCreateUser() {
     
     const [state, dispatch] = useContext(GlobalContext);
-    const roles = ['admin', 'developer', 'vigilante', 'Maniobrista', 'Reparador', 'Lavador', 'Gestor de calidad'];
+    const roles = ['admin', 'developer', 'vigilante', 'maniobrista', 'reparador', 'lavador', 'gestor de calidad'];
     const [dataUser, setDataUser] = useState({ rol: "", first_name: "", last_name: "", position: "", phone: "", email: "", password: "" })
     const [modal, setModal] = useState({form: false})
     const [error, setError] = useState(null);
@@ -21,7 +21,7 @@ function useCreateUser() {
             validateRol = true;
         }
 
-        if (!rol || !first_name || !last_name || !position || !phone || !password || !email) {
+        if (!rol || !first_name || !last_name || !position || !password || !email) {
             dispatch({ type: actionTypesGlobal.setNotification, payload: 'Llena todos los campos' })
         } else {
             validateInputs = true

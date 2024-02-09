@@ -90,7 +90,6 @@ function FormAddUser({ dataUser, setDataUser, createUser, toggleForm, modal }) {
                                                 width={IsSmall? '100%': ''}
                                                 label="celular"
                                                 value={dataUser.phone}
-                                                required={true}
                                                 onChangue={(e) => setDataUser({ ...dataUser, phone: e.target.value })}
                                             />
 

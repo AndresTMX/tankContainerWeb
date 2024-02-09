@@ -8,16 +8,10 @@ function useGetOperators() {
     const [loadingOperators, setLoadingOperators] = useState(null)
     const [errorOperators, setErrorOperators] = useState(null)
     const [update, setUpdate] = useState(false)
+    const cache = JSON.parse(localStorage.getItem('operadores'));
 
     useEffect(() => {
-        const cache = JSON.parse(localStorage.getItem('operadores'));
-        if(!cache){
-            getOperators();
-        }
-
-        if(cache){
-            setOperators(cache)
-        }
+        getOperators();
     }, [update])
 
 
@@ -41,11 +35,27 @@ function useGetOperators() {
         setUpdate(!update)
     }
 
-    const states = {operators, loadingOperators}
+    const createNewOperator = async (newOperator) => {
+        try {
+            const { error } = await supabase
+                .from('operadores')
+                .insert({ nombre: newOperator.nombre })
 
-    const functions = {updateOperators}
+            if (error) {
+                throw new Error(`Error al agregar nuevo operador, error: ${error.message}`)
+            }
+            return { error }
+        } catch (error) {
+            console.error(error.message)
+            return { error }
+        }
+    }
 
-    return {states, functions}
+    const states = { operators, loadingOperators }
+
+    const functions = { updateOperators, createNewOperator }
+
+    return { states, functions }
 
 }
 
