@@ -1,96 +1,73 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DinamicItem } from "../../pages/Layout";
 import { Box, Stack, Chip, Grid, } from "@mui/material";
+import { useLayout } from "../../Hooks/Layout";
 
 function GridContainer58({ items }) {
 
     //recibe todos los contenedores que sean de tipo NFC/FCOJ
     const [level, setLevel] = useState(true);
 
+    const { CountForType, actualizarEstadoPorDefecto, count, types } = useLayout();
+
+    
+    const simulateLevelOne = [
+        {
+            nivel: '1',
+            fila: '1',
+            columna: '1',
+            numTank: null
+        },
+        {
+            nivel: '1',
+            fila: '2',
+            columna: '1',
+            numTank: null
+        },
+        {
+            nivel: '1',
+            fila: '3',
+            columna: '1',
+            numTank: null
+        },
+        {
+            nivel: '1',
+            fila: '4',
+            columna: '1',
+            numTank: null
+        },
+        {
+            nivel: '1',
+            fila: '5',
+            columna: '1',
+            numTank: null
+        },
+        {
+            nivel: '1',
+            fila: '6',
+            columna: '1',
+            numTank: null
+        },
+
+
+    ]
+
+    const [columnOne, setColumnOne] = useState(simulateLevelOne)
+    console.log("🚀 ~ GridContainer58 ~ columnOne:", columnOne)
+
+    useEffect(() => {
+        CountForType(columnOne)
+    }, [level])
+
     const toggleLevel = () => setLevel(!level)
 
     const simulateItem = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6']
     const simulateItem2 = ['1', '2', '3', '4', '5']
 
-    const simulateLevelOne = [ 
-        {
-            nivel:'1',
-            ejey:'1',
-            ejex:'1',
-            item:'tanque 2',
-        },
-        {
-            nivel:'1',
-            ejey:'1',
-            ejex:'2',
-            item:'',
-        },
-        {
-            nivel:'1',
-            ejey:'1',
-            ejex:'3',
-            item:'',
-        },
-        {
-            nivel:'1',
-            ejey:'1',
-            ejex:'4',
-            item:'',
-        },
-        {
-            nivel:'1',
-            ejey:'1',
-            ejex:'5',
-            item:'',
-        },
-        {
-            nivel:'1',
-            ejey:'1',
-            ejex:'6',
-            item:'',
-        },
-        {
-            nivel:'1',
-            ejey:'2',
-            ejex:'1',
-            item:'',
-        },
-        {
-            nivel:'1',
-            ejey:'2',
-            ejex:'2',
-            item:'',
-        },
-        {
-            nivel:'1',
-            ejey:'2',
-            ejex:'3',
-            item:'',
-        },
-        {
-            nivel:'1',
-            ejey:'2',
-            ejex:'4',
-            item:'',
-        },
-        {
-            nivel:'1',
-            ejey:'2',
-            ejex:'5',
-            item:'',
-        },
-        {
-            nivel:'1',
-            ejey:'2',
-            ejex:'6',
-            item:'',
-        },
-       
-     ]
+    const EjeY1 = simulateLevelOne.filter((item) => item.columna === '1')
 
-     const EjeY1 = simulateLevelOne.filter((item) =>  item.nivel === '1' &&  item.ejey === '1'  )
+    const EjeY2 = simulateLevelOne.filter((item) => item.nivel === '1' && item.columna === '2')
 
-     const EjeY2 = simulateLevelOne.filter((item) =>  item.nivel === '1' &&  item.ejey === '2'  )
 
 
     return (
@@ -114,47 +91,13 @@ function GridContainer58({ items }) {
                         <Grid item xs={2.4}>
                             <Grid container direction='column' spacing={1}
                                 sx={{ height: '100%', width: '100%' }}>
-                                {EjeY1.map((item) => (
-                                    <DinamicItem sizeItem={2} numTank={item.item} />
+                                {columnOne.map((item) => (
+                                    <DinamicItem sizeItem={2} item={item} />
                                 ))}
                             </Grid>
                         </Grid>
 
-                        <Grid item xs={2.4}>
-                            <Grid container direction='column' spacing={1}
-                                sx={{ height: '100%', width: '100%' }}>
-                                {EjeY2.map((item) => (
-                                    <DinamicItem sizeItem={2} numTank={item.ejex} />
-                                ))}
-                            </Grid>
-                        </Grid>
-
-                        <Grid item xs={2.4}>
-                            <Grid container direction='column' spacing={1}
-                                sx={{ height: '100%', width: '100%' }}>
-                                {simulateItem.map((item) => (
-                                    <DinamicItem sizeItem={2} numTank={item} />
-                                ))}
-                            </Grid>
-                        </Grid>
-
-                        <Grid item xs={2.4}>
-                            <Grid container direction='column' spacing={1}
-                                sx={{ height: '100%', width: '100%' }}>
-                                {simulateItem.map((item) => (
-                                    <DinamicItem sizeItem={2} numTank={item} />
-                                ))}
-                            </Grid>
-                        </Grid>
-
-                        <Grid item xs={2.4}>
-                            <Grid container direction='column' spacing={1}
-                                sx={{ height: '100%', width: '100%' }}>
-                                {simulateItem2.map((item) => (
-                                    <DinamicItem sizeItem={2} numTank={item} />
-                                ))}
-                            </Grid>
-                        </Grid>
+                     
 
 
                     </Grid>}

@@ -25,7 +25,7 @@ function ProgramList({ Requestloading, RequestError, registers, loadingSearch, e
     return (
         <ContainerScroll height={ movile? '70vh' : '76vh'} background='whitesmoke'>
 
-            <Stack gap='10px' padding='0px'>
+            <Stack gap='10px' padding='0px' >
 
                 {(Requestloading && !RequestError) &&
                     <>

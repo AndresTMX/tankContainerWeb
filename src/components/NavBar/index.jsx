@@ -31,7 +31,7 @@ function NavBar() {
         { to: '/prelavado', text: 'Prelavado' },
         { to: '/lavado', text: 'Lavado' },
         { to: '/calidad', text: 'Calidad' },
-        // { to: '/ubicaciones', text: 'Ubicaciones' },
+        { to: '/ubicaciones', text: 'Ubicaciones' },
 
     ];
     const settings = [
