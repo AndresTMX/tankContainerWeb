@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Grid, Paper, Button, Stack, Chip, IconButton, Typography,  } from "@mui/material";
+import { Grid, Paper, Button, Stack, Chip, IconButton, Typography } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import InfoIcon from '@mui/icons-material/Info';
 import { dateInText } from "../../Helpers/date"
@@ -13,7 +12,7 @@ export function GridItemElement({ sizeItem, item, tipos }) {
     const movile = useMediaQuery('(max-width:770px)')
     const navigate = useNavigate()
 
-    const serializado = JSON.stringify({...item, tipos})
+    const serializado = JSON.stringify({ ...item, tipos })
 
     const MoreInfo = () => {
         navigate(`${encodeURIComponent(serializado)}`)
@@ -56,6 +55,7 @@ export function GridItemElement({ sizeItem, item, tipos }) {
                         >
                             {dateInText(item.created_at)}
                         </Typography>}
+
                     </Stack>
 
 
@@ -68,6 +68,7 @@ export function GridItemElement({ sizeItem, item, tipos }) {
                             {item.numero_tanque}
                         </Typography>}
 
+
                         <IconButton
                             size='small'
                             sx={{ color: 'white' }}
@@ -75,6 +76,8 @@ export function GridItemElement({ sizeItem, item, tipos }) {
                         >
                             <InfoIcon />
                         </IconButton>
+
+
                     </Stack>
                 </Paper>}
 

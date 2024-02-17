@@ -1,9 +1,9 @@
-import { useState, } from "react";
+import { useEffect, useState, } from "react";
 import { usePostProgramation } from "../../Hooks/Programacion/PostProgramation";
 import { useTypeWashing } from "../../Hooks/Lavado/useTypesWashing";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //helpers
-import { dateInText, datetimeMXFormat, tiempoTranscurrido, timepoParaX } from "../../Helpers/date";
+import { dateInText, datetimeMXFormat, tiempoTranscurrido, timepoParaX, currentDate } from "../../Helpers/date";
 //DatePicker components
 import dayjs from "dayjs";
 import { DateTimePicker } from "@mui/x-date-pickers";
@@ -16,14 +16,14 @@ import { ContainerScroll } from "../ContainerScroll";
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import { ItemLoadingState } from "../ItemLoadingState";
 import EditCalendarIcon from '@mui/icons-material/EditCalendar';
-import { Stack, Alert, Paper, Chip, Box, Modal, Typography, Divider, Button, Container } from "@mui/material";
+import { Stack, Alert, Paper, Chip, Box, Modal, Typography, Divider, Button, IconButton, } from "@mui/material";
 
 function ProgramList({ Requestloading, RequestError, registers, loadingSearch, errorSearch, results, search, OnKeySearch, typeRegister, changueTypeRegister }) {
 
     const movile = useMediaQuery(`(max-width:540px)`)
 
     return (
-        <ContainerScroll height={ movile? '70vh' : '76vh'} background='whitesmoke'>
+        <ContainerScroll height={movile ? '70vh' : '76vh'} background='whitesmoke'>
 
             <Stack gap='10px' padding='0px' >
 
@@ -87,6 +87,7 @@ function Item({ registro, changueTypeRegister, typeRegister }) {
             {(typeRegister === 'programado') &&
                 <ItemProgramWashing
                     registro={registro}
+                    changueTypeRegister={changueTypeRegister}
                 />
             }
 
@@ -175,12 +176,15 @@ function ItemPrograming({ registro, changueTypeRegister }) {
                 modal={programModal}
                 toggleModal={toggleModalProgram}
                 changueTypeRegister={changueTypeRegister}
+                action={'programar'}
             />
         </>
     )
 }
 
-function ItemProgramWashing({ registro }) {
+function ItemProgramWashing({ registro, changueTypeRegister }) {
+
+    const [vencimiento, setVencimiento] = useState(false)
 
     const movile = useMediaQuery('(max-width:820px)')
 
@@ -189,6 +193,18 @@ function ItemProgramWashing({ registro }) {
     const { carga, numero_pipa, numero_tanque, status, transportistas, clientes } = registros_detalles_entradas || {};
     const { name: linea } = transportistas || {};
     const { cliente } = clientes || {};
+
+    const [modalEdit, setModalEdit] = useState(false);
+    const toggleModalEdit = () => setModalEdit(!modalEdit);
+    const entregaTentativa = dayjs(tentativeEnd);
+
+    useEffect(() => {
+        if (entregaTentativa.isBefore(currentDate, 'day')) {
+            setVencimiento(true)
+        } else {
+            setVencimiento(false)
+        }
+    }, [registro])
 
     return (
         <>
@@ -201,8 +217,12 @@ function ItemProgramWashing({ registro }) {
                     padding: movile ? '10px' : '15px'
                 }}
             >
-                <Stack flexDirection='row' gap='10px'>
+                <Stack flexDirection='row' gap='10px' justifyContent='space-between'>
                     <Chip color='warning' label={status} />
+
+                    <IconButton onClick={toggleModalEdit} variant="outlined" color='info'>
+                        <EditCalendarIcon />
+                    </IconButton>
                 </Stack>
 
                 <Stack flexDirection={movile ? 'column' : 'row'} gap={movile ? '15px' : '30px'} justifyContent='flex-start'>
@@ -248,17 +268,19 @@ function ItemProgramWashing({ registro }) {
                         flexDirection={movile ? 'column' : 'row'}
                         alignItems={movile ? 'start' : 'center'}>
 
-                        <Box sx={{ padding: '10px', bgcolor: '#ed6c02', color: 'white', width: movile ? '100%' : 'auto' }}>
+                        <Box sx={{ padding: '10px', bgcolor: !vencimiento ? '#ed6c02' : '#d32f2f', color: 'white', width: movile ? '100%' : 'auto' }}>
                             <Typography variant="subtitle2">
-                                {<ScheduleIcon fontSize="10px" />} Tiempo para entrega </Typography>
-                            <Typography>{timepoParaX(tentativeEnd)}</Typography>
+                                {<ScheduleIcon fontSize="10px" />} {!vencimiento ? 'Tiempo para entrega' : 'Tiempo excedido'} </Typography>
+                            <Typography>
+                                {timepoParaX(tentativeEnd)}
+                            </Typography>
                         </Box>
 
 
                         <Box sx={{ padding: '10px', bgcolor: '#0288d1', color: 'white', width: movile ? '100%' : 'auto' }}>
                             <Typography variant="subtitle2">
                                 {<AlarmIcon fontSize="10px" />}  Fecha de entrega tentativa</Typography>
-                            <Typography>{dateInText(tentativeEnd)}</Typography>
+                            <Typography>{dateInText(tentativeEnd)} {datetimeMXFormat(tentativeEnd)} </Typography>
                         </Box>
 
                     </Stack>
@@ -266,11 +288,22 @@ function ItemProgramWashing({ registro }) {
                 </Stack>
 
             </Paper>
+
+            <ModalPrograming
+                item={registros_detalles_entradas}
+                modal={modalEdit}
+                toggleModal={toggleModalEdit}
+                changueTypeRegister={changueTypeRegister}
+                oldProgramDate={program_date}
+                oldTentativeDate={tentativeEnd}
+                action={'reprogramar'}
+
+            />
         </>
     )
 }
 
-function ModalPrograming({ modal, toggleModal, item, changueTypeRegister }) {
+function ModalPrograming({ modal, toggleModal, item, changueTypeRegister, oldProgramDate, oldTentativeDate, action }) {
 
     const { types, loading, error, cache } = useTypeWashing();
 
@@ -278,7 +311,10 @@ function ModalPrograming({ modal, toggleModal, item, changueTypeRegister }) {
 
     const defaultDate = dayjs();
 
-    const [programing, setPrograming] = useState({ program_date: defaultDate, tentativeEnd: defaultDate });
+    const oldDate = oldProgramDate ? dayjs(oldProgramDate) : defaultDate;
+    const oldEnd = oldTentativeDate ? dayjs(oldTentativeDate) : defaultDate;
+
+    const [programing, setPrograming] = useState({ program_date: oldDate, tentativeEnd: oldEnd });
 
     const typeWashingSelected = types.filter((type) => type.id === programing.id_tipo_lavado);
 
@@ -291,66 +327,66 @@ function ModalPrograming({ modal, toggleModal, item, changueTypeRegister }) {
             tentativeEnd: programing.tentativeEnd,
             id_detalle_entrada: item.id
         }
-        await createProgram(newWashing, item.id)
+        await createProgram(newWashing, item.id, action)
         setTimeout(() => {
             changueTypeRegister('programado')
         }, 1000)
     }
 
     return (
-            <Modal open={modal}>
-                <Box sx={{ display: 'flex', paddingTop:'3%' , justifyContent: 'center'}}>
-                    <form onSubmit={submit}>
-                        <Paper sx={{ padding: '20px', width: '90vw', maxWidth: '500px' }}>
-                            <Stack gap='10px'>
+        <Modal open={modal}>
+            <Box sx={{ display: 'flex', paddingTop: '3%', justifyContent: 'center' }}>
+                <form onSubmit={submit}>
+                    <Paper sx={{ padding: '20px', width: '90vw', maxWidth: '500px' }}>
+                        <Stack gap='10px'>
 
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DemoContainer
-                                        components={[
-                                            'DateTimePicker',
-                                            'DateTimePicker',
-                                        ]}
-                                    >
-                                        <DemoItem label='Fecha y hora de lavado'>
-                                            <DateTimePicker
-                                                required
-                                                value={programing.program_date}
-                                                onChange={(newValue) => setPrograming({ ...programing, program_date: newValue })}
-                                            />
-                                        </DemoItem>
-
-                                        <DemoItem label="Fecha y hora tentativa de recolección">
-                                            <DateTimePicker
-                                                required
-                                                value={programing.tentativeEnd}
-                                                onChange={(newValue) => setPrograming({ ...programing, tentativeEnd: newValue })}
-                                            />
-                                        </DemoItem>
-
-                                    </DemoContainer>
-                                </LocalizationProvider>
-
-                                <Button
-                                    type='submit'
-                                    color="primary"
-                                    variant="contained"
-                                    fullWidth
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DemoContainer
+                                    components={[
+                                        'DateTimePicker',
+                                        'DateTimePicker',
+                                    ]}
                                 >
-                                    Programar
-                                </Button>
+                                    <DemoItem label='Fecha y hora de lavado'>
+                                        <DateTimePicker
+                                            required
+                                            value={programing.program_date}
+                                            onChange={(newValue) => setPrograming({ ...programing, program_date: newValue })}
+                                        />
+                                    </DemoItem>
 
-                                <Button
-                                    onClick={toggleModal}
-                                    color="error"
-                                    variant="contained"
-                                    fullWidth
-                                >
-                                    Cancelar
-                                </Button>
-                            </Stack>
-                        </Paper>
-                    </form>
-                </Box>
-            </Modal>
+                                    <DemoItem label="Fecha y hora tentativa de recolección">
+                                        <DateTimePicker
+                                            required
+                                            value={programing.tentativeEnd}
+                                            onChange={(newValue) => setPrograming({ ...programing, tentativeEnd: newValue })}
+                                        />
+                                    </DemoItem>
+
+                                </DemoContainer>
+                            </LocalizationProvider>
+
+                            <Button
+                                type='submit'
+                                color="primary"
+                                variant="contained"
+                                fullWidth
+                            >
+                                Programar
+                            </Button>
+
+                            <Button
+                                onClick={toggleModal}
+                                color="error"
+                                variant="contained"
+                                fullWidth
+                            >
+                                Cancelar
+                            </Button>
+                        </Stack>
+                    </Paper>
+                </form>
+            </Box>
+        </Modal>
     )
 }

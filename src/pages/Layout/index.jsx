@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { Box, Tab, Tabs, Grid, Stack} from "@mui/material";
+import { Toaster } from "sonner";
+import { Box, Tab, Tabs, Grid, Stack } from "@mui/material";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 //components
-import { GridContainer58 } from "../../containers/GridContainer58";
+import { GridBlock } from "../../containers/GridBlock";
+//dataGrid
+import { typesBloqueA, BloqueA, typesBloqueB, BloqueB, typesBloqueC, BloqueC } from "../../layoutData";
 
 function Layout() {
 
@@ -21,7 +24,9 @@ function Layout() {
     return (
         <>
 
-            <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', flexDirection: 'column', display: 'flex', height: '100%', padding:'10px', width:'100%' }}>
+            <Toaster richColors position="top-center" />
+
+            <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', flexDirection: 'column', display: 'flex', height: '100%', padding: '10px', width: '100%' }}>
 
                 <Box sx={{ display: 'flex', alignItems: 'start', }}>
                     <Tabs
@@ -42,16 +47,20 @@ function Layout() {
                 </Box>
 
                 <CustomTabPanel value={value} index={0}>
-                    <Stack width='100%' height='100%' >
-                        <GridContainer58 />
+                    <Stack width='100%' height='100%'  >
+                        <GridBlock tipos={typesBloqueA} simulateState={BloqueA} bloque={'a'} />
                     </Stack>
                 </CustomTabPanel>
 
                 <CustomTabPanel value={value} index={1}>
-                    Item Two
+                    <Stack width='100%' height='100%'>
+                        <GridBlock tipos={typesBloqueB} simulateState={BloqueB} bloque={'b'} />
+                    </Stack>
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index={2}>
-                    Item Three
+                    <Stack width='100%' height='100%'>
+                        <GridBlock tipos={typesBloqueC} simulateState={BloqueC} bloque={'c'} />
+                    </Stack>
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index={3}>
                     Item For
