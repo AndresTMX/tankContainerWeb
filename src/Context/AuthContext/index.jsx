@@ -118,6 +118,7 @@ function RouteProtect({ children }) {
         "/maniobras/pendiente",
         "/programacion",
         "/ubicaciones",
+        "/ubicaciones/"
 
       ],
     },
@@ -154,11 +155,16 @@ function RouteProtect({ children }) {
   ];
 
   function asignedModules(routes, userRol, pathname) {
+
+    const partes = pathname.split("/");
+
+    const subrutas = partes.length - 2;
+
     const licenses = routes.find((route) => route.rol === userRol);
 
     const routesAprove = licenses?.routes;
 
-    if (routesAprove.includes(pathname)) {
+    if (routesAprove.includes(pathname) || subrutas >= 1 ) {
       return children;
     } else {
       return <Navigate to={routesAprove[1]} />;

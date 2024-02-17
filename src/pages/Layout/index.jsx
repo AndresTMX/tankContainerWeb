@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { Button, IconButton, Box, Tab, Tabs, Select, MenuItem, FormControl, InputLabel, Stack, Grid, Chip, Paper, Typography } from "@mui/material";
+import { Toaster } from "sonner";
+import { Box, Tab, Tabs, Grid, Stack } from "@mui/material";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 //components
-import { GridContainer58 } from "../../containers/GridContainer58";
+import { GridBlock } from "../../containers/GridBlock";
+//dataGrid
+import { typesBloqueA, BloqueA, typesBloqueB, BloqueB, typesBloqueC, BloqueC } from "../../layoutData";
 
 function Layout() {
 
@@ -21,14 +24,15 @@ function Layout() {
     return (
         <>
 
-            <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', flexDirection: movile ? 'column' : 'row', display: 'flex', height: '100%', padding: movile? '5px' :'20px', gap: '20px', alignItems: movile? 'center':'start', justifyContent:'center', paddingBottom:'20px' }}>
+            <Toaster richColors position="top-center" />
 
-                <Box sx={{ height: movile ? 'auto' : '80vh', display: 'flex', alignItems: 'start', maxWidth:'100%' }}>
+            <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', flexDirection: 'column', display: 'flex', height: '100%', padding: '10px', width: '100%' }}>
+
+                <Box sx={{ display: 'flex', alignItems: 'start', }}>
                     <Tabs
                         value={value}
                         onChange={handleChange}
-                        aria-label="basic tabs example"
-                        orientation={movile ? "horizontal" : "vertical"}
+                        orientation={"horizontal"}
                         scrollButtons
                         variant="scrollable"
                     >
@@ -42,30 +46,31 @@ function Layout() {
                     </Tabs>
                 </Box>
 
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+                <CustomTabPanel value={value} index={0}>
+                    <Stack width='100%' height='100%'  >
+                        <GridBlock tipos={typesBloqueA} simulateState={BloqueA} bloque={'a'} />
+                    </Stack>
+                </CustomTabPanel>
 
-                    <CustomTabPanel value={value} index={0}>
-                        <>
-                        <GridContainer58/>
-                        </>
-                    </CustomTabPanel>
-
-                    <CustomTabPanel value={value} index={1}>
-                        Item Two
-                    </CustomTabPanel>
-                    <CustomTabPanel value={value} index={2}>
-                        Item Three
-                    </CustomTabPanel>
-                    <CustomTabPanel value={value} index={3}>
-                        Item For
-                    </CustomTabPanel>
-                    <CustomTabPanel value={value} index={4}>
-                        Item Five
-                    </CustomTabPanel>
-                    <CustomTabPanel value={value} index={5}>
-                        Item Six
-                    </CustomTabPanel>
-                </Box>
+                <CustomTabPanel value={value} index={1}>
+                    <Stack width='100%' height='100%'>
+                        <GridBlock tipos={typesBloqueB} simulateState={BloqueB} bloque={'b'} />
+                    </Stack>
+                </CustomTabPanel>
+                <CustomTabPanel value={value} index={2}>
+                    <Stack width='100%' height='100%'>
+                        <GridBlock tipos={typesBloqueC} simulateState={BloqueC} bloque={'c'} />
+                    </Stack>
+                </CustomTabPanel>
+                <CustomTabPanel value={value} index={3}>
+                    Item For
+                </CustomTabPanel>
+                <CustomTabPanel value={value} index={4}>
+                    Item Five
+                </CustomTabPanel>
+                <CustomTabPanel value={value} index={5}>
+                    Item Six
+                </CustomTabPanel>
             </Box>
 
 
@@ -75,16 +80,3 @@ function Layout() {
 
 export { Layout };
 
-export function DinamicItem({ sizeItem, numTank }) {
-
-    const empty = numTank === ''? true : false;
-
-    return (
-        <Grid item xs={sizeItem} >
-            <Paper elevation={4}
-             sx={{ height:'100%', width:'100%', background: empty? 'whitesmoke': '#0092ba'}}>
-                <Typography>{numTank}</Typography>
-            </Paper>
-        </Grid>
-    )
-}

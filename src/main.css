@@ -30,7 +30,7 @@
 
   /* Estilos generales para la barra de desplazamiento en Firefox */
 html {
-  scrollbar-width:thin;
+  scrollbar-width:none;
   scrollbar-color: #afafaf whitesmoke;
   overflow-X: hidden;  
 }
@@ -47,20 +47,6 @@ html:hover {
   width: 3px; 
 }
 
-/* Estilo del riel de la barra de desplazamiento */
-::-webkit-scrollbar-track {
-  background-color: #f1f1f1; 
-}
 
-/* Estilo del pulgar de la barra de desplazamiento */
-::-webkit-scrollbar-thumb {
-  background-color: #047391;
-  border-radius: 6px; 
-}
-
-/* Cambiar el estilo de la barra de desplazamiento en hover */
-html::-webkit-scrollbar-thumb:hover {
-  background-color: #0092ba;
-}
 
 

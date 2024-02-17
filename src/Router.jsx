@@ -14,6 +14,8 @@ import { Calidad } from "./pages/Calidad";
 import { Lavado } from "./pages/Lavado";
 import { Layout } from "./pages/Layout";
 import { ErrorPage } from "./pages/Error";
+import { ItemGridInfo } from "./outlets/ItemGridInfo";
+import { AssignItem } from "./outlets/AssignItem";
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -21,6 +23,7 @@ let theme = createTheme({
   palette: {
     primary: {
       main: "#0092ba",
+      border: '#e5e7eb'
     },
     secondary: {
       main: "#025E73",
@@ -186,7 +189,12 @@ function Router() {
                     </UI>
                   </RouteProtect>
                 }
-              />
+              >
+                <Route path=":item" element={<ItemGridInfo />} />
+
+                <Route path="/ubicaciones/asignacion/:item" element={<AssignItem />} />
+
+              </Route>
 
               <Route path="*" element={<ErrorPage />} />
             </Routes>
