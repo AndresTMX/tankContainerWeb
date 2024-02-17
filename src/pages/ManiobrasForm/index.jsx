@@ -52,6 +52,7 @@ function ManiobrasForm() {
         economico,
         placas,
         typeTank,
+        espectTank,
     } = statesFormRegister;
 
     const {
@@ -69,6 +70,7 @@ function ManiobrasForm() {
         setEconomico,
         setPlacas,
         setDataClient,
+        setEspectTank,
     } = functionsFormRegister;
 
     //hooks de clientes
@@ -434,6 +436,8 @@ function ManiobrasForm() {
                                     <AddDataTanks
                                         dataTank={dataTank}
                                         typeTank={typeTank}
+                                        espectTank={espectTank}
+                                        setEspectTank={setEspectTank}
                                         setDataTank={setDataTank}
                                         setTypeTank={setTypeTank}
                                     />

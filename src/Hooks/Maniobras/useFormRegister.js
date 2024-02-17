@@ -20,7 +20,8 @@ function useFormRegister() {
   const [dataClient, setDataClient] = useState([]);
   const [operator, setOperator] = useState("");
   const [dataTank, setDataTank] = useState({ tanque1: '', tanque2: '', tanque3: '', tanque4: '' });
-  const [typeTank, setTypeTank] = useState({ tanque1: '', tanque2: '', tanque3: '', tanque4: '' })
+  const [typeTank, setTypeTank] = useState({ tanque1: '', tanque2: '', tanque3: '', tanque4: '' });
+  const [espectTank, setEspectTank] = useState({ tanque1: '', tanque2: '', tanque3: '', tanque4: '' })
   const [typePipa, setTypePipa] = useState('');
   const [cliente, setCliente] = useState('');
   const [tracto, setTracto] = useState("");
@@ -90,6 +91,8 @@ function useFormRegister() {
 
     const arrayTanks = Object.values(dataTank);
     const arrayTypes = Object.values(typeTank);
+    const arrayEspects = Object.values(espectTank);
+
 
     arrayTanks.map((register, index) => {
       if (register.trim() != '') {
@@ -97,6 +100,7 @@ function useFormRegister() {
           carga: typeChargue,
           transportista_id: select,
           cliente_id: cliente,
+          especificacion: arrayEspects[index],
           tipo: arrayTypes[index],
           numero_tanque: register.numero_tanque || register.toLowerCase().trim(),
         });
@@ -166,6 +170,7 @@ function useFormRegister() {
     typeTank,
     economico,
     placas,
+    espectTank
   };
 
   const functionsFormRegister = {
@@ -184,6 +189,7 @@ function useFormRegister() {
     setTypePipa,
     setDataClient,
     validateNumTank,
+    setEspectTank,
   };
 
   return { statesFormRegister, functionsFormRegister };

@@ -142,15 +142,12 @@ function ItemPrograming({ registro, changueTypeRegister }) {
                         <Divider />
                         <Box>
                             <Typography variant="subtitle2">{`N° ${carga}`}</Typography>
-                            <Typography>{numero_tanque || numero_pipa}</Typography>
+                            <Typography>{tipo}  {numero_tanque || numero_pipa}</Typography>
                         </Box>
                     </Stack>
 
                     <Stack flexDirection={movile ? 'column' : 'row'} gap='20px'>
-                        <Box>
-                            <Typography variant="subtitle2">Tipo</Typography>
-                            <Typography>{tipo}</Typography>
-                        </Box>
+
                         <Divider />
                         <Box>
                             <Typography variant="subtitle2">Especificación</Typography>
@@ -190,7 +187,7 @@ function ItemProgramWashing({ registro, changueTypeRegister }) {
 
     const { created_at, program_date, program_time, tentativeEnd, registros_detalles_entradas } = registro || {};
 
-    const { carga, numero_pipa, numero_tanque, status, transportistas, clientes } = registros_detalles_entradas || {};
+    const { carga, numero_pipa, numero_tanque, status, transportistas, clientes, especificacion, tipo } = registros_detalles_entradas || {};
     const { name: linea } = transportistas || {};
     const { cliente } = clientes || {};
 
@@ -229,13 +226,20 @@ function ItemProgramWashing({ registro, changueTypeRegister }) {
 
                     <Box>
                         <Typography variant="subtitle2">{`N° ${carga}`}</Typography>
-                        <Typography>{numero_tanque || numero_pipa}</Typography>
+                        <Typography>{tipo}  {numero_tanque || numero_pipa}</Typography>
                     </Box>
+                    <Divider />
+                    {especificacion &&
+                        <Box>
+                            <Typography variant="subtitle2">Especificacion</Typography>
+                            <Typography>{especificacion}</Typography>
+                        </Box>}
                     <Divider />
                     <Box>
                         <Typography variant="subtitle2">Cliente</Typography>
                         <Typography>{cliente}</Typography>
                     </Box>
+
 
                 </Stack>
 

@@ -317,10 +317,10 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                                         }}
                                     >
 
-                                        <Stack flexDirection={'row'} gap='5px'>
+                                        <Stack flexDirection={'row'} alignItems='center' gap='5px'>
                                             <Typography>{`${index + 1} ° `}</Typography>
-                                            <Chip color='info' size='small' label={detail.tipo} />
-                                            <Typography variant="button">{detail.numero_tanque}</Typography>
+                                            <Chip size="small" sx={{textTransform:'uppercase'}} color="info" label={detail.especificacion}/>
+                                            <Typography variant="button">{`${detail.tipo}   ${detail.numero_tanque}`}</Typography>
                                         </Stack>
 
                                         {statusRegister === 'confirm' &&
