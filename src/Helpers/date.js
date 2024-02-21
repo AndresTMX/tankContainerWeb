@@ -51,7 +51,7 @@ export const dateTextShort = (date) => {
 }
 
 export const dateExpiration = (date) => {
-    const datemx = date.tz('America/Mexico_City');
+    const datemx =dayjs(date).tz('America/Mexico_City')
     const year = datemx.$y;
     const month = datemx.$M + 3;
     const day = datemx.$D;

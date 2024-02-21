@@ -16,6 +16,7 @@ import { Layout } from "./pages/Layout";
 import { ErrorPage } from "./pages/Error";
 import { ItemGridInfo } from "./outlets/ItemGridInfo";
 import { AssignItem } from "./outlets/AssignItem";
+import { ModalGrid } from "./outlets/ModalGrid";
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -190,9 +191,14 @@ function Router() {
                   </RouteProtect>
                 }
               >
-                <Route path=":item" element={<ItemGridInfo />} />
+                {/* <Route path=":item" element={<ItemGridInfo />} /> */}
+                {/* <Route path="/ubicaciones/asignacion/:item" element={<AssignItem />} /> */}
 
-                <Route path="/ubicaciones/asignacion/:item" element={<AssignItem />} />
+                <Route path="/ubicaciones/layout/:bloque/:modal" element={<ModalGrid />} />
+                
+                <Route path="/ubicaciones/layout/asignacion/:item" element={<AssignItem />} />
+
+                <Route path="/ubicaciones/layout/info/:item" element={<ItemGridInfo />} />
 
               </Route>
 

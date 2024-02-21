@@ -7,6 +7,8 @@ function DateWashing({ dataCerd }) {
 
     const { folio, numLavado, temperature, dateInit, dateEnd, cliente, numero_taque, numero_pipa, tipo, transportista, cargas_previas, urlString, checkIn, checkOut, duration, logo } = dataCerd || {};
 
+    const { carga1, carga2, carga3 } = cargas_previas || {};
+
     const numero_carga = `${numero_taque || numero_pipa} ${tipo != 'pipa' ? tipo : ''}`;
 
     const renderLogo = logo === 'juice' ? LogoJuiceProducts : LogoKosher;
@@ -44,9 +46,9 @@ function DateWashing({ dataCerd }) {
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{numero_carga}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{transportista}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >CARTER KEASER</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{cargas_previas.carga1}</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{cargas_previas.carga2}</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{cargas_previas.carga3}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{carga1 || ''}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{carga2 || ''}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{carga3 ||''}</Text>
 
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateMXFormat(checkIn)}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{checkOut ? dateMXFormat(checkOut) : 'pending'}</Text>

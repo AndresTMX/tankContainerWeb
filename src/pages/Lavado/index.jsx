@@ -15,7 +15,7 @@ function Lavado() {
 
 
    return (
-      <>
+      <>     
          <Box
             sx={{
                display: 'flex',

@@ -3,11 +3,14 @@ import { Outlet } from "react-router-dom";
 import { useLayout } from "../../Hooks/Layout";
 import { GridItemColumn } from "../GridItemColumn";
 import { Stack, Chip, Grid, } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
-function GridBlock({ tipos, simulateState, bloque }) {
+function GridBlock({ tipos, simulateState, bloque, levels }) {
 
-    const [level, setLevel] = useState('1');
+    const [level, setLevel] = useState(levels[0]);
     const toggleLevel = (level) => setLevel(level)
+
+    const movile = useMediaQuery('(max-width:700px)')
 
     const { stateLayout } = useLayout(tipos, level, simulateState, bloque);
 
@@ -25,11 +28,12 @@ function GridBlock({ tipos, simulateState, bloque }) {
     }, [stateLayout])
 
     return (
-        <Stack gap='20px' alignItems='center'>
+        <Stack gap='15px' alignItems='center'>
 
-            <Stack flexDirection='row' alignItems='center' justifyContent='flex-end' gap='10px' >
-                <Chip onClick={() => toggleLevel('1')} color={level === '1' ? 'primary' : 'default'} label='nivel 1' />
-                <Chip onClick={() => toggleLevel('2')} color={level === '2' ? 'primary' : 'default'} label='nivel 2' />
+            <Stack flexDirection='row' width='50%' alignItems='center' justifyContent='flex-end' gap='10px' >
+                {levels.map((levelItem) => (
+                    <Chip key={levelItem} onClick={() => toggleLevel(levelItem)} color={level === levelItem ? 'primary' : 'default'} label={`nivel ${levelItem}`} />
+                ))}
             </Stack>
 
             <Outlet />
@@ -43,7 +47,7 @@ function GridBlock({ tipos, simulateState, bloque }) {
                     paddingTop: '10px',
                     paddingBottom: '10px',
                     height: '100%',
-                    minWidth: '700px',
+                    minWidth: movile ? 'auto' : '700px',
                     maxWidth: '1200px',
                     bgcolor: 'whitesmoke',
                     overflowY: 'auto',
@@ -52,7 +56,14 @@ function GridBlock({ tipos, simulateState, bloque }) {
                 }}>
 
                 {columns.map((columna) => (
-                    <GridItemColumn key={columna} stateLayout={stateLayout} column={columna} level={level} tipos={tipos} bloque={bloque} />
+                    <GridItemColumn
+                        key={columna}
+                        stateLayout={stateLayout}
+                        column={columna}
+                        level={level}
+                        tipos={tipos}
+                        bloque={bloque}
+                    />
                 ))}
 
             </Grid>
