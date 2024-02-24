@@ -1,11 +1,10 @@
 import { View, Text, Image } from "@react-pdf/renderer";
-import { dateInText, currentDate } from "../../../Helpers/date";
 import { LogoJuiceProducts, ImageCert1, LogoKosher } from "../../../resourcesLinks";
-import { dateMXFormat, dateExpiration } from "../../../Helpers/date";
+import { dateMXFormat, dateExpiration, dateInTextEn, datetimeMXFormat, dateTimeMoreMinutes } from "../../../Helpers/date";
 
 function DateWashing({ dataCerd }) {
 
-    const { folio, numLavado, temperature, dateInit, dateEnd, cliente, numero_taque, numero_pipa, tipo, transportista, cargas_previas, urlString, checkIn, checkOut, duration, logo } = dataCerd || {};
+    const { folio, numLavado, temperature, dateEnd, cliente, numero_taque, numero_pipa, tipo, transportista, cargas_previas, urlString, checkIn, checkOut, duration, logo } = dataCerd || {};
 
     const { carga1, carga2, carga3 } = cargas_previas || {};
 
@@ -41,19 +40,19 @@ function DateWashing({ dataCerd }) {
                     </View>
 
                     <View style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '70%' }}>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateInText(dateInit)}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateMXFormat(dateEnd)}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{cliente}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{numero_carga}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{transportista}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >CARTER KEASER</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{carga1 || ''}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{carga2 || ''}</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{carga3 ||''}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{carga3 || ''}</Text>
 
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateMXFormat(checkIn)}</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{checkOut ? dateMXFormat(checkOut) : 'pending'}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateInTextEn(checkIn) + '  ' + datetimeMXFormat(checkIn)}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateInTextEn(dateEnd) + '  ' + dateTimeMoreMinutes(checkIn, duration)}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{`${duration} MIN`}</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateExpiration(dateEnd)}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateExpiration(dateEnd) + '  ' + dateTimeMoreMinutes(checkIn, duration)}</Text>
                     </View>
 
                 </View>

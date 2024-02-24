@@ -19,7 +19,7 @@ function EIR({ maniobrasCheckList, dataDocument }) {
                 <View style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '32%', }}>
                     <Image style={{ width: '100%', height: '180px' }} src={ImageEIR2} />
                     <Image style={{ width: '100%', height: '180px' }} src={ImageEIR1} />
-                    <ComentBox widht="100%" height="120px" coment="comentario random de prueba" />
+                    <ComentBox widht="100%" height="120px" coment={''} />
                 </View>
                 <SimpleTable checkList={maniobrasCheckList} />
             </View>

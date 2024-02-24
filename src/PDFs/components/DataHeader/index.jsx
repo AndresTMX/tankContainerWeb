@@ -23,8 +23,6 @@ function DataHeader({ data }) {
             alignItems: 'center',
             gap: '5px',
         }
-
-
     })
 
     return (
@@ -39,19 +37,10 @@ function DataHeader({ data }) {
                     </View>
 
                     <View style={style.BoxData}>
-                        <Text style={{ display: 'flex', fontSize: '10px' }}> Fecha :</Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.fechaActual || fechaActual}</Text>
-                    </View>
-
-                    <View style={style.BoxData}>
-                        <Text style={{ display: 'flex', fontSize: '10px' }}> Hora: </Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data.horaActual || horaActual}</Text>
-                    </View>
-
-
-                    <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> Entrada: </Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{dateMXFormat(data?.checkIn)}</Text>
+                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>
+                            {data.dayInput + '   ' + data.dateInput} 
+                            </Text>
                     </View>
 
                     <View style={style.BoxData}>

@@ -1,69 +1,38 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 //components
-import { Box, Stack, Fade, Paper, Chip,  Typography, Alert } from "@mui/material";
+import { Box, Stack, Fade, Paper, Chip, Alert } from "@mui/material";
 import { DetailsCheckList } from "../../components/DetailsCheckList";
 import { CheckListEIR } from "../../sections/CheckListEIR";
 import { NotConexionState } from "../NotConectionState";
-import { Searcher } from "../../components/Searcher";
 import { ItemLoadingState } from "../ItemLoadingState";
+import { ContainerScroll } from "../ContainerScroll";
+import { Searcher } from "../../components/Searcher";
 import { ItemEIR } from "../ItemEIR";
-//context
-import { AuthContext } from "../../Context/AuthContext";
-import { ManiobrasContext } from "../../Context/ManiobrasContext";
 //hooks
-import { useGetLastFolio } from "../../Hooks/foliosManagment/useGetLastFolio";
 import { useGetEIR } from "../../Hooks/Maniobras/useGetEIR";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useSearcher } from "../../Hooks/useSearcher";
-//helpers
-import { routerFilterSearch } from "../../Helpers/searcher";
-//ViewerPDF
-import { ViewerDocument } from "../../PDFs/components/Viewer";
-import { EIR } from "../../PDFs/plantillas/EIR";
-import { ContainerScroll } from "../ContainerScroll";
+import { Toaster } from "sonner";
 
 function EIRManiobras() {
-
-    const { folio } = useGetLastFolio();
-    const { key } = useContext(AuthContext);
-    const session = JSON.parse(sessionStorage.getItem(key));
-    const { user_metadata } = session || {};
-    const { first_name, last_name } = user_metadata || {};
 
     const isMovile = useMediaQuery("(max-width:730px)");
 
     //hook para consultar eir
     const [typeRegister, setTypeRegister] = useState("pendientes")
-    const changueTypeRegister = (newType) => {
+    const changueTypeRegister = (type) => {
+        setTypeRegister(type)
         setData([])
-        selectItem({});
-        setTypeRegister(newType)
     }
+
     const { loading: loadingEIR, error: errorEIR, data: dataEIR, setData } = useGetEIR(typeRegister)
-
-    //contexto maniobras
-    const [state, dispatch] = useContext(ManiobrasContext);
-
-    //maniobrasContextRevisar
-    const { maniobrasCheckList } = state;
-    const checkList = [...maniobrasCheckList?.pageOne, ...maniobrasCheckList?.pageTwo, ...maniobrasCheckList?.pageThree];
-
-    const [viewPDF, setViewPDF] = useState(false);
-    const toggleModalPDF = () => setViewPDF(!viewPDF);
 
     const [modalCheck, setModalCheck] = useState(false);
     const toggleModalCheck = () => setModalCheck(!modalCheck);
-    const [item, selectItem] = useState({});
-    //inicio del hook del buscador
-    const { states: statesSearcher, functions } = useSearcher(routerFilterSearch, dataEIR, typeRegister);
-    const { search, results, loading, error } = statesSearcher;
-    const { searching, onChangueSearch, searchingKey } = functions;
-
-    //counterStep
-    const [step, setStep] = useState(1);
 
     return (
         <>
+
+            <Toaster richColors position='top-center' />
             <Box
                 sx={{
                     display: 'flex',
@@ -109,11 +78,7 @@ function EIRManiobras() {
 
                                 <Box sx={{ width: '350px', alignItems: isMovile ? 'center' : 'flex-end' }}>
                                     <Searcher
-                                        search={search}
-                                        searching={searching}
-                                        placeholder={'Busca registros usando ....'}
-                                        searchingKey={searchingKey}
-                                        onChangueSearch={onChangueSearch}
+
                                     />
                                 </Box>
 
@@ -125,15 +90,7 @@ function EIRManiobras() {
 
                             {(errorEIR) && <NotConexionState />}
 
-                            {(!errorEIR && error) &&
-                                <Fade in={error}>
-                                    <Box sx={{ width: '90vw', maxWidth: '700px' }}  >
-                                        <Alert sx={{ width: '100%' }} severity="warning">{error.toString()}</Alert>
-                                    </Box>
-                                </Fade>
-                            }
-
-                            {(loadingEIR || loading) && (
+                            {(loadingEIR) && (
                                 <Stack gap="20px" >
                                     <ItemLoadingState />
                                     <ItemLoadingState />
@@ -141,7 +98,7 @@ function EIRManiobras() {
                                 </Stack>
                             )}
 
-                            {(!loadingEIR && !error && !loading && !errorEIR && dataEIR.length === 0) && (
+                            {(!loadingEIR && !errorEIR && dataEIR.length === 0) && (
                                 <Fade in={!loadingEIR}>
                                     <Box sx={{ width: '90vw', maxWidth: '700px' }} >
                                         {typeRegister === 'pendientes' &&
@@ -157,27 +114,7 @@ function EIRManiobras() {
                                 </Fade>
                             )}
 
-                            {(!error && !loadingEIR && !loading && search.length >= 1 && results.length >= 1) &&
-                                <Fade in={!loading} timeout={500}>
-                                    <Stack gap="10px">
-                                        <Typography>Coincidencias basadas en tu busqueda: {search}</Typography>
-                                        {results.map((element) => (
-                                            <ItemEIR
-                                                key={typeRegister === 'pendientes' ? element.id : element.folio}
-                                                data={element}
-                                                typeRegister={typeRegister}
-                                                toggleChecklist={toggleModalCheck}
-                                                selectItem={selectItem}
-                                                item={item}
-
-
-                                            />
-                                        ))}
-                                    </Stack>
-                                </Fade>
-                            }
-
-                            {(!loadingEIR && !loading && !errorEIR && !error && results.length === 0) &&
+                            {(!loadingEIR && !errorEIR) &&
                                 <Fade in={!loadingEIR} timeout={500}>
                                     <Stack spacing='10px'>
                                         {
@@ -187,8 +124,6 @@ function EIRManiobras() {
                                                     data={element}
                                                     typeRegister={typeRegister}
                                                     toggleChecklist={toggleModalCheck}
-                                                    selectItem={selectItem}
-                                                    item={item}
 
                                                 />))
                                         }
@@ -197,71 +132,21 @@ function EIRManiobras() {
 
                         </ContainerScroll>
 
-                    </Stack>}
-
+                    </Stack>
+                }
             </Box>
 
-            <ModalCheckListEIR
-                changueTypeRegister={changueTypeRegister}
-                toggleModalCheck={toggleModalCheck}
-                toggleModalPDF={toggleModalPDF}
-                stateModal={modalCheck}
-                selectItem={selectItem}
-                setStep={setStep}
-                step={step}
-                item={item}
-            />
+            {modalCheck &&
+                <Stack>
+                    <DetailsCheckList
+                        toggleModalCheck={toggleModalCheck}
+                        setTypeRegister={setTypeRegister}
+                    />
 
-            <ViewerDocument stateModal={viewPDF} ToggleModal={toggleModalPDF}>
-                <EIR maniobrasCheckList={checkList} dataDocument={{...item, folio}} />
-            </ViewerDocument>
+                    <CheckListEIR />
+                </Stack>}
         </>
     );
 }
 
 export { EIRManiobras };
-
-export function ModalCheckListEIR({ stateModal, setStep, step, changueTypeRegister, item, selectItem, toggleModalCheck, toggleModalPDF }) {
-    return (
-        <>
-            {stateModal &&
-                <Paper
-                    elevation={4}
-                    sx={{
-                        width: '100%',
-                        maxWidth: '800px',
-                        padding: '15px',
-                    }}
-                >
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '10px',
-                            width: '100%',
-                            maxWidth: '800px',
-                        }}
-                    >
-                        <DetailsCheckList
-                            step={step}
-                            setStep={setStep}
-                            item={item}
-                            selectItem={selectItem}
-                            changueTypeRegister={changueTypeRegister}
-                            toggleModalCheck={toggleModalCheck}
-
-                        />
-
-                        <CheckListEIR
-                            step={step}
-                            item={item}
-                            setStep={setStep}
-                            selectItem={selectItem}
-                            toggleModalPDF={toggleModalPDF}
-                        />
-
-                    </Box>
-                </Paper>}
-        </>
-    )
-}

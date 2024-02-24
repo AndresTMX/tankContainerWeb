@@ -1,4 +1,5 @@
 import { useState } from "react";
+import dayjs from "dayjs";
 //components
 import { Box, Tabs, Tab, Stack } from "@mui/material";
 import { Materiales } from "../../components/Materiales";
@@ -22,6 +23,7 @@ function Maniobras() {
     const ToggleTab = (event, newValue) => {
         setTab(newValue)
     }
+
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -63,9 +65,9 @@ function Maniobras() {
 
             </Stack>
 
+            <Notification />
             <LoadingState duration={1000} />
 
-            <Notification />
         </Box>
     );
 }

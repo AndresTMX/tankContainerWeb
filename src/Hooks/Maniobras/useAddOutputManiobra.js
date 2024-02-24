@@ -7,7 +7,7 @@ function useAddOutputManiobra() {
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
-    const addOutputRegisterForManiobra = async (idRegistro, dataTanques, placas, tracto, numero_economico, operador_id, transportista_id, clienteId) => {
+    const addOutputRegisterForManiobra = async (idRegistro, dataTanques, tracto, numero_economico, operador_id, transportista_id, clienteId) => {
 
         dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
@@ -18,7 +18,6 @@ function useAddOutputManiobra() {
                 .from('registros')
                 .insert({
                     type: 'salida',
-                    placas,
                     tracto,
                     numero_economico,
                     operador_id,

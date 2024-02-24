@@ -34,6 +34,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 
 function CheckListCalidadPrelavado({ modal, toggleModal, prelavado, updater }) {
+console.log("🚀 ~ prelavado:", prelavado)
 
     const isSmall = useMediaQuery('(max-width:720px)');
     const { data, error, loading } = useGetTypeWashing();

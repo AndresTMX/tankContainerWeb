@@ -42,7 +42,7 @@ function useGetEIR(typeRegister) {
                      *,
                      clientes(*),
                      users_data(*),
-                     registros_detalles_entradas(*)
+                     registros_detalles_entradas(*, registros(*))
                      `)
             .order('created_at', { ascending: false })
             .range(0, 100)

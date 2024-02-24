@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import supabase from "../../supabase";
 import { useContext } from "react";
 import { GlobalContext } from "../../Context/GlobalContext";
@@ -12,15 +13,32 @@ function useUpdateRepair() {
     const preset = 'mvtjch9n';
     const folderName = 'evidencias_reparacion';
 
-    const updateRepair = async (updates, idRepair) => {
+    const updateRepair = async (questionsForUpdate, dataMaintance, idRepair) => {
+
         dispatchGlobal({
             type: actionTypesGlobal.setLoading,
             payload: true
         });
 
+        const { proforma, repairs } = dataMaintance;
+
         try {
+
+            let updates;
+
+            if (questionsForUpdate.length >= 1) {
+                const checklistUpdate = await updateImagesReparation(repairs, questionsForUpdate);
+
+                updates = { proforma, repairs: checklistUpdate }
+
+            } else {
+                updates = { proforma, repairs }
+            }
+
+            const data = JSON.stringify(updates)
+
             const { error } = await supabase.from('reparaciones')
-                .update({ ...updates })
+                .update({ data, status: 'proceso' })
                 .eq('id', idRepair)
 
             if (error) {
@@ -51,13 +69,15 @@ function useUpdateRepair() {
 
     }
 
-    const completeRepair = async (updates, idRepair) => {
+    const completeRepair = async (updates, idRepair, idRegister) => {
 
         try {
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
                 payload: true
             });
+
+            const currentDate = new dayjs(new Date()).utc();
 
             const repairsWhitEvidences = await sendImagesReparation(updates.repairs);
 
@@ -68,12 +88,23 @@ function useUpdateRepair() {
 
             const updatesInJson = JSON.stringify(updatesRepairs)
 
-            await updateRepair({ status: 'completado', data: updatesInJson, checkOut: new Date() }, idRepair)
+            const { error: errorUpdateRepair } = await supabase
+                .from('reparaciones')
+                .update({ status: 'completado', data: updatesInJson, checkOut: currentDate })
+                .eq('id', idRepair);
 
-            const {error} = await supabase
-            .from('registros_detalles_entradas')
-            .update({status: updates.status})
-            .eq('id', idRepair)
+            if (errorUpdateRepair) {
+                throw new Error(`Error al actualizar la reparación, error: ${errorUpdateRepair.message}`)
+            }
+
+            const { error } = await supabase
+                .from('registros_detalles_entradas')
+                .update({ status: updates.status })
+                .eq('id', idRegister)
+
+            if (error) {
+                throw new Error(`Error al actualizar registro de entrada`)
+            }
 
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
@@ -85,6 +116,7 @@ function useUpdateRepair() {
                 payload: 'reparacion terminada, evidencias cargadas'
             })
         } catch (error) {
+            console.error(error)
             dispatchGlobal({
                 type: actionTypesGlobal.setLoading,
                 payload: false
@@ -153,6 +185,61 @@ function useUpdateRepair() {
         } catch (error) {
             dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false })
             dispatchGlobal({ tyoe: actionTypesGlobal.setNotification, payload: error.message })
+        }
+    }
+
+    const updateImagesReparation = async (oldQuestions, updateQuestions) => {
+        try {
+
+            //extraer las imagenes y cambiarles el nombre
+            const imagesWhitName = updateQuestions.map((question) => {
+                const oldFile = question.image;
+                return new File([oldFile], question.question, { type: oldFile.type });
+            });
+
+            //extraer los objetos para mapearlos
+            const arrayFiles = Object.values(imagesWhitName)
+            const links = [];
+
+            //crear el array de promesas
+            const sendImages = arrayFiles.map(async (file) => {
+                const formData = new FormData();
+                formData.append('folder', folderName);
+                formData.append('upload_preset', `${preset}`)
+                formData.append('file', file);
+                const request = await sendImageCloudinary(formData);
+                links.push({ url: request.url, question: request.original_filename })
+            });
+
+            //resolver promesas
+            try {
+                await Promise.all(sendImages);
+            } catch (error) {
+                dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false })
+                dispatchGlobal({ tyoe: actionTypesGlobal.setNotification, payload: error.message })
+            }
+
+            //copia profunda del array original 
+            const copyFlatInString = JSON.stringify(oldQuestions);
+            const copyFlatInJson = JSON.parse(copyFlatInString);
+
+            console.log(links)
+            console.log(copyFlatInJson)
+
+            //copia del array original con los cambios listos para enviar la data
+            const arrayWhitUrls = copyFlatInJson.map((item) => {
+                const newItem = item
+                if (typeof newItem.image != 'string') {
+                    const indexImage = links.findIndex((link) => link.question === item.question)
+                    newItem.image = links[indexImage].url
+                    newItem.preview = ''
+                }
+                return newItem
+            })
+
+            return arrayWhitUrls;
+        } catch (error) {
+            console.error(error)
         }
     }
 

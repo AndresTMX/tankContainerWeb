@@ -1,16 +1,21 @@
-import { useReducer, createContext } from "react";
-import { initialState, reducer } from "../../Reducers/ReparacionesReducer";
+import { useContext, createContext } from "react";
 
 const ReparacionesContext = createContext();
 
 const ReparacionesProvider = ({children}) => {
-    const [state, dispatch] = useReducer(reducer, initialState)
+
 
     return(
-        <ReparacionesContext.Provider value={[state, dispatch]}>
+        <ReparacionesContext.Provider value={{}}>
             {children}
         </ReparacionesContext.Provider>
     )
 }
 
-export {ReparacionesContext, ReparacionesProvider}
+function useRepairContext() {
+
+
+
+}
+
+export {ReparacionesContext, ReparacionesProvider, useRepairContext}

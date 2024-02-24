@@ -17,7 +17,7 @@ import { ContainerScroll } from "../ContainerScroll";
 
 function FormEditManiobras({ register, detalles, toggleModal, updaterDetails, updaterRegisters }) {
 
-    const { checkIn, created_at, numero_economico, operadores, placas, tracto, type: typeRegister, status: statusRegister, id: idRegister } = register || {};
+    const { checkIn, created_at, operadores, economico, tracto, type: typeRegister, status: statusRegister, id: idRegister } = register || {};
 
     const { carga, transportistas, status, clientes } = detalles[0] || {};
     const { nombre, contacto, id: operadorId } = operadores || {};
@@ -40,8 +40,7 @@ function FormEditManiobras({ register, detalles, toggleModal, updaterDetails, up
     const [editableRegister, setEditableRegister] = useState(true);
     const [dataRegister, setDataRegister] = useState({
         operador_id: operadorId,
-        numero_economico: numero_economico,
-        placas: placas,
+        economico: economico,
         tracto: tracto,
     })
 
@@ -135,23 +134,6 @@ function FormEditManiobras({ register, detalles, toggleModal, updaterDetails, up
                                     onChange={(e) => setDataRegister({ ...dataRegister, tracto: e.target.value })}
                                 />
 
-                                <TextField
-                                    value={dataRegister.placas}
-                                    variant='outlined'
-                                    helperText='Placas'
-                                    disabled={editableRegister}
-                                    onChange={(e) => setDataRegister({ ...dataRegister, placas: e.target.value })}
-
-                                />
-
-                                <TextField
-                                    value={dataRegister.numero_economico}
-                                    variant='outlined'
-                                    sx={{ width: '169px' }}
-                                    disabled={editableRegister}
-                                    helperText='N° de económico'
-                                    onChange={(e) => setDataRegister({ ...dataRegister, numero_economico: e.target.value })}
-                                />
 
                             </Stack>
 

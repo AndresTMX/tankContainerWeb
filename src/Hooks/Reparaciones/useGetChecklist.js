@@ -1,11 +1,7 @@
 import supabase from "../../supabase";
 import { useEffect, useState, useContext } from "react";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 
 function useGetCheckList(idDetailRegister) {
-
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
     const [checklist, setChecklist] = useState([]);
     const [dataJson, setDataJson] = useState([]);
@@ -30,17 +26,17 @@ function useGetCheckList(idDetailRegister) {
                 throw new Error(`Error al cargar el checklist`)
             } else {
                 setLoading(false)
-                setChecklist(data)
-                setDataJson(JSON.parse(data[0].data))
+                if(data.length >= 1){
+                    setChecklist(data)
+                    setDataJson(JSON.parse(data[0]?.data))
+                }else{
+                    setChecklist(data)
+                }
             }
 
         } catch (error) {
             setError(error)
             setLoading(false)
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
         }
     }
     

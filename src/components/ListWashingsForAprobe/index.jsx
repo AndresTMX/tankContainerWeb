@@ -565,7 +565,7 @@ function WashingTest({ modal, toggleModal, idLavado, idRegistro, updaterList }) 
 
                         {(step === 1) && <Test setStep={setStep} revision={revision} changueValue={changueValue} />}
 
-                        {(step === 2) && <EvaluacionResults previusStep={() => setStep(1)} sendForm={() => { console.log('enviado') }} />}
+                        {(step === 2) && <EvaluacionResults previusStep={() => setStep(1)} idLavado={idLavado} idRegistro={idRegistro} toggleModal={toggleModal} updaterList={updaterList}/>}
 
                         {(step === 3) && <EvidenceURL url={url} setUrl={setUrl} submitForm={submitForm} />}
 

@@ -19,7 +19,7 @@ function usePostRegister(updaterRegisters) {
     FUNCIONES PARA AGREGAR REGISTROS DE ENTRADA
     /*/
 
-    const sendInputRegistersTank = async (data, economico, placas, tracto, operator) => {
+    const sendInputRegistersTank = async (data, economico, tracto, operator) => {
 
         try {
             dispatchGlobal({
@@ -35,7 +35,6 @@ function usePostRegister(updaterRegisters) {
                     type: 'entrada',
                     numero_economico: economico,
                     operador_id: operator,
-                    placas: placas,
                     tracto: tracto
                 })
                 .select()
@@ -92,7 +91,7 @@ function usePostRegister(updaterRegisters) {
 
     }
 
-    const sendInputRegistersPipa = async (data, economico, placas, tracto, operator) => {
+    const sendInputRegistersPipa = async (data, economico, tracto, operator) => {
         try {
 
             dispatchGlobal({
@@ -108,7 +107,6 @@ function usePostRegister(updaterRegisters) {
                     type: 'entrada',
                     numero_economico: economico,
                     operador_id: operator,
-                    placas: placas,
                     tracto: tracto
 
                 })
@@ -160,7 +158,7 @@ function usePostRegister(updaterRegisters) {
         }
     }
 
-    const sendInputRegisterEmptyTracto = async (register, economico, placas, tracto, operator) => {
+    const sendInputRegisterEmptyTracto = async (register, economico, tracto, operator) => {
         try {
             dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
@@ -172,7 +170,6 @@ function usePostRegister(updaterRegisters) {
                     type: 'entrada',
                     numero_economico: economico,
                     operador_id: operator,
-                    placas: placas,
                     tracto: tracto
                 })
                 .select()
@@ -216,7 +213,7 @@ function usePostRegister(updaterRegisters) {
     FUNCION PARA RETORNAR TRACTO VACIO
     /*/
 
-    const returnEmpty = async (idRegister, registros, economico, placas, tracto, operator) => {
+    const returnEmpty = async (idRegister, registros, economico, tracto, operator) => {
         try {
 
             dispatchGlobal({
@@ -253,7 +250,6 @@ function usePostRegister(updaterRegisters) {
                     type: 'salida',
                     numero_economico: economico,
                     operador_id: operator,
-                    placas: placas,
                     tracto: tracto
                 })
                 .select()

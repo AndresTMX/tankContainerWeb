@@ -20,8 +20,10 @@ function Reparaciones() {
 
     const IsSmall = useMediaQuery('(max-width:900px)')
     const IsExtraSmall = useMediaQuery('(max-width:700px)');
-    const [typeRepair, setTypeRepair] = useState('pending');
+    
+    const [typeRepair, setTypeRepair] = useState('pendiente');
     const changueTypeRepair = (newRepair) => setTypeRepair(newRepair);
+
     const { repairs, loadingRepairs, errorRepairs, updateRepairs } = useGetRepairs(typeRepair);
     const { states, functions } = useSearcher(filterSearchRepair, repairs, typeRepair);
 
@@ -37,8 +39,7 @@ function Reparaciones() {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
-                paddingTop: IsExtraSmall ? '20px' : '0px',
+                paddingTop: '10px',
                 paddingLeft: '0px',
                 paddingRight: '0px',
                 width: '100%',
@@ -62,8 +63,8 @@ function Reparaciones() {
                             alignItems='center'
                             flexDirection='row'
                             flexWrap='wrap'
-                            padding='20px'
-                            spacing='20px'
+                            padding='10px'
+                            spacing='10px'
                         >
                             <Stack spacing='10px' paddingRight='20px'>
                                 <Typography variant="h6">Reparaciones {typeRepair}</Typography>
@@ -71,18 +72,18 @@ function Reparaciones() {
                                 <Stack flexDirection={'row'} gap={'10px'}>
                                     <Chip
                                         label={'pendientes'}
-                                        color={typeRepair === "pending" ? 'warning' : 'default'}
-                                        onClick={() => setTypeRepair('pending')}
+                                        color={typeRepair === "pendiente" ? 'warning' : 'default'}
+                                        onClick={() => setTypeRepair('pendiente')}
                                     />
                                     <Chip
                                         label={'proceso'}
-                                        color={typeRepair === "proces" ? 'info' : 'default'}
-                                        onClick={() => setTypeRepair('proces')}
+                                        color={typeRepair === "proceso" ? 'info' : 'default'}
+                                        onClick={() => setTypeRepair('proceso')}
                                     />
                                     <Chip
                                         label={'completados'}
-                                        color={typeRepair === "complet" ? 'success' : 'default'}
-                                        onClick={() => setTypeRepair('complet')}
+                                        color={typeRepair === "completado" ? 'success' : 'default'}
+                                        onClick={() => setTypeRepair('completado')}
                                     />
                                 </Stack>
                             </Stack>
@@ -119,10 +120,10 @@ function Reparaciones() {
                 <Fade in={!itemRepair}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: IsSmall ? '95vw' : '700px', maxWidth: '700px', }}>
                         <Paper elevation={4}>
-                            <ContainerScroll height='60vh'>
+                            <ContainerScroll height='67vh'>
 
                                 {(!loadingRepairs && !errorRepairs) &&
-                                    <Stack gap='10px'>
+                                    <Stack gap='10px' padding='0px'>
                                         {repairs.map((item) => (
                                             <MaintenancesItem
                                                 key={item.id}

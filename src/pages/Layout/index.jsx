@@ -160,7 +160,6 @@ function Layout() {
                                                 justifyContent: 'center',
                                                 height: '40px',
                                                 width: '100%',
-                                                color: 'white',
                                                 backgroundColor: 'gray',
                                                 borderRight: '1',
                                                 borderRightStyle: 'solid',

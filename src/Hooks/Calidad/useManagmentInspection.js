@@ -81,6 +81,16 @@ function useManagmentInspection(updater) {
 
             if (status === "interna" || status === "externa") {
 
+                //actualiza el lavado a cancelado
+                const { error: errorUpdateWashing } = await supabase
+                    .from('lavados')
+                    .update({ status: 'rechazado' })
+                    .eq('id', idLavado)
+
+                if (errorUpdateWashing) {
+                    throw new Error(`Error al actualizar los detalles del tanque, error: ${errorUpdateWashing.message}`)
+                }
+
                 //actualiza el estatus del registro
                 const { error: errorUpdateRegister } = await supabase
                     .from('registros_detalles_entradas')

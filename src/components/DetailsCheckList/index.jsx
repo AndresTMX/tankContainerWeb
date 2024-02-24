@@ -1,314 +1,45 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { TextGeneral } from "../TextGeneral";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { Box, Chip, Stack, Button, Typography, Modal, Paper, Divider, Fade, IconButton } from "@mui/material";
+import { Box, Stack, Button, Typography, Modal, Paper, Divider, Fade, IconButton } from "@mui/material";
 //icons
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import GradingIcon from '@mui/icons-material/Grading';
 //hooks
 import { usePostCheckList } from "../../Hooks/foliosManagment/usePostCheckList";
-import { ManiobrasContext } from "../../Context/ManiobrasContext";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { AuthContext } from "../../Context/AuthContext";
-//helpers
-import { tiempoTranscurrido, dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
-import { actionTypes } from "../../Reducers/ManiobrasReducer";
+import { useManiobrasContext } from "../../Context/ManiobrasContext";
 
-function DetailsCheckList({ changueTypeRegister, step , selectItem, item, toggleModalCheck, setStep }) {
+function DetailsCheckList({ toggleModalCheck, setTypeRegister }) {
 
-  const IsSmall = useMediaQuery('(max-width:900px)');
-  const IsExtraSmall = useMediaQuery('(max-width:450px)');
+  const IsSmall = useMediaQuery('(max-width:580px)');
+
+  const { step, setStep, checklist, setChecklist, item, setItem, CheckAll } = useManiobrasContext()
 
   const { sendCheckList } = usePostCheckList();
 
-  const pageOne = [
-    {
-      question: 'PANEL FROTAL',
-      value: null,
-      preview: '',
-      image: '',
-      coment: '',
-    },
-    {
-      question: 'MARCO FRONTAL',
-      value: null,
-      preview: '',
-      image: '',
-      coment: '',
-
-    },
-    {
-      question: 'PANEL TRASERO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: '',
-
-    },
-    {
-      question: 'MARCO TRASERO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: '',
-
-    },
-    {
-      question: 'PANEL DERECHO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: '',
-    },
-    {
-      question: 'MARCO DERECHO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: '',
-    },
-    {
-      question: 'PANEL IZQUIERDO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'MARCO IZQUIERDO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'PANEL SUPERIOR',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'MARCO SUPERIOR',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'PANEL INFERIOR',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-  ]
-
-  const pageTwo = [
-    {
-      question: 'MARCO INFERIOR',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'NOMENCLATURA',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'ESCALERAS',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'PASARELAS',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'ENTRADA DE HOMBRE',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'MARIPOSAS DE E. HOMBRE',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'VÁLVULA DE PRESIÓN Y ALIVIO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'TUBO DE DESAGÜE',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'VÁLVULA DE ALIVIO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'BRIDA CIEGA',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-  ]
-
-  const pageThree = [
-    {
-      question: 'MANÓMETRO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'TERMÓMETRO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'PLACA DE DATOS',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'PORTA DOCUMENTOS',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'TUBO DE VAPOR',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'TAPONES DE TUBO DE VAPOR',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'SISTEMA DE CALENTAMIENTO ELÉCTRICO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'VÁLVULA DE PIE DE TANQUE',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'VÁLVULA DE DESCARGA',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'TAPÓN DE VÁLVULA DE DESCARGA',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'MANERAL DE VÁLVULA DE SEGURIDAD',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'CIERRE DE EMERGENCIA REMOTO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    }
-  ]
-
-  const { key } = useContext(AuthContext);
-  const [state, dispatch] = useContext(ManiobrasContext);
-  const [stateGlobal, dispatchGlobal] = useContext(GlobalContext)
-
-  const { maniobrasCheckList} = state;
-
-  const { carga, linea, numero_tanque,  checkIn } = item;
+  const { carga, linea, numero_tanque, checkIn, clientes } = item;
 
   const { tracto } = item.registros || {};
 
-  const complete = step === 5 ? true : false;
+  const complete = step === 8 ? true : false;
 
-  const time = tiempoTranscurrido(checkIn);
   const [modal, setModal] = useState(false);
 
   const clearSelect = () => {
     setStep(1)
-    selectItem({})
+    setItem({})
     toggleModalCheck()
-    dispatch({ type: actionTypes.setManiobrasCheck, payload: { pageOne: pageOne, pageTwo: pageTwo, pageThree: pageThree } })
-
   }
 
   const ShowModalWarning = () => {
     setModal(!modal)
   }
 
-  const completeCheck = () => {
-
-    if (!complete) {
-      dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: '¡Complete el checklist primero!' })
-    } else {
-
-      ShowModalWarning()
-    }
-
-  }
-
   const sendCheck = async () => {
-    const flatCheckList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
+    
+    const flatCheckList = Object.values(checklist).flat();
 
     const data = {
-      user_id: key,
       registro_detalle_entrada_id: item.id,
       cliente_id: item.cliente_id,
       ingreso: item.checkIn,
@@ -316,133 +47,133 @@ function DetailsCheckList({ changueTypeRegister, step , selectItem, item, toggle
 
     await sendCheckList(data, flatCheckList, item)
     setStep(1)
-    selectItem({})
+    setItem({})
     toggleModalCheck()
-    changueTypeRegister("realizados")
-    dispatch({ type: actionTypes.setManiobrasCheck, payload: { pageOne: pageOne, pageTwo: pageTwo, pageThree: pageThree } })
+    setTypeRegister("realizados")
   }
 
   return (
     <>
-      <Paper elevation={4}>
+      <Paper sx={{ border: 1, borderColor: 'whitesmoke', width: '100%' }} elevation={2}>
 
         <Stack
+          flexDirection={IsSmall ? 'column' : 'row'}
+          justifyContent={"space-between"}
+          alignItems={IsSmall ? 'flex-start' : 'center'}
           bgcolor="whitesmoke"
           borderRadius="4px"
           padding="10px"
           gap="10px"
         >
-          <Stack
-            justifyContent="space-between"
-            flexDirection="row"
-            flexWrap="wrap"
-            gap="10px"
-          >
-            <Stack
-              flexDirection="row"
-              alignItems="center"
-              flexWrap="wrap"
-              gap="10px"
-            >
 
-              <Chip
-                size="small"
-                color="secondary"
-                label={dateMXFormat(checkIn)}
-                icon={<CalendarTodayIcon />}
-                sx={{
-                  width: "120px",
-                  fontWeight: 500,
-                  padding: "5px",
-                }}
-              />
+          {IsSmall &&
+            <>
 
-              <Chip
-                size="small"
-                color="info"
-                label={datetimeMXFormat(checkIn)}
-                icon={<AccessTimeIcon />}
-                sx={{
-                  maxWidth: "90px",
-                  fontWeight: 500,
-                  padding: "5px",
-                }}
-              />
+              <Stack
+                flexDirection={'row'}
+                gap='10px'
+                justifyContent={'space-between'}
+                width={IsSmall ? '100%' : 'auto'}>
 
-              <Chip
-                size="small"
-                color="info"
-                label={tiempoTranscurrido(checkIn)}
-                icon={<AccessTimeIcon />}
-                sx={{
-                  maxWidth: "200px",
-                  fontWeight: 500,
-                  padding: "5px",
-                }}
-              />
+                <Stack gap='5px' flexDirection='row'>
+                  <IconButton
+                    size='small'
+                    onClick={CheckAll}
+                    variant="contained"
+                    color="info"
+                  >
+                    <GradingIcon />
+                  </IconButton>
 
-            </Stack>
 
-            <Stack flexDirection='row' gap='10px'>
-              <Button
-                disabled={!complete}
-                onClick={completeCheck}
-                size="small"
-                variant="contained"
-                color="info"
-              >
-                completar
-              </Button>
+                  <Button
+                    disabled={!complete}
+                    onClick={ShowModalWarning}
+                    size="small"
+                    variant="contained"
+                    color="info"
+                  >
+                    completar
+                  </Button>
+                </Stack>
 
-              <IconButton
-                onClick={clearSelect}
-                size="small"
-                color="error"
-              >
-                <DoDisturbIcon />
-              </IconButton>
-            </Stack>
+                <IconButton
+                  onClick={clearSelect}
+                  size="small"
+                  color="error"
+                >
+                  <DoDisturbIcon />
+                </IconButton>
 
-          </Stack>
 
-          <Stack
-            flexDirection={IsExtraSmall ? "column" : "row"}
-            width="100%"
-            gap="20px"
-          >
+              </Stack>
+              <Divider flexItem orientation={IsSmall ? "horizontal" : "vertical"} />
+            </>
+          }
 
-            <TextGeneral
-              label="linea"
-              text={linea}
-            />
+          <Box>
+            <Typography variant='caption' >Cliente</Typography>
+            <Typography>{clientes?.cliente}</Typography>
+          </Box>
 
-            <Stack flexDirection="row" gap="10px">
+          <Divider flexItem orientation={IsSmall ? "horizontal" : "vertical"}
+          />
+
+          <Box>
+            <Typography variant='caption' >Linea</Typography>
+            <Typography>{linea}</Typography>
+          </Box>
+
+          {carga === 'Tanque' &&
+            <>
               <Divider
                 orientation={IsSmall ? "horizontal" : "vertical"}
                 flexItem
               />
-
               <TextGeneral
-                label="tracto"
-                text={tracto}
+                label="N° tanque"
+                text={numero_tanque}
               />
+            </>
 
-              {carga === 'Tanque' &&
-                <>
-                  <Divider
-                    orientation={IsSmall ? "horizontal" : "vertical"}
-                    flexItem
-                  />
-                  <TextGeneral
-                    label="N° tanque"
-                    text={numero_tanque}
-                  />
-                </>
+          }
 
-              }
-            </Stack>
 
+          {!IsSmall && <Stack
+            flexDirection={'row'}
+            gap='10px'
+            width={IsSmall ? '100%' : 'auto'}>
+
+            <Button
+              size='small'
+              onClick={CheckAll}
+              variant="contained"
+              color="info"
+              endIcon={<GradingIcon />}
+            >
+              todo bien
+            </Button>
+
+
+            <Button
+              disabled={!complete}
+              onClick={ShowModalWarning}
+              size="small"
+              variant="contained"
+              color="info"
+            >
+              completar
+            </Button>
+
+            <IconButton
+              onClick={clearSelect}
+              size="small"
+              color="error"
+            >
+              <DoDisturbIcon />
+            </IconButton>
           </Stack>
+          }
 
         </Stack>
 
@@ -453,9 +184,9 @@ function DetailsCheckList({ changueTypeRegister, step , selectItem, item, toggle
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          position: 'absolute',
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
+          width: '100vw',
 
         }}
       >

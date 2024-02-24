@@ -16,7 +16,7 @@ import { usePostRegister } from "../../Hooks/Maniobras/usePostRegister";
 import { useEditManiobra } from "../../Hooks/Maniobras/useEditManiobra";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //helpers
-import { dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
+import { dateMXFormat, dateTextShort, datetimeMXFormat } from "../../Helpers/date";
 //icons
 import AddIcon from '@mui/icons-material/Add';
 import InfoIcon from "@mui/icons-material/Info";
@@ -30,7 +30,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
 
     const IsSmall = useMediaQuery("(max-width:900px)");
 
-    const { checkIn, created_at, tracto, placas, numero_economico, type: typeRegister, operadores, status: statusRegister, id: idRegister } = register || {};
+    const { checkIn, created_at, tracto, numero_economico:economico, type: typeRegister, operadores, status: statusRegister, id: idRegister } = register || {};
     const { details, detailManiobras, loading, error, updateDetails } = useDetailsForManiobra(idRegister, typeRegister)
     const { carga, transportistas, status, clientes } = details[0] || {};
     const { nombre, contacto, id: operadorId } = operadores || {};
@@ -78,7 +78,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
 
                 <Stack gap="8px" flexDirection="column" padding="15px">
 
-                    {(carga === "tanque" && detailManiobras.length === 0 && typeRegister === 'entrada') &&
+                    {(carga === "tanque" && statusRegister === 'confirm' && detailManiobras.length === 0 && typeRegister === 'entrada') &&
                         <Alert sx={{ width: '100%' }} severity="info">
                             Puedes subir tanques a este tractocamion para generar una salida
                         </Alert>
@@ -92,7 +92,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
 
                     <Stack
                         flexDirection="row"
-                        justifyContent="space-between"
+                        justifyContent='space-between'
                         flexWrap="wrap"
                         gap="10px"
                     >
@@ -102,30 +102,6 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                             flexWrap="wrap"
                             gap="10px"
                         >
-
-                            <Chip
-                                size="small"
-                                color="secondary"
-                                label={dateMXFormat(checkIn || created_at)}
-                                icon={<CalendarTodayIcon />}
-                                sx={{
-                                    width: "120px",
-                                    fontWeight: 500,
-                                    padding: "5px",
-                                }}
-                            />
-
-                            <Chip
-                                size="small"
-                                color="info"
-                                label={datetimeMXFormat(checkIn || created_at)}
-                                icon={<AccessTimeIcon />}
-                                sx={{
-                                    maxWidth: "120px",
-                                    fontWeight: 500,
-                                    padding: "5px",
-                                }}
-                            />
 
                             <Chip
                                 size="small"
@@ -139,7 +115,28 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                                     )
                                 }
                                 sx={{
-                                    maxWidth: "100px",
+                                    fontWeight: 500,
+                                    padding: "5px",
+                                }}
+                            />
+
+                            <Chip
+                                size="small"
+                                color="secondary"
+                                label={checkIn != null ? `${typeRegister} el ${dateTextShort(checkIn)}` : `Creada el ${dateTextShort(created_at)}`}
+                                icon={<CalendarTodayIcon />}
+                                sx={{
+                                    fontWeight: 500,
+                                    padding: "5px",
+                                }}
+                            />
+
+                            <Chip
+                                size="small"
+                                color="info"
+                                label={checkIn != null ? `${datetimeMXFormat(checkIn)}` : `${datetimeMXFormat(created_at)}`}
+                                icon={<AccessTimeIcon />}
+                                sx={{
                                     fontWeight: 500,
                                     padding: "5px",
                                 }}
@@ -147,7 +144,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
 
                         </Stack>
 
-                        <Stack flexDirection='row' gap='10px'>
+                        <Stack flexDirection='row' gap='10px' justifyContent='flex-start'>
 
                             {(carga === 'pipa' && statusRegister === 'confirm') &&
                                 <Button
@@ -171,7 +168,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
 
                             {(carga != 'pipa' && statusRegister === 'confirm') &&
                                 <Button
-                                    onClick={() => returnEmpty(idRegister, details, numero_economico, placas, tracto, operadorId)}
+                                    onClick={() => returnEmpty(idRegister, details, economico, tracto, operadorId)}
                                     size="small"
                                     variant="contained"
                                     color="error"
@@ -186,7 +183,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                                     variant="contained"
                                     color="warning"
                                 >
-                                    editar registro
+                                    editar
                                 </Button>}
 
                             {(statusRegister === 'forconfirm' && typeRegister === 'entrada') &&
@@ -196,7 +193,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                                     variant="contained"
                                     color="error"
                                 >
-                                    eliminar registro
+                                    eliminar
                                 </Button>}
                         </Stack>
 
@@ -319,7 +316,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
 
                                         <Stack flexDirection={'row'} alignItems='center' gap='5px'>
                                             <Typography>{`${index + 1} ° `}</Typography>
-                                            <Chip size="small" sx={{textTransform:'uppercase'}} color="info" label={detail.especificacion}/>
+                                            <Chip size="small" sx={{ textTransform: 'uppercase' }} color="info" label={detail.especificacion} />
                                             <Typography variant="button">{`${detail.tipo}   ${detail.numero_tanque}`}</Typography>
                                         </Stack>
 

@@ -3,20 +3,18 @@ import { Box, Paper, Stack, Button, IconButton, Divider, Chip, Typography } from
 import { ButtonDowloand } from "../../PDFs/components/ButtonDowloand";
 import { ModalInfoOperator } from "../ModalInfoOperator";
 import { TextGeneral } from "../TextGeneral";
-//context
-import { ManiobrasContext } from "../../Context/ManiobrasContext";
-import { actionTypes } from "../../Reducers/ManiobrasReducer";
 //icons
 import InfoIcon from "@mui/icons-material/Info";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 //helpers
-import { tiempoTranscurrido, dateMXFormat, datetimeMXFormat } from "../../Helpers/date";
+import { tiempoTranscurrido, dateMXFormat, datetimeMXFormat, dateInText } from "../../Helpers/date";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useRegisterForDetails } from "../../Hooks/Maniobras/useRegisterForDetails";
+import { useManiobrasContext } from "../../Context/ManiobrasContext";
 
-function ItemEIR({ typeRegister, data, toggleChecklist, selectItem, item }) {
+function ItemEIR({ typeRegister, data, toggleChecklist }) {
 
     //state modal info operator
     const [modal, setModal] = useState(false);
@@ -27,22 +25,11 @@ function ItemEIR({ typeRegister, data, toggleChecklist, selectItem, item }) {
         <>
 
             {(typeRegister === 'pendientes') &&
-                <ItemPending
-                    data={data}
-                    toggleOperator={toggleModal}
-                    toggleChecklist={toggleChecklist}
-                    selectItem={selectItem}
-                    item={item}
-
+                <ItemPending data={data} toggleOperator={toggleModal} toggleChecklist={toggleChecklist}
                 />}
 
             {(typeRegister === 'realizados') &&
-                <ItemComplete
-                    data={data}
-                    selectItem={selectItem}
-                    item={item}
-
-                />}
+                <ItemComplete data={data} />}
 
             <ModalInfoOperator
                 modal={modal}
@@ -57,15 +44,17 @@ function ItemEIR({ typeRegister, data, toggleChecklist, selectItem, item }) {
 
 export { ItemEIR };
 
-export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem, item }) {
+export function ItemPending({ data, toggleOperator, toggleChecklist }) {
+
+    const IsSmall = useMediaQuery('(max-width:850px)');
+    const { item, setItem } = useManiobrasContext();
 
     const { entrada_id } = data;
 
     const { register, loading, error } = useRegisterForDetails(entrada_id)
 
-    const { checkIn, created_at, operadores, tracto  } = register;
+    const { checkIn, created_at, operadores, tracto } = register;
 
-    const IsSmall = useMediaQuery('(max-width:850px)');
 
     const { carga, numero_tanque, transportistas, clientes } = data;
 
@@ -76,7 +65,7 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
     const { name: linea } = transportistas || {};
 
     const selectTank = () => {
-        selectItem({ ...item, ...data, checkIn, linea })
+        setItem({ ...item, ...data, checkIn, linea })
         toggleChecklist()
     }
 
@@ -99,10 +88,9 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
                         <Chip
                             size="small"
                             color="secondary"
-                            label={dateMXFormat(checkIn)}
+                            label={`Ingreso el ${dateInText(checkIn)}`}
                             icon={<CalendarTodayIcon />}
                             sx={{
-                                width: "120px",
                                 fontWeight: 500,
                                 padding: "5px",
                             }}
@@ -114,7 +102,6 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
                             label={datetimeMXFormat(checkIn)}
                             icon={<AccessTimeIcon />}
                             sx={{
-                                maxWidth: "90px",
                                 fontWeight: 500,
                                 padding: "5px",
                             }}
@@ -123,10 +110,9 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
                         <Chip
                             size="small"
                             color="info"
-                            label={tiempoTranscurrido(checkIn)}
+                            label={`${tiempoTranscurrido(checkIn)} desde su llegada`}
                             icon={<AccessTimeIcon />}
                             sx={{
-                                maxWidth: "200px",
                                 fontWeight: 500,
                                 padding: "5px",
                             }}
@@ -164,7 +150,7 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
                 <Box
                     sx={{
                         display: "flex",
-                        bgcolor:"whitesmoke",
+                        bgcolor: "whitesmoke",
                         alignItems: !IsSmall ? "center" : "start",
                         flexDirection: IsSmall ? "column" : "row",
                         justifyContent: "space-between",
@@ -181,211 +167,167 @@ export function ItemPending({ data, toggleOperator, toggleChecklist, selectItem,
                         alignItems={IsSmall ? "start" : "center"}
                         gap="10px"
                     >
-                        <TextGeneral width={'200px'} text={linea} label="Linea" />
+                        <Box>
+                            <Typography variant='caption'>Linea</Typography>
+                            <Typography>{linea}</Typography>
+                        </Box>
                         <Divider
                             orientation={IsSmall ? "horizontal" : "vertical"}
                             flexItem
                         />
-                        <TextGeneral width={'50px'} label="Tracto" text={tracto} />
+                        <Box>
+                            <Typography variant='caption'>Tracto</Typography>
+                            <Typography>{tracto}</Typography>
+                        </Box>
                         <Divider
                             orientation={IsSmall ? "horizontal" : "vertical"}
                             flexItem
                         />
-                        <TextGeneral width={'100px'} label="Tipo de carga" text={carga} />
-                        {(carga === 'tanque') && <>
-                            <Divider
-                                orientation={IsSmall ? "horizontal" : "vertical"}
-                                flexItem
-                            />
-                            <Stack width={'100px'}>
-                                <Typography variant="subtitle2">N° de tanque</Typography>
-                                <Typography variant="button">{numero_tanque}</Typography>
-                            </Stack>
-                        </>}
+
+                        <Box>
+                            <Typography variant='caption'>{carga}</Typography>
+                            <Typography>{numero_tanque || numero_pipa}</Typography>
+                        </Box>
+
+                        <Divider
+                            orientation={IsSmall ? "horizontal" : "vertical"}
+                            flexItem
+                        />
+
+                        <Box>
+                            <Typography variant='caption'>Operador</Typography>
+                            <Typography>{nombre}</Typography>
+                        </Box>
+
                     </Stack>
 
 
-                    <Divider
-                        orientation={IsSmall ? "horizontal" : "vertical"}
-                        flexItem
-                    />
-
-                    <Stack
-                        width={'100%'}
-                        flexDirection={"row"}
-                        alignItems={"center"}
-                        justifyContent="space-between"
-                        gap="10px"
-                    >
-
-                        <Stack flexDirection="row" gap="10px">
-                            <TextGeneral width={'100px'}
-                                label="Operador"
-                                text={`${nombre?.split(" ").slice(0, 2)[0]} ${nombre?.split(" ").slice(0, 2)[1]}`} />
-                            <IconButton color="info" onClick={toggleOperator}>
-                                <InfoIcon />
-                            </IconButton>
-                        </Stack>
-                    </Stack>
                 </Box>
 
             </Stack>
-        </Paper>
+        </Paper >
     );
 }
 
-export function ItemComplete({ data, selectItem, item }) {
+export function ItemComplete({ data, selectItem }) {
 
-    const [state, dispatch] = useContext(ManiobrasContext);
     const isMovile = useMediaQuery('(max-width:620px)');
 
     const { folio, created_at, ingreso, registros_detalles_entradas, clientes, users_data, data: checklistString } = data || {};
-    const { status, numero_tanque, tracto } = registros_detalles_entradas || {};
+    const { status, numero_tanque, registros } = registros_detalles_entradas || {};
     const { first_name, last_name } = users_data || {}
     const { cliente } = clientes || {};
 
-    const generateDocument = () => {
-        const checklistJson = JSON.parse(checklistString)
-        const listQuestions = Object.values(checklistJson)
+    const checklistJson = checklistString ? JSON.parse(checklistString) : [];
 
-        const dataDocument = {
-            folio: folio,
-            fechaActual: dateMXFormat(created_at),
-            horaActual: datetimeMXFormat(created_at),
-            cliente: cliente,
-            dayInput: dateMXFormat(ingreso),
-            numero_tanque: numero_tanque,
-            tracto: tracto,
-            usuario_emisor: `${first_name} ${last_name}`
-        }
-
-        const pageOne = listQuestions.slice(0, 11);
-        const pageTwo = listQuestions.slice(11, 21);
-        const pageThree = listQuestions.slice(21, 33);
-
-        selectItem(dataDocument)
-        dispatch({
-            type: actionTypes.setManiobrasCheck,
-            payload: {
-                pageOne: pageOne,
-                pageTwo: pageTwo,
-                pageThree: pageThree
-            }
-        });
-
+    const dataDocument = {
+        folio: folio,
+        fechaActual: dateMXFormat(created_at),
+        horaActual: datetimeMXFormat(created_at),
+        dayInput: dateMXFormat(ingreso),
+        dateInput: datetimeMXFormat(ingreso),
+        numero_tanque: numero_tanque,
+        clientes,
+        registros: registros,
+        usuario_emisor: `${first_name} ${last_name}`
     }
 
     return (
-        <Paper sx={{ padding: '20px' }}>
+        <>
 
-            <Stack gap='20px' >
+            <Paper sx={{ padding: '20px' }}>
 
-                <Stack
-                    justifyContent='space-between'
-                    alignItems='center'
-                    flexDirection='row'
-                    flexWrap='wrap'
-                    gap='20px'
-                >
+                <Stack gap='20px' >
 
                     <Stack
-                        flexDirection='row'
+                        justifyContent='space-between'
                         alignItems='center'
+                        flexDirection='row'
                         flexWrap='wrap'
-                        gap='10px'
+                        gap='20px'
                     >
-                        <Chip
-                            size="small"
-                            color="success"
-                            label={`Folio: ${folio}`}
-                        />
 
-                        <Chip
-                            size="small"
-                            color="secondary"
-                            label={dateMXFormat(created_at)}
-                            icon={<CalendarTodayIcon />}
-                            sx={{
-                                width: "120px",
-                                fontWeight: 500,
-                                padding: "5px",
-                            }}
-                        />
-
-                        <Chip
-                            size="small"
-                            color="info"
-                            label={datetimeMXFormat(created_at)}
-                            icon={<AccessTimeIcon />}
-                            sx={{
-                                maxWidth: "90px",
-                                fontWeight: 500,
-                                padding: "5px",
-                            }}
-                        />
-
-                        <Chip
-                            size="small"
-                            color='warning'
-                            label={status} />
-                    </Stack>
-
-
-                    <Stack width={isMovile ? '100%' : 'auto'}>
-
-                        {(folio != item.folio) &&
-                            <Button
-                                onClick={() => generateDocument()}
-                                fullWidth={isMovile}
+                        <Stack
+                            flexDirection='row'
+                            alignItems='center'
+                            flexWrap='wrap'
+                            gap='10px'
+                        >
+                            <Chip
                                 size="small"
-                                variant='contained'
-                                color='primary'
-                            >
-                                Reimprimir
-                            </Button>}
+                                color="success"
+                                label={`Folio: ${folio}`}
+                            />
 
-                        {(folio === item.folio) &&
+                            <Chip
+                                size="small"
+                                color="secondary"
+                                label={` Realizado ${dateInText(created_at)}`}
+                                icon={<CalendarTodayIcon />}
+                                sx={{
+                                    fontWeight: 500,
+                                    padding: "5px",
+                                }}
+                            />
+
+                            <Chip
+                                size="small"
+                                color="info"
+                                label={datetimeMXFormat(created_at)}
+                                icon={<AccessTimeIcon />}
+                                sx={{
+                                    fontWeight: 500,
+                                    padding: "5px",
+                                }}
+                            />
+
+                        </Stack>
+
+
+                        <Stack width={isMovile ? '100%' : 'auto'}>
+
                             <ButtonDowloand
-                                selectItem={selectItem}
-                                state={state}
-                                item={item}
-                            />}
+                                dataDocument={dataDocument}
+                                checklist={checklistJson}
+                            />
+                        </Stack>
+
                     </Stack>
 
+                    <Stack
+                        justifyContent='space-between'
+                        flexDirection={isMovile ? 'column' : 'row'}
+                        alignItems={isMovile ? 'start' : 'center'}
+                        flexWrap='wrap'
+                        gap='20px'
+
+                    >
+                        <TextGeneral
+                            label={'Realizado por '}
+                            text={`${first_name} ${last_name}`}
+                        />
+
+                        <Divider flexItem />
+
+                        <TextGeneral
+                            label={'Cliente '}
+                            text={cliente}
+                        />
+
+                        <Divider flexItem />
+
+                        <TextGeneral
+                            label={'N° de contenedor'}
+                            text={numero_tanque}
+                        />
+
+                    </Stack>
+
+
                 </Stack>
 
-                <Stack
-                    justifyContent='space-between'
-                    flexDirection={isMovile ? 'column' : 'row'}
-                    alignItems={isMovile ? 'start' : 'center'}
-                    flexWrap='wrap'
-                    gap='20px'
+            </Paper>
+        </>
 
-                >
-                    <TextGeneral
-                        label={'Realizado por '}
-                        text={`${first_name} ${last_name}`}
-                    />
-
-                    <Divider flexItem />
-
-                    <TextGeneral
-                        label={'Cliente '}
-                        text={cliente}
-                    />
-
-                    <Divider flexItem />
-
-                    <TextGeneral
-                        label={'N° de contenedor'}
-                        text={numero_tanque}
-                    />
-
-                </Stack>
-
-
-            </Stack>
-
-        </Paper>
     )
 }

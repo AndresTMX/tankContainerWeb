@@ -2,6 +2,8 @@ import { Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 
 function SimpleTable({ checkList }) {
 
+    const questionsList = Object.values(checkList).flat(); 
+
     const style = StyleSheet.create({
         ContainerTable: {
             display: 'flex',
@@ -49,8 +51,8 @@ function SimpleTable({ checkList }) {
 
             </View>
 
-            {checkList.length >= 1 &&
-                checkList.map((item, index) => (
+            {questionsList.length >= 1 &&
+                questionsList.map((item, index) => (
                     <SimpleRow
                         key={item.question}
                         index={index}

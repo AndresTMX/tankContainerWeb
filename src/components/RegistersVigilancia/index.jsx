@@ -92,12 +92,13 @@ function RegistersVigilancia({ data, error, loading, search, resultsSearch, erro
 export { RegistersVigilancia };
 
 function ItemVigilancia({ register, updater }) {
+console.log("🚀 ~ ItemVigilancia ~ register:", register)
 
     const IsSmall = useMediaQuery("(max-width:900px)");
 
     const { checkOutRegisterWhitId, checkRegisterWhitId } = useUpdateRegister(updater);
 
-    const { checkIn, created_at, placas, numero_economico, tracto, operadores, type: typeRegister, status: statusRegister, id: idRegister } = register || {};
+    const { checkIn, created_at, numero_economico, tracto, operadores, type: typeRegister, status: statusRegister, id: idRegister } = register || {};
     const { details, detailManiobras, loading, error, updateDetails } = useDetailsForManiobra(idRegister, typeRegister)
     const { carga, transportistas, status, clientes } = details[0] || {};
     const { nombre, contacto } = operadores || {};
@@ -152,30 +153,6 @@ function ItemVigilancia({ register, updater }) {
                                 }}
                             />
 
-                            <Chip
-                                size="small"
-                                color="secondary"
-                                label={dateMXFormat(created_at)}
-                                icon={<CalendarTodayIcon />}
-                                sx={{
-                                    maxWidth: "120px",
-                                    fontWeight: 500,
-                                    padding: "5px",
-                                }}
-                            />
-
-                            <Chip
-                                size="small"
-                                color="info"
-                                label={datetimeMXFormat(created_at)}
-                                icon={<AccessTimeIcon />}
-                                sx={{
-                                    maxWidth: "120px",
-                                    fontWeight: 500,
-                                    padding: "5px",
-                                }}
-                            />
-
 
                         </Stack>
 
@@ -210,35 +187,36 @@ function ItemVigilancia({ register, updater }) {
                     <Stack
                         bgcolor='whitesmoke'
                         flexDirection={IsSmall ? 'column' : 'row'}
-                        alignItems='start'
+                        justifyContent='space-around'
                         gap='10px'
                         padding='10px'
                     >
-                        <TextGeneral width={'50px'} label="Tracto" text={tracto} />
+                        <Box>
+                            <Typography variant='caption' >Tractocamion</Typography>
+                            <Typography>{tracto}</Typography>
+                        </Box>
+
                         <Divider
                             orientation={IsSmall ? "horizontal" : "vertical"}
                             flexItem
                         />
 
-                        <TextGeneral width={'150px'} text={placas} label="Placas" />
+                        <Box>
+                            <Typography variant='caption' >Economico</Typography>
+                            <Typography>{numero_economico}</Typography>
+                        </Box>
+        
+
                         <Divider
                             orientation={IsSmall ? "horizontal" : "vertical"}
                             flexItem
                         />
-                        <TextGeneral width={'150px'} label="Número económico" text={numero_economico} />
-                        <Divider
-                            orientation={IsSmall ? "horizontal" : "vertical"}
-                            flexItem
-                        />
-                        <Stack flexDirection="row" gap="10px">
-                            <TextGeneral
-                                width={'100px'}
-                                label="Operador"
-                                text={`${nombre?.split(" ").slice(0, 2)[0]} ${nombre?.split(" ").slice(0, 2)[1]} `} />
-                            <IconButton color="info" onClick={toggleModalOperator}>
-                                <InfoIcon />
-                            </IconButton>
-                        </Stack>
+
+                        <Box>
+                            <Typography variant='caption' >Tipo de carga</Typography>
+                            <Typography>{carga}</Typography>
+                        </Box>
+
                     </Stack>
 
                     <Box
@@ -262,28 +240,45 @@ function ItemVigilancia({ register, updater }) {
                             gap="10px"
                         >
 
-                            <Stack width='200px'>
-                                <Typography variant="subtitle2">
+                            <Box>
+                                <Typography variant='caption'>
                                     Cliente
                                 </Typography>
 
-                                <Typography variant="subtitle">
+                                <Typography >
                                     {cliente}
                                 </Typography>
+                            </Box>
+
+                            <Divider
+                                orientation={IsSmall ? "horizontal" : "vertical"}
+                                flexItem
+                            />
+
+                            <Box>
+                                <Typography variant='caption'>
+                                    Linea
+                                </Typography>
+
+                                <Typography >
+                                    {linea}
+                                </Typography>
+                            </Box>
+
+                            <Divider
+                                orientation={IsSmall ? "horizontal" : "vertical"}
+                                flexItem
+                            />
+
+                            <Stack flexDirection="row" gap="10px">
+                                <Box>
+                                    <Typography variant='caption'>Operador</Typography>
+                                    <Typography>{nombre}</Typography>
+                                </Box>
+                                <IconButton color="info" onClick={toggleModalOperator}>
+                                    <InfoIcon />
+                                </IconButton>
                             </Stack>
-
-                            <Divider
-                                orientation={IsSmall ? "horizontal" : "vertical"}
-                                flexItem
-                            />
-
-                            <TextGeneral width={'200px'} text={linea} label="Linea" />
-                            <Divider
-                                orientation={IsSmall ? "horizontal" : "vertical"}
-                                flexItem
-                            />
-
-                            <TextGeneral width={'100px'} label="Tipo de carga" text={carga} />
                         </Stack>
                     </Box>
 

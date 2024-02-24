@@ -1,44 +1,44 @@
-import { useState, useContext } from "react";
-import { Box, Paper, Stack, Button, IconButton, Typography, Card, CardMedia, CardActionArea, CardContent, CardActions, Modal, Fade, Alert, Skeleton, Select, MenuItem, FormControl, InputLabel, Menu, FormHelperText } from "@mui/material";
+import { useState } from "react";
+import { toast, Toaster } from "sonner";
+import { Box, Paper, Stack, Button, IconButton, Typography, Card, CardMedia, CardActionArea, CardContent, CardActions, Modal, Fade, Alert, Skeleton, Select, MenuItem, FormControl, InputLabel, FormHelperText } from "@mui/material";
 import { DataGridRepairs } from "../DataGridRepairs";
 import { DataGridMaterials } from "../DataGridMaterials";
-import { Proforma } from "../../PDFs/plantillas/proforma";
-import { PDFViewer } from "@react-pdf/renderer";
-import { ButtonDowloandProforma } from "../../PDFs/components/ButtonDowloand";
 //hooks
 import { useGetCheckList } from "../../Hooks/Reparaciones/useGetChecklist";
 import { useUpdateRepair } from "../../Hooks/Reparaciones/useUpdateRepair";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
-//icons
-import CloseIcon from '@mui/icons-material/Close';
-import AddIcon from '@mui/icons-material/Add';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
-import PanoramaIcon from '@mui/icons-material/Panorama';
-import { SelectSimple } from "../SelectSimple";
-import { ContainerScroll } from "../ContainerScroll";
 import { useDataRepair } from "../../Hooks/Reparaciones/useDataRepair";
+//icons
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PanoramaIcon from '@mui/icons-material/Panorama';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+//components
+import { ButtonDowloandProforma } from "../../PDFs/components/ButtonDowloand";
+import { Proforma } from "../../PDFs/plantillas/proforma";
+import { ContainerScroll } from "../ContainerScroll";
+import { PDFViewer } from "@react-pdf/renderer";
+import { SelectSimple } from "../SelectSimple";
 import { dateInText } from "../../Helpers/date";
 
 function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTypeRepair }) {
 
-    const { checklist, dataJson, loading, error } = useGetCheckList(tanque.id_detalle_registro)
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
+    const { checklist, dataJson, loading, error } = useGetCheckList(tanque.registros_detalles_entradas.id);
+
     const { updateRepair, completeRepair } = useUpdateRepair();
+
     const [reparation, setReparation] = useState('');
     const [newStatus, setNewStatus] = useState('');
     const [viewPDF, setViewPDF] = useState(false);
 
     //hook de manejo de datos 
     const { states, actions } = useDataRepair(typeRepair, tanque, dataJson, loading);
-    const { evidences, imagesChecklist, rows, rowModesModel, rowsMaterials, rowModesMaterials } = states;
-    const { toggleImage, onChangueImage, onDeleteImage, setRows, setRowModesModel, setRowMaterials, setRowModesMaterials } = actions;
+    const { evidences, checklist: checklistState, rows, rowModesModel, rowsMaterials, rowModesMaterials } = states;
+    const { toggleImage, onChangueImage, onDeleteImage, setRows, setRowModesModel, setRowMaterials, setRowModesMaterials, upLoadImage } = actions;
 
     //informacion recopilada en checklist
-    const dataChecklist = checklist.length >= 1 ? checklist[0] : [];
-    const { folio, ingreso, clientes } = dataChecklist;
+    const { folio, ingreso, clientes } = checklist[0] || {};
     const { cliente } = clientes || {};
     //fecha de finalizacion del mantenimiento
     const { checkOut, numero_tanque, } = tanque
@@ -46,10 +46,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
     const updateTypeMaintance = async () => {
 
         if (reparation.trim() === '') {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Selecciona un tipo de reparación'
-            })
+            toast.warning('Selecciona un tipo de reparación')
         } else {
             await updateRepair({ tipo_reparacion: reparation }, tanque.id)
             setTimeout(() => {
@@ -66,25 +63,32 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
             imageEvidence: '',
         }));
 
-        const dataMaintance = {
-            proforma: rows,
-            repairs: questionsWhitImageRepair
-        }
-
-        const data = JSON.stringify(dataMaintance);
-
         if (rows.length >= 1 && questionsWhitImageRepair.length >= 1) {
-            await updateRepair({ status: 'proceso', data: data }, tanque.id)
+
+            const dataMaintance = {
+                proforma: rows,
+                repairs: questionsWhitImageRepair
+            }
+
+            const questionsForUpdate = []
+
+            for (const question of questionsWhitImageRepair) {
+                if (typeof question.image != 'string') {
+                    questionsForUpdate.push(question)
+                }
+            }
+
+            console.log(questionsForUpdate)
+
+            await updateRepair(questionsForUpdate, dataMaintance, tanque.id)
             setTimeout(() => {
                 selectItem(false)
                 updateRepairs()
                 changueTypeRepair('proceso')
             }, 1000)
+
         } else {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Agrega evidencias y conceptos para iniciar la reparación'
-            })
+            toast.warning('Agrega evidencias y conceptos para iniciar la reparación')
         }
 
     }
@@ -94,10 +98,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
         const validationEvidences = evidences.filter((question) => question.imageEvidence === '');
 
         if (validationEvidences.length > 0 || rowsMaterials.length === 0 && newStatus === '') {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Anexa evidencias, materiales y estatus para completar la reparación'
-            })
+            toast.warning('Anexa evidencias, materiales y estatus para completar la reparación')
         } else {
             const dataMaintance = {
                 proforma: rows,
@@ -106,7 +107,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                 status: newStatus,
             }
 
-            await completeRepair(dataMaintance, tanque.id);
+            await completeRepair(dataMaintance, tanque.id, tanque.registros_detalles_entradas.id);
             setTimeout(() => {
                 selectItem(false)
                 updateRepairs()
@@ -117,11 +118,14 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
 
     return (
         <>
+
+            <Toaster richColors position='top-center' />
+
             <Box sx={{ bgcolor: 'whitesmoke', display: 'flex', flexDirection: 'column', width: '100vw', alignItems: 'center' }}>
+
                 <Stack
                     width={'100%'}
                     position={'fixed'}
-                    maxWidth={'900px'}
                     flexDirection={'row'}
                     alignItems={'center'}
                     justifyContent={'space-between'}
@@ -129,7 +133,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                     padding={'20px'}
                     zIndex={4}
                     sx={{
-                        top: '50px'
+                        top: '50px',
                     }}
                 >
                     <Typography variant='h6'>
@@ -142,7 +146,8 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                         <ArrowBackIcon />
                     </IconButton>
                 </Stack>
-                <Box sx={{ padding: '15px', }} elevation={4}>
+
+                <Box sx={{ padding: '15px', maxWidth: '1200px' }} elevation={4}>
 
                     {(typeRepair === 'pendiente') &&
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '90vw', marginTop: '50px' }}>
@@ -171,14 +176,22 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                             <Stack gap={'5px'}>
                                 <Typography variant='caption'>Evidencias recopiladas en EIR</Typography>
                                 <Paper>
-                                    <Stack padding={'15px'} gap={'15px'} flexDirection={'row'} alignItems={'center'}>
-                                        {!loading && imagesChecklist.length > 0 &&
-                                            imagesChecklist.map((question) => (
+                                    <Stack
+                                        gap={'15px'}
+                                        padding={'15px'}
+                                        alignItems={'center'}
+                                        flexDirection={'row'}
+                                        sx={{ overflowX: 'auto' }}
+                                    >
+                                        {!loading && checklistState.length > 0 &&
+                                            checklistState.map((question, index) => (
                                                 <ImageDinamic
                                                     key={question.question}
+                                                    index={index}
                                                     toggleItem={toggleImage}
                                                     typeRepair={typeRepair}
                                                     question={question}
+                                                    upLoadImage={upLoadImage}
                                                 />
                                             ))}
 
@@ -235,12 +248,14 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                                 <Typography variant='caption'>Evidencias agregadas al documento</Typography>
                                 <Paper>
                                     <Stack padding={'15px'} gap={'15px'} flexDirection={'row'} alignItems={'center'}>
-                                        {evidences.map((question) => (
+                                        {evidences.map((question, index) => (
                                             <ImageDinamic
                                                 key={question.question}
+                                                index={index}
                                                 question={question}
                                                 toggleItem={toggleImage}
                                                 typeRepair={typeRepair}
+                                                upLoadImage={upLoadImage}
                                             />
                                         ))}
 
@@ -284,7 +299,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                                 </Stack>
                             </Paper>
 
-                            <Paper sx={{padding:'20px'}}>
+                            <Paper sx={{ padding: '20px' }}>
                                 <FormControl fullWidth>
                                     <InputLabel>Siguiente estatus</InputLabel>
                                     <Select
@@ -293,7 +308,6 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                                         label='Siguiente estatus'
                                     >
                                         <MenuItem value="almacenado">Almacenado</MenuItem>
-                                        <MenuItem value="finalized">Finalizado</MenuItem>
                                     </Select>
                                     <FormHelperText>Este estatus definirá si el tanque se almacena para programar un lavado en el futuro o se le deja de dar seguimiento</FormHelperText>
                                 </FormControl>
@@ -474,7 +488,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
 
 export { ModalRepair };
 
-export function ImageDinamic({ question, toggleItem, typeRepair }) {
+export function ImageDinamic({ question, toggleItem, typeRepair, index, upLoadImage }) {
 
     const [modal, setModal] = useState(false);
     const [imageModal, setImageModal] = useState('')
@@ -484,18 +498,20 @@ export function ImageDinamic({ question, toggleItem, typeRepair }) {
         setImageModal(image)
     }
 
+    const image = typeof question.image != 'string' ? question.preview : question.image;
+
     return (
         <>
 
             {(typeRepair === 'pendiente') &&
-                <Card sx={{ width: '150px', height: '150px' }}>
+                <Card sx={{ width: '150px', height: '150px', minWidth: '150px', minHeight: '150px' }}>
 
                     <CardActionArea>
                         <CardMedia
                             component="img"
                             height="100px"
                             width="100px"
-                            image={question.image}
+                            image={image}
                             alt={question.question}
                         />
                         <CardContent sx={{ width: '100%', height: '60px', position: 'relative', top: '-10px', bgcolor: 'whitesmoke' }}>
@@ -526,12 +542,32 @@ export function ImageDinamic({ question, toggleItem, typeRepair }) {
                                 </IconButton>
 
                                 <IconButton
-                                    onClick={() => toggleModal(question.image)}
+                                    onClick={() => toggleModal(question.preview)}
                                     size='small'
                                     color="info"
                                 >
                                     <PanoramaIcon />
                                 </IconButton>
+
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    id={`image-${index}input`}
+                                    style={{ display: "none" }}
+                                    onChange={(e) => upLoadImage(index, e)}
+
+                                />
+
+                                <label htmlFor={`image-${index}input`}>
+                                    <IconButton
+                                        size='small'
+                                        color="info"
+                                        component="span"
+                                    >
+                                        <FileUploadIcon />
+                                    </IconButton>
+                                </label>
+
                             </Paper>
 
                         </CardActions>

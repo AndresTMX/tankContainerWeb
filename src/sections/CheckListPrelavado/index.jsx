@@ -50,8 +50,6 @@ function CheckListPrelavado({ updater }) {
 
     const [checklist, setChecklist] = useState({});
 
-    // initialState de agmark cambios: [], tapas: [], empaques: [], componentes: [], cubierta: []
-
     const SendForm = async (questionsString, newStatus) => {
 
         const dataChecklist = {
@@ -466,7 +464,7 @@ function StepTwo({ updateQuestions, changueValue, changueImage, changueComent, v
             coment: '',
             preview: '',
             image: '',
-            correct: 'buen estado',
+            correct: ['buen estado', 'n/a'],
             incorrect: 'mal estado',
             for: 'agmark',
             section: 'valvulaDescarga',
@@ -706,16 +704,6 @@ function StepThree({ updateQuestions, changueValue, changueImage, changueComent,
             etapa: 'prelavado'
         },
         {
-            question: "Charola cubeta",
-            value: "",
-            preview: "",
-            image: "",
-            coment: "",
-            correct: "si",
-            incorrect: "no",
-            etapa: 'prelavado'
-        },
-        {
             question: "Tuerca mariposa",
             value: "",
             preview: "",
@@ -768,7 +756,7 @@ function StepThree({ updateQuestions, changueValue, changueImage, changueComent,
             preview: "",
             image: "",
             coment: "",
-            correct: "si",
+            correct: ["si", "no"],
             incorrect: "no",
             for: "calidad",
             etapa: "prelavado"
@@ -1308,7 +1296,6 @@ function ItemCheckList({ item, index, state, set, changueValue, changueImage, ch
             <Typography variant='body1' >
                 {item.question}
             </Typography>
-
             <FormGroup required>
                 {!correctIsArray && <FormControlLabel
                     sx={{ textTransform: 'uppercase' }}

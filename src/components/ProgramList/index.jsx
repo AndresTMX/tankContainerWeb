@@ -313,7 +313,8 @@ function ModalPrograming({ modal, toggleModal, item, changueTypeRegister, oldPro
 
     const { createProgram } = usePostProgramation()
 
-    const defaultDate = dayjs();
+    const defaultDate = dayjs().tz('America/Mexico_City');
+
 
     const oldDate = oldProgramDate ? dayjs(oldProgramDate) : defaultDate;
     const oldEnd = oldTentativeDate ? dayjs(oldTentativeDate) : defaultDate;
@@ -327,8 +328,8 @@ function ModalPrograming({ modal, toggleModal, item, changueTypeRegister, oldPro
         e.preventDefault()
         const newWashing = {
             ...programing,
-            program_date: programing.program_date,
-            tentativeEnd: programing.tentativeEnd,
+            program_date: dayjs(programing.program_date).utc(),
+            tentativeEnd: dayjs(programing.tentativeEnd).utc(),
             id_detalle_entrada: item.id
         }
         await createProgram(newWashing, item.id, action)

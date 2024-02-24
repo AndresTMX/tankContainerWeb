@@ -15,10 +15,9 @@ function useFormRegister() {
 
   const [dataPipa, setDataPipa] = useState({ pipa1: "", pipa2: "" });
   const [typeChargue, setTypeChargue] = useState("");
-  const [economico, setEconomico] = useState("");
-  const [placas, setPlacas] = useState("");
   const [dataClient, setDataClient] = useState([]);
   const [operator, setOperator] = useState("");
+  const [economico, setEconomico] = useState("")
   const [dataTank, setDataTank] = useState({ tanque1: '', tanque2: '', tanque3: '', tanque4: '' });
   const [typeTank, setTypeTank] = useState({ tanque1: '', tanque2: '', tanque3: '', tanque4: '' });
   const [espectTank, setEspectTank] = useState({ tanque1: '', tanque2: '', tanque3: '', tanque4: '' })
@@ -107,7 +106,7 @@ function useFormRegister() {
       }
     })
 
-    await sendInputRegistersTank(registers, economico, placas, tracto, operator)
+    await sendInputRegistersTank(registers, economico, tracto, operator)
     clearInputs()
   }
 
@@ -119,7 +118,7 @@ function useFormRegister() {
       cliente_id: cliente,
       numero_tanque: null,
     }
-    await sendInputRegisterEmptyTracto(data, economico, placas, tracto, operator)
+    await sendInputRegisterEmptyTracto(data, economico, tracto, operator)
     clearInputs()
   }
 
@@ -139,7 +138,7 @@ function useFormRegister() {
       }
     })
 
-    await sendInputRegistersPipa(registers, economico, placas, tracto, operator)
+    await sendInputRegistersPipa(registers, economico, tracto, operator)
     clearInputs()
   }
 
@@ -169,7 +168,6 @@ function useFormRegister() {
     dataClient,
     typeTank,
     economico,
-    placas,
     espectTank
   };
 
@@ -183,7 +181,6 @@ function useFormRegister() {
     selectClient,
     setTypeTank,
     setEconomico,
-    setPlacas,
     routerRegisters,
     setTypeChargue,
     setTypePipa,

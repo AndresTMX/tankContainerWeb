@@ -3,7 +3,7 @@ import { dateMXFormat, dateInText } from "../../../Helpers/date";
 
 function DataProforma({ typeData, dataHeader }) {
 
-    const { folio, ingreso, nombre_cliente, checkOut, numero_tanque } = dataHeader;
+    const { folio, ingreso, cliente, checkOut, numero_tanque } = dataHeader;
 
     const fecha = dateMXFormat(checkOut);
     const fechaEscrita = dateInText(checkOut);
@@ -65,7 +65,7 @@ function DataProforma({ typeData, dataHeader }) {
                             <View style={{ width: '40%' }}>
                                 <BoxText
                                     label={'CLIENTE'}
-                                    text={nombre_cliente}
+                                    text={cliente}
                                     widthLabel={'50px'}
                                     widthText={'auto'}
                                 />

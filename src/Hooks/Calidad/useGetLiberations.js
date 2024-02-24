@@ -9,7 +9,7 @@ function useGetLiberations() {
     const [loading, setLoading] = useState([]);
     const [update, setUpdate] = useState(false);
     const nameCache = `lavados_${typeRegister}s`;
-    const cache = localStorage.getItem(nameCache);
+    const cache = JSON.parse(localStorage.getItem(nameCache))|| [];
 
     const updaterList = () => setUpdate(!update)
 
@@ -20,7 +20,7 @@ function useGetLiberations() {
             const { data, error } = await supabase
                 .from('lavados')
                 .select('*, registros_detalles_entradas(*, registros(*), clientes(*), transportistas(*) ), tipos_lavado(*)')
-                .eq('status', 'liberado')
+                .in('status', ['liberado', 'finalizado'])
                 .order('tentativeEnd', { ascending: false })
                 .limit(100)
 

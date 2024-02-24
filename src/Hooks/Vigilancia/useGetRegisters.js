@@ -39,7 +39,7 @@ function useGetRegisters(typeRegister) {
             .from('registros')
             .select(` *, operadores(*), registros_detalles_salidas(*)`)
             .eq('type', typeRegister)
-            .is('checkIn', null)
+            .is('checkOut', null)
             .order('created_at', { ascending: false })
             .range(0, 50)
 

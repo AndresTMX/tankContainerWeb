@@ -6,6 +6,10 @@ function useDataRepair(typeRepair, dataTanque, dataChecklist, loading) {
         routerData()
     }, [typeRepair, loading])
 
+    useEffect(() => {
+        setChecklist(dataChecklist)
+    }, dataChecklist)
+
     const [imagesChecklist, setImagesChecklist] = useState([])
     const [evidences, setEvidences] = useState([])
 
@@ -15,11 +19,12 @@ function useDataRepair(typeRepair, dataTanque, dataChecklist, loading) {
     //stados de la dataGrid de materiales
     const [rowsMaterials, setRowMaterials] = useState([]);
     const [rowModesMaterials, setRowModesMaterials] = useState({});
+    const [checklist, setChecklist] = useState(dataChecklist)
 
     const routerData = () => {
 
         const routes = {
-            pendiente: () => extractDataPending(),
+            pendiente: () => chargueChecklist(),
             proceso: () => extractDataProcess(),
             completado: () => extractDataComplete()
         }
@@ -29,9 +34,8 @@ function useDataRepair(typeRepair, dataTanque, dataChecklist, loading) {
         }
     }
 
-    const extractDataPending = () => {
-        const questionsWhitImageEvidence = dataChecklist.filter((question) => question.image != '');
-        setImagesChecklist(questionsWhitImageEvidence);
+    const chargueChecklist = () => {
+        setImagesChecklist(dataChecklist);
     }
 
     const extractDataProcess = () => {
@@ -77,8 +81,22 @@ function useDataRepair(typeRepair, dataTanque, dataChecklist, loading) {
         setEvidences(copyState)
     }
 
-    const states = { evidences, imagesChecklist, rows, rowModesModel, rowsMaterials, rowModesMaterials }
-    const actions = { toggleImage, onChangueImage, onDeleteImage, setRows, setRowModesModel, setRowMaterials, setRowModesMaterials }
+    const upLoadImage = async (indexInput, event) => {
+        const copyState = [...checklist];
+
+        const file = event.target.files[0];
+        const urlImage = URL.createObjectURL(file);
+        if (file) {
+            copyState[indexInput].image = file;
+            copyState[indexInput].preview = urlImage;
+        }
+
+        setChecklist(copyState);
+
+    };
+
+    const states = { evidences, imagesChecklist, rows, rowModesModel, rowsMaterials, rowModesMaterials, checklist }
+    const actions = { toggleImage, onChangueImage, onDeleteImage, setRows, setRowModesModel, setRowMaterials, setRowModesMaterials, upLoadImage }
 
     return { states, actions }
 

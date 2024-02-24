@@ -15,8 +15,8 @@ function Proforma({ typeProforma, dataHeader, arrayConcepts, arrayEvidences, tan
     const ArraysEvidences = dividirArray(arrayEvidences, 4);
 
     const Total = arrayConcepts.reduce((total, concept) => total + concept.importe, 0);
-    const Iva = (Total / 100) * 16;
-    const TotalWhitIva = Total + Iva;
+    const Iva = '0';
+    const TotalWhitIva = Total;
 
     return (
         <Document>

@@ -2,12 +2,12 @@ import { Box, Paper, Chip, Stack, TextField, Typography, Alert, Button, Modal, I
 import { NotConexionState } from "../NotConectionState";
 import { ItemLoadingState } from "../ItemLoadingState";
 import { ContainerScroll } from "../ContainerScroll";
-import { LoadingState } from "../LoadingState";
 //hooks
 import { useGetLiberations } from "../../Hooks/Calidad/useGetLiberations";
 import { useGetPreviusChargue } from "../../Hooks/Calidad/useGetPreviusChargue";
+import { useRejected } from "../../Hooks/Calidad/useRejected";
 //helpers
-import { dateTextShort } from "../../Helpers/date";
+import { dateTextShort, dateExpiration } from "../../Helpers/date";
 import { useState } from "react";
 import ClearIcon from '@mui/icons-material/Clear';
 //pdfAssets
@@ -114,9 +114,11 @@ function ItemLiberation({ lavado, updaterList }) {
 
 function ItemLiberado({ lavado, updaterList }) {
 
+    const { rejectedTank } = useRejected()
+
     const { status, URL, dateInit, dateEnd, concentracion, program_date, registros_detalles_entradas, sellos, tentativeEnd, tipos_lavado, folio } = lavado || {};
 
-    const { carga, numero_tanque, numero_pipa, tipo, transportistas, registros } = registros_detalles_entradas || {};
+    const { carga, numero_tanque, numero_pipa, tipo, transportistas, registros, especificacion, } = registros_detalles_entradas || {};
 
     const { cliente } = registros_detalles_entradas.clientes || {};
 
@@ -190,25 +192,40 @@ function ItemLiberado({ lavado, updaterList }) {
                         color='info'
                         label={'Fecha de entrega: ' + dateTextShort(tentativeEnd)}
                     />
+
+                    <Button variant="outlined" size="small" onClick={toggleUrl}>URL</Button>
+
                 </Stack>
 
-                <Box sx={{ display: 'flex', flexDirection: 'row', gap: '20px', justifyContent: 'space-between', flexWrap: 'wrap', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'col', gap: '20px',  flexWrap: 'wrap', alignItems: 'center' }}>
 
-                    <Stack flexDirection='row' alignItems='center' gap='20px' flexWrap='wrap'>
+                    <Stack flexDirection='row' alignItems='center' gap='20px' width='100%' flexWrap='wrap'>
                         <Box>
                             <Typography variant='caption' >{carga}</Typography>
                             <Typography>{tipo || ''} {numero_tanque || numero_pipa} </Typography>
                         </Box>
 
+                        {especificacion &&
+                            <Box>
+                                <Typography variant='caption'>Especificacion</Typography>
+                                <Typography>{especificacion}</Typography>
+                            </Box>}
+
                         <Box>
                             <Typography variant='caption'>Lavado asignado</Typography>
                             <Typography>{tipoLavado}</Typography>
                         </Box>
+
+                        <Box>
+                            <Typography variant='caption'>Caducidad de lavado</Typography>
+                            <Typography>{dateExpiration(dateEnd)}</Typography>
+                        </Box>
+
                     </Stack>
 
-                    <Stack flexDirection='row' alignItems='center' gap='10px'>
+                    <Stack flexDirection='row' alignItems='center' justifyContent='flex-end' width='100%' gap='10px' flexWrap='wrap'>
 
-                        <Button variant="outlined" size="small" onClick={toggleUrl}>URL</Button>
+                        <Button variant="outlined" color="error" size="small" onClick={() => rejectedTank(lavado.id)}>Marcar como rechazado</Button>
 
                         <Button variant="contained" size="small" onClick={toggleModalForm}>Generar certificado</Button>
 

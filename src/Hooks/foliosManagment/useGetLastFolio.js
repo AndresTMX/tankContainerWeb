@@ -30,24 +30,6 @@ function useGetLastFolio() {
 
     }
 
-    const getAllCheckList = async () => {
-        const { data, error } = await supabase
-            .from(tableChecklistManiobras)
-            .select(`
-            *,
-            users_data(*),
-            registros_detalles_entradas(*)
-            `)
-            .order('created_at', { ascending: false })
-            .range(0, 1)
-
-        if (error) {
-            setErrorFolio(error)
-        } else {
-            setFolio(data)
-        }
-    }
-
     return { getLastFolio, errorFolio, folio }
 
 

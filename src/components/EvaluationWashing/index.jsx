@@ -31,14 +31,10 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { useSaniticeValue } from "../../Hooks/Lavado/useSaniticeValue";
 import SaveIcon from '@mui/icons-material/Save';
 import { useSealItem } from "../../Hooks/Lavado/useSealItem";
+import { useSendToSanitization } from "../../Hooks/Calidad/useSendToSanitzation";
 
 
 function EvaluationWashing({ modal, toggleModal, lavado, updateList }) {
-
-    // useEffect(() => {
-    //     setRevision(initialStatate)
-    //     setStep(1)
-    // }, [modal])
 
     const { updateDateTimeWashing } = useCreateConditionsWashing();
 
@@ -385,14 +381,18 @@ function RevisionLavado({ revision, changueValue, submitChecklist }) {
     );
 }
 
-export function EvaluacionResults({ step, setStep }) {
+export function EvaluacionResults({ step, setStep, idLavado, idRegistro, toggleModal, updaterList }) {
+
+    const { returnToStatus } = useSendToSanitization()
 
     const [select, setSelect] = useState('')
 
-    const submitForm = (e) => {
+    const submitForm = async (e) => {
         e.preventDefault();
-        sendForm()
 
+        await returnToStatus(idLavado, idRegistro, select)
+        toggleModal()
+        updaterList()
     }
 
     return (
@@ -413,7 +413,7 @@ export function EvaluacionResults({ step, setStep }) {
                             label='Siguiente etapa'
                             onChange={(e) => setSelect(e.target.value)}
                         >
-                            <MenuItem value='prelavado'>Prelavado</MenuItem>
+                            <MenuItem value='lavado'>Lavado</MenuItem>
                             <MenuItem value='interna'>Reparación interna</MenuItem>
                             <MenuItem value='externa'>Reparación externa</MenuItem>
                         </Select>

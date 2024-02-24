@@ -12,7 +12,10 @@ dayjs.extend(customParseFormat);
 
 export const dateInText = (date) => dayjs(date).format('dddd, MMMM D, YYYY');
 
-export const currentDate = new dayjs(new Date());
+export const dateInTextEn = (date) => dayjs(date).locale('en').format('dddd, MMMM D, YYYY');
+
+
+export const currentDate = new dayjs(new Date()).utc();
 
 export const transformDate = (date) => dayjs(date);
 
@@ -51,11 +54,23 @@ export const dateTextShort = (date) => {
 }
 
 export const dateExpiration = (date) => {
-    const datemx =dayjs(date).tz('America/Mexico_City')
+    const datemx = dayjs(date).tz('America/Mexico_City')
     const year = datemx.$y;
-    const month = datemx.$M + 3;
-    const day = datemx.$D;
+    const month = datemx.$M;
+    const day = datemx.$D + 3;
     return `${day}/${month}/${year}`
+}
+
+export const dateTimeMoreMinutes = (date, minutes) => {
+    // Parsea la fecha dada
+    const fecha = dayjs(date).tz('America/Mexico_City');
+
+    // Suma los minutos especificados
+    const fechaModificada = fecha.add(minutes, 'minute');
+
+    // Formatea la fecha modificada y devuelve la hora en formato HH:mm
+    return fechaModificada.format('hh:mm A');
+
 }
 
 

@@ -27,8 +27,8 @@ function useSendToSanitization() {
             const urls = []
 
             const dataURL = [
-                { position:'dome', image: imageDome, value: valueDome},
-                { position:'valve', image: imageValve, value: valueValve},
+                { position: 'dome', image: imageDome, value: valueDome },
+                { position: 'valve', image: imageValve, value: valueValve },
             ]
 
             for (let item of dataURL) {
@@ -101,7 +101,74 @@ function useSendToSanitization() {
         }
     }
 
-    return { sendToSanitization }
+    const returnToStatus = async (idLavado, idRegistro, newStatus) => {
+
+        try {
+
+            if (newStatus === 'interna' || newStatus === 'externa') {
+
+                //cambiar status de lavado a cancelado
+                const { error: errorUpdateStatusWashing } = await supabase
+                    .from('lavados')
+                    .update({ status: 'cancelado' })
+                    .eq('id', idLavado)
+
+                if (errorUpdateStatusWashing) {
+                    throw new Error(`Error al crear nueva reparación ${newStatus} , error: ${errorUpdateStatusWashing.message}`)
+                }
+
+                //crear reparacion del tipo deseado
+                const { error: errorCreateReaparation } = await supabase
+                    .from('reparaciones')
+                    .insert({ id_detalle_registro: idRegister, tipo_reparacion: newStatus })
+
+                if (errorCreateReaparation) {
+                    await supabase.from('lavados').update({ status: 'almacenado-prelavado' }).eq('id', idLavado)
+                    throw new Error(`Error al crear raparación ${newStatus} `)
+                }
+
+                const { error: errorUpdateStatus } = await supabase
+                    .from('registros_detalles_entradas')
+                    .update({ status: 'reparacion' })
+                    .eq('id', idRegistro)
+
+                if (errorUpdateStatus) {
+                    throw new Error(`Error al actualizar el registro ${errorUpdateStatus.message} `)
+                }
+
+            }
+
+            if (newStatus === 'lavado') {
+
+                const { error } = await supabase
+                    .from('registros_detalles_entradas')
+                    .update({ status: newStatus })
+                    .eq('id', idRegistro);
+
+                if (error) {
+                    await supabase.from('registros_detalles_entradas').update({ status: 'prelavado' }).eq('id', idRegistro);
+                    throw new Error(`Error al actualizar el estatus del registro \nerror: ${error.message}`)
+                }
+
+                const { error: errorUpdateWashing } = await supabase
+                    .from('lavados')
+                    .update({ status: 'asignado' })
+                    .eq('id', idLavado)
+
+                if (errorUpdateWashing) {
+                    await supabase.from('registros_detalles_entradas').update({ status: 'prelavado' }).eq('id', idRegistro)
+                    await supabase.from('lavados').update({ status: 'pending' }).eq('id', idLavado)
+                    throw new Error(`Error al actualizar el estatus del registro \nerror: ${error.message}`)
+                }
+
+            }
+            
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    return { sendToSanitization, returnToStatus }
 }
 
 export { useSendToSanitization };

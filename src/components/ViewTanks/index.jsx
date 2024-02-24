@@ -24,7 +24,7 @@ function ViewTanks({ register, toggle, details, detailManiobras, changueTypeMani
         getTanksReadyToOutput();
     }, [])
 
-    const { tracto, operadores, placas, numero_economico, operador_id} = register
+    const { tracto, operadores, numero_economico, operador_id} = register
     const { carga,  transportistas, clientes, transportista_id, entrada_id } = details[0] || {};
     const { nombre, contacto } = operadores || {};
     const { name: linea, } = transportistas || {};
@@ -51,7 +51,7 @@ function ViewTanks({ register, toggle, details, detailManiobras, changueTypeMani
 
         console.log(registers)
 
-        await addOutputRegisterForManiobra(entrada_id, registers, placas, tracto, numero_economico, operador_id, transportista_id, clienteId)
+        await addOutputRegisterForManiobra(entrada_id, registers, tracto, numero_economico, operador_id, transportista_id, clienteId)
         setTimeout(() => {
             changueTypeManiobra('pendiente')
             toggle(false)

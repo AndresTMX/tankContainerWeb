@@ -1,30 +1,63 @@
-import { useState, useContext, useEffect } from "react";
-import { Box, Paper, Stack, Button, IconButton, Typography, Modal, Fade, Container, TextField } from "@mui/material";
-import { ModalAddCustomer } from "../../components/DataGridCustomers";
-import { StepBarProgress } from "../StepBarProgress";
+import { useState, } from "react";
+import { toast } from "sonner";
+import { Box, Paper, Stack, Button, IconButton, Typography, Modal, TextField, FormControlLabel, Checkbox, FormGroup, FormControl } from "@mui/material";
 import { ContainerScroll } from "../../components/ContainerScroll";
-import { ManiobrasContext } from "../../Context/ManiobrasContext";
-import { useCheckList } from "../../Hooks/useChecklistManiobras";
 import { SelectSimple } from "../../components/SelectSimple";
 import { AccordionSimple } from "../../components/Accordion";
 import { TextGeneral } from "../../components/TextGeneral";
-import { InputImage } from "../../components/InputImage";
-import { InputText } from "../../components/InputText";
+import { StepBarProgress } from "../StepBarProgress";
 //icons
-import ChatIcon from '@mui/icons-material/Chat';
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 //button download pdf
 import { ButtonDowloand } from "../../PDFs/components/ButtonDowloand";
-//hooks
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
+import { useManiobrasContext } from "../../Context/ManiobrasContext";
+import { useGetLastFolio } from "../../Hooks/foliosManagment/useGetLastFolio";
+import { ViewerDocument } from "../../PDFs/components/Viewer"
+import { EIR } from "../../PDFs/plantillas/EIR";
 
-function CheckListEIR({ step, setStep, item, selectItem, toggleModalPDF }) {
+function CheckListEIR() {
 
-  const [state, dispatch] = useContext(ManiobrasContext);
+  const { step, setStep, checklist, setChecklist, item, setItem } = useManiobrasContext();
 
-  const nextStepBar = (step) => {
-    setStep(step)
+  const updateQuestions = (questions, key) => {
+    const newState = { ...checklist, [key]: questions }
+    setChecklist(newState)
+    setStep(step + 1)
+  }
+
+  const changueValue = (index, value, state, set) => {
+    const newState = state.length >= 1 ? [...state] : [];
+    newState[index].value = value
+    set(newState)
+  }
+
+  const changueComent = (index, event, state, set) => {
+    const newState = state.length >= 1 ? [...state] : [];
+    newState[index].coment = event.target.value
+    set(newState)
+  }
+
+  const changueImage = (index, event, state, set) => {
+    const newState = state.length >= 1 ? [...state] : [];
+    const file = event.target.files[0];
+    const urlImage = URL.createObjectURL(file);
+    if (file) {
+      newState[index].image = file;
+      newState[index].preview = urlImage;
+    }
+    set(newState)
+  }
+
+  const validateQuestions = (questions, callback) => {
+    let valuesNull = questions.filter((obj) => obj.value === null);
+    let responsesIncorrect = questions.filter((item) => item.value != item.correct && item.preview === '');
+
+    if (valuesNull.length >= 1 || responsesIncorrect.length >= 1) {
+      toast.warning(`Termina el checklist y anexa las evidencias`)
+    } else {
+      callback()
+    }
   }
 
   return (
@@ -33,44 +66,102 @@ function CheckListEIR({ step, setStep, item, selectItem, toggleModalPDF }) {
         sx={{
           display: 'flex',
           flexDirection: 'column',
+          paddingBottom: '30px'
         }}>
 
-        <StepBarProgress step={step} numSteps={6} />
+        <StepBarProgress step={step} numSteps={9} />
 
         {step === 1 && (
           <StepOne
-            state={state}
-            nextStepBar={nextStepBar} />
+            validateQuestions={validateQuestions}
+            updateQuestions={updateQuestions}
+            changueComent={changueComent}
+            changueValue={changueValue}
+            changueImage={changueImage}
+          />
         )}
 
         {step === 2 && (
           <StepTwo
-            state={state}
-            nextStepBar={nextStepBar} />
+            setStep={setStep}
+            step={step}
+            validateQuestions={validateQuestions}
+            updateQuestions={updateQuestions}
+            changueComent={changueComent}
+            changueValue={changueValue}
+            changueImage={changueImage}
+          />
         )}
 
 
         {step === 3 && (
           <StepThree
-            state={state}
-            nextStepBar={nextStepBar} />
+            step={step}
+            setStep={setStep}
+            validateQuestions={validateQuestions}
+            updateQuestions={updateQuestions}
+            changueComent={changueComent}
+            changueValue={changueValue}
+            changueImage={changueImage}
+          />
         )}
 
         {step === 4 && (
           <StepFor
-            item={item}
-            state={state}
-            selectItem={selectItem}
-            nextStepBar={nextStepBar} />
+            step={step}
+            setStep={setStep}
+            validateQuestions={validateQuestions}
+            updateQuestions={updateQuestions}
+            changueComent={changueComent}
+            changueValue={changueValue}
+            changueImage={changueImage}
+          />
         )}
 
         {step === 5 && (
+          <StepFive
+            step={step}
+            setStep={setStep}
+            validateQuestions={validateQuestions}
+            updateQuestions={updateQuestions}
+            changueComent={changueComent}
+            changueValue={changueValue}
+            changueImage={changueImage}
+          />
+        )}
+
+        {step === 6 && (
+          <StepSix
+            step={step}
+            setStep={setStep}
+            validateQuestions={validateQuestions}
+            updateQuestions={updateQuestions}
+            changueComent={changueComent}
+            changueValue={changueValue}
+            changueImage={changueImage}
+          />
+        )}
+
+        {step === 7 && (
+          <StepOptions
+            item={item}
+            step={step}
+            setStep={setStep}
+            setItem={setItem}
+            validateQuestions={validateQuestions}
+            updateQuestions={updateQuestions}
+            changueComent={changueComent}
+            changueValue={changueValue}
+            changueImage={changueImage}
+          />
+        )}
+
+        {step === 8 && (
           <StepFinal
             item={item}
-            state={state}
-            selectItem={selectItem}
-            nextStepBar={nextStepBar}
-            toggleModalPDF={toggleModalPDF}
+            step={step}
+            setStep={setStep}
+            checklist={checklist}
           />
         )}
 
@@ -82,59 +173,74 @@ function CheckListEIR({ step, setStep, item, selectItem, toggleModalPDF }) {
 
 export { CheckListEIR };
 
-export function QuestionItem({ question, value, index, SelectQuestionComent, ChangueInput, ChangueImage, DiscardImage }) {
 
-  const IsSmall = useMediaQuery('(max-width:750px)');
+export function QuestionItem({ item, index, state, set, changueValue, changueImage, changueComent }) {
+
+  const [image, setImage] = useState(false);
+
   return (
     <>
-      <Paper elevation={3} sx={{ width: '100%', padding: '15px', backgroundColor: 'white' }}>
 
-        <Stack
-          flexDirection={IsSmall ? 'column' : 'row'}
-          alignItems={IsSmall ? 'start' : 'center'}
-          justifyContent='space-between'
-        >
-          <Typography variant="subtitle2"
-            sx={{ maxWidth: IsSmall ? '100%' : '270px', padding: IsSmall ? '7px' : '0px' }}>
-            {question.question}
-          </Typography>
+      <Paper
+        elevation={3}
+        sx={{ display: 'flex', flexDirection: 'column', width: '100%', justifyContent: 'center', gap: '10px', padding: '10px' }} >
+        <Typography variant='body1' >
+          {item.question}
+        </Typography>
 
-          <Stack flexDirection='row' alignItems='center' width={IsSmall ? '100%' : 'auto'} flexWrap={'wrap'} >
-
-            <SelectSimple
-              required={true}
-              width={IsSmall ? '100%' : null}
-              onChange={(e) => ChangueInput(index, e.target.value)}
-              title={'respuesta'}
-              value={value === null ? '' : value}
-              defaultValue={''}
-              options={['Si', 'No', 'Cortado', 'Doblado', 'Faltante', 'Respaldo', 'Abollado']}
-            />
-
-            <Stack
-              flexDirection='row'
-              alignItems='center'
-              width={IsSmall ? '100%' : 'auto'}
-              padding='7px'
-            >
-              <InputImage
-                index={index}
-                preview={question.preview}
-                onChangue={(e) => ChangueImage(index, e)}
-                discardImage={DiscardImage}
+        <FormGroup>
+          {
+            item.options.map((option, indexOption) => (
+              <FormControlLabel key={`${option}_${indexOption}`}
+                sx={{ textTransform: 'uppercase' }}
+                onChange={() => changueValue(index, option, state, set)}
+                control={<Checkbox checked={item.value === option ? true : false} />}
+                label={option}
               />
+            ))
+          }
+        </FormGroup>
 
-              <IconButton
-                onClick={() => SelectQuestionComent(index)}
-                variant="contained"
-                color="primary">
-                <ChatIcon />
-              </IconButton>
-            </Stack>
-          </Stack>
+        <FormControl sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <input
+            id={`image-${item.question}`}
+            onChange={(e) => changueImage(index, e, state, set)}
+            style={{ display: 'none' }}
+            accept="image/*"
+            type="file"
+          />
 
-        </Stack>
+          <label htmlFor={`image-${item.question}`}>
+            <Button
+              onChange={(e) => changueImage(index, e, state, set)}
+              endIcon={<AddAPhotoIcon />}
+              size="small"
+              variant="outlined"
+              component='span'>
+              Cargar evidencia
+            </Button>
+          </label>
 
+          <IconButton
+            color={item.preview != '' ? 'info' : 'default'}
+            disabled={item.preview != '' ? false : true}
+            onClick={() => setImage(!image)}
+          >
+            <OpenInNewIcon />
+          </IconButton>
+        </FormControl>
+
+        <TextField id={`coment-${item.question}`} value={item.coment} onChange={(e) => changueComent(index, e, state, set)} label='Observaciones' />
+
+        <Modal open={image}>
+          <Box
+            onClick={() => setImage(!image)}
+            sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '5%', width: '100%', minHeight: '100vh' }}>
+            <Paper elevation={3} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '15px', maxWidth: '90vw' }}>
+              <img width='100%' src={item.preview} />
+            </Paper>
+          </Box>
+        </Modal>
 
       </Paper>
 
@@ -143,41 +249,28 @@ export function QuestionItem({ question, value, index, SelectQuestionComent, Cha
   );
 }
 
-export function StepOne({ nextStepBar, state }) {
+export function StepOne({ updateQuestions, changueValue, changueImage, changueComent, validateQuestions, }) {
 
-  const IsSmall = useMediaQuery('(max-width:850px)');
-  //inicio del hook de checklist
-  const mockListCheck = [
+  const questionsBase = [
     {
       question: 'PANEL FROTAL',
       value: null,
       preview: '',
       image: '',
       coment: '',
+      section: 'panel',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
     },
     {
-      question: 'MARCO FRONTAL',
+      question: 'PANEL IZQUIERDO',
       value: null,
       preview: '',
       image: '',
       coment: '',
-
-    },
-    {
-      question: 'PANEL TRASERO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: '',
-
-    },
-    {
-      question: 'MARCO TRASERO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: '',
-
+      section: 'panel',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
     },
     {
       question: 'PANEL DERECHO',
@@ -185,6 +278,108 @@ export function StepOne({ nextStepBar, state }) {
       preview: '',
       image: '',
       coment: '',
+      section: 'panel',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+    {
+      question: 'PANEL INFERIOR',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      section: 'panel',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+    {
+      question: 'PANEL SUPERIOR',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      section: 'panel',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+    {
+      question: 'PANEL TRASERO',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      section: 'panel',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+
+    },
+  ]
+
+  const [questions, setQuestions] = useState(questionsBase);
+
+  const Submit = (e) => {
+    e.preventDefault();
+    validateQuestions(questions, () => updateQuestions(questions, 'paneles'))
+  }
+
+  return (
+    <>
+      <form onSubmit={(e) => Submit(e)}>
+        <Paper elevation={3} sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '100%', }}>
+
+          <Typography variant='subtitle' fontWeight='500'>Verifica la presencia y condiciones de lo siguiente</Typography>
+
+          <ContainerScroll height={'auto'} maxHeight={'55vh'}>
+            <Stack gap='10px'>
+              {questions.map((item, index) => (
+                <QuestionItem
+                  key={index}
+                  state={questions}
+                  item={item}
+                  index={index}
+                  set={setQuestions}
+                  changueValue={changueValue}
+                  changueImage={changueImage}
+                  changueComent={changueComent}
+                />
+              ))}
+            </Stack>
+          </ContainerScroll>
+
+          <Button
+            type="submit"
+            variant="contained"
+            size="small" >
+            Siguiente
+          </Button>
+        </Paper>
+      </form>
+    </>
+  )
+}
+
+export function StepTwo({ updateQuestions, changueValue, changueImage, changueComent, validateQuestions, setStep, step }) {
+
+  const questionsBase = [
+    {
+      question: 'MARCO FRONTAL',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+
+    {
+      question: 'MARCO TRASERO',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+
     },
     {
       question: 'MARCO DERECHO',
@@ -192,531 +387,517 @@ export function StepOne({ nextStepBar, state }) {
       preview: '',
       image: '',
       coment: '',
-    },
-    {
-      question: 'PANEL IZQUIERDO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
     },
     {
       question: 'MARCO IZQUIERDO',
       value: null,
       preview: '',
       image: '',
-      coment: ''
-    },
-    {
-      question: 'PANEL SUPERIOR',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
     },
     {
       question: 'MARCO SUPERIOR',
       value: null,
       preview: '',
       image: '',
-      coment: ''
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
     },
-    {
-      question: 'PANEL INFERIOR',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-  ]
-  const stateCheckList = state.maniobrasCheckList.pageOne.length >= 1 ? state.maniobrasCheckList.pageOne : mockListCheck;
-  const { actions, states } = useCheckList(stateCheckList)
-  const { ChangueInput, ChangueImage, DiscardImage, ChangueComent, SelectQuestionComent, ToggleModalComent, nextStep } = actions
-  const { listCheck, indexQuestion, modalComent, } = states
-
-  const next = (e) => {
-    e.preventDefault();
-    const newState = { ...state.maniobrasCheckList, pageOne: [...listCheck] }
-    nextStep(newState)
-    nextStepBar(2)
-  }
-
-  return (
-    <>
-      <Paper sx={{ width: '100%' }}>
-        <ContainerScroll height={'56vh'}>
-          <form onSubmit={next}>
-            <Stack width='100%' gap='10px'>
-              {listCheck.map((question, index) => (
-                <QuestionItem
-                  key={index}
-                  index={index}
-                  question={question}
-                  value={question.value}
-                  coment={question.coment}
-                  ChangueInput={ChangueInput}
-                  ChangueImage={ChangueImage}
-                  DiscardImage={DiscardImage}
-                  SelectQuestionComent={SelectQuestionComent}
-                />
-              ))}
-            </Stack>
-
-            <Stack
-              marginTop='20px'
-              flexDirection='row'
-              alignItems='center'
-              justifyContent='flex-end'
-            >
-              <Button
-                color="primary"
-                variant="contained"
-                type="submit"
-              >
-                Siguiente
-              </Button>
-            </Stack>
-          </form>
-
-        </ContainerScroll>
-      </Paper>
-
-      <Modal open={modalComent}>
-        <Container
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh',
-          }}
-        >
-          <Fade in={modalComent} timeout={500}>
-            <Paper
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '20px',
-                padding: '20px'
-              }}>
-              <Typography>Agregar comentarios</Typography>
-
-              <InputText
-                type='textarea'
-                width={IsSmall ? '100%' : '300px'}
-                value={listCheck[indexQuestion].coment}
-                label={'Comentarios'}
-                onChangue={ChangueComent}
-              />
-
-              <Button
-                onClick={ToggleModalComent}
-                variant='contained'
-                color='error'
-              >Cerrar
-              </Button>
-
-            </Paper>
-          </Fade>
-        </Container>
-      </Modal>
-    </>
-  )
-}
-
-export function StepTwo({ nextStepBar, state }) {
-
-  const IsSmall = useMediaQuery('(max-width:850px)');
-  //inicio del hook de checklist
-  const mockListCheck = [
     {
       question: 'MARCO INFERIOR',
       value: null,
       preview: '',
       image: '',
-      coment: ''
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
     },
+  ]
+
+  const [questions, setQuestions] = useState(questionsBase);
+
+  const Submit = (e) => {
+    e.preventDefault();
+    validateQuestions(questions, () => updateQuestions(questions, 'marcos'))
+  }
+
+  return (
+    <>
+      <form onSubmit={(e) => Submit(e)}>
+        <Paper elevation={3} sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '100%', }}>
+
+          <Typography variant='subtitle' fontWeight='500'>Verifica la presencia y condiciones de lo siguiente</Typography>
+
+          <ContainerScroll height={'auto'} maxHeight={'55vh'}>
+            <Stack gap='10px'>
+              {questions.map((item, index) => (
+                <QuestionItem
+                  key={index}
+                  state={questions}
+                  item={item}
+                  index={index}
+                  set={setQuestions}
+                  changueValue={changueValue}
+                  changueImage={changueImage}
+                  changueComent={changueComent}
+                />
+              ))}
+            </Stack>
+          </ContainerScroll>
+
+          <Stack flexDirection='row' justifyContent={'space-around'} flexWrap='wrap' gap='10px' >
+            <Button
+              color="warning"
+              onClick={() => setStep(step - 1)}
+              variant="contained"
+              size="small" >
+              anterior
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              size="small" >
+              Siguiente
+            </Button>
+          </Stack>
+        </Paper>
+      </form>
+    </>
+  )
+}
+
+export function StepThree({ updateQuestions, changueValue, changueImage, changueComent, validateQuestions, setStep, step }) {
+
+  const questionsBase = [
     {
       question: 'NOMENCLATURA',
       value: null,
       preview: '',
       image: '',
-      coment: ''
-    },
-    {
-      question: 'ESCALERAS',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'PASARELAS',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'ENTRADA DE HOMBRE',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'MARIPOSAS DE E. HOMBRE',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'VÁLVULA DE PRESIÓN Y ALIVIO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'TUBO DE DESAGÜE',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'VÁLVULA DE ALIVIO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'BRIDA CIEGA',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-  ]
-  const stateCheckList = state.maniobrasCheckList.pageTwo.length >= 1 ? state.maniobrasCheckList.pageTwo : mockListCheck;
-  const { actions, states } = useCheckList(stateCheckList)
-  const { ChangueInput, ChangueComent, ChangueImage, DiscardImage, SelectQuestionComent, ToggleModalComent, nextStep } = actions
-  const { listCheck, indexQuestion, modalComent, maniobrasCheckList } = states
-
-  const next = (e) => {
-    e.preventDefault();
-    const newState = { ...state.maniobrasCheckList, pageTwo: [...listCheck] };
-    nextStep(newState)
-    nextStepBar(3)
-  }
-
-  return (
-    <>
-      <Paper sx={{ width: '100%' }}>
-        <ContainerScroll>
-          <form onSubmit={next}>
-            <Stack width='100%' gap='10px'>
-              {listCheck.map((question, index) => (
-                <QuestionItem
-                  key={index}
-                  index={index}
-                  question={question}
-                  value={question.value}
-                  coment={question.coment}
-                  ChangueImage={ChangueImage}
-                  DiscardImage={DiscardImage}
-                  ChangueInput={ChangueInput}
-                  SelectQuestionComent={SelectQuestionComent}
-                />
-              ))}
-            </Stack>
-
-            <Stack
-              justifyContent='space-between'
-              marginTop='20px'
-              flexDirection='row'
-              alignItems='center'
-              width='100%'
-            >
-
-              <Button
-                variant="contained"
-                color="error"
-                onClick={() => nextStepBar(1)}
-              >
-                anterior
-              </Button>
-
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-              >
-                Siguiente
-              </Button>
-            </Stack>
-          </form>
-        </ContainerScroll>
-      </Paper>
-
-      <Modal open={modalComent}>
-        <Container
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh',
-          }}
-        >
-          <Fade in={modalComent} timeout={500}>
-            <Paper
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '20px',
-                padding: '20px'
-              }}>
-              <Typography>Agregar comentarios</Typography>
-
-              <InputText
-                type='textarea'
-                width={IsSmall ? '100%' : '300px'}
-                value={listCheck[indexQuestion].coment}
-                label={'Comentarios'}
-                onChangue={ChangueComent}
-              />
-
-              <Button
-                onClick={ToggleModalComent}
-                variant='contained'
-                color='error'
-              >Cerrar
-              </Button>
-
-            </Paper>
-          </Fade>
-        </Container>
-      </Modal>
-    </>
-  )
-}
-
-export function StepThree({ nextStepBar, state }) {
-
-  const IsSmall = useMediaQuery('(max-width:850px)');
-  //inicio del hook de checklist
-  const mockListCheck = [
-    {
-      question: 'MANÓMETRO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'TERMÓMETRO',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
     },
     {
       question: 'PLACA DE DATOS',
       value: null,
       preview: '',
       image: '',
-      coment: ''
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
     },
     {
       question: 'PORTA DOCUMENTOS',
       value: null,
       preview: '',
       image: '',
-      coment: ''
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
     },
+
+  ]
+
+  const [questions, setQuestions] = useState(questionsBase);
+
+  const Submit = (e) => {
+    e.preventDefault();
+    validateQuestions(questions, () => updateQuestions(questions, 'informacion'))
+  }
+
+  return (
+    <>
+      <form onSubmit={(e) => Submit(e)}>
+        <Paper elevation={3} sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '100%', }}>
+
+          <Typography variant='subtitle' fontWeight='500'>Verifica la presencia y condiciones de lo siguiente</Typography>
+
+          <ContainerScroll height={'auto'} maxHeight={'55vh'}>
+            <Stack gap='10px'>
+              {questions.map((item, index) => (
+                <QuestionItem
+                  key={index}
+                  state={questions}
+                  item={item}
+                  index={index}
+                  set={setQuestions}
+                  changueValue={changueValue}
+                  changueImage={changueImage}
+                  changueComent={changueComent}
+                />
+              ))}
+            </Stack>
+          </ContainerScroll>
+
+          <Stack flexDirection='row' justifyContent={'space-around'} flexWrap='wrap' gap='10px' >
+            <Button
+              color="warning"
+              onClick={() => setStep(step - 1)}
+              variant="contained"
+              size="small" >
+              anterior
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              size="small" >
+              Siguiente
+            </Button>
+          </Stack>
+        </Paper>
+      </form>
+    </>
+  )
+}
+
+export function StepFor({ updateQuestions, changueValue, changueImage, changueComent, validateQuestions, setStep, step }) {
+
+  const questionsBase = [
+
     {
-      question: 'TUBO DE VAPOR',
+      question: 'ESCALERAS',
       value: null,
       preview: '',
       image: '',
-      coment: ''
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
     },
     {
-      question: 'TAPONES DE TUBO DE VAPOR',
+      question: 'PASARELAS',
       value: null,
       preview: '',
       image: '',
-      coment: ''
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
     },
     {
-      question: 'SISTEMA DE CALENTAMIENTO ELÉCTRICO',
+      question: 'ENTRADA DE HOMBRE',
       value: null,
       preview: '',
       image: '',
-      coment: ''
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+
     },
     {
-      question: 'VÁLVULA DE PIE DE TANQUE',
+      question: 'MARIPOSAS DE E. HOMBRE',
       value: null,
       preview: '',
       image: '',
-      coment: ''
-    },
-    {
-      question: 'VÁLVULA DE DESCARGA',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
-    },
-    {
-      question: 'TAPÓN DE VÁLVULA DE DESCARGA',
-      value: null,
-      preview: '',
-      image: '',
-      coment: ''
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
     },
     {
       question: 'MANERAL DE VÁLVULA DE SEGURIDAD',
       value: null,
       preview: '',
       image: '',
-      coment: ''
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
     },
+  ]
+
+  const [questions, setQuestions] = useState(questionsBase);
+
+  const Submit = (e) => {
+    e.preventDefault();
+    validateQuestions(questions, () => updateQuestions(questions, 'entradas'))
+  }
+
+  return (
+    <>
+      <form onSubmit={(e) => Submit(e)}>
+        <Paper elevation={3} sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '100%', }}>
+
+          <Typography variant='subtitle' fontWeight='500'>Verifica la presencia y condiciones de lo siguiente</Typography>
+
+          <ContainerScroll height={'auto'} maxHeight={'55vh'}>
+            <Stack gap='10px'>
+              {questions.map((item, index) => (
+                <QuestionItem
+                  key={index}
+                  state={questions}
+                  item={item}
+                  index={index}
+                  set={setQuestions}
+                  changueValue={changueValue}
+                  changueImage={changueImage}
+                  changueComent={changueComent}
+                />
+              ))}
+            </Stack>
+          </ContainerScroll>
+
+          <Stack flexDirection='row' justifyContent={'space-around'} flexWrap='wrap' gap='10px' >
+            <Button
+              color="warning"
+              onClick={() => setStep(step - 1)}
+              variant="contained"
+              size="small" >
+              anterior
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              size="small" >
+              Siguiente
+            </Button>
+          </Stack>
+        </Paper>
+      </form>
+    </>
+  )
+}
+
+export function StepFive({ updateQuestions, changueValue, changueImage, changueComent, validateQuestions, setStep, step }) {
+
+  const questionsBase = [
+    {
+      question: 'VÁLVULA DE PRESIÓN Y ALIVIO',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+    {
+      question: 'VÁLVULA DE ALIVIO',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+    {
+      question: 'VÁLVULA DE PIE DE TANQUE',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+    {
+      question: 'VÁLVULA DE DESCARGA',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      step: '5',
+      section: 'valvula',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+    {
+      question: 'TAPÓN DE VÁLVULA DE DESCARGA',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+    {
+      question: 'TAPONES DE TUBO DE VAPOR',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+    {
+      question: 'BRIDA CIEGA',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+    {
+      question: 'TUBO DE DESAGÜE',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+    {
+      question: 'TUBO DE VAPOR',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+  ]
+
+  const [questions, setQuestions] = useState(questionsBase);
+
+  const Submit = (e) => {
+    e.preventDefault();
+    validateQuestions(questions, () => updateQuestions(questions, 'valvulas'))
+  }
+
+  return (
+    <>
+      <form onSubmit={(e) => Submit(e)}>
+        <Paper elevation={3} sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '100%', }}>
+
+          <Typography variant='subtitle' fontWeight='500'>Verifica la presencia y condiciones de lo siguiente</Typography>
+
+          <ContainerScroll height={'auto'} maxHeight={'55vh'}>
+            <Stack gap='10px'>
+              {questions.map((item, index) => (
+                <QuestionItem
+                  key={index}
+                  state={questions}
+                  item={item}
+                  index={index}
+                  set={setQuestions}
+                  changueValue={changueValue}
+                  changueImage={changueImage}
+                  changueComent={changueComent}
+                />
+              ))}
+            </Stack>
+          </ContainerScroll>
+
+          <Stack flexDirection='row' justifyContent={'space-around'} flexWrap='wrap' gap='10px' >
+            <Button
+              color="warning"
+              onClick={() => setStep(step - 1)}
+              variant="contained"
+              size="small" >
+              anterior
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              size="small" >
+              Siguiente
+            </Button>
+          </Stack>
+        </Paper>
+      </form>
+    </>
+  )
+}
+
+export function StepSix({ updateQuestions, changueValue, changueImage, changueComent, validateQuestions, setStep, step }) {
+
+  const questionsBase = [
     {
       question: 'CIERRE DE EMERGENCIA REMOTO',
       value: null,
       preview: '',
       image: '',
-      coment: ''
-    }
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+    {
+      question: 'SISTEMA DE CALENTAMIENTO ELÉCTRICO',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+    {
+      question: 'MANÓMETRO',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
+    {
+      question: 'TERMÓMETRO',
+      value: null,
+      preview: '',
+      image: '',
+      coment: '',
+      correct: 'buen estado',
+      options: ['buen estado', 'mal estado', 'cortado', 'doblado', 'abollado', 'faltante']
+    },
   ]
-  const stateCheckList = state.maniobrasCheckList.pageThree.length >= 1 ? state.maniobrasCheckList.pageThree : mockListCheck;
-  const { actions, states } = useCheckList(stateCheckList)
-  const { ChangueInput, ChangueComent, SelectQuestionComent, ChangueImage, DiscardImage, ToggleModalComent, nextStep } = actions
-  const { listCheck, indexQuestion, modalComent } = states
 
-  const next = (e) => {
+  const [questions, setQuestions] = useState(questionsBase);
+
+  const Submit = (e) => {
     e.preventDefault();
-    const newState = { ...state.maniobrasCheckList, pageThree: [...listCheck] };
-    nextStep(newState)
-    nextStepBar(4)
+    validateQuestions(questions, () => updateQuestions(questions, 'sistemas'))
   }
 
   return (
     <>
-      <Paper sx={{ width: '100%' }}>
-        <ContainerScroll>
-          <form onSubmit={next}>
-            <Stack width='100%' gap='10px'>
-              {listCheck.map((question, index) => (
+      <form onSubmit={(e) => Submit(e)}>
+        <Paper elevation={3} sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '100%', }}>
+
+          <Typography variant='subtitle' fontWeight='500'>Verifica la presencia y condiciones de lo siguiente</Typography>
+
+          <ContainerScroll height={'auto'} maxHeight={'55vh'}>
+            <Stack gap='10px'>
+              {questions.map((item, index) => (
                 <QuestionItem
                   key={index}
+                  state={questions}
+                  item={item}
                   index={index}
-                  question={question}
-                  value={question.value}
-                  coment={question.coment}
-                  ChangueImage={ChangueImage}
-                  DiscardImage={DiscardImage}
-                  ChangueInput={ChangueInput}
-                  SelectQuestionComent={SelectQuestionComent}
+                  set={setQuestions}
+                  changueValue={changueValue}
+                  changueImage={changueImage}
+                  changueComent={changueComent}
                 />
               ))}
             </Stack>
+          </ContainerScroll>
 
-            <Stack
-              justifyContent='space-between'
-              marginTop='20px'
-              flexDirection='row'
-              alignItems='center'
-              width='100%'
-            >
-
-              <Button
-                variant="contained"
-                color="error"
-                onClick={() => nextStepBar(2)}
-              >
-                anterior
-              </Button>
-
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-              >
-                Siguiente
-              </Button>
-            </Stack>
-          </form>
-        </ContainerScroll>
-      </Paper>
-
-      <Modal open={modalComent}>
-        <Container
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh',
-          }}
-        >
-          <Fade in={modalComent} timeout={500}>
-            <Paper
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '20px',
-                padding: '20px'
-              }}>
-              <Typography>Agregar comentarios</Typography>
-
-              <InputText
-                type='textarea'
-                width={IsSmall ? '100%' : '300px'}
-                value={listCheck[indexQuestion].coment}
-                label={'Comentarios'}
-                onChangue={ChangueComent}
-              />
-
-              <Button
-                onClick={ToggleModalComent}
-                variant='contained'
-                color='error'
-              >Cerrar
-              </Button>
-
-            </Paper>
-          </Fade>
-        </Container>
-      </Modal>
+          <Stack flexDirection='row' justifyContent={'space-around'} flexWrap='wrap' gap='10px' >
+            <Button
+              color="warning"
+              onClick={() => setStep(step - 1)}
+              variant="contained"
+              size="small" >
+              anterior
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              size="small" >
+              Siguiente
+            </Button>
+          </Stack>
+        </Paper>
+      </form>
     </>
   )
 }
 
-export function StepFor({ nextStepBar, item, selectItem, state }) {
-
-  const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-  const [modalCustomer, setModalCustomer] = useState(false)
-  const { maniobrasCheckList } = state;
-  const flatCheckList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
-  const questionsWhitEvidenceAnex = flatCheckList.filter((question) => question.image != '');
+export function StepOptions({ item, setItem, step, setStep }) {
 
   const onSumbit = (e) => {
     e.preventDefault();
-
-    if ((item.status === 'interna' || item.status === 'externa') && questionsWhitEvidenceAnex.length === 0) {
-      dispatchGlobal({
-        type: actionTypesGlobal.setNotification,
-        payload: 'Anexa evidencias para enviar este tanque a reparacion'
-      })
-    } else {
-      nextStepBar(5)
-    }
+    setStep(step + 1)
   }
 
   const optionsStatus = [
@@ -746,7 +927,7 @@ export function StepFor({ nextStepBar, item, selectItem, state }) {
               width={'100%'}
               value={item.status}
               options={optionsStatus}
-              onChange={(e) => selectItem({ ...item, status: e.target.value })}
+              onChange={(e) => setItem({ ...item, status: e.target.value })}
               helperText={'Selecciona a que etapa pasa este contedor'}
             />
 
@@ -762,7 +943,7 @@ export function StepFor({ nextStepBar, item, selectItem, state }) {
                 variant="contained"
                 color='error'
                 size="small"
-                onClick={() => nextStepBar(3)}>
+                onClick={() => setStep(step - 1)}>
                 atras
               </Button>
 
@@ -786,20 +967,24 @@ export function StepFor({ nextStepBar, item, selectItem, state }) {
   )
 }
 
-export function StepFinal({ nextStepBar, toggleModalPDF, item, state, selectItem }) {
+export function StepFinal({ setStep, step, checklist, item }) {
 
-  const { maniobrasCheckList } = state;
-  const flatCheckList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
+  const flatCheckList = Object.values(checklist).flat();
 
   function filterChecklist(checklist, valueFilter) {
     return checklist.filter((item) => item.value === valueFilter)
   }
 
-  const cortados = filterChecklist(flatCheckList, 'Cortado');
-  const doblados = filterChecklist(flatCheckList, 'Doblado');
-  const faltantes = filterChecklist(flatCheckList, 'Faltante');
-  const respaldo = filterChecklist(flatCheckList, 'Respaldo');
-  const abollados = filterChecklist(flatCheckList, 'Abollado');
+  const cortados = filterChecklist(flatCheckList, 'cortado');
+  const doblados = filterChecklist(flatCheckList, 'doblado');
+  const faltantes = filterChecklist(flatCheckList, 'faltante');
+  const respaldo = filterChecklist(flatCheckList, 'respaldo');
+  const abollados = filterChecklist(flatCheckList, 'abollado');
+
+  const [viewPDF, setViewPDF] = useState(false);
+  const toggleModalPDF = () => setViewPDF(!viewPDF);
+
+  const { folio } = useGetLastFolio()
 
   return (
     <>
@@ -844,6 +1029,29 @@ export function StepFinal({ nextStepBar, toggleModalPDF, item, state, selectItem
         </Stack>
 
         <Stack>
+
+          {cortados.length >= 1 && (
+            <AccordionSimple arrayList={cortados} name={'cortados'} />
+          )}
+
+          {doblados.length >= 1 && (
+            <AccordionSimple arrayList={doblados} name={'doblados'} />
+          )}
+
+          {faltantes.length >= 1 && (
+            <AccordionSimple arrayList={faltantes} name={'faltantes'} />
+          )}
+
+          {respaldo.length >= 1 && (
+            <AccordionSimple arrayList={respaldo} name={'respaldo'} />
+          )}
+
+          {abollados.length >= 1 && (
+            <AccordionSimple arrayList={abollados} name={'abollados'} />
+          )}
+        </Stack>
+
+        <Stack>
           <Stack gap={'15px'}>
             <TextGeneral
               width={'100%'}
@@ -859,34 +1067,11 @@ export function StepFinal({ nextStepBar, toggleModalPDF, item, state, selectItem
           </Stack>
         </Stack>
 
-        <Stack>
-
-          {cortados.length >= 1 && (
-            <AccordionSimple arrayList={cortados} name={'Cortados'} />
-          )}
-
-          {doblados.length >= 1 && (
-            <AccordionSimple arrayList={doblados} name={'Doblados'} />
-          )}
-
-          {faltantes.length >= 1 && (
-            <AccordionSimple arrayList={faltantes} name={'Faltantes'} />
-          )}
-
-          {respaldo.length >= 1 && (
-            <AccordionSimple arrayList={respaldo} name={'Respaldo'} />
-          )}
-
-          {abollados.length >= 1 && (
-            <AccordionSimple arrayList={doblados} name={'Abollados'} />
-          )}
-        </Stack>
-
         <Stack flexDirection='row' justifyContent='space-between'>
           <Stack flexDirection='row' gap={'15px'} >
             <Button
               size="small"
-              onClick={() => nextStepBar(4)}
+              onClick={() => setStep(step - 1)}
               variant="contained"
               color="warning">
               Atras
@@ -900,12 +1085,15 @@ export function StepFinal({ nextStepBar, toggleModalPDF, item, state, selectItem
             </Button>
           </Stack>
           <ButtonDowloand
-            selectItem={selectItem}
-            item={item}
-            state={state} />
+            dataDocument={{ ...item, folio }}
+            checklist={checklist} />
         </Stack>
 
       </Paper>
+
+      <ViewerDocument stateModal={viewPDF} ToggleModal={toggleModalPDF}>
+        <EIR maniobrasCheckList={checklist} dataDocument={{ ...item, folio }} />
+      </ViewerDocument>
     </>
   )
 }

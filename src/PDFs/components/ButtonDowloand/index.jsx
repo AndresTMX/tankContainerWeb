@@ -1,29 +1,17 @@
-import { useEffect } from "react";
 import { Button } from "@mui/material";
 import { EIR } from "../../plantillas/EIR";
 import { Proforma } from "../../plantillas/proforma";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import { useGetLastFolio } from "../../../Hooks/foliosManagment/useGetLastFolio";
 
-function ButtonDowloand({ item, state, selectItem }) {
+function ButtonDowloand({ dataDocument, checklist, }) {
 
-  const { folio } = useGetLastFolio();
-  const { maniobrasCheckList } = state;
-  const checkList = [...maniobrasCheckList.pageOne, ...maniobrasCheckList.pageTwo, ...maniobrasCheckList.pageThree];
-
-  useEffect(() => {
-    if (!item.folio) {
-      selectItem({ ...item, folio })
-    }
-  }, [folio])
-
-  const folioDocument = item.folio||folio;
+  const checklistValues = Object.values(checklist)
 
   return (
     <PDFDownloadLink
-      document={<EIR maniobrasCheckList={checkList} dataDocument={item} />}
-      fileName={`EIR_${folioDocument} `}
+      document={<EIR maniobrasCheckList={checklistValues} dataDocument={dataDocument} />}
+      fileName={`EIR_${dataDocument.folio} `}
 
     >
       {({ blob, url, loading, error }) =>

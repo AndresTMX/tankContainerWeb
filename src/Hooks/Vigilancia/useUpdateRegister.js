@@ -1,6 +1,6 @@
+import dayjs from "dayjs";
 import { useContext } from "react";
 import supabase from "../../supabase";
-import { currenDateFormatTz } from "../../Helpers/date";
 //context
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
@@ -12,10 +12,12 @@ function useUpdateRegister(updater) {
     const checkRegisterWhitId = async (idRegister, data) => {
         try {
 
+            const currentDate = new dayjs(new Date()).utc();
+
             const detalles = data;
             //actualizar registros para confirmar la entrada
             const { error: errorUpdateRegister } = await supabase.from('registros')
-                .update({ checkIn: currenDateFormatTz, status: 'confirm' })
+                .update({ checkIn: currentDate, status: 'confirm' })
                 .eq('id', idRegister)
 
             if (errorUpdateRegister) {
@@ -40,7 +42,7 @@ function useUpdateRegister(updater) {
                 if (dataRepeat.length === 0) {
                     const { data: dataDetailTank, error: errorAddDetailTank } = await supabase
                         .from('tanques_detalles')
-                        .insert({ tanque: numero_carga, tipo: registro.tipo||'pipa' })
+                        .insert({ tanque: numero_carga, tipo: registro.tipo || 'pipa' })
                         .select()
 
                     if (errorAddDetailTank) {
@@ -94,23 +96,35 @@ function useUpdateRegister(updater) {
     const checkOutRegisterWhitId = async (idRegister, data) => {
         try {
 
+            const currentDate = new dayjs(new Date()).utc();
+
             //actualizar registros para confirmar la salida
             const { error: errorUpdateRegister } = await supabase.from('registros')
-                .update({ checkOut: currenDateFormatTz, status: 'finalizado' })
+                .update({ checkOut: currentDate, status: 'finalizado' })
                 .eq('id', idRegister)
 
             if (errorUpdateRegister) {
                 throw new Error(`Error al intentar confirmar la entrada del registro, error: ${errorUpdateRegister.message}`)
             }
 
+            //actualizar los detalles del registro de entrada
+            const { error: errorUpdateStatusInput } = await supabase
+                .from('registros_detalles_entradas')
+                .update({ status: 'finalizado' })
+                .eq('entrada_id', idRegister)
+
+            if (errorUpdateStatusInput) {
+                throw new Error(`Error al actualizar el estatus del registro de entrada, error:${errorUpdateStatusInput.message}`)
+            }
+
             //actualizar los detalles del registro de salida
             const { error: errorUpdateStatus } = await supabase
                 .from('registros_detalles_salidas')
-                .update({ status: 'finalizado' })
-                .eq('registro_id', data.id)
+                .update({ status: 'confirmado' })
+                .eq('salida_id', idRegister)
 
             if (errorUpdateStatus) {
-                throw new Error(`Error al actualizar el estatus del registro de salida, error:${errorUpdateStatus}`)
+                throw new Error(`Error al actualizar el estatus del registro de salida, error:${errorUpdateStatus.message}`)
             }
 
             dispatchGlobal({

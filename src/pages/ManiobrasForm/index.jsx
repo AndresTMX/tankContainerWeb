@@ -50,7 +50,6 @@ function ManiobrasForm() {
         cliente,
         dataClient,
         economico,
-        placas,
         typeTank,
         espectTank,
     } = statesFormRegister;
@@ -68,7 +67,6 @@ function ManiobrasForm() {
         setTypeTank,
         selectClient,
         setEconomico,
-        setPlacas,
         setDataClient,
         setEspectTank,
     } = functionsFormRegister;
@@ -397,15 +395,6 @@ function ManiobrasForm() {
                                     />
                                 </FormControl>
 
-                                <FormControl sx={{ width: isMovile ? '100%' : '200px' }}>
-                                    <TextField
-                                        required
-                                        id='numero_placas'
-                                        label='Número de placas'
-                                        value={placas}
-                                        onChange={(e) => setPlacas(e.target.value)}
-                                    />
-                                </FormControl>
 
                                 <FormControl sx={{ width: isMovile ? '100%' : '200px' }}>
                                     <TextField

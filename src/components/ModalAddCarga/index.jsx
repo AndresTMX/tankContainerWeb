@@ -16,7 +16,7 @@ function ModalAddCarga({ details, setModal, updater, registerData }) {
 
     const { addNewCarga } = useEditManiobra(updater);
 
-    const [newChargue, setNewChargue] = useState({ tipo: '', numero_pipa: '', numero_tanque: '', })
+    const [newChargue, setNewChargue] = useState({ tipo: '', numero_pipa: '', numero_tanque: '', especificacion:'' })
 
     const onChange = (value) => {
         if (carga === 'tanque') {
@@ -27,6 +27,8 @@ function ModalAddCarga({ details, setModal, updater, registerData }) {
             setNewChargue({ ...newChargue, numero_pipa: value })
         }
     }
+
+    const espectOptions = ['nfc', 'fcoj', 'or-oil', 'dlimonene', 'tequila', 'nfc/fcoj']
 
     const OnSubmit = async (e) => {
         e.preventDefault();
@@ -57,29 +59,42 @@ function ModalAddCarga({ details, setModal, updater, registerData }) {
                     </Stack>
 
                     <Box>
-                        <Box sx={{ display: 'flex', flexDirection: 'row', gap: '2px', width: '350px', justifyContent: 'space-around' }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '300px', }}>
 
-                            {carga === 'tanque' &&
-                                <FormControl sx={{ width: '30%' }}>
-                                    <InputLabel>Tipo</InputLabel>
-                                    <Select
-                                        required
-                                        sx={{ width: '100%' }}
-                                        label='Tipo'
-                                        value={newChargue.tipo}
-                                        onChange={(e) => setNewChargue({ ...newChargue, tipo: e.target.value })}
-                                    >
-                                        <MenuItem value='AGMU'>AGMU</MenuItem>
-                                        <MenuItem value='AFIU'>AFIU</MenuItem>
-                                        <MenuItem value='DYOU'>DYOU</MenuItem>
-                                    </Select>
-                                </FormControl>}
+                            <FormControl sx={{ width: '100%' }}>
+                                <InputLabel>Tipo</InputLabel>
+                                <Select
+                                    required
+                                    sx={{ width: '100%' }}
+                                    label='Tipo'
+                                    value={newChargue.tipo}
+                                    onChange={(e) => setNewChargue({ ...newChargue, tipo: e.target.value })}
+                                >
+                                    <MenuItem value='AGMU'>AGMU</MenuItem>
+                                    <MenuItem value='AFIU'>AFIU</MenuItem>
+                                    <MenuItem value='DYOU'>DYOU</MenuItem>
+                                </Select>
+                            </FormControl>
 
-                            <FormControl sx={{ width: carga === 'tanque' ? '70%' : '100%' }}>
+                            <FormControl sx={{ width: '100%' }}>
+                                <InputLabel>Especificación</InputLabel>
+                                <Select
+                                    sx={{ width: '100%', textTransform: 'uppercase' }}
+                                    label='Especificación'
+                                    value={newChargue.especificacion}
+                                    onChange={(e) => setNewChargue({...newChargue, especificacion: e.target.value })}
+                                >
+                                    {espectOptions.map((option) => (
+                                        <MenuItem sx={{ textTransform: 'uppercase' }} key={option} value={option}>{option}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+
+                            <FormControl sx={{ width: '100%' }}>
                                 <TextField
                                     required
                                     sx={{ width: '100%' }}
-                                    value={newChargue.numero_tanque||newChargue.numero_pipa}
+                                    value={newChargue.numero_tanque || newChargue.numero_pipa}
                                     onChange={(e) => onChange(e.target.value)}
                                     label={`Número de ${carga}`}
                                 />

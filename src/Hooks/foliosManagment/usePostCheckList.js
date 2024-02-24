@@ -2,17 +2,14 @@ import supabase from "../../supabase";
 import { useContext } from "react";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
-import { AuthContext } from "../../Context/AuthContext";
 import { sendImageCloudinary } from "../../cloudinary";
 
 
 function usePostCheckList() {
 
-    const { key } = useContext(AuthContext)
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
     const tableManiobrasChecklist = 'maniobras_checklist'
-    const tableReparaciones = 'reparaciones'
     //cloudinary data
     const preset = 'mvtjch9n';
     const folderName = 'maniobras_checklist';
@@ -21,27 +18,24 @@ function usePostCheckList() {
         try {
             dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true })
 
-            const idRegistro = dataCheck.registro_detalle_entrada_id;
+            const newStatus = item.status === 'interna' || item.status === 'externa' ? 'reparacion': item.status;
 
             if (item.status === 'interna' || item.status === 'externa') {
 
-                const { data: dataRepair, error: errorRepair } = await supabase
-                    .from(tableReparaciones)
+                const { error: errorRepair } = await supabase
+                    .from('reparaciones')
                     .insert({
-                        id_usuario: key,
                         id_detalle_registro: item.id,
-                        numero_tanque: item.numero_tanque,
-                        status: 'pendiente',
                         tipo_reparacion: item.status,
                     })
 
                 if (errorRepair) {
-                    throw new Error(`Error: ${errorRepair}`)
+                    throw new Error(`Error al crear reparación: ${errorRepair.message}`)
                 }
             }
 
             const { errorUpdate } = await supabase.from('registros_detalles_entradas')
-                .update({ status: item.status })
+                .update({ status: newStatus })
                 .eq('id', item.id)
 
             if (errorUpdate) {
@@ -89,7 +83,7 @@ function usePostCheckList() {
     const sendImagesChecklist = async (flatCheckList) => {
 
         try {
-            //recuperar imagenes con preguntas        
+            //recuperar preguntas con imagenes      
             const imagesWhitQuestion = flatCheckList.filter((question) => question.image != '');
 
             //extraer las imagenes y cambiarles el nombre
