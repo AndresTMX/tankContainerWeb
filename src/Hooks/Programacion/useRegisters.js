@@ -44,7 +44,7 @@ function useRegistersProgramer() {
         const { error, data } = await supabase
             .from('lavados')
             .select(`* , registros_detalles_entradas(*, clientes(*), transportistas(*) )`)
-            .eq('status', 'pending')
+            .eq('status', 'pendiente')
             .order('tentativeEnd', { ascending: true })
 
         if (error) {

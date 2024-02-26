@@ -27,7 +27,7 @@ function usePreWashing() {
             const { data, error } = await supabase
                 .from('lavados')
                 .select(` *, registros_detalles_entradas(*, clientes(*), registros(*))`)
-                .eq('status', 'pending')
+                .eq('status', 'pendiente')
                 .order('tentativeEnd', { ascending: true })
 
 

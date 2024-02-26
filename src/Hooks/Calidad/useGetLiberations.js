@@ -45,8 +45,8 @@ function useGetLiberations() {
         try {
             const { data, error } = await supabase
                 .from('lavados')
-                .select('*, registros_detalles_entradas(*)')
-                .eq('status', 'rejected')
+                .select('*, registros_detalles_entradas(*, registros(*), clientes(*), transportistas(*) ), tipos_lavado(*)')
+                .eq('status', 'rechazado')
                 .order('tentativeEnd', { ascending: false })
                 .limit(100)
 
@@ -77,7 +77,7 @@ function useGetLiberations() {
 
     useEffect(() => {
         routerFetch()
-    }, [typeRegister])
+    }, [typeRegister, update])
 
     return { data, error, loading, cache, typeRegister, setTypeRegister, updaterList }
 

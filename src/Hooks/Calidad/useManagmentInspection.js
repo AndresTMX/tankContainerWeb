@@ -126,7 +126,7 @@ function useManagmentInspection(updater) {
                 //actualizar los detalles del lavado
                 const { error: errorUpdateWashing } = await supabase
                     .from('lavados')
-                    .update({ status: 'pending' })
+                    .update({ status: 'pendiente' })
                     .eq('id', idLavado)
 
                 if (errorUpdateWashing) {

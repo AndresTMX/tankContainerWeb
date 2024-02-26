@@ -199,7 +199,7 @@ function useChecklistPrelavado(updaterFunction) {
 
                 if (errorUpdateWashing) {
                     await supabase.from('registros_detalles_entradas').update({ status: 'prelavado' }).eq('id', idRegister)
-                    await supabase.from('lavados').update({ status: 'pending' }).eq('id', idLavado)
+                    await supabase.from('lavados').update({ status: 'pendiente' }).eq('id', idLavado)
                     throw new Error(`Error al actualizar el estatus del registro \nerror: ${error.message}`)
                 }
 
@@ -224,7 +224,7 @@ function useChecklistPrelavado(updaterFunction) {
 
                 if (errorUpdateWashing) {
                     await supabase.from('registros_detalles_entradas').update({ status: 'prelavado' }).eq('id', idRegister)
-                    await supabase.from('lavados').update({ status: 'pending' }).eq('id', idLavado)
+                    await supabase.from('lavados').update({ status: 'pendiente' }).eq('id', idLavado)
                     throw new Error(`Error al actualizar el estatus del registro \nerror: ${error.message}`)
                 }
 

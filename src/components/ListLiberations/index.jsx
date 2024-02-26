@@ -1,4 +1,4 @@
-import { Box, Paper, Chip, Stack, TextField, Typography, Alert, Button, Modal, IconButton, Card, CardMedia, CardContent, FormControl, Select, MenuItem, InputLabel, } from "@mui/material";
+import { Box, Paper, Chip, Stack, Typography, Alert, Button, Modal, IconButton, Card, CardMedia, CardContent, FormControl, Select, MenuItem, InputLabel, } from "@mui/material";
 import { NotConexionState } from "../NotConectionState";
 import { ItemLoadingState } from "../ItemLoadingState";
 import { ContainerScroll } from "../ContainerScroll";
@@ -6,6 +6,7 @@ import { ContainerScroll } from "../ContainerScroll";
 import { useGetLiberations } from "../../Hooks/Calidad/useGetLiberations";
 import { useGetPreviusChargue } from "../../Hooks/Calidad/useGetPreviusChargue";
 import { useRejected } from "../../Hooks/Calidad/useRejected";
+import useMediaQuery from "@mui/material/useMediaQuery";
 //helpers
 import { dateTextShort, dateExpiration } from "../../Helpers/date";
 import { useState } from "react";
@@ -15,6 +16,8 @@ import { ViewerDocument } from "../../PDFs/components/Viewer";
 import { Certificado } from "../../PDFs/plantillas/Certificado";
 //resources web
 import { LogoKosher, LogoJuiceProducts } from "../../resourcesLinks";
+//services
+import { createWashing } from "../../services/lavados";
 
 function ListLiberations() {
 
@@ -104,8 +107,8 @@ function ItemLiberation({ lavado, updaterList }) {
                 <ItemLiberado lavado={lavado} updaterList={updaterList} />
             }
 
-            {(status === 'rejected') &&
-                <Typography>Item {status}</Typography>
+            {(status === 'rechazado') &&
+                <ItemRechazado lavado={lavado} updaterList={updaterList} />
             }
 
         </>
@@ -113,6 +116,8 @@ function ItemLiberation({ lavado, updaterList }) {
 }
 
 function ItemLiberado({ lavado, updaterList }) {
+
+    const movile = useMediaQuery('(max-width:700px)')
 
     const { rejectedTank } = useRejected()
 
@@ -130,6 +135,12 @@ function ItemLiberado({ lavado, updaterList }) {
 
     //cargas previas
     const { loading, error, info: cargas_previas } = useGetPreviusChargue(numero_tanque || numero_pipa);
+
+    //rejected button
+    const rejectedHandler = async () => {
+        await rejectedTank(lavado.id, () => updaterList())
+
+    }
 
     //url
     const [modalUrl, setModalUrl] = useState(false);
@@ -193,41 +204,51 @@ function ItemLiberado({ lavado, updaterList }) {
                         label={'Fecha de entrega: ' + dateTextShort(tentativeEnd)}
                     />
 
-                    <Button variant="outlined" size="small" onClick={toggleUrl}>URL</Button>
-
                 </Stack>
 
-                <Box sx={{ display: 'flex', flexDirection: 'col', gap: '20px',  flexWrap: 'wrap', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', }}>
 
-                    <Stack flexDirection='row' alignItems='center' gap='20px' width='100%' flexWrap='wrap'>
-                        <Box>
+                    <Stack
+                        width='100%'
+                        justifyContent={movile ? 'center' : 'space-around'}
+                        flexDirection={movile ? 'column' : 'row'}
+                        alignItems={movile ? 'flex-start' : 'center'}
+                        gap='20px'
+                    >
+                        <Box >
                             <Typography variant='caption' >{carga}</Typography>
                             <Typography>{tipo || ''} {numero_tanque || numero_pipa} </Typography>
                         </Box>
 
                         {especificacion &&
-                            <Box>
+                            <Box >
                                 <Typography variant='caption'>Especificacion</Typography>
                                 <Typography>{especificacion}</Typography>
                             </Box>}
 
-                        <Box>
+                        <Box >
                             <Typography variant='caption'>Lavado asignado</Typography>
                             <Typography>{tipoLavado}</Typography>
                         </Box>
 
-                        <Box>
+                        <Box >
                             <Typography variant='caption'>Caducidad de lavado</Typography>
                             <Typography>{dateExpiration(dateEnd)}</Typography>
                         </Box>
 
                     </Stack>
 
-                    <Stack flexDirection='row' alignItems='center' justifyContent='flex-end' width='100%' gap='10px' flexWrap='wrap'>
+                    <Stack
+                        width='100%'
+                        justifyContent={movile ? 'center' : 'flex-start'}
+                        flexDirection={movile ? 'column' : 'row'}
+                        alignItems={movile ? 'flex-start' : 'center'}
+                        gap='10px'
+                    >
 
-                        <Button variant="outlined" color="error" size="small" onClick={() => rejectedTank(lavado.id)}>Marcar como rechazado</Button>
-
-                        <Button variant="contained" size="small" onClick={toggleModalForm}>Generar certificado</Button>
+                        <Button fullWidth={movile} variant="contained" color='info' size="small" onClick={toggleUrl}>URL</Button>
+                        <Button fullWidth={movile} variant="contained" size="small" onClick={toggleModalForm}>Generar certificado</Button>
+                        <Button fullWidth={movile} variant="contained" color="error" size="small" onClick={rejectedHandler}>Marcar como rechazado</Button>
 
                     </Stack>
 
@@ -256,14 +277,124 @@ function ItemLiberado({ lavado, updaterList }) {
     )
 }
 
+function ItemRechazado({ lavado, updaterList }) {
+
+    const movile = useMediaQuery('(max-width:700px)');
+
+    const { status, URL, dateInit, dateEnd, concentracion, program_date, registros_detalles_entradas, sellos, tentativeEnd, tipos_lavado, folio, } = lavado || {};
+    const { carga, numero_tanque, numero_pipa, tipo, transportistas, registros, especificacion, id: idEntrada } = registros_detalles_entradas || {};
+    const { cliente } = registros_detalles_entradas.clientes || {};
+    const { name: transportista } = transportistas || {};
+    const { checkIn, checkOut } = registros || {};
+    const { lavado: tipoLavado, num: numLavado, temperature, duration } = tipos_lavado || {};
+
+    async function reprocessWashing() {
+
+        try {
+
+            const newWashing = {
+                id_detalle_entrada: idEntrada,
+                program_date: program_date,
+                tentativeEnd: tentativeEnd,
+
+            }
+
+            const { error } = await createWashing(newWashing)
+
+            if (error) {
+                throw new Error(error.message)
+            }
+            updaterList()
+        } catch (error) {
+            console.error(error?.message)
+        }
+    }
+
+
+    return (
+        <>
+            <Paper sx={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '10px', gap: '10px' }}>
+
+                <Stack flexDirection='row' alignItems='center' gap='10px' flexWrap='wrap'>
+                    <Chip
+                        size='small'
+                        color='error'
+                        label={status}
+                    />
+                    <Chip
+                        size='small'
+                        color='warning'
+                        label={'Fecha de entrega: ' + dateTextShort(tentativeEnd)}
+                    />
+
+                </Stack>
+
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', }}>
+
+                    <Stack
+                        width='100%'
+                        justifyContent={movile ? 'center' : 'space-around'}
+                        flexDirection={movile ? 'column' : 'row'}
+                        alignItems={movile ? 'flex-start' : 'center'}
+                        gap='20px'
+                    >
+                        <Box >
+                            <Typography variant='caption' >{carga}</Typography>
+                            <Typography>{tipo || ''} {numero_tanque || numero_pipa} </Typography>
+                        </Box>
+
+                        {especificacion &&
+                            <Box >
+                                <Typography variant='caption'>Especificacion</Typography>
+                                <Typography>{especificacion}</Typography>
+                            </Box>}
+
+                        <Box >
+                            <Typography variant='caption'>Lavado asignado</Typography>
+                            <Typography>{tipoLavado}</Typography>
+                        </Box>
+
+                        <Box >
+                            <Typography variant='caption'>Caducidad de lavado</Typography>
+                            <Typography>{dateExpiration(dateEnd)}</Typography>
+                        </Box>
+
+                    </Stack>
+
+                    <Stack
+                        width='100%'
+                        justifyContent={movile ? 'center' : 'flex-end'}
+                        flexDirection={movile ? 'column' : 'row'}
+                        alignItems={movile ? 'flex-start' : 'center'}
+                        gap='10px'
+                    >
+
+                        <Button
+                            onClick={() => reprocessWashing()}
+                            fullWidth={movile}
+                            variant="contained"
+                            color='info'
+                            size="small"
+                        >Reprocesar
+                        </Button>
+                    </Stack>
+
+                </Box>
+
+            </Paper>
+
+        </>
+    )
+}
+
 function ModalViewURL({ modal, toggleModal, url }) {
 
     const jsonURL = JSON.parse(url);
 
     const { coments } = jsonURL || {};
 
-    const urlDome = jsonURL[0];
-    const urlValvule = jsonURL[1];
+    const urlDome = jsonURL[0]? jsonURL[0]:false;
+    const urlValvule = jsonURL[1]? jsonURL[1]:false;
 
     return (
         <>
@@ -301,7 +432,7 @@ function ModalViewURL({ modal, toggleModal, url }) {
 
                         <Card sx={{ bgcolor: 'whitesmoke' }}>
                             <Stack>
-                                {urlDome.image != '' &&
+                                {urlDome &&
                                     <CardMedia
                                         component='img'
                                         height="194"
@@ -310,7 +441,7 @@ function ModalViewURL({ modal, toggleModal, url }) {
 
                                     />}
 
-                                {urlValvule?.image != '' &&
+                                {urlValvule &&
                                     <CardMedia
                                         component='img'
                                         height="194"
