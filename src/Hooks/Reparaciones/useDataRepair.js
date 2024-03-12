@@ -8,7 +8,7 @@ function useDataRepair(typeRepair, dataTanque, dataChecklist, loading) {
 
     useEffect(() => {
         setChecklist(dataChecklist)
-    }, dataChecklist)
+    }, [dataChecklist])
 
     const [imagesChecklist, setImagesChecklist] = useState([])
     const [evidences, setEvidences] = useState([])

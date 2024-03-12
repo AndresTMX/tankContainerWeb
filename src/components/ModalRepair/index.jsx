@@ -121,7 +121,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
 
             <Toaster richColors position='top-center' />
 
-            <Box sx={{ bgcolor: 'whitesmoke', display: 'flex', flexDirection: 'column', width: '100vw', alignItems: 'center' }}>
+            <Box sx={{ bgcolor: 'whitesmoke', display: 'flex', flexDirection: 'column', width: '100vw', alignItems: 'center', minHeight:'100vh' }}>
 
                 <Stack
                     width={'100%'}
