@@ -17,6 +17,11 @@ import { ErrorPage } from "./pages/Error";
 import { ItemGridInfo } from "./outlets/ItemGridInfo";
 import { AssignItem } from "./outlets/AssignItem";
 import { ModalGrid } from "./outlets/ModalGrid";
+//Outlets programacion
+import { ProgramacionProvider } from "./Hooks/Programacion/context";
+import { TanquesAlmacenados } from "./components/ProgramComponents/almacenados";
+import { TanquesProgramados } from "./components/ProgramComponents/programados";
+
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -139,12 +144,23 @@ function Router() {
                 path="/programacion"
                 element={
                   <RouteProtect>
-                    <UI>
-                      <Programacion />
-                    </UI>
+                    <ProgramacionProvider>
+                      <UI>
+                        <Programacion />
+                      </UI>
+                    </ProgramacionProvider>
                   </RouteProtect>
                 }
-              />
+              >
+
+                <Route path="/programacion/almacenados" element={<TanquesAlmacenados />} />
+
+                <Route path="/programacion/almacenados/programar" element={<p>programar</p>} />
+
+                <Route path="/programacion/programados" element={<TanquesProgramados />} />
+
+
+              </Route>
 
               <Route
                 path="/prelavado"
@@ -191,11 +207,9 @@ function Router() {
                   </RouteProtect>
                 }
               >
-                {/* <Route path=":item" element={<ItemGridInfo />} /> */}
-                {/* <Route path="/ubicaciones/asignacion/:item" element={<AssignItem />} /> */}
 
                 <Route path="/ubicaciones/layout/:bloque/:modal" element={<ModalGrid />} />
-                
+
                 <Route path="/ubicaciones/layout/asignacion/:item" element={<AssignItem />} />
 
                 <Route path="/ubicaciones/layout/info/:item" element={<ItemGridInfo />} />
