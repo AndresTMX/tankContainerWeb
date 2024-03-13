@@ -18,9 +18,11 @@ import { ItemGridInfo } from "./outlets/ItemGridInfo";
 import { AssignItem } from "./outlets/AssignItem";
 import { ModalGrid } from "./outlets/ModalGrid";
 //Outlets programacion
-import { ProgramacionProvider } from "./Hooks/Programacion/context";
+import { ProgramacionProvider } from "./Context/ProgramacionContext";
 import { TanquesAlmacenados } from "./components/ProgramComponents/almacenados";
 import { TanquesProgramados } from "./components/ProgramComponents/programados";
+import { ProgramarLavadado } from "./components/ProgramComponents/almacenados";
+import { ReprogramarLavado } from "./components/ProgramComponents/programados";
 
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -153,11 +155,14 @@ function Router() {
                 }
               >
 
-                <Route path="/programacion/almacenados" element={<TanquesAlmacenados />} />
+                <Route path="/programacion/almacenados" element={<TanquesAlmacenados />} >
+                  <Route path="/programacion/almacenados/programar/:tanque" element={<ProgramarLavadado />} />
+                </Route>
 
-                <Route path="/programacion/almacenados/programar" element={<p>programar</p>} />
 
-                <Route path="/programacion/programados" element={<TanquesProgramados />} />
+                <Route path="/programacion/programados" element={<TanquesProgramados />} >
+                  <Route path="/programacion/programados/reprogramar/:tanque" element={<ReprogramarLavado />} />
+                </Route>
 
 
               </Route>

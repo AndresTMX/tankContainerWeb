@@ -1,9 +1,7 @@
 import { Box, Stack, Paper, Chip, TextField, } from "@mui/material";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useContextProgramacion } from "../../Hooks/Programacion/context";
-//custom components
-import { LoadingState } from "../../components/LoadingState";
+import { useContextProgramacion } from "../../Context/ProgramacionContext";
 //router
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 //icons
@@ -62,7 +60,7 @@ function Programacion() {
                             name="searchProgram"
                             onKeyDown={handleKeyPress}
                             onChange={onChangeClear}
-                            ref={searchValue}
+                            inputRef={searchValue}
                             InputProps={{
                                 endAdornment: <SearchIcon />
                             }}
@@ -76,8 +74,6 @@ function Programacion() {
             </Box>
 
             <Toaster richColors position='top-center' />
-
-            <LoadingState duration={1000} />
 
         </>
     );

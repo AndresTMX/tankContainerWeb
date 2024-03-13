@@ -1,7 +1,9 @@
 import { useEffect, useState, useContext, createContext, useRef } from "react";
 import { useLocation } from "react-router-dom";
 //services
-import { getStored, getPrograming } from "../../../services/programacion";
+import { getStored, getPrograming } from "../../services/programacion";
+//libreries
+import { toast } from "sonner";
 
 const ProgramacionContext = createContext();
 
@@ -22,7 +24,18 @@ export function ProgramacionProvider({ children }) {
     const [mode, setMode] = useState(dataMode)
 
     //parametro de busqueda
-    const keySearch = 'numero_tanque';
+    function extractKey(tanque) {
+        try {
+            if (pathname.includes('almacenados')) {
+                return tanque['numero_tanque']
+            } else {
+                const key = tanque['registros_detalles_entradas']['numero_tanque'];
+                return key
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     //array dinamico
     const dataDinamic = mode === dataMode ? registers : dataSearch;
@@ -35,11 +48,8 @@ export function ProgramacionProvider({ children }) {
 
 
             registers.forEach(element => {
-                newData.set(element[keySearch], element)
+                newData.set(extractKey(element), element)
             });
-
-            console.log(newData)
-            console.log(searchValue.current.value)
 
             for (const [clave, valor] of newData) {
                 if (clave.includes(searchValue.current.value)) {
@@ -82,6 +92,7 @@ export function ProgramacionProvider({ children }) {
 
     async function fetchData(fetchFunction) {
         try {
+
             const { error, data } = await fetchFunction();
 
             if (error) {
@@ -94,13 +105,16 @@ export function ProgramacionProvider({ children }) {
             console.error(error);
             setError(error.message);
         } finally {
-            setLoading(false);
+            setTimeout(() => {
+                setLoading(false);
+            }, 2000)
         }
     }
 
     useEffect(() => {
-        setError(null);
         setLoading(true);
+        setRegisters([])
+        setError(null);
         setMode(dataMode)
         const fetchFunction = pathname.includes('almacenados') ? getStored : getPrograming;
         fetchData(fetchFunction);
