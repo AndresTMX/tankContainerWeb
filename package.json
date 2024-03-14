@@ -38,7 +38,9 @@
     "react-router-dom": "^6.17.0",
     "sonner": "^1.4.0",
     "sort-by": "^0.0.2",
-    "styled-components": "^6.1.1"
+    "styled-components": "^6.1.1",
+    "uuid": "^9.0.1",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

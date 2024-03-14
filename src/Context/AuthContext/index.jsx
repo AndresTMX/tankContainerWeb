@@ -88,6 +88,7 @@ function RouteProtect({ children }) {
       rol: "admin",
       routes: [
         "/",
+        "/importaciones",
         "/admin",
         "/perfil",
         "/vigilancia",
@@ -106,6 +107,7 @@ function RouteProtect({ children }) {
       rol: "developer",
       routes: [
         "/",
+        "/importaciones",
         "/admin",
         "/perfil",
         "/vigilancia",

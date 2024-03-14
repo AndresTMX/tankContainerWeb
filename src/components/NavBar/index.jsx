@@ -24,9 +24,10 @@ function NavBar() {
     }
 
     const pages = [
+        { to: '/importaciones', text: 'importaciones' },
         { to: '/vigilancia', text: 'Vigilancia' },
         { to: '/maniobras', text: 'Maniobras' },
-        { to: '/programacion', text: 'Programación' },
+        { to: '/programacion/almacenados', text: 'Programación' },
         { to: '/reparaciones', text: 'Reparación' },
         { to: '/prelavado', text: 'Prelavado' },
         { to: '/lavado', text: 'Lavado' },

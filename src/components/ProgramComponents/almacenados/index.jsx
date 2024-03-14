@@ -1,9 +1,9 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 // custom components
 import { ContainerScroll } from "../../ContainerScroll"
 import { ItemLoadingState } from "../../ItemLoadingState"
 // components
-import { Stack, Alert, Chip, Button, Paper, Box, Divider, Typography, Modal, } from "@mui/material"
+import { Stack, Alert, Chip, Button, Paper, Box, Divider, Typography, Modal, Pagination } from "@mui/material"
 import { DemoContainer, DemoItem, } from "@mui/x-date-pickers/internals/demo"
 import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
@@ -26,6 +26,23 @@ export function TanquesAlmacenados() {
 
     const { searchValue, dataDinamic, loading, error, mode } = states;
 
+    const [page, setPage] = useState(1);
+
+    const handleChange = (event, value) => {
+        setPage(value);
+    };
+
+    const rowsPerPage = 5;
+
+    const pages = Math.ceil(dataDinamic?.length / rowsPerPage);
+
+    const items = useMemo(() => {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        return dataDinamic.slice(start, end);
+    }, [page, dataDinamic]);
+
     return (
         <>
             <ContainerScroll height={movile ? '70vh' : '76vh'} background='whitesmoke'>
@@ -41,7 +58,7 @@ export function TanquesAlmacenados() {
                         </>
                     }
 
-                    {(!loading && !error && dataDinamic.length === 0 && mode === 'data' ) &&
+                    {(!loading && !error && dataDinamic.length === 0 && mode === 'data') &&
                         <Alert severity='info'>Sin registros añadidos</Alert>
                     }
 
@@ -55,7 +72,7 @@ export function TanquesAlmacenados() {
 
 
                     {
-                        dataDinamic.map((tanque) => (
+                        items.map((tanque) => (
                             <TanqueAlmacenado
                                 key={tanque.id}
                                 tanque={tanque}
@@ -63,8 +80,11 @@ export function TanquesAlmacenados() {
                         ))
                     }
 
+
+
                 </Stack>
             </ContainerScroll>
+            <Pagination variant="outlined" shape="rounded" color="primary" count={pages} page={page} onChange={handleChange} />
 
             <Outlet />
 

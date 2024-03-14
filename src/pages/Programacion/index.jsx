@@ -25,7 +25,7 @@ function Programacion() {
         <>
 
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px' }}>
-                <Stack alignItems='center' width='100%' gap='20px' maxWidth='900px'>
+                <Stack alignItems='center' width='100%' gap='10px' maxWidth='900px'>
                     <Paper
                         sx={{
                             display: 'flex',

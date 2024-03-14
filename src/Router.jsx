@@ -2,6 +2,7 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { UI } from "./UI";
 import { PageAdmin } from "./pages/Admin";
+import { ImportacionPage } from "./pages/Importacion";
 import { Login } from "./pages/Login";
 import { Perfil } from "./pages/Perfil";
 import { Vigilancia } from "./pages/Vigilancia";
@@ -83,6 +84,20 @@ function Router() {
                   </RouteProtect>
                 }
               />
+
+              <Route
+                path="/importaciones"
+                element={
+                  <RouteProtect>
+                    <UI>
+                      <>
+                        <ImportacionPage />
+                      </>
+                    </UI>
+                  </RouteProtect>
+                }
+              />
+
 
               <Route
                 path="/vigilancia"
