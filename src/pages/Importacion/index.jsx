@@ -1,20 +1,67 @@
 import { useState, useMemo, } from "react";
-import { Box, Stack, Paper, Divider, Typography, Button } from "@mui/material"
+import { Box, Stack, Paper, Divider, Typography, Button, FormControl, InputLabel, Select, MenuItem, TextField, } from "@mui/material"
 //icons
 import { SiMicrosoftexcel } from "react-icons/si";
 import { TbTableImport } from "react-icons/tb";
 //grid
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, useGridApiContext, useGridApiRef } from "@mui/x-data-grid";
 //libraries
 import * as XLSX from 'xlsx'
 import { v4 as uuidv4 } from 'uuid';
+import { useCallback } from "react";
+//context 
+import { useContextImportacion } from "../../Context/ImportacionContext";
+//helpers
+import { currentDate } from "../../Helpers/date";
 
 
 export function ImportacionPage() {
 
+    const { dataRows, setDataRos } = useContextImportacion();
+
     const [dataImport, setDataImport] = useState([]);
-    const [dataObject, setDataObject] = useState([])
-    console.log("🚀 ~ ImportacionPage ~ dataObject:", dataObject)
+
+    const arrayTypes = [
+        {
+            id: '1',
+            tipo: 'AGMU'
+        },
+        {
+            id: '2',
+            tipo: 'AFIU'
+        },
+        {
+            id: '3',
+            tipo: 'DYOU'
+        },
+    ]
+
+    const arrayEspects = [
+        {
+            id: '1',
+            especificacion: 'NFC'
+        },
+        {
+            id: '2',
+            especificacion: 'FCOJ'
+        },
+        {
+            id: '3',
+            especificacion: 'OR-OIL'
+        },
+        {
+            id: '4',
+            especificacion: 'DLIMONENE'
+        },
+        {
+            id: '5',
+            especificacion: 'TEQUILA'
+        },
+        {
+            id: '6',
+            especificacion: 'NFC/FCOJ'
+        },
+    ]
 
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
@@ -37,43 +84,159 @@ export function ImportacionPage() {
                 const id = uuidv4();
                 return { ...obj, id: id };
             });
-            setDataObject(objects)
+            setDataRos(objects)
         };
 
         reader.readAsArrayBuffer(file);
     };
 
+    const downloadTemplate = () => {
+
+        const ws = XLSX.utils.json_to_sheet(dataRows);
+        const wb = XLSX.utils.book_new();
+
+        const columnWidths = [
+            { wpx: 70 }, // Ancho de la primera columna en píxeles
+            { wpx: 70 }, // Ancho de la segunda columna en píxeles
+            { wpx: 70 }, // Ancho de la tercera columna en píxeles
+            { wpx: 70 }, // Ancho de la tercera columna en píxeles
+            { wpx: 90 }, // Ancho de la tercera columna en píxeles
+            { wpx: 90 }, // Ancho de la tercera columna en píxeles
+            { wpx: 90 }, // Ancho de la tercera columna en píxeles
+            { wpx: 90 }, // Ancho de la tercera columna en píxeles
+            { wpx: 90 }, // Ancho de la tercera columna en píxeles
+        ];
+        ws['!cols'] = columnWidths;
+
+        XLSX.utils.book_append_sheet(wb, ws, `plantilla`);
+        XLSX.writeFile(wb, `plantilla_importacion.xlsx`);
+
+    }
+
+    // const columns = [
+    //     {
+    //         field: 'chasis',
+    //         headerName: 'CHASIS',
+    //         width: 150,
+    //         editable: true
+    //     },
+    //     {
+    //         field: 'checkIn',
+    //         headerName: 'ENTRADA',
+    //         type: 'text',
+    //         editable: true,
+    //         width: 150,
+    //         align: 'left',
+    //         headerAlign: 'left',
+    //     },
+    //     {
+    //         field: 'checkOut',
+    //         headerName: 'SALIDA',
+    //         type: 'text',
+    //         width: 180,
+    //         editable: true,
+    //     },
+    //     {
+    //         field: 'deuda',
+    //         headerName: 'DEUDA',
+    //         type: 'text',
+    //         width: 150,
+    //         editable: true,
+    //     },
+    //     {
+    //         field: 'estancia',
+    //         headerName: 'ESTANCIA',
+    //         type: 'text',
+    //         width: 150,
+    //         editable: true,
+    //     },
+    // ];
+
+    const renderSelectEditInputCell = (params, options, keyValue) => {
+        return <SelectEditInputCell props={params} options={options} keyValue={keyValue} />;
+    };
+
     const columns = [
-        { field: 'chasis', headerName: 'CHASIS', width: 150, editable: true },
         {
-            field: 'checkIn',
-            headerName: 'ENTRADA',
+            field: 'tracto',
+            headerName: 'N° TRACTO',
+            width: 150,
+            editable: true,
+            type: 'text',
+            renderEditCell: (params) => (InputEditCell(params))
+
+        },
+        {
+            field: 'operador_id',
+            headerName: 'OPERADOR',
             type: 'text',
             editable: true,
-            width: 150,
+            width: 200,
             align: 'left',
             headerAlign: 'left',
+            renderEditCell: (params) => (renderSelectEditInputCell(params, [{ id: '1', nombre: 'operador 1' }, { id: '2', nombre: 'operador 2' }], 'nombre'))
         },
         {
-            field: 'checkOut',
-            headerName: 'SALIDA',
-            type: 'text',
-            width: 180,
-            editable: true,
-        },
-        {
-            field: 'deuda',
-            headerName: 'DEUDA',
+            field: 'carga',
+            headerName: 'TIPO DE CARGA',
             type: 'text',
             width: 150,
             editable: true,
+            align: 'left',
+            headerAlign: 'left',
+            renderEditCell: (params) => (renderSelectEditInputCell(params, [{ id: '1', carga: 'tanque' }, { id: '2', carga: 'pipa' }], 'carga'))
+
         },
         {
-            field: 'estancia',
-            headerName: 'ESTANCIA',
+            field: 'transportista_id',
+            headerName: 'LINEA TRANSPORTISTA',
+            type: 'text',
+            width: 200,
+            editable: true,
+            align: 'left',
+            headerAlign: 'left',
+            renderEditCell: (params) => (renderSelectEditInputCell(params, [{ id: '1', transportista_id: 'transportista 1' }, { id: '2', transportista_id: 'transportista 2' }], 'transportista_id'))
+
+        },
+        {
+            field: 'numero_tanque',
+            headerName: 'N° TANQUE',
             type: 'text',
             width: 150,
             editable: true,
+            renderEditCell: (params) => (InputEditCell(params))
+
+        },
+        {
+            field: 'cliente_id',
+            headerName: 'CLIENTE',
+            type: 'text',
+            width: 200,
+            editable: true,
+            align: 'left',
+            headerAlign: 'left',
+            renderEditCell: (params) => (renderSelectEditInputCell(params, [{ id: '1', cliente_id: 'cliente 1' }, { id: '2', cliente_id: 'cliente 2' }], 'cliente_id'))
+        },
+        {
+            field: 'tipo',
+            headerName: 'TIPO',
+            type: 'text',
+            width: 150,
+            editable: true,
+            align: 'left',
+            headerAlign: 'left',
+            renderEditCell: (params) => (renderSelectEditInputCell(params, arrayTypes, 'tipo'))
+        },
+        {
+            field: 'especificacion',
+            headerName: 'ESPECIFICACION',
+            type: 'text',
+            width: 150,
+            editable: true,
+            align: 'left',
+            headerAlign: 'left',
+            renderEditCell: (params) => (renderSelectEditInputCell(params, arrayEspects, 'especificacion'))
+
         },
     ];
 
@@ -105,6 +268,14 @@ export function ImportacionPage() {
 
         }
     }
+
+    const handleCellEditCommit = useCallback(({ id, field, value }) => {
+        setDataObject((prevDataObject) =>
+            dataRows.map((row) =>
+                row.id === id ? { ...row, [field]: value } : row
+            )
+        );
+    }, []);
 
     return (
         <>
@@ -164,6 +335,7 @@ export function ImportacionPage() {
                                 }}
                                 variant='outlined'
                                 size="medium"
+                                onClick={downloadTemplate}
                                 endIcon={<SiMicrosoftexcel />}
                             >
                                 Descargar plantilla
@@ -188,7 +360,13 @@ export function ImportacionPage() {
                         }}
                     >
 
-                        <DataGrid rows={dataObject} columns={columns} />
+                        <DataGrid
+                            editMode="row"
+                            rows={dataRows}
+                            columns={columns}
+                        // onRowEditCommit={handleCellEditCommit}
+                        // onCellEditStart={(params) => console.log(params)}
+                        />
 
                     </Paper>
                 </Box>
@@ -197,3 +375,71 @@ export function ImportacionPage() {
         </>
     )
 }
+
+
+function SelectEditInputCell({ props, options, keyValue, keyId }) {
+
+    const { id, value, field, tabIndex } = props;
+    const apiRef = useGridApiContext();
+    const { dataRows, setDataRows } = useContextImportacion();
+
+    const handleChange = async (event) => {
+        await apiRef.current.setEditCellValue({ id, field, value: event.target.value });
+        apiRef.current.stopCellEditMode({ id, field });
+        const updates = apiRef.current.getRowWithUpdatedValues(id)
+        let copyRows = [...dataRows]
+        copyRows[tabIndex][field] = updates[field]
+        setDataRows(copyRows)
+    };
+
+    const valueString = () => {
+        const updates = apiRef.current.getRowWithUpdatedValues(id);
+        const idOption = updates[field]
+        const indexOption = options.findIndex((option) => option['id'] === idOption)
+        return options[indexOption][keyValue]
+    }
+
+    const newValue = valueString()
+    console.log("🚀 ~ SelectEditInputCell ~ newValue:", newValue)
+
+    return (
+        <Select
+            fullWidth
+            value={newValue}
+            onChange={handleChange}
+            size="small"
+            sx={{ height: 1 }}
+            native
+            autoFocus
+        >
+            {options.map((op, index) => (
+                <option key={op.id} value={op.id}>{op[keyValue]}</option>
+            ))}
+        </Select>
+    );
+}
+
+function InputEditCell(props) {
+
+    const { id, value, field, tabIndex } = props;
+    const apiRef = useGridApiContext();
+    const { dataRows, setDataRows } = useContextImportacion();
+
+    const handleChange = async (event) => {
+        await apiRef.current.setEditCellValue({ id, field, value: event.target.value });
+        apiRef.current.stopCellEditMode({ id, field });
+        const updates = apiRef.current.getRowWithUpdatedValues(id)
+        let copyRows = [...dataRows]
+        copyRows[tabIndex][field] = updates[field]
+        setDataRows(copyRows)
+    };
+
+    return (
+        <TextField
+            value={value}
+            onChange={handleChange}
+        />
+    );
+}
+
+

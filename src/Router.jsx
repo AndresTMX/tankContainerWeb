@@ -24,7 +24,6 @@ import { TanquesAlmacenados } from "./components/ProgramComponents/almacenados";
 import { TanquesProgramados } from "./components/ProgramComponents/programados";
 import { ProgramarLavadado } from "./components/ProgramComponents/almacenados";
 import { ReprogramarLavado } from "./components/ProgramComponents/programados";
-
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -46,6 +45,7 @@ import { GlobalProvider } from "./Context/GlobalContext";
 import { ManiobrasProvider } from "./Context/ManiobrasContext";
 import { ReparacionesProvider } from "./Context/ReparacionesContext";
 import { PrelavadoProvider } from "./Context/PrelavadoContext";
+import { ImportacionProvider } from "./Context/ImportacionContext";
 //route protect
 import { RouteProtect } from "./Context/AuthContext";
 
@@ -90,9 +90,9 @@ function Router() {
                 element={
                   <RouteProtect>
                     <UI>
-                      <>
+                      <ImportacionProvider>
                         <ImportacionPage />
-                      </>
+                      </ImportacionProvider>
                     </UI>
                   </RouteProtect>
                 }
