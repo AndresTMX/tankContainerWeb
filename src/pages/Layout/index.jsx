@@ -1,28 +1,12 @@
-import { useState } from "react";
 import { Toaster } from "sonner";
 import { useNavigate, Outlet } from "react-router-dom";
-import { Box, Tab, Tabs, Grid, Stack, Paper, Container, Button } from "@mui/material";
-import { CustomTabPanel } from "../../components/CustomTabPanel";
-//hooks
-import useMediaQuery from "@mui/material/useMediaQuery";
-//components
-import { GridBlock } from "../../containers/GridBlock";
+import { Box, Paper,} from "@mui/material";
 //dataGrid
 import { typesBloqueA, BloqueA, typesBloqueB, BloqueB, typesBloqueC, BloqueC, typesBloqueD, BloqueD, typesBloqueE, BloqueE } from "../../layoutData";
 
 function Layout() {
 
-    const movile = useMediaQuery('(max-width:850px)')
-    const [value, setValue] = useState(0);
-
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
-
     const navigate = useNavigate()
-
-    const bloque = 'a'
-
     const modal = true;
 
     return (
@@ -35,9 +19,10 @@ function Layout() {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
+                    justifyContent:'center',
                     backgroundColor: 'whitesmoke',
                     padding: '20px',
-                    height:'100vh'
+                    height: '93vh'
                 }}>
 
                 <Paper
@@ -46,9 +31,8 @@ function Layout() {
                         display: 'flex',
                         flexDirection: 'column',
                         padding: '10px',
-                        gap: '50px',
                         border: 1,
-                        borderColor: 'whitesmoke'
+                        borderColor: 'whitesmoke',
 
                     }}
                 >
@@ -56,6 +40,7 @@ function Layout() {
                     {/* CAJON SUPERIOR NFC/FCOJ */}
                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
                         <Box
+                            onClick={() => navigate(`/ubicaciones/layout/${BloqueA[0].bloque}/${modal}`)}
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -64,14 +49,13 @@ function Layout() {
                                 height: '70px',
                                 width: '250px',
                                 backgroundColor: 'orange',
-                                color: 'white'
+                                color: 'white',
+                                cursor: 'pointer'
                             }}
                         >
-                            <Button
-                                variant="contained"
-                                onClick={() => navigate(`/ubicaciones/layout/${bloque}/${modal}`)}>
-                                NFC / FCOJ
-                            </Button>
+
+                            <strong style={{ fontSize: '15px' }} > NFC / FCOJ</strong>
+
                         </Box>
                     </div>
 
@@ -98,6 +82,7 @@ function Layout() {
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
 
                                 <Box
+                                    onClick={() => navigate(`/ubicaciones/layout/${BloqueB[0].bloque}/${modal}`)}
                                     sx={{
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -105,12 +90,14 @@ function Layout() {
                                         justifyContent: 'center',
                                         height: '40px',
                                         width: '80%',
-                                        backgroundColor: 'orange',
+                                        backgroundColor: '#c23092',
                                         color: 'white',
-                                        marginBottom: '1px'
+                                        marginBottom: '1px',
+                                        cursor: 'pointer'
                                     }}
                                 >
-                                    <strong>FCOJ / DYOU</strong>
+                                    <strong style={{ fontSize: '10px' }} >FCOJ / DYOU (NFC/FCO)</strong>
+
                                 </Box>
 
                                 <div style={{ display: 'flex', flexDirection: 'row', }}>
@@ -174,6 +161,7 @@ function Layout() {
 
                                     <div style={{ display: 'flex', flexDirection: 'column', width: '130px', gap: '3px' }}>
                                         <Box
+                                            onClick={() => navigate(`/ubicaciones/layout/${BloqueB[0].bloque}/${modal}`)}
                                             sx={{
                                                 display: 'flex',
                                                 flexDirection: 'column',
@@ -181,14 +169,16 @@ function Layout() {
                                                 justifyContent: 'center',
                                                 height: '40px',
                                                 width: '100%',
-                                                backgroundColor: 'orange',
-                                                color: 'white'
+                                                backgroundColor: '#c23092',
+                                                color: 'white',
+                                                cursor: 'pointer'
                                             }}
                                         >
-                                            <strong>FCOJ / DYOU</strong>
+                                            <strong style={{ fontSize: '10px' }} >FCOJ / DYOU (NFC/FCO)</strong>
                                         </Box>
 
                                         <Box
+                                            onClick={() => navigate(`/ubicaciones/layout/${BloqueB[0].bloque}/${modal}`)}
                                             sx={{
                                                 display: 'flex',
                                                 flexDirection: 'column',
@@ -196,14 +186,16 @@ function Layout() {
                                                 justifyContent: 'center',
                                                 height: '40px',
                                                 width: '100%',
-                                                backgroundColor: 'orange',
-                                                color: 'white'
+                                                backgroundColor: '#c23092',
+                                                color: 'white',
+                                                cursor: 'pointer'
                                             }}
                                         >
-                                            <strong>FCOJ / DYOU</strong>
+                                            <strong style={{ fontSize: '10px' }} >FCOJ / DYOU (NFC/FCO)</strong>
                                         </Box>
 
                                         <Box
+                                            onClick={() => navigate(`/ubicaciones/layout/${BloqueC[0].bloque}/${modal}`)}
                                             sx={{
                                                 display: 'flex',
                                                 flexDirection: 'column',
@@ -211,14 +203,16 @@ function Layout() {
                                                 justifyContent: 'center',
                                                 height: '40px',
                                                 width: '220px',
-                                                backgroundColor: 'orange',
+                                                backgroundColor: '#39a028',
                                                 color: 'white',
                                                 borderBottom: '2px',
                                                 borderColor: 'white',
-                                                borderBottomStyle: 'solid'
+                                                borderBottomStyle: 'solid',
+                                                cursor: 'pointer'
                                             }}
                                         >
-                                            <strong>tequila / aceite</strong>
+
+                                            <strong>TEQUILA / ACEITE</strong>
                                         </Box>
                                     </div>
 
@@ -274,6 +268,7 @@ function Layout() {
                         </div>
 
                         <Box
+                            onClick={() => navigate(`/ubicaciones/layout/${BloqueE[0].bloque}/${modal}`)}
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -281,14 +276,16 @@ function Layout() {
                                 justifyContent: 'center',
                                 height: '100px',
                                 width: '50px',
-                                backgroundColor: 'orange',
-                                color: 'white'
+                                backgroundColor: '#ffc71a',
+                                color: 'white',
+                                cursor:'pointer'
                             }}
                         >
-                            <strong style={{ transform: 'rotate(-90deg)' }}>Proceso</strong>
+                            <strong style={{ transform: 'rotate(-90deg)', fontSize: '15px', textAlign: 'center' }}>PROCESO</strong>
                         </Box>
 
                         <Box
+                            onClick={() => navigate(`/ubicaciones/layout/${BloqueD[0].bloque}/${modal}`)}
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -296,15 +293,18 @@ function Layout() {
                                 justifyContent: 'center',
                                 height: '100px',
                                 width: '50px',
-                                backgroundColor: 'orange',
-                                color: 'white'
+                                backgroundColor: '#3788d8',
+                                color: 'white',
+                                cursor: 'pointer'
                             }}
                         >
-                            <strong style={{ transform: 'rotate(-90deg)' }}>Lavado</strong>
+                            <strong style={{ transform: 'rotate(-90deg)', fontSize: '11px', textAlign: 'center' }}>PRELAVADO / LAVADO</strong>
+
                         </Box>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', }}>
                             <Box
+                                onClick={() => navigate(`/ubicaciones/layout/${BloqueC[0].bloque}/${modal}`)}
                                 sx={{
                                     display: 'flex',
                                     flexDirection: 'column',
@@ -312,14 +312,18 @@ function Layout() {
                                     justifyContent: 'center',
                                     height: '250px',
                                     width: '50px',
-                                    backgroundColor: 'orange',
-                                    color: 'white'
+                                    backgroundColor: '#39a028',
+                                    color: 'white',
+                                    cursor: 'pointer'
                                 }}
                             >
-                                <strong style={{ transform: 'rotate(-90deg)' }}>Tequila Aceite</strong>
+
+                                <strong style={{ transform: 'rotate(-90deg)', fontSize: '15px', textAlign: 'center', width: '150px' }}>TEQUILA / ACEITE</strong>
+
                             </Box>
 
                             <Box
+                                onClick={() => navigate(`/ubicaciones/layout/${BloqueD[0].bloque}/${modal}`)}
                                 sx={{
                                     display: 'flex',
                                     flexDirection: 'column',
@@ -327,11 +331,12 @@ function Layout() {
                                     justifyContent: 'center',
                                     height: '250px',
                                     width: '50px',
-                                    backgroundColor: 'orange',
-                                    color: 'white'
+                                    backgroundColor: '#3788d8',
+                                    color: 'white',
+                                    cursor: 'pointer'
                                 }}
                             >
-                                <strong style={{ transform: 'rotate(-90deg)' }}>Prelavado</strong>
+                                <strong style={{ transform: 'rotate(-90deg)', fontSize: '15px', textAlign: 'center', width: '160px' }}>PRELAVADO / LAVADO</strong>
                             </Box>
                         </div>
 

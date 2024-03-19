@@ -944,256 +944,256 @@ export const typesBloqueD = ['lavado', 'prelavado']
 export const BloqueD = [
 
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "1",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "1",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "1",
-        "columna": "2",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "1",
+        columna: "2",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "1",
-        "columna": "3",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "1",
+        columna: "3",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "2",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "2",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "2",
-        "columna": "2",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "2",
+        columna: "2",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "2",
-        "columna": "3",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "2",
+        columna: "3",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "3",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "3",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "3",
-        "columna": "2",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "3",
+        columna: "2",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "3",
-        "columna": "3",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "3",
+        columna: "3",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "4",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "4",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "4",
-        "columna": "2",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "4",
+        columna: "2",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "4",
-        "columna": "3",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "4",
+        columna: "3",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "5",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "5",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "5",
-        "columna": "2",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "5",
+        columna: "2",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "5",
-        "columna": "3",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "5",
+        columna: "3",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "6",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "6",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "6",
-        "columna": "2",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "6",
+        columna: "2",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "1",
-        "fila": "6",
-        "columna": "3",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "1",
+        fila: "6",
+        columna: "3",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "1",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "1",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "1",
-        "columna": "2",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "1",
+        columna: "2",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "1",
-        "columna": "3",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "1",
+        columna: "3",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "2",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "2",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "2",
-        "columna": "2",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "2",
+        columna: "2",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "2",
-        "columna": "3",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "2",
+        columna: "3",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "3",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "3",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "3",
-        "columna": "2",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "3",
+        columna: "2",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "3",
-        "columna": "3",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "3",
+        columna: "3",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "4",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "4",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "4",
-        "columna": "2",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "4",
+        columna: "2",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "4",
-        "columna": "3",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "4",
+        columna: "3",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "5",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "5",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "5",
-        "columna": "2",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "5",
+        columna: "2",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "5",
-        "columna": "3",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "5",
+        columna: "3",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "6",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "6",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "6",
-        "columna": "2",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "6",
+        columna: "2",
+        numero_tanque: ""
     },
     {
-        "bloque": "d",
-        "nivel": "2",
-        "fila": "6",
-        "columna": "3",
-        "numero_tanque": ""
+        bloque: "d",
+        nivel: "2",
+        fila: "6",
+        columna: "3",
+        numero_tanque: ""
     }
 
 ]
@@ -1204,38 +1204,38 @@ export const typesBloqueE = ['proceso']
 
 export const BloqueE = [
     {
-        "bloque": "e",
-        "nivel": "1",
-        "fila": "1",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "e",
+        nivel: "1",
+        fila: "1",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "e",
-        "nivel": "1",
-        "fila": "2",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "e",
+        nivel: "1",
+        fila: "2",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "e",
-        "nivel": "1",
-        "fila": "3",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "e",
+        nivel: "1",
+        fila: "3",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "e",
-        "nivel": "1",
-        "fila": "4",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "e",
+        nivel: "1",
+        fila: "4",
+        columna: "1",
+        numero_tanque: ""
     },
     {
-        "bloque": "e",
-        "nivel": "1",
-        "fila": "5",
-        "columna": "1",
-        "numero_tanque": ""
+        bloque: "e",
+        nivel: "1",
+        fila: "5",
+        columna: "1",
+        numero_tanque: ""
     },
 ]

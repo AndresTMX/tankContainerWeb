@@ -191,8 +191,6 @@ function Router() {
                   </RouteProtect>
                 }
               >
-                {/* <Route path=":item" element={<ItemGridInfo />} /> */}
-                {/* <Route path="/ubicaciones/asignacion/:item" element={<AssignItem />} /> */}
 
                 <Route path="/ubicaciones/layout/:bloque/:modal" element={<ModalGrid />} />
                 

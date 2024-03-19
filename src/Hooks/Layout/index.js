@@ -12,7 +12,7 @@ function useLayout(arrayTypes, level, stateDetault, bloque) {
         try {
             const { error, data } = await supabase
                 .from('registros_detalles_entradas')
-                .select('* , clientes(*), transportistas(*), registros(*)', { count: 'exact' })
+                .select('* , clientes(*), transportistas(*), registros(*)')
                 .in('especificacion', arrayTypes)
                 .not('columna', 'is', null)
                 .eq('nivel', level)
@@ -26,29 +26,30 @@ function useLayout(arrayTypes, level, stateDetault, bloque) {
             return { error, data }
         } catch (error) {
             console.error(error)
-            return { error }
         }
     }
 
     function actualizarEstadoPorDefecto(estadoPorDefecto, datosAPI) {
-        // Copiar el estado por defecto para evitar modificarlo directamente
-        const nuevoEstado = [...estadoPorDefecto];
+        // Crear un objeto Map para indexar los objetos del estado por su clave única
+        const estadoPorDefectoMap = new Map(
+            estadoPorDefecto.map((objetoEstado) => [
+                `${objetoEstado.bloque}-${objetoEstado.nivel}-${objetoEstado.fila}-${objetoEstado.columna}`,
+                objetoEstado
+            ])
+        );
 
-        // Iterar sobre los datos de la API
+        // Iterar sobre los datos de la API y actualizar los objetos del estado si es necesario
         datosAPI.forEach((objetoAPI) => {
-            // Buscar objetos en el estado por defecto con las mismas fila y columna
-            const objetoExistente = nuevoEstado.find((objeto) => {
-                return objeto.bloque === objetoAPI.bloque &&  objeto.nivel === objetoAPI.nivel && objeto.fila === objetoAPI.fila &&objeto .columna === objetoAPI.columna;
-            });
-
-            // Si se encuentra un objeto coincidente, actualizarlo con los datos de la API
-            if (objetoExistente) {
-                // Reemplazar el objeto existente con los datos de la API
-                Object.assign(objetoExistente, objetoAPI);
+            const clave = `${objetoAPI.bloque}-${objetoAPI.nivel}-${objetoAPI.fila}-${objetoAPI.columna}`;
+            if (estadoPorDefectoMap.has(clave)) {
+                const objetoEstado = estadoPorDefectoMap.get(clave);
+                // Actualizar el objeto existente con los datos de la API
+                estadoPorDefectoMap.set(clave, { ...objetoEstado, ...objetoAPI });
             }
         });
 
-        return nuevoEstado;
+        // Devolver los valores del Map como un array para obtener el nuevo estado
+        return [...estadoPorDefectoMap.values()];
     }
 
     const changes = supabase
@@ -62,19 +63,18 @@ function useLayout(arrayTypes, level, stateDetault, bloque) {
             },
             (payload) => {
                 CountForType()
+                console.log('reload')
             }
         )
         .subscribe()
 
     useEffect(() => {
-
-        setStateLayout(stateDetault)
         CountForType()
         return () => {
             changes.unsubscribe();
         };
 
-    }, [level, pathname, ]);
+    }, [level, pathname,]);
 
 
     return { stateLayout }

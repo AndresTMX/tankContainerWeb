@@ -140,6 +140,14 @@ function RouteProtect({ children }) {
       ],
     },
     {
+      rol: "reparador",
+      routes: [
+        "/",
+        "/maniobras",
+        "/reparaciones",
+      ],
+    },
+    {
       rol: "gestor de calidad",
       routes: [
         "/",
@@ -164,7 +172,7 @@ function RouteProtect({ children }) {
 
     const routesAprove = licenses?.routes;
 
-    if (routesAprove.includes(pathname) || subrutas >= 1 ) {
+    if (routesAprove.includes(pathname) || subrutas >= 1) {
       return children;
     } else {
       return <Navigate to={routesAprove[1]} />;

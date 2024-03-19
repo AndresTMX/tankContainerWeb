@@ -1,6 +1,6 @@
 import { typesBloqueA, BloqueA, typesBloqueB, BloqueB, typesBloqueC, BloqueC, typesBloqueD, BloqueD, typesBloqueE, BloqueE } from "../../layoutData";
-import { Modal, Box, Card, Container, Paper, Button, IconButton, CardHeader, CardContent } from "@mui/material";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Modal, Container, Paper, IconButton,  } from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
 import { GridBlock } from "../../containers/GridBlock";
 import CloseIcon from '@mui/icons-material/Close';
 
