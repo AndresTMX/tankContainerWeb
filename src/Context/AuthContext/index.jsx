@@ -124,7 +124,7 @@ function RouteProtect({ children }) {
     },
     {
       rol: "vigilante",
-      routes: ["/", "/vigilancia", "/perfil"],
+      routes: ["/", "/vigilancia", "/perfil",  ],
     },
     {
       rol: "maniobrista",
@@ -137,6 +137,7 @@ function RouteProtect({ children }) {
         "/create_maniobra",
         "/maniobras/pendiente",
         "/programacion",
+        "/ubicaciones/"
       ],
     },
     {
@@ -145,6 +146,7 @@ function RouteProtect({ children }) {
         "/",
         "/maniobras",
         "/reparaciones",
+        "/ubicaciones/"
       ],
     },
     {
@@ -158,6 +160,7 @@ function RouteProtect({ children }) {
         "/calidad",
         "/lavado",
         "/programacion",
+        "/ubicaciones/"
       ],
     },
   ];
