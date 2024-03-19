@@ -118,7 +118,6 @@ function RouteProtect({ children }) {
         "/maniobras/pendiente",
         "/programacion",
         "/ubicaciones",
-        "/ubicaciones/"
 
       ],
     },
@@ -137,7 +136,7 @@ function RouteProtect({ children }) {
         "/create_maniobra",
         "/maniobras/pendiente",
         "/programacion",
-        "/ubicaciones/"
+        "/ubicaciones"
       ],
     },
     {
@@ -146,7 +145,7 @@ function RouteProtect({ children }) {
         "/",
         "/maniobras",
         "/reparaciones",
-        "/ubicaciones/"
+        "/ubicaciones"
       ],
     },
     {
@@ -160,7 +159,7 @@ function RouteProtect({ children }) {
         "/calidad",
         "/lavado",
         "/programacion",
-        "/ubicaciones/"
+        "/ubicaciones"
       ],
     },
   ];

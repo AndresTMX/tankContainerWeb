@@ -31,8 +31,7 @@
   /* Estilos generales para la barra de desplazamiento en Firefox */
 html {
   scrollbar-width:none;
-  scrollbar-color: #afafaf whitesmoke;
-  overflow-X: hidden;  
+  scrollbar-color: #afafaf whitesmoke;  
 }
 
 
