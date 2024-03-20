@@ -318,7 +318,7 @@ export function ImportacionPage() {
                 </Box>
             </Stack >
 
-            <ModalEdit />
+            <ModalEdit modal={modal} setModal={setModal} transportistas={dataTransportistas}/>
         </>
     )
 }
@@ -344,7 +344,7 @@ function EditToolbar(props) {
     );
 }
 
-function ModalEdit({ modal, setModal }) {
+function ModalEdit({ modal, setModal, transportistas, operadores, clientes }) {
 
     const [value, setValue] = useState(0);
 
@@ -360,7 +360,7 @@ function ModalEdit({ modal, setModal }) {
                         sx={{
                             display: 'flex',
                             padding: '10px',
-                            height: '500px'
+                            height: '500px',
                         }}>
                         <Tabs
                             orientation="vertical"
@@ -376,8 +376,10 @@ function ModalEdit({ modal, setModal }) {
                         </Tabs>
 
                         <CustomTabPanel value={value} index={0}>
-                            <Box sx={{ padding: '10px' }}>
-                                <ItemTransportista/>
+                            <Box sx={{ padding: '10px', display:'flex', flexDirection:'column', gap:'10px' }}>
+                                {transportistas.map((transport) => (
+                                    <ItemTransportista key={transport.id} transport={transport}/>
+                                ))}
                             </Box>
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={1}>
@@ -386,7 +388,9 @@ function ModalEdit({ modal, setModal }) {
                             </Box>
                         </CustomTabPanel>
                         <CustomTabPanel value={value} index={2}>
-                            Item Three
+                            <Box sx={{ padding: '10px' }}>
+                                <ItemCliente />
+                            </Box>
                         </CustomTabPanel>
 
                     </Paper>
@@ -396,7 +400,7 @@ function ModalEdit({ modal, setModal }) {
     )
 }
 
-function ItemOperator() {
+function ItemOperator({operador}) {
 
     const [edit, setEdit] = useState(false)
 
@@ -456,10 +460,11 @@ function ItemOperator() {
     )
 }
 
-function ItemTransportista() {
+function ItemTransportista({transport}) {
+console.log("🚀 ~ ItemTransportista ~ transport:", transport)
 
     const [edit, setEdit] = useState(false)
-    
+
     const transportista = useRef()
 
     function saveChangues() {
@@ -503,7 +508,61 @@ function ItemTransportista() {
                 </Stack>
 
                 <Stack gap='10px' flexDirection='row'>
-                    <TextField disabled={!edit} inputRef={transportista} defaultValue="transportista" placeholder="transportista" />
+                    <TextField disabled={!edit} inputRef={transportista} defaultValue={transport.name} />
+                </Stack>
+            </Paper>
+        </>
+    )
+}
+
+function ItemCliente() {
+
+    const [edit, setEdit] = useState(false)
+
+    const cliente = useRef()
+
+    function saveChangues() {
+        try {
+            const changues = {
+                name: transportista.current.value,
+            }
+            console.log(changues)
+        } catch (error) {
+
+        }
+    }
+
+    return (
+        <>
+            <Paper elevation={2} sx={{ display: 'flex', flexDirection: 'column', padding: '10px', gap: '5px' }} >
+
+                <Stack flexDirection='row' justifyContent='flex-end' >
+                    <IconButton
+                        size='small'
+                        onClick={() => setEdit(!edit)}
+                    >
+                        <EditIcon />
+                    </IconButton>
+
+                    <IconButton
+                        size='small'
+                        color={edit ? "primary" : "default"}
+                        disabled={!edit}
+                        onClick={saveChangues}
+                    >
+                        <SaveIcon />
+                    </IconButton>
+
+                    <IconButton
+                        size='small'
+                        color='error'
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                </Stack>
+
+                <Stack gap='10px' flexDirection='row'>
+                    <TextField disabled={!edit} inputRef={cliente} defaultValue="cliente" placeholder="cliente" />
                 </Stack>
             </Paper>
         </>
