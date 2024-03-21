@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Box, Stack, Paper, Typography, Button, FormControl, InputLabel, Select, MenuItem, TextField, Modal, Container, Tabs, Tab, IconButton, } from "@mui/material"
+import { Box, Stack, Paper, Typography, Button, TextField, Modal, Container, Tabs, Tab, IconButton, } from "@mui/material"
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 //icons
 import AddIcon from '@mui/icons-material/Add';
@@ -7,25 +7,28 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
+import { GoDuplicate } from "react-icons/go";
+
 //grid
 import { DataGrid, GridToolbarContainer, GridActionsCellItem, GridRowEditStopReasons, GridRowModes } from "@mui/x-data-grid";
 //libraries
-import * as XLSX from 'xlsx'
 import { v4 as uuidv4 } from 'uuid';
+import { toast, Toaster } from "sonner";
 //hooks
 import { useRealtime } from "../../Hooks/FetchData";
 //services
-import { getAllClientes } from "../../services/clientes";
-import { getAllOperadores } from "../../services/operadores";
-import { getAllTransportistas } from "../../services/transportistas";
+import { getAllClientes, createNewCliente, updateCliente, deleteCliente } from "../../services/clientes";
+import { getAllOperadores, createOperador, updateOperador, deleteOperador } from "../../services/operadores";
+import { getAllTransportistas, createTransportista, updateTransportista, deleteTransportista } from "../../services/transportistas";
+import { createRegistersForGroup } from "../../services/importaciones";
 
 export function ImportacionPage() {
 
+    const { loading: loadingTransportistas, error: errorTransportistas, data: dataTransportistas } = useRealtime(getAllTransportistas, "transportistas", "transportistas");
     const { loading: loadingOperadores, error: errorOperadores, data: dataOperadores } = useRealtime(getAllOperadores, 'operadores', 'operadores');
-
-    const { loading: loadingTransportistas, error: errorTransportistas, data: dataTransportistas } = useRealtime(getAllTransportistas, 'transportistas', 'transportistas');
-
     const { loading: loadingClientes, error: errorClientes, data: dataClientes } = useRealtime(getAllClientes, 'clientes', 'clientes');
+
 
 
     function extractKeysValues(array, keyValue) {
@@ -123,13 +126,21 @@ export function ImportacionPage() {
             field: 'actions',
             type: 'actions',
             headerName: 'Actions',
-            width: 100,
+            width: 150,
             cellClassName: 'actions',
             getActions: ({ id }) => {
                 const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
                 if (isInEditMode) {
                     return [
+                        <GridActionsCellItem
+                            icon={<FileCopyIcon />}
+                            label="Duplicate"
+                            sx={{
+                                color: 'primary.main',
+                            }}
+                            onClick={handleDuplicateCick(id)}
+                        />,
                         <GridActionsCellItem
                             icon={<SaveIcon />}
                             label="Save"
@@ -149,6 +160,13 @@ export function ImportacionPage() {
                 }
 
                 return [
+                    <GridActionsCellItem
+                        icon={<FileCopyIcon />}
+                        label="Edit"
+                        className="textPrimary"
+                        onClick={handleDuplicateCick(id)}
+                        color="inherit"
+                    />,
                     <GridActionsCellItem
                         icon={<EditIcon />}
                         label="Edit"
@@ -181,6 +199,17 @@ export function ImportacionPage() {
         setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
     };
 
+    const handleDuplicateCick = (id) => () => {
+        const newId = uuidv4();
+        const currentRow = rows.find((row) => row.id === id)
+
+        setRows((oldRows) => [...oldRows, { ...currentRow, id: newId, isNew: true, }]);
+        setRowModesModel((oldModel) => ({
+            ...oldModel,
+            [newId]: { mode: GridRowModes.Edit, fieldToFocus: 'tracto' },
+        }));
+    }
+
     const handleDeleteClick = (id) => () => {
         setRows(rows.filter((row) => row.id !== id));
     };
@@ -207,10 +236,14 @@ export function ImportacionPage() {
         setRowModesModel(newRowModesModel);
     };
 
-    async function SendRegisters(register) {
+    async function SendRegisters() {
         try {
 
+
+
             //agrupar los registros con el mismo numero de tracto
+
+            createRegistersForGroup(rows)
 
             //function asyncrona por grupo
             //crear un registro general
@@ -243,6 +276,8 @@ export function ImportacionPage() {
         <>
             <Stack>
 
+                <Toaster richColors position='top-center' />
+
                 <Box sx={{ width: '95vw', marginInline: 'auto', paddingTop: '10px' }} >
                     <Paper
                         sx={{
@@ -265,21 +300,18 @@ export function ImportacionPage() {
                         <Stack flexDirection='row' alignItems='center' gap='10px' >
 
                             <Button
+                                color='success'
+                                onClick={SendRegisters}
                                 variant="contained"
                             >
-                                operadores
+                                importar
                             </Button>
 
                             <Button
+                                onClick={() => setModal(!modal)}
                                 variant="contained"
                             >
-                                nueva linea
-                            </Button>
-
-                            <Button
-                                variant="contained"
-                            >
-                                nuevo cliente
+                                añadir registros
                             </Button>
                         </Stack>
 
@@ -318,7 +350,13 @@ export function ImportacionPage() {
                 </Box>
             </Stack >
 
-            <ModalEdit modal={modal} setModal={setModal} transportistas={dataTransportistas}/>
+            <ModalEdit
+                modal={modal}
+                setModal={setModal}
+                clientes={dataClientes}
+                operadores={dataOperadores}
+                transportistas={dataTransportistas}
+            />
         </>
     )
 }
@@ -352,15 +390,60 @@ function ModalEdit({ modal, setModal, transportistas, operadores, clientes }) {
         setValue(newValue);
     };
 
+    async function addNewTransportista() {
+        try {
+            const { error } = await createTransportista('Nueva linea transportista')
+
+            if (error) {
+                toast.error(error?.message)
+            } else {
+                toast.success('Transportista agregado')
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async function addNewCliente() {
+        try {
+            const { error } = await createNewCliente({ cliente: 'nuevo cliente' })
+
+            if (error) {
+                toast.error(error?.message)
+            } else {
+                toast.success('Nuevo cliente agregado')
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async function addNewOperador() {
+        try {
+            const { error } = await createOperador({ nombre: 'nuevo operador' })
+
+            if (error) {
+                toast.error(error?.message)
+            } else {
+                toast.success('Nuevo operador agregado')
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     return (
         <>
-            <Modal open={true}>
-                <Container sx={{ paddingTop: '5%' }}>
+            <Modal open={modal} onClose={() => setModal(false)} >
+                <Container sx={{ paddingTop: '5%', }}>
                     <Paper
                         sx={{
                             display: 'flex',
                             padding: '10px',
-                            height: '500px',
+                            height: '80vh',
+                            zIndex: 10
                         }}>
                         <Tabs
                             orientation="vertical"
@@ -376,20 +459,56 @@ function ModalEdit({ modal, setModal, transportistas, operadores, clientes }) {
                         </Tabs>
 
                         <CustomTabPanel value={value} index={0}>
-                            <Box sx={{ padding: '10px', display:'flex', flexDirection:'column', gap:'10px' }}>
-                                {transportistas.map((transport) => (
-                                    <ItemTransportista key={transport.id} transport={transport}/>
-                                ))}
+                            <Box sx={{ padding: '10px', display: 'flex', flexDirection: 'column', gap: '10px', }}>
+                                <Stack flexDirection='row' justifyContent='flex-end'>
+                                    <IconButton
+                                        color="primary"
+                                        onClick={async () => await addNewTransportista()}
+                                    >
+                                        <AddIcon />
+                                    </IconButton>
+                                </Stack>
+                                <Stack gap='10px' padding='10px' maxHeight='70vh' overflow='auto'>
+                                    {transportistas.map((transport) => (
+                                        <ItemTransportista key={transport.id} transport={transport} />
+                                    ))}
+                                </Stack>
                             </Box>
                         </CustomTabPanel>
+
                         <CustomTabPanel value={value} index={1}>
-                            <Box sx={{ padding: '10px' }}>
-                                <ItemOperator />
+                            <Box sx={{ padding: '10px', display: 'flex', flexDirection: 'column', gap: '10px', }}>
+                                <Stack flexDirection='row' justifyContent='flex-end'>
+                                    <IconButton
+                                        color="primary"
+                                        onClick={async () => await addNewOperador()}
+                                    >
+                                        <AddIcon />
+                                    </IconButton>
+                                </Stack>
+                                <Stack gap='10px' padding='10px' maxHeight='70vh' overflow='auto'>
+                                    {operadores.map((op) => (
+                                        <ItemOperator key={op.id} operador={op} />
+                                    ))}
+                                </Stack>
                             </Box>
                         </CustomTabPanel>
+
                         <CustomTabPanel value={value} index={2}>
-                            <Box sx={{ padding: '10px' }}>
-                                <ItemCliente />
+                            <Box sx={{ padding: '10px', display: 'flex', flexDirection: 'column', gap: '10px', }}>
+                                <Stack flexDirection='row' justifyContent='flex-end'>
+                                    <IconButton
+                                        color="primary"
+                                        onClick={async () => await addNewCliente()}
+                                    >
+                                        <AddIcon />
+                                    </IconButton>
+                                </Stack>
+                                <Stack gap='10px' padding='10px' maxHeight='70vh' overflow='auto'>
+                                    {clientes.map((client) => (
+                                        <ItemCliente key={client.id} cliente={client} />
+                                    ))}
+                                </Stack>
                             </Box>
                         </CustomTabPanel>
 
@@ -400,25 +519,63 @@ function ModalEdit({ modal, setModal, transportistas, operadores, clientes }) {
     )
 }
 
-function ItemOperator({operador}) {
+function ItemOperator({ operador }) {
 
     const [edit, setEdit] = useState(false)
 
     const nombre = useRef();
-    const correo = useRef();
     const contacto = useRef();
 
-    function saveChangues() {
+    async function saveChangues() {
         try {
             const changues = {
                 nombre: nombre.current.value,
-                correo: correo.current.value,
                 contacto: contacto.current.value
             }
-            console.log(changues)
-        } catch (error) {
 
+            const { error } = await updateOperador(operador.id, changues);
+
+            if (error) {
+                toast.error(error?.message)
+            } else {
+                toast.success('Operador actualizado')
+                setEdit(!edit)
+            }
+
+        } catch (error) {
+            console.error(error)
         }
+    }
+
+    async function deleteOperadorForId() {
+        toast.custom((t) => (
+            <Paper elevation={3} sx={{ padding: '10px' }}>
+                <p>¿Seguro que deseas elimnar este operador?</p>
+                <Stack flexDirection='row' gap='20px' alignItems='center' >
+
+                    <Button
+                        variant="contained"
+                        size='small'
+                        onClick={() => toast.dismiss(t)}
+                    >
+                        cancelar
+                    </Button>
+
+                    <Button
+                        onClick={async () => {
+                            await deleteOperador(operador.id)
+                            toast.dismiss(t)
+                        }
+                        }
+                        variant="contained"
+                        size="small"
+                        color="error">
+                        eliminar
+                    </Button>
+
+                </Stack>
+            </Paper>
+        ))
     }
 
     return (
@@ -445,37 +602,72 @@ function ItemOperator({operador}) {
                     <IconButton
                         size='small'
                         color='error'
+                        onClick={deleteOperadorForId}
                     >
                         <DeleteIcon />
                     </IconButton>
                 </Stack>
 
                 <Stack gap='10px' flexDirection='row'>
-                    <TextField disabled={!edit} inputRef={nombre} defaultValue="nombre" placeholder="nombre" />
-                    <TextField disabled={!edit} inputRef={correo} defaultValue="correo" placeholder="correo" />
-                    <TextField disabled={!edit} inputRef={contacto} defaultValue="contacto" placeholder="contacto" />
+                    <TextField fullWidth disabled={!edit} inputRef={nombre} defaultValue={operador.nombre} />
+                    <TextField sx={{ width: '200px' }} disabled={!edit} inputRef={contacto} defaultValue={operador.contacto} />
                 </Stack>
             </Paper>
         </>
     )
 }
 
-function ItemTransportista({transport}) {
-console.log("🚀 ~ ItemTransportista ~ transport:", transport)
+function ItemTransportista({ transport }) {
 
     const [edit, setEdit] = useState(false)
 
     const transportista = useRef()
 
-    function saveChangues() {
+    async function saveChangues() {
         try {
-            const changues = {
-                name: transportista.current.value,
-            }
-            console.log(changues)
-        } catch (error) {
+            const { error } = await updateTransportista(transport.id, transportista.current.value)
 
+            if (error) {
+                toast.error(error?.message)
+            } else {
+                toast.success('Transportista actualizado')
+                setEdit(!edit)
+            }
+
+        } catch (error) {
+            console.error(error)
         }
+    }
+
+    async function deleteTransport() {
+        toast.custom((t) => (
+            <Paper elevation={3} sx={{ padding: '10px' }}>
+                <p>¿Seguro que deseas elimnar esta linea transportista?</p>
+                <Stack flexDirection='row' gap='20px' alignItems='center' >
+
+                    <Button
+                        variant="contained"
+                        size='small'
+                        onClick={() => toast.dismiss(t)}
+                    >
+                        cancelar
+                    </Button>
+
+                    <Button
+                        onClick={async () => {
+                            await deleteTransportista(transport.id)
+                            toast.dismiss(t)
+                        }
+                        }
+                        variant="contained"
+                        size="small"
+                        color="error">
+                        eliminar
+                    </Button>
+
+                </Stack>
+            </Paper>
+        ))
     }
 
     return (
@@ -502,34 +694,72 @@ console.log("🚀 ~ ItemTransportista ~ transport:", transport)
                     <IconButton
                         size='small'
                         color='error'
+                        onClick={deleteTransport}
                     >
                         <DeleteIcon />
                     </IconButton>
                 </Stack>
 
                 <Stack gap='10px' flexDirection='row'>
-                    <TextField disabled={!edit} inputRef={transportista} defaultValue={transport.name} />
+                    <TextField fullWidth disabled={!edit} inputRef={transportista} defaultValue={transport.name} />
                 </Stack>
             </Paper>
         </>
     )
 }
 
-function ItemCliente() {
+function ItemCliente({ cliente }) {
 
     const [edit, setEdit] = useState(false)
 
-    const cliente = useRef()
+    const clienteRef = useRef()
 
-    function saveChangues() {
+    async function saveChangues() {
         try {
-            const changues = {
-                name: transportista.current.value,
-            }
-            console.log(changues)
-        } catch (error) {
 
+            const { error } = await updateCliente(cliente.id, { cliente: clienteRef.current.value })
+
+            if (error) {
+                toast.error(`Error al actualizar cliente, error: ${error.message}`)
+            } else {
+                toast.success(`Cliente actualizado`)
+                setEdit(!edit)
+            }
+
+        } catch (error) {
+            console.error(error)
         }
+    }
+
+    async function deleteClientForID() {
+        toast.custom((t) => (
+            <Paper elevation={3} sx={{ padding: '10px' }}>
+                <p>¿Seguro que deseas elimnar este cliente?</p>
+                <Stack flexDirection='row' gap='20px' alignItems='center' >
+
+                    <Button
+                        variant="contained"
+                        size='small'
+                        onClick={() => toast.dismiss(t)}
+                    >
+                        cancelar
+                    </Button>
+
+                    <Button
+                        onClick={async () => {
+                            await deleteCliente(cliente.id)
+                            toast.dismiss(t)
+                        }
+                        }
+                        variant="contained"
+                        size="small"
+                        color="error">
+                        eliminar
+                    </Button>
+
+                </Stack>
+            </Paper>
+        ))
     }
 
     return (
@@ -556,13 +786,14 @@ function ItemCliente() {
                     <IconButton
                         size='small'
                         color='error'
+                        onClick={deleteClientForID}
                     >
                         <DeleteIcon />
                     </IconButton>
                 </Stack>
 
                 <Stack gap='10px' flexDirection='row'>
-                    <TextField disabled={!edit} inputRef={cliente} defaultValue="cliente" placeholder="cliente" />
+                    <TextField fullWidth disabled={!edit} inputRef={clienteRef} defaultValue={cliente.cliente} />
                 </Stack>
             </Paper>
         </>

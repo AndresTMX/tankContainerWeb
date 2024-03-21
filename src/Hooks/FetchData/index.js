@@ -65,17 +65,14 @@ function useRealtime(service, nameCache, nameTable) {
         }
     }
 
-    const changes = supabase.channel('schema-db-changes').on(
-        'postgres_changes',
-        {
-            schema: 'public',
-            event: '*',
-            table: nameTable
-        },
-        (payload) => {
-            setUpdate(!update)
-        }
-    )
+    const changes = supabase.channel(`custom-all-channel-${nameTable}`)
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: nameTable },
+            (payload) => {
+                setUpdate(!update)
+            }
+        )
         .subscribe()
 
     useEffect(() => {
