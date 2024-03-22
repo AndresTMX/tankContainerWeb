@@ -1,143 +1,442 @@
-import { Container, Box, Paper, Button, Typography, Stack, IconButton, Divider, Chip } from "@mui/material";
-import { DetailsUser } from "../../components/DetailsUser";
-import { LoadingState } from '../../components/LoadingState'
-import { Notification } from "../../components/Notification";
-import { DataGridCustomers } from "../../components/DataGridCustomers";
-import { ContainerScroll } from "../../components/ContainerScroll";
-//forms
-import { FormAddUser } from "../../components/FormAddUser";
-import { FormAddTransporters } from "../../components/FormAddTransporters";
+import { useState, useRef } from "react";
+import { CustomTabPanel } from "../../components/CustomTabPanel";
+import { Container, Box, Paper, Button, Typography, Stack, IconButton, Divider, Chip, Modal, Tab, Tabs, TextField, } from "@mui/material";
 //icons
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import UpdateIcon from '@mui/icons-material/Update';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 //hooks
-import { useCreateUser } from "../../Hooks/usersManagment/useCreateUser";
-import { useGetUsers } from "../../Hooks/usersManagment/useGetUsers";
-import { useFormTransporter } from "../../Hooks/useFormTransporter";
-import { useGetTransporters } from "../../Hooks/transportersManagment/useGetTransporters";
-import { useDeleteTransporter } from "../../Hooks/transportersManagment/useDeleteTransporter";
+import { useRealtime } from "../../Hooks/FetchData"
 //helpers
 import { dateMXFormat } from "../../Helpers/date";
+//services
+import { getAllClientes, createNewCliente, updateCliente, deleteCliente } from "../../services/clientes";
+import { getAllOperadores, createOperador, updateOperador, deleteOperador } from "../../services/operadores";
+import { getAllTransportistas, createTransportista, updateTransportista, deleteTransportista } from "../../services/transportistas";
+//libreries
+import { toast, Toaster } from "sonner";
 
 function PageAdmin() {
 
-    const { dataUser, setDataUser, createUser, toggleForm, modal } = useCreateUser();
-    const { transporter, setTransporter, addTransporter, transporterModal, toggleFormTransporter } = useFormTransporter();
-    const { transporters, updateAllTransports } = useGetTransporters();
-    const { deleteTransporter } = useDeleteTransporter();
-    const { users, updateUsers } = useGetUsers();
+    const { loading: loadingClientes, error: errorClientes, data: clientes } = useRealtime(getAllClientes, 'clientes', 'clientes')
+    const { loading: loadingOperadores, error: errorOperadores, data: operadores } = useRealtime(getAllOperadores, 'operadores', 'operadores')
+    const { loading: loadingTransportistas, error: errorTransportistas, data: transportistas } = useRealtime(getAllTransportistas, 'transportistas', 'transportistas')
+    // const { loading: loadingTransportistas, error: errorTransportistas, data: transportistas } = useRealtime(getAllTransportistas, 'transportistas', 'transportistas')
+
+
+    const [tab, setTab] = useState(0)
+
+    const handleChange = (event, newValue) => {
+        setTab(newValue)
+    }
+
+    async function addNewTransportista() {
+        try {
+            const { error } = await createTransportista('Nueva linea transportista')
+
+            if (error) {
+                toast.error(error?.message)
+            } else {
+                toast.success('Transportista agregado')
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async function addNewCliente() {
+        try {
+            const { error } = await createNewCliente({ cliente: 'nuevo cliente' })
+
+            if (error) {
+                toast.error(error?.message)
+            } else {
+                toast.success('Nuevo cliente agregado')
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async function addNewOperador() {
+        try {
+            const { error } = await createOperador({ nombre: 'nuevo operador' })
+
+            if (error) {
+                toast.error(error?.message)
+            } else {
+                toast.success('Nuevo operador agregado')
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
 
     return (
         <>
-            <Container
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '20px',
-                    paddingTop: '50px',
-                    paddingBottom: '50px'
-                }}>
+            <Toaster richColors position="top-center" />
 
-                {/* vista de todos los usuraios */}
-                <Box sx={{ bgcolor: 'whitesmoke', padding: '20px', borderRadius: '4px' }}>
+            <Container sx={{ paddingTop: '10px', bgcolor:'whitesmoke' , height:'93vh' }}>
+                <Box>
+                    <Tabs
+                        orientation="orizontal"
+                        variant="scrollable"
+                        value={tab}
+                        onChange={handleChange}
+                        aria-label="Vertical tabs example"
+                        sx={{ borderBottom: 1, borderColor: 'divider' }}
+                    >
+                        <Tab label="Transportistas" />
+                        <Tab label="Operadores" />
+                        <Tab label="Clientes" />
+                    </Tabs>
 
-                    <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
-                        <Typography variant="subtitle2">Usuarios registrados</Typography>
-                        <Stack flexDirection='row' gap='10px'>
-                            <IconButton onClick={toggleForm}>
-                                <AddIcon color="primary" />
-                            </IconButton>
-                            <IconButton onClick={updateUsers}>
-                                <UpdateIcon color="primary" />
-                            </IconButton>
-                        </Stack>
-                    </Stack>
-                    <Divider flexItem orientation="horizontal" />
+                    <CustomTabPanel value={tab} index={0}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', }}>
+                            <Stack flexDirection='row' justifyContent='flex-end'>
+                                <IconButton
+                                    color="primary"
+                                    onClick={async () => await addNewTransportista()}
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </Stack>
+                            <Stack gap='10px' padding='10px' maxHeight='70vh' overflow='auto'>
+                                {transportistas.map((transport) => (
+                                    <ItemTransportista key={transport.id} transport={transport} />
+                                ))}
+                            </Stack>
+                        </Box>
+                    </CustomTabPanel>
 
-                    <ContainerScroll height={'250px'}>
-                        <Stack gap={'10px'}>
-                            {users.map((user) => (
-                                <DetailsUser key={user.first_name} user={user} />
-                            ))}
-                        </Stack>
-                    </ContainerScroll>
-                </Box>
+                    <CustomTabPanel value={tab} index={1}>
+                        <Box sx={{  display: 'flex', flexDirection: 'column', gap: '10px', }}>
+                            <Stack flexDirection='row' justifyContent='flex-end'>
+                                <IconButton
+                                    color="primary"
+                                    onClick={async () => await addNewOperador()}
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </Stack>
+                            <Stack gap='10px' padding='10px' maxHeight='70vh' overflow='auto'>
+                                {operadores.map((op) => (
+                                    <ItemOperator key={op.id} operador={op} />
+                                ))}
+                            </Stack>
+                        </Box>
+                    </CustomTabPanel>
 
-                {/* vista de todas las lineas transportistas */}
-                <Box sx={{ bgcolor: 'whitesmoke', padding: '20px', borderRadius: '4px' }}>
-                    <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
-                        <Typography variant="subtitle2">Lineas transportistas</Typography>
-                        <Stack flexDirection='row' gap='10px'>
-                            <IconButton onClick={toggleFormTransporter}>
-                                <AddIcon color="primary" />
-                            </IconButton>
-                            <IconButton onClick={updateAllTransports}>
-                                <UpdateIcon color="primary" />
-                            </IconButton>
-                        </Stack>
-                    </Stack>
-                    <Divider flexItem orientation="horizontal" />
-
-
-
-                    <ContainerScroll height={'200px'}>
-                        <Stack gap='10px'>
-                            {transporters.map((item) => (
-                                <Paper
-                                    sx={{ padding: '5px' }}
-                                    key={item.id}>
-                                    <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
-                                        <Typography variant="subtitle2">{item.name}</Typography>
-
-                                        <div>
-                                            <Chip
-                                                size="small"
-                                                color='info'
-                                                icon={<EventAvailableIcon />}
-                                                label={`${dateMXFormat(item.created_at)}`}
-                                            />
-                                            <IconButton
-                                                color="error"
-                                                onClick={() => deleteTransporter(item.id)}
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </div>
-                                    </Stack>
-                                </Paper>
-                            ))}
-                        </Stack>
-                    </ContainerScroll>
+                    <CustomTabPanel value={tab} index={2}>
+                        <Box sx={{display: 'flex', flexDirection: 'column', gap: '10px', }}>
+                            <Stack flexDirection='row' justifyContent='flex-end'>
+                                <IconButton
+                                    color="primary"
+                                    onClick={async () => await addNewCliente()}
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </Stack>
+                            <Stack gap='10px' padding='10px' maxHeight='70vh' overflow='auto'>
+                                {clientes.map((client) => (
+                                    <ItemCliente key={client.id} cliente={client} />
+                                ))}
+                            </Stack>
+                        </Box>
+                    </CustomTabPanel>
 
                 </Box>
-
-                <DataGridCustomers />
-
             </Container>
-
-            <FormAddUser
-                dataUser={dataUser}
-                setDataUser={setDataUser}
-                createUser={createUser}
-                toggleForm={toggleForm}
-                modal={modal}
-            />
-
-            <FormAddTransporters
-                transporter={transporter}
-                setTransporter={setTransporter}
-                addTransporter={addTransporter}
-                transporterModal={transporterModal}
-                toggleModal={toggleFormTransporter}
-            />
-
-            <Notification />
-
-            <LoadingState duration={1000} />
         </>
     );
 }
 
 export { PageAdmin };
+
+function ItemTransportista({ transport }) {
+
+    const [edit, setEdit] = useState(false)
+
+    const transportista = useRef()
+
+    async function saveChangues() {
+        try {
+            const { error } = await updateTransportista(transport.id, transportista.current.value)
+
+            if (error) {
+                toast.error(error?.message)
+            } else {
+                toast.success('Transportista actualizado')
+                setEdit(!edit)
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async function deleteTransport() {
+        toast.custom((t) => (
+            <Paper elevation={3} sx={{ padding: '10px' }}>
+                <p>¿Seguro que deseas elimnar esta linea transportista?</p>
+                <Stack flexDirection='row' gap='20px' alignItems='center' >
+
+                    <Button
+                        variant="contained"
+                        size='small'
+                        onClick={() => toast.dismiss(t)}
+                    >
+                        cancelar
+                    </Button>
+
+                    <Button
+                        onClick={async () => {
+                            await deleteTransportista(transport.id)
+                            toast.dismiss(t)
+                        }
+                        }
+                        variant="contained"
+                        size="small"
+                        color="error">
+                        eliminar
+                    </Button>
+
+                </Stack>
+            </Paper>
+        ))
+    }
+
+    return (
+        <>
+            <Paper elevation={2} sx={{ display: 'flex', flexDirection: 'column', padding: '10px', gap: '5px' }} >
+
+                <Stack flexDirection='row' justifyContent='flex-end' >
+                    <IconButton
+                        size='small'
+                        onClick={() => setEdit(!edit)}
+                    >
+                        <EditIcon />
+                    </IconButton>
+
+                    <IconButton
+                        size='small'
+                        color={edit ? "primary" : "default"}
+                        disabled={!edit}
+                        onClick={saveChangues}
+                    >
+                        <SaveIcon />
+                    </IconButton>
+
+                    <IconButton
+                        size='small'
+                        color='error'
+                        onClick={deleteTransport}
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                </Stack>
+
+                <Stack gap='10px' flexDirection='row'>
+                    <TextField fullWidth disabled={!edit} label={'Linea transportista'} inputRef={transportista} defaultValue={transport.name} />
+                </Stack>
+            </Paper>
+        </>
+    )
+}
+
+function ItemOperator({ operador }) {
+
+    const [edit, setEdit] = useState(false)
+
+    const nombre = useRef();
+    const contacto = useRef();
+
+    async function saveChangues() {
+        try {
+            const changues = {
+                nombre: nombre.current.value,
+                contacto: contacto.current.value
+            }
+
+            const { error } = await updateOperador(operador.id, changues);
+
+            if (error) {
+                toast.error(error?.message)
+            } else {
+                toast.success('Operador actualizado')
+                setEdit(!edit)
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async function deleteOperadorForId() {
+        toast.custom((t) => (
+            <Paper elevation={3} sx={{ padding: '10px' }}>
+                <p>¿Seguro que deseas elimnar este operador?</p>
+                <Stack flexDirection='row' gap='20px' alignItems='center' >
+
+                    <Button
+                        variant="contained"
+                        size='small'
+                        onClick={() => toast.dismiss(t)}
+                    >
+                        cancelar
+                    </Button>
+
+                    <Button
+                        onClick={async () => {
+                            await deleteOperador(operador.id)
+                            toast.dismiss(t)
+                        }
+                        }
+                        variant="contained"
+                        size="small"
+                        color="error">
+                        eliminar
+                    </Button>
+
+                </Stack>
+            </Paper>
+        ))
+    }
+
+    return (
+        <>
+            <Paper elevation={2} sx={{ display: 'flex', flexDirection: 'column', padding: '10px', gap: '5px' }} >
+
+                <Stack flexDirection='row' justifyContent='flex-end' >
+                    <IconButton
+                        size='small'
+                        onClick={() => setEdit(!edit)}
+                    >
+                        <EditIcon />
+                    </IconButton>
+
+                    <IconButton
+                        size='small'
+                        color={edit ? "primary" : "default"}
+                        disabled={!edit}
+                        onClick={saveChangues}
+                    >
+                        <SaveIcon />
+                    </IconButton>
+
+                    <IconButton
+                        size='small'
+                        color='error'
+                        onClick={deleteOperadorForId}
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                </Stack>
+
+                <Stack gap='10px' flexDirection='row'>
+                    <TextField fullWidth disabled={!edit} label={'Operador'}  inputRef={nombre} defaultValue={operador.nombre} />
+                    <TextField sx={{ width: '200px' }} disabled={!edit} inputRef={contacto} defaultValue={operador.contacto} />
+                </Stack>
+            </Paper>
+        </>
+    )
+}
+
+function ItemCliente({ cliente }) {
+
+    const [edit, setEdit] = useState(false)
+
+    const clienteRef = useRef()
+
+    async function saveChangues() {
+        try {
+
+            const { error } = await updateCliente(cliente.id, { cliente: clienteRef.current.value })
+
+            if (error) {
+                toast.error(`Error al actualizar cliente, error: ${error.message}`)
+            } else {
+                toast.success(`Cliente actualizado`)
+                setEdit(!edit)
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async function deleteClientForID() {
+        toast.custom((t) => (
+            <Paper elevation={3} sx={{ padding: '10px' }}>
+                <p>¿Seguro que deseas elimnar este cliente?</p>
+                <Stack flexDirection='row' gap='20px' alignItems='center' >
+
+                    <Button
+                        variant="contained"
+                        size='small'
+                        onClick={() => toast.dismiss(t)}
+                    >
+                        cancelar
+                    </Button>
+
+                    <Button
+                        onClick={async () => {
+                            await deleteCliente(cliente.id)
+                            toast.dismiss(t)
+                        }
+                        }
+                        variant="contained"
+                        size="small"
+                        color="error">
+                        eliminar
+                    </Button>
+
+                </Stack>
+            </Paper>
+        ))
+    }
+
+    return (
+        <>
+            <Paper elevation={2} sx={{ display: 'flex', flexDirection: 'column', padding: '10px', gap: '5px' }} >
+
+                <Stack flexDirection='row' justifyContent='flex-end' >
+                    <IconButton
+                        size='small'
+                        onClick={() => setEdit(!edit)}
+                    >
+                        <EditIcon />
+                    </IconButton>
+
+                    <IconButton
+                        size='small'
+                        color={edit ? "primary" : "default"}
+                        disabled={!edit}
+                        onClick={saveChangues}
+                    >
+                        <SaveIcon />
+                    </IconButton>
+
+                    <IconButton
+                        size='small'
+                        color='error'
+                        onClick={deleteClientForID}
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                </Stack>
+
+                <Stack gap='10px' flexDirection='row'>
+                    <TextField fullWidth disabled={!edit} label={'Cliente'}  inputRef={clienteRef} defaultValue={cliente.cliente} />
+                </Stack>
+            </Paper>
+        </>
+    )
+}
+

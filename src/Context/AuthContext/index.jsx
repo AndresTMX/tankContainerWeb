@@ -101,6 +101,7 @@ function RouteProtect({ children }) {
         "/maniobras/pendiente",
         "/programacion",
         "/ubicaciones",
+        '/transportista'
       ],
     },
     {
@@ -120,7 +121,8 @@ function RouteProtect({ children }) {
         "/maniobras/pendiente",
         "/programacion",
         "/ubicaciones",
-        "/ubicaciones/"
+        "/ubicaciones/",
+        '/transportista'
 
       ],
     },

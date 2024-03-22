@@ -22,9 +22,9 @@ function Calidad() {
 
    return (
       <>
-         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+         <Box >
 
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                <Tabs
                   value={tab}
                   onChange={ToggleTab}
@@ -38,19 +38,19 @@ function Calidad() {
             </Box>
 
             <CustomTabPanel value={tab} index={0}>
-               <Box sx={{ width: '90vw', maxWidth: '700px' }} >
+               <Box sx={{ width: '90vw', maxWidth: '700px', marginX:'auto' }} >
                   <ListPrelavadosPending />
                </Box>
             </CustomTabPanel>
 
             <CustomTabPanel value={tab} index={1}>
-               <Box sx={{ width: '90vw', maxWidth: '700px' }}>
+               <Box sx={{ width: '90vw', maxWidth: '700px', marginX:'auto'  }}>
                   <ListWashingForAprobe />
                </Box>
             </CustomTabPanel>
 
             <CustomTabPanel value={tab} index={2}>
-               <Box sx={{ width: '90vw', maxWidth: '700px' }}>
+               <Box sx={{ width: '90vw', maxWidth: '700px', marginX:'auto'  }}>
                   <ListLiberations />
                </Box>
             </CustomTabPanel>

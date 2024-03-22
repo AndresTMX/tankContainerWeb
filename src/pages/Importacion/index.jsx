@@ -8,99 +8,38 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
-import { GoDuplicate } from "react-icons/go";
-
+import { SiMicrosoftexcel } from "react-icons/si";
+import { TbTableImport } from "react-icons/tb";
+import { MdFileUpload } from "react-icons/md";
+import { FaTrash } from "react-icons/fa";
 //grid
-import { DataGrid, GridToolbarContainer, GridActionsCellItem, GridRowEditStopReasons, GridRowModes } from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem, GridRowEditStopReasons, GridRowModes } from "@mui/x-data-grid";
 //libraries
 import { v4 as uuidv4 } from 'uuid';
 import { toast, Toaster } from "sonner";
-//hooks
-import { useRealtime } from "../../Hooks/FetchData";
+import * as XLSX from 'xlsx'
 //services
-import { getAllClientes, createNewCliente, updateCliente, deleteCliente } from "../../services/clientes";
-import { getAllOperadores, createOperador, updateOperador, deleteOperador } from "../../services/operadores";
-import { getAllTransportistas, createTransportista, updateTransportista, deleteTransportista } from "../../services/transportistas";
-import { createRegistersForGroup } from "../../services/importaciones";
+import { createMultipleRegisters } from "../../services/puerto";
 
 export function ImportacionPage() {
 
-    const { loading: loadingTransportistas, error: errorTransportistas, data: dataTransportistas } = useRealtime(getAllTransportistas, "transportistas", "transportistas");
-    const { loading: loadingOperadores, error: errorOperadores, data: dataOperadores } = useRealtime(getAllOperadores, 'operadores', 'operadores');
-    const { loading: loadingClientes, error: errorClientes, data: dataClientes } = useRealtime(getAllClientes, 'clientes', 'clientes');
-
-
-
-    function extractKeysValues(array, keyValue) {
-        return array.map((item) => item[keyValue])
-    }
-
-    const arrayTypes = ['AGMU', 'AFIU', 'DYOU']
-
-    const arrayEspects = ['NFC', 'FCOJ', 'OR-OIL', 'DLIMONENE', 'TEQUILA', 'NFC/FCOJ']
-
     const defaultRows = [
-        { id: 1, tracto: '1235', operador: '', carga: '', transportista: '', numero_tanque: '00000-0', cliente: '', tipo: '', especificacion: '' },
+        { id: 1, numero_tanque: '00000-0', tipo: '', especificacion: '' },
     ]
+
+    const espectOptions = ['NFC', 'FCOJ', 'OR-OIL', 'DLIMONENE', 'TEQUILA', 'NFC/FCOJ']
+
 
     const [rows, setRows] = useState(defaultRows);
     const [rowModesModel, setRowModesModel] = useState({});
 
     const columns = [
         {
-            field: 'tracto',
-            headerName: 'N° TRACTO',
-            width: 150,
-            editable: true,
-            type: 'text',
-        },
-        {
-            field: 'operador',
-            headerName: 'OPERADOR',
-            editable: true,
-            width: 200,
-            align: 'left',
-            headerAlign: 'left',
-            type: 'singleSelect',
-            valueOptions: extractKeysValues(dataOperadores, 'nombre')
-        },
-        {
-            field: 'carga',
-            headerName: 'TIPO DE CARGA',
-            type: 'singleSelect',
-            width: 150,
-            editable: true,
-            align: 'left',
-            headerAlign: 'left',
-            valueOptions: ['tanque', 'pipa']
-        },
-        {
-            field: 'transportista',
-            headerName: 'LINEA TRANSPORTISTA',
-            type: 'singleSelect',
-            width: 200,
-            editable: true,
-            align: 'left',
-            headerAlign: 'left',
-            valueOptions: extractKeysValues(dataTransportistas, 'name')
-
-        },
-        {
             field: 'numero_tanque',
             headerName: 'N° TANQUE',
             type: 'text',
             width: 150,
             editable: true,
-        },
-        {
-            field: 'cliente',
-            headerName: 'CLIENTE',
-            type: 'singleSelect',
-            width: 200,
-            editable: true,
-            align: 'left',
-            headerAlign: 'left',
-            valueOptions: extractKeysValues(dataClientes, 'cliente')
         },
         {
             field: 'tipo',
@@ -110,17 +49,17 @@ export function ImportacionPage() {
             align: 'left',
             headerAlign: 'left',
             type: 'singleSelect',
-            valueOptions: arrayTypes
+            valueOptions: ['AGMU', 'DYOU', 'AFIU',],
         },
         {
             field: 'especificacion',
-            headerName: 'ESPECIFICACION',
-            type: 'singleSelect',
+            headerName: 'ESPECIFICACIÓN',
             width: 150,
             editable: true,
             align: 'left',
             headerAlign: 'left',
-            valueOptions: arrayEspects
+            type: 'singleSelect',
+            valueOptions: espectOptions
         },
         {
             field: 'actions',
@@ -183,7 +122,62 @@ export function ImportacionPage() {
                 ];
             },
         },
+
     ];
+
+    const handleFileUpload = (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+            // console.log(jsonData);
+
+            const headers = jsonData[0];
+            const objects = jsonData.slice(1).map(row => {
+                const obj = {};
+                headers.forEach((header, index) => {
+                    obj[header] = row[index];
+                });
+                const id = uuidv4();
+                return { ...obj, id: id };
+            });
+            console.log(objects)
+            setRows(objects)
+        };
+
+        reader.readAsArrayBuffer(file);
+    };
+
+    const downloadTemplate = () => {
+
+        const rowsTransform = rows.map((row, index) => ({
+            id: index,
+            numero_tanque: row.numero_tanque,
+            especificacion: row.especificacion,
+            tipo: row.tipo,
+        }))
+
+        const ws = XLSX.utils.json_to_sheet(rowsTransform);
+        const wb = XLSX.utils.book_new();
+
+        const columnWidths = [
+            { wpx: 50 }, // Ancho de la primera columna en píxeles
+            { wpx: 100 }, // Ancho de la segunda columna en píxeles
+            { wpx: 100 }, // Ancho de la segunda columna en píxeles
+            { wpx: 100 }, // Ancho de la segunda columna en píxeles
+
+        ];
+        ws['!cols'] = columnWidths;
+
+        XLSX.utils.book_append_sheet(wb, ws, `plantilla`);
+        XLSX.writeFile(wb, `plantilla_importacion.xlsx`);
+
+    }
 
     const handleRowEditStop = (params, event) => {
         if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -203,7 +197,7 @@ export function ImportacionPage() {
         const newId = uuidv4();
         const currentRow = rows.find((row) => row.id === id)
 
-        setRows((oldRows) => [...oldRows, { ...currentRow, id: newId, isNew: true, }]);
+        setRows((oldRows) => [...oldRows, { ...currentRow, id: newId, }]);
         setRowModesModel((oldModel) => ({
             ...oldModel,
             [newId]: { mode: GridRowModes.Edit, fieldToFocus: 'tracto' },
@@ -236,41 +230,61 @@ export function ImportacionPage() {
         setRowModesModel(newRowModesModel);
     };
 
+    function hasDuplicateValuesForKey(array, key) {
+        // Creamos un objeto para almacenar los valores únicos de la clave
+        const uniqueValues = {};
+
+        // Iteramos sobre el array de objetos
+        for (const obj of array) {
+            // Obtenemos el valor de la clave para el objeto actual
+            const value = obj[key];
+
+            // Si ya existe el valor en el objeto uniqueValues, significa que es un valor duplicado
+            if (uniqueValues[value]) {
+                return value; // Se encontró un valor duplicado
+            } else {
+                uniqueValues[value] = true; // Almacenamos el valor en el objeto uniqueValues
+            }
+        }
+
+        // Si no se encontraron valores duplicados, retornamos false
+        return false;
+    }
+
     async function SendRegisters() {
         try {
 
+            const tanquesSinTipo = rows.filter((t) => t.tipo === '' || t.especificacion === '');
+            const repeat = hasDuplicateValuesForKey(rows, 'numero_tanque');
 
+            if (tanquesSinTipo.length > 0) {
+                throw new Error(`Error, ${tanquesSinTipo.length} items sin tipo o especificación`)
+            }
 
-            //agrupar los registros con el mismo numero de tracto
+            if (repeat) {
+                throw new Error(`Error, items repetido ${repeat}`)
+            }
 
-            createRegistersForGroup(rows)
+            const rowsTransform = rows.map((row) => ({
+                numero_tanque: row.numero_tanque,
+                especificacion: row.especificacion,
+                tipo: row.tipo,
+            }))
 
-            //function asyncrona por grupo
-            //crear un registro general
-            //crear los registros de cada tanque (array de promesas)
-            //retornar mensaje de exito por cada grupo
+            const { error } = await createMultipleRegisters(rowsTransform)
 
-            //campos requeridos para registro general
-
-            //numero economico || numero de tracto
-            //nombre de operador
-
-            //carga : tanque
-            //nombre de linea transportista
-            //entrada_id
-            //numero_tanque
-            //cliente
-            //tipo 
-            //especificacion
-            //
+            if (error) {
+                throw new Error(`Error, al importar tanques ${error}`)
+            } else {
+                toast.success(`Tanques importados correctamente`)
+                setRows(defaultRows)
+            }
 
         } catch (error) {
-
+            toast.error(error?.message)
         }
     }
 
-    //modal
-    const [modal, setModal] = useState(false)
 
     return (
         <>
@@ -300,18 +314,50 @@ export function ImportacionPage() {
                         <Stack flexDirection='row' alignItems='center' gap='10px' >
 
                             <Button
-                                color='success'
-                                onClick={SendRegisters}
+                                color='error'
                                 variant="contained"
+                                endIcon={<FaTrash />}
+                                onClick={() => setRows(defaultRows)}
                             >
-                                importar
+                                limpiar tabla
                             </Button>
 
                             <Button
-                                onClick={() => setModal(!modal)}
+                                color='success'
                                 variant="contained"
+                                endIcon={<SiMicrosoftexcel />}
+                                onClick={downloadTemplate}
                             >
-                                añadir registros
+                                descargar plantilla
+                            </Button>
+
+                            <input
+                                type="file"
+                                accept=".xlsx, .xls"
+                                id={`import-xls`}
+                                style={{ display: 'none' }}
+                                onChange={handleFileUpload} />
+
+
+                            <label htmlFor="import-xls">
+                                <Button
+                                    color="success"
+                                    variant="contained"
+                                    component="span"
+                                    size="medium"
+                                    endIcon={<TbTableImport />}
+                                >
+                                    importar xls
+                                </Button>
+
+                            </label>
+
+                            <Button
+                                onClick={SendRegisters}
+                                variant="contained"
+                                endIcon={<MdFileUpload />}
+                            >
+                                subir tanques
                             </Button>
                         </Stack>
 
@@ -340,46 +386,12 @@ export function ImportacionPage() {
                         onRowModesModelChange={handleRowModesModelChange}
                         onRowEditStop={handleRowEditStop}
                         processRowUpdate={processRowUpdate}
-                        slots={{
-                            toolbar: EditToolbar,
-                        }}
-                        slotProps={{
-                            toolbar: { setRows, setRowModesModel },
-                        }}
                     />
                 </Box>
             </Stack >
 
-            <ModalEdit
-                modal={modal}
-                setModal={setModal}
-                clientes={dataClientes}
-                operadores={dataOperadores}
-                transportistas={dataTransportistas}
-            />
         </>
     )
-}
-
-function EditToolbar(props) {
-    const { setRows, setRowModesModel } = props;
-
-    const handleClick = () => {
-        const id = uuidv4();
-        setRows((oldRows) => [...oldRows, { id, tracto: '00000-0', operador: '', carga: '', transportista: '', numero_tanque: '00000', cliente: '', tipo: '', especificacion: '', isNew: true }]);
-        setRowModesModel((oldModel) => ({
-            ...oldModel,
-            [id]: { mode: GridRowModes.Edit, fieldToFocus: 'tracto' },
-        }));
-    };
-
-    return (
-        <GridToolbarContainer>
-            <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-                Añadir registro
-            </Button>
-        </GridToolbarContainer>
-    );
 }
 
 function ModalEdit({ modal, setModal, transportistas, operadores, clientes }) {
