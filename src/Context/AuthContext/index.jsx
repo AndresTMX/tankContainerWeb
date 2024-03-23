@@ -20,7 +20,7 @@ function AuthProvider({ children }) {
       if (!error) {
         setKey(data.user.id);
         const session = JSON.stringify(data.user);
-        sessionStorage.setItem(data.user.id, session);
+        sessionStorage.setItem('tankUser', session);
         setLoading(false)
         navigate("/admin")
       }
@@ -33,6 +33,7 @@ function AuthProvider({ children }) {
     try {
       const { error } = await supabase.auth.signOut();
       if (!error) {
+        sessionStorage.removeItem('tankUser');
         navigate("/")
       }
     } catch (error) {
@@ -88,7 +89,6 @@ function RouteProtect({ children }) {
       rol: "admin",
       routes: [
         "/",
-        "/importaciones",
         "/admin",
         "/perfil",
         "/vigilancia",
@@ -109,6 +109,7 @@ function RouteProtect({ children }) {
       routes: [
         "/",
         "/importaciones",
+        "/transportista",
         "/admin",
         "/perfil",
         "/vigilancia",
@@ -122,7 +123,6 @@ function RouteProtect({ children }) {
         "/programacion",
         "/ubicaciones",
         "/ubicaciones/",
-        '/transportista'
 
       ],
     },

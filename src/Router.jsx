@@ -46,6 +46,7 @@ import { GlobalProvider } from "./Context/GlobalContext";
 import { ManiobrasProvider } from "./Context/ManiobrasContext";
 import { ReparacionesProvider } from "./Context/ReparacionesContext";
 import { PrelavadoProvider } from "./Context/PrelavadoContext";
+import { TransportistaProvider } from "./Context/TransportistaContext";
 //route protect
 import { RouteProtect } from "./Context/AuthContext";
 
@@ -100,9 +101,11 @@ function Router() {
                 path="/transportista"
                 element={
                   <RouteProtect>
-                    <UI>
-                      <Transportista />
-                    </UI>
+                    <TransportistaProvider>
+                      <UI>
+                        <Transportista />
+                      </UI>
+                    </TransportistaProvider>
                   </RouteProtect>
                 }
               />

@@ -23,8 +23,7 @@ function NavBar() {
         const error = await logOut()
     }
 
-    const session = JSON.parse(sessionStorage.getItem(key) || '[]')
-    console.log("🚀 ~ NavBar ~ session:", session)
+    const session = JSON.parse(sessionStorage.getItem('tankUser'));
 
     const { user_metadata } = session || {};
 

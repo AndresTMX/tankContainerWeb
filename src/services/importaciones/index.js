@@ -9,7 +9,6 @@ export async function createRegistersForGroup(rows) {
 
         for (let group of groups) {
             const repetElement = hasDuplicateValuesForKey(group, 'numero_tanque')
-            console.log("🚀 ~ createRegistersForGroup ~ repetElement:", repetElement)
 
             if (repetElement) {
                 toast.warning(`Números de tanques repetidos, ${repetElement}`)

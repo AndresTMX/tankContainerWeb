@@ -16,3 +16,21 @@ export async function createMultipleRegisters(arrayRegisters) {
         console.error(error)
     }
 }
+
+export async function getAllRegistersForStatus(status) {
+    try {
+        const { error, data } = await supabase
+            .from('puerto')
+            .select('*')
+            .eq('status', status)
+            .order('created_at', { ascending: false })
+
+        if (error) {
+            throw new Error(`Error al recuperar tanques en puerto, ${error.message}`)
+        }
+
+        return { error, data }
+    } catch (error) {
+        console.error(error)
+    }
+}

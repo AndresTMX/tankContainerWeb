@@ -82,8 +82,8 @@ function PageAdmin() {
         <>
             <Toaster richColors position="top-center" />
 
-            <Container sx={{ paddingTop: '10px', bgcolor:'whitesmoke' , height:'93vh' }}>
-                <Box>
+            <Container sx={{ paddingTop: '10px', height:'90vh', }}>
+                <Box >
                     <Tabs
                         orientation="orizontal"
                         variant="scrollable"
@@ -98,7 +98,7 @@ function PageAdmin() {
                     </Tabs>
 
                     <CustomTabPanel value={tab} index={0}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px',  bgcolor:'whitesmoke' , padding:'10px' }}>
                             <Stack flexDirection='row' justifyContent='flex-end'>
                                 <IconButton
                                     color="primary"
@@ -116,7 +116,7 @@ function PageAdmin() {
                     </CustomTabPanel>
 
                     <CustomTabPanel value={tab} index={1}>
-                        <Box sx={{  display: 'flex', flexDirection: 'column', gap: '10px', }}>
+                        <Box sx={{  display: 'flex', flexDirection: 'column', gap: '10px',  bgcolor:'whitesmoke' , padding:'10px'  }}>
                             <Stack flexDirection='row' justifyContent='flex-end'>
                                 <IconButton
                                     color="primary"
@@ -134,7 +134,7 @@ function PageAdmin() {
                     </CustomTabPanel>
 
                     <CustomTabPanel value={tab} index={2}>
-                        <Box sx={{display: 'flex', flexDirection: 'column', gap: '10px', }}>
+                        <Box sx={{display: 'flex', flexDirection: 'column', gap: '10px',  bgcolor:'whitesmoke' , padding:'10px'  }}>
                             <Stack flexDirection='row' justifyContent='flex-end'>
                                 <IconButton
                                     color="primary"
