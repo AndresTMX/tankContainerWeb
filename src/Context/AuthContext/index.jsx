@@ -80,7 +80,7 @@ function RouteProtect({ children }) {
     getAuth();
   }, []);
 
-  const session = JSON.parse(sessionStorage.getItem(key));
+  const session = JSON.parse(sessionStorage.getItem('tankUser'));
   const location = useLocation();
   const routeCurrent = location.pathname;
 

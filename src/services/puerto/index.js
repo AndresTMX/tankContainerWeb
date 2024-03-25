@@ -34,3 +34,20 @@ export async function getAllRegistersForStatus(status) {
         console.error(error)
     }
 }
+
+export async function updateRegister(id, updates) {
+    try {
+        const { error } = await supabase
+            .from('puerto')
+            .update({ ...updates })
+            .eq('id', id)
+
+        if (error) {
+            throw new Error(`Error al actualizar tanque, error: ${error.message}`)
+        }
+
+        return { error }
+    } catch (error) {
+        console.error(error)
+    }
+}

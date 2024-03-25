@@ -34,10 +34,8 @@ export function TransportistaProvider({ children }) {
 
     }
 
-
-
     return (
-        <TransportistaContext.Provider value={{ selectTanks, toggleTank, toggleGroup }}>
+        <TransportistaContext.Provider value={{ selectTanks, setSelectTanks, toggleTank, toggleGroup }}>
             {children}
         </TransportistaContext.Provider>
     )
