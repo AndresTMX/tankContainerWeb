@@ -2,6 +2,8 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { UI } from "./UI";
 import { PageAdmin } from "./pages/Admin";
+import { ImportacionPage } from "./pages/Importacion";
+import { Transportista } from "./pages/Transportista";
 import { Login } from "./pages/Login";
 import { Perfil } from "./pages/Perfil";
 import { Vigilancia } from "./pages/Vigilancia";
@@ -17,6 +19,12 @@ import { ErrorPage } from "./pages/Error";
 import { ItemGridInfo } from "./outlets/ItemGridInfo";
 import { AssignItem } from "./outlets/AssignItem";
 import { ModalGrid } from "./outlets/ModalGrid";
+//Outlets programacion
+import { ProgramacionProvider } from "./Context/ProgramacionContext";
+import { TanquesAlmacenados } from "./components/ProgramComponents/almacenados";
+import { TanquesProgramados } from "./components/ProgramComponents/programados";
+import { ProgramarLavadado } from "./components/ProgramComponents/almacenados";
+import { ReprogramarLavado } from "./components/ProgramComponents/programados";
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -38,6 +46,7 @@ import { GlobalProvider } from "./Context/GlobalContext";
 import { ManiobrasProvider } from "./Context/ManiobrasContext";
 import { ReparacionesProvider } from "./Context/ReparacionesContext";
 import { PrelavadoProvider } from "./Context/PrelavadoContext";
+import { TransportistaProvider } from "./Context/TransportistaContext";
 //route protect
 import { RouteProtect } from "./Context/AuthContext";
 
@@ -76,6 +85,31 @@ function Router() {
                   </RouteProtect>
                 }
               />
+
+              <Route
+                path="/importaciones"
+                element={
+                  <RouteProtect>
+                    <UI>
+                      <ImportacionPage />
+                    </UI>
+                  </RouteProtect>
+                }
+              />
+
+              <Route
+                path="/transportista"
+                element={
+                  <RouteProtect>
+                    <TransportistaProvider>
+                      <UI>
+                        <Transportista />
+                      </UI>
+                    </TransportistaProvider>
+                  </RouteProtect>
+                }
+              />
+
 
               <Route
                 path="/vigilancia"
@@ -139,12 +173,26 @@ function Router() {
                 path="/programacion"
                 element={
                   <RouteProtect>
-                    <UI>
-                      <Programacion />
-                    </UI>
+                    <ProgramacionProvider>
+                      <UI>
+                        <Programacion />
+                      </UI>
+                    </ProgramacionProvider>
                   </RouteProtect>
                 }
-              />
+              >
+
+                <Route path="/programacion/almacenados" element={<TanquesAlmacenados />} >
+                  <Route path="/programacion/almacenados/programar/:tanque" element={<ProgramarLavadado />} />
+                </Route>
+
+
+                <Route path="/programacion/programados" element={<TanquesProgramados />} >
+                  <Route path="/programacion/programados/reprogramar/:tanque" element={<ReprogramarLavado />} />
+                </Route>
+
+
+              </Route>
 
               <Route
                 path="/prelavado"
@@ -193,7 +241,7 @@ function Router() {
               >
 
                 <Route path="/ubicaciones/layout/:bloque/:modal" element={<ModalGrid />} />
-                
+
                 <Route path="/ubicaciones/layout/asignacion/:item" element={<AssignItem />} />
 
                 <Route path="/ubicaciones/layout/info/:item" element={<ItemGridInfo />} />
