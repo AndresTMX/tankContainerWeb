@@ -14,7 +14,6 @@ export const dateInText = (date) => dayjs(date).format('dddd, MMMM D, YYYY');
 
 export const dateInTextEn = (date) => dayjs(date).locale('en').format('dddd, MMMM D, YYYY');
 
-
 export const currentDate = new dayjs(new Date()).utc();
 
 export const transformDate = (date) => dayjs(date);
@@ -73,5 +72,13 @@ export const dateTimeMoreMinutes = (date, minutes) => {
 
 }
 
+export const minutosXhoras = (horas, minutos) => dayjs().set('hour', horas).set('minute', minutos).format('HH:mm');
 
+export const diferenciaEnHoras = (hora) => {
+    const diferencia = dayjs(hora).diff(dayjs(), 'minute')
 
+    const horasRestantes = Math.floor(diferencia / 60)
+    const minutosRestantes = diferencia % 60
+
+    return(`${horasRestantes} horas y ${minutosRestantes} minutos restantes`);
+}

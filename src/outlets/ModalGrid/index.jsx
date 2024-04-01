@@ -1,5 +1,5 @@
 import { typesBloqueA, BloqueA, typesBloqueB, BloqueB, typesBloqueC, BloqueC, typesBloqueD, BloqueD, typesBloqueE, BloqueE } from "../../layoutData";
-import { Modal, Container, Paper, IconButton,  } from "@mui/material";
+import { Modal, Container, Paper, IconButton, } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { GridBlock } from "../../containers/GridBlock";
 import CloseIcon from '@mui/icons-material/Close';
@@ -14,7 +14,7 @@ function ModalGrid() {
 
             <Modal open={modal}>
                 <Container>
-                    <Paper sx={{ padding: '20px', marginTop:'5%' }}>
+                    <Paper sx={{ padding: '20px', marginTop: '2%' }}>
                         <IconButton variant="contained" color='error' onClick={() => navigate(`/ubicaciones`)} >
                             <CloseIcon />
                         </IconButton>

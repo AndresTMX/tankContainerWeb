@@ -121,7 +121,7 @@ function ItemLiberado({ lavado, updaterList }) {
 
     const { rejectedTank } = useRejected()
 
-    const { status, URL, dateInit, dateEnd, concentracion, program_date, registros_detalles_entradas, sellos, tentativeEnd, tipos_lavado, folio } = lavado || {};
+    const { status, URL, dateInit, dateEnd, concentracion, registros_detalles_entradas, sellos, tentativeEnd, tipos_lavado, folio } = lavado || {};
 
     const { carga, numero_tanque, numero_pipa, tipo, transportistas, registros, especificacion, } = registros_detalles_entradas || {};
 
@@ -281,7 +281,7 @@ function ItemRechazado({ lavado, updaterList }) {
 
     const movile = useMediaQuery('(max-width:700px)');
 
-    const { status, URL, dateInit, dateEnd, concentracion, program_date, registros_detalles_entradas, sellos, tentativeEnd, tipos_lavado, folio, } = lavado || {};
+    const { status, URL, dateInit, dateEnd, concentracion, registros_detalles_entradas, sellos, tentativeEnd, tipos_lavado, folio, } = lavado || {};
     const { carga, numero_tanque, numero_pipa, tipo, transportistas, registros, especificacion, id: idEntrada } = registros_detalles_entradas || {};
     const { cliente } = registros_detalles_entradas.clientes || {};
     const { name: transportista } = transportistas || {};
@@ -294,9 +294,7 @@ function ItemRechazado({ lavado, updaterList }) {
 
             const newWashing = {
                 id_detalle_entrada: idEntrada,
-                program_date: program_date,
                 tentativeEnd: tentativeEnd,
-
             }
 
             const { error } = await createWashing(newWashing)

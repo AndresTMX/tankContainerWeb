@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 // custom components
 import { ContainerScroll } from "../../ContainerScroll"
 import { ItemLoadingState } from "../../ItemLoadingState"
 // components
-import { Stack, Alert, Chip, Button, Paper, Box, Divider, Typography, IconButton, Modal, Pagination } from "@mui/material"
+import { Stack, Alert, Chip, Button, Paper, Box, Divider, Typography, IconButton, Modal, Pagination, Select, MenuItem, InputLabel, FormControl } from "@mui/material"
 import { DemoContainer, DemoItem, } from "@mui/x-date-pickers/internals/demo"
 import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
@@ -12,7 +12,7 @@ import useMediaQuery from "@mui/material/useMediaQuery"
 import { useContextProgramacion } from "../../../Context/ProgramacionContext"
 import { useNavigate, useParams, Outlet } from "react-router-dom"
 //helpers
-import { dateInText, datetimeMXFormat, timepoParaX, currentDate } from "../../../Helpers/date"
+import { dateInText, datetimeMXFormat, timepoParaX, currentDate, minutosXhoras, diferenciaEnHoras } from "../../../Helpers/date"
 //libraries
 import dayjs from "dayjs"
 import { toast } from "sonner"
@@ -101,7 +101,7 @@ function TanqueProgramado({ tanque }) {
     const movile = useMediaQuery('(max-width:820px)')
     const navigate = useNavigate();
 
-    const { created_at, program_date, program_time, tentativeEnd, registros_detalles_entradas } = tanque || {};
+    const { created_at, tentativeEnd, registros_detalles_entradas } = tanque || {};
 
     const { carga, numero_pipa, numero_tanque, status, transportistas, clientes, especificacion, tipo } = registros_detalles_entradas || {};
     const { name: linea } = transportistas || {};
@@ -163,51 +163,22 @@ function TanqueProgramado({ tanque }) {
 
                 </Stack>
 
-                <Stack flexDirection={movile ? 'column' : 'row'} alignItems='center' justifyContent='space-between' bgcolor='whitesmoke'>
+                <Stack flexDirection={movile ? 'column' : 'row'} alignItems='center' justifyContent='space-between' bgcolor='whitesmoke' width={'100%'} >
 
-                    <Stack
-                        gap='10px'
-                        width={movile ? '100%' : 'auto'}
-                        flexDirection={movile ? 'column' : 'row'}
-                        alignItems={movile ? 'start' : 'center'}
-                        justifyContent='flex-start'
-                        sx={{ padding: '10px', bgcolor: 'whitesmoke' }}>
-                        <Box>
-                            <Typography variant="subtitle2">
-                                {<EditCalendarIcon fontSize="10px" color='info' />} Fecha agendada
-                            </Typography>
-                            <Typography>{dateInText(program_date)}</Typography>
-                        </Box>
-
-                        <Box>
-                            <Typography variant="subtitle2">
-                                {<ScheduleIcon fontSize="10px" color='info' />} Hora agendada </Typography>
-                            <Typography>{datetimeMXFormat(program_date)}</Typography>
-                        </Box>
-
-                    </Stack>
-
-                    <Stack
-                        width={movile ? '100%' : 'auto'}
-                        flexDirection={movile ? 'column' : 'row'}
-                        alignItems={movile ? 'start' : 'center'}>
-
-                        <Box sx={{ padding: '10px', bgcolor: !vencimiento ? '#ed6c02' : '#d32f2f', color: 'white', width: movile ? '100%' : 'auto' }}>
-                            <Typography variant="subtitle2">
-                                {<ScheduleIcon fontSize="10px" />} {!vencimiento ? 'Tiempo para entrega' : 'Tiempo excedido'} </Typography>
-                            <Typography>
-                                {timepoParaX(tentativeEnd)}
-                            </Typography>
-                        </Box>
+                    <Box sx={{ padding: '10px', bgcolor: !vencimiento ? '#ed6c02' : '#d32f2f', color: 'white', width: movile ? '100%' : '50%' }}>
+                        <Typography variant="subtitle2">
+                            {<ScheduleIcon fontSize="10px" />} {!vencimiento ? 'Tiempo para entrega' : 'Tiempo excedido'} </Typography>
+                        <Typography>
+                            {vencimiento ? timepoParaX(tentativeEnd) : ''} {!vencimiento ? diferenciaEnHoras(tentativeEnd) : ''}
+                        </Typography>
+                    </Box>
 
 
-                        <Box sx={{ padding: '10px', bgcolor: '#0288d1', color: 'white', width: movile ? '100%' : 'auto' }}>
-                            <Typography variant="subtitle2">
-                                {<AlarmIcon fontSize="10px" />}  Fecha de entrega tentativa</Typography>
-                            <Typography>{dateInText(tentativeEnd)} {datetimeMXFormat(tentativeEnd)} </Typography>
-                        </Box>
-
-                    </Stack>
+                    <Box sx={{ padding: '10px', bgcolor: '#0288d1', color: 'white', width: movile ? '100%' : '50%' }}>
+                        <Typography variant="subtitle2">
+                            {<AlarmIcon fontSize="10px" />} Fecha de entrega tentativa</Typography>
+                        <Typography>{dateInText(tentativeEnd)} {datetimeMXFormat(tentativeEnd)} </Typography>
+                    </Box>
 
                 </Stack>
 
@@ -225,38 +196,53 @@ export function ReprogramarLavado() {
 
     const tanqueJson = JSON.parse(decodeURI(tanque));
 
-    const { id, program_date, tentativeEnd } = tanqueJson;
+    const { id, tentativeEnd } = tanqueJson;
 
-    const defaultDate = dayjs()
+    const defaultDate = dayjs();
 
-    const oldDate = dayjs(program_date)
+    const destinoRef = useRef();
+
     const oldEnd = dayjs(tentativeEnd)
 
-    const [programing, setPrograming] = useState({ program_date: oldDate, tentativeEnd: oldEnd });
+    const [programing, setPrograming] = useState({ tentativeEnd: oldEnd });
 
     //controller submit
     const submit = async (e) => {
         try {
             e.preventDefault()
+
+            const destinoSeleccionado = destinos.find((destino) => destino.id === destinoRef.current.value);
+
+            const tiempoDeViaje = parseInt(destinoSeleccionado?.duracion);
+
+            const fechaDeEntrga = dayjs(programing.tentativeEnd).utc()
+
+            const entregaMenosViaje = fechaDeEntrga.subtract(tiempoDeViaje, 'minute');
+
+            if (entregaMenosViaje.isBefore(currentDate)) {
+                throw new Error('La fecha y hora selecionada menos el tiempo de viaje resulta en una fecha pasada');
+            } 
+
             const newWashing = {
-                program_date: dayjs(programing.program_date).utc(),
-                tentativeEnd: dayjs(programing.tentativeEnd).utc(),
+                tentativeEnd: entregaMenosViaje,
+                destino_id: destinoRef.current.value
             }
 
             const { error } = await updateWashing(id, newWashing)
 
             if (error) {
-                toast.error('Error al reprogramar lavado')
+                throw new Error('Error al reprogramar lavado')
             } else {
                 toast.success('Lavado reprogramado')
                 navigate('/programacion/programados')
             }
 
         } catch (error) {
-            console.error(error)
+            toast.error(error?.message)
         }
     }
 
+    const destinos = JSON.parse(localStorage.getItem('destinos') || '[]');
 
 
     return (
@@ -274,13 +260,6 @@ export function ReprogramarLavado() {
                                             'DateTimePicker',
                                         ]}
                                     >
-                                        <DemoItem label='Fecha y hora de lavado'>
-                                            <DateTimePicker
-                                                required
-                                                value={programing.program_date}
-                                                onChange={(newValue) => setPrograming({ ...programing, program_date: newValue })}
-                                            />
-                                        </DemoItem>
 
                                         <DemoItem label="Fecha y hora tentativa de recolección">
                                             <DateTimePicker
@@ -292,6 +271,24 @@ export function ReprogramarLavado() {
 
                                     </DemoContainer>
                                 </LocalizationProvider>
+
+                                <FormControl>
+                                    <InputLabel>Planta destino</InputLabel>
+                                    <Select
+                                        label="Planta destino"
+                                        defaultValue=""
+                                        inputRef={destinoRef}
+                                    >
+                                        {destinos.map((destino) => (
+                                            <MenuItem
+                                                key={destino.id}
+                                                value={destino.id}>
+                                                {destino.destino} <span style={{ fontSize: '14px', color: 'gray', padding: '2px', marginLeft: '10px' }} >{minutosXhoras(destino.duracion / 60, destino.duracion % 60)} horas</span>
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+
 
                                 <Button
                                     type='submit'

@@ -16,6 +16,7 @@ import { dateMXFormat } from "../../Helpers/date";
 import { getAllClientes, createNewCliente, updateCliente, deleteCliente } from "../../services/clientes";
 import { getAllOperadores, createOperador, updateOperador, deleteOperador } from "../../services/operadores";
 import { getAllTransportistas, createTransportista, updateTransportista, deleteTransportista } from "../../services/transportistas";
+import { getAllDestinos, createDestino, updateDestino } from "../../services/destinos";
 //libreries
 import { toast, Toaster } from "sonner";
 
@@ -24,7 +25,7 @@ function PageAdmin() {
     const { loading: loadingClientes, error: errorClientes, data: clientes } = useRealtime(getAllClientes, 'clientes', 'clientes')
     const { loading: loadingOperadores, error: errorOperadores, data: operadores } = useRealtime(getAllOperadores, 'operadores', 'operadores')
     const { loading: loadingTransportistas, error: errorTransportistas, data: transportistas } = useRealtime(getAllTransportistas, 'transportistas', 'transportistas')
-    // const { loading: loadingTransportistas, error: errorTransportistas, data: transportistas } = useRealtime(getAllTransportistas, 'transportistas', 'transportistas')
+    const { loading: loadingDestino, error: errorDestino, data: destinos } = useRealtime(getAllDestinos, 'destinos', 'destinos')
 
 
     const [tab, setTab] = useState(0)
@@ -77,12 +78,26 @@ function PageAdmin() {
         }
     }
 
+    async function addNewDestino() {
+        try {
+            const { error } = await createDestino({ destino: 'nuevo destino', duracion:'60' })
+
+            if (error) {
+                toast.error(error?.message)
+            } else {
+                toast.success('Nuevo destino agregado')
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
 
     return (
         <>
             <Toaster richColors position="top-center" />
 
-            <Container sx={{ paddingTop: '10px', height:'90vh', }}>
+            <Container sx={{ paddingTop: '10px', height: '90vh', }}>
                 <Box >
                     <Tabs
                         orientation="orizontal"
@@ -95,10 +110,11 @@ function PageAdmin() {
                         <Tab label="Transportistas" />
                         <Tab label="Operadores" />
                         <Tab label="Clientes" />
+                        <Tab label="Destino" />
                     </Tabs>
 
                     <CustomTabPanel value={tab} index={0}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px',  bgcolor:'whitesmoke' , padding:'10px' }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', bgcolor: 'whitesmoke', padding: '10px' }}>
                             <Stack flexDirection='row' justifyContent='flex-end'>
                                 <IconButton
                                     color="primary"
@@ -116,7 +132,7 @@ function PageAdmin() {
                     </CustomTabPanel>
 
                     <CustomTabPanel value={tab} index={1}>
-                        <Box sx={{  display: 'flex', flexDirection: 'column', gap: '10px',  bgcolor:'whitesmoke' , padding:'10px'  }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', bgcolor: 'whitesmoke', padding: '10px' }}>
                             <Stack flexDirection='row' justifyContent='flex-end'>
                                 <IconButton
                                     color="primary"
@@ -134,7 +150,7 @@ function PageAdmin() {
                     </CustomTabPanel>
 
                     <CustomTabPanel value={tab} index={2}>
-                        <Box sx={{display: 'flex', flexDirection: 'column', gap: '10px',  bgcolor:'whitesmoke' , padding:'10px'  }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', bgcolor: 'whitesmoke', padding: '10px' }}>
                             <Stack flexDirection='row' justifyContent='flex-end'>
                                 <IconButton
                                     color="primary"
@@ -146,6 +162,24 @@ function PageAdmin() {
                             <Stack gap='10px' padding='10px' maxHeight='70vh' overflow='auto'>
                                 {clientes.map((client) => (
                                     <ItemCliente key={client.id} cliente={client} />
+                                ))}
+                            </Stack>
+                        </Box>
+                    </CustomTabPanel>
+
+                    <CustomTabPanel value={tab} index={3}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', bgcolor: 'whitesmoke', padding: '10px' }}>
+                            <Stack flexDirection='row' justifyContent='flex-end'>
+                                <IconButton
+                                    color="primary"
+                                    onClick={async () => await addNewDestino()}
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </Stack>
+                            <Stack gap='10px' padding='10px' maxHeight='70vh' overflow='auto'>
+                                {destinos.map((destino) => (
+                                    <ItemDestino key={destino.id} destino={destino} />
                                 ))}
                             </Stack>
                         </Box>
@@ -340,7 +374,7 @@ function ItemOperator({ operador }) {
                 </Stack>
 
                 <Stack gap='10px' flexDirection='row'>
-                    <TextField fullWidth disabled={!edit} label={'Operador'}  inputRef={nombre} defaultValue={operador.nombre} />
+                    <TextField fullWidth disabled={!edit} label={'Operador'} inputRef={nombre} defaultValue={operador.nombre} />
                     <TextField sx={{ width: '200px' }} disabled={!edit} inputRef={contacto} defaultValue={operador.contacto} />
                 </Stack>
             </Paper>
@@ -433,10 +467,68 @@ function ItemCliente({ cliente }) {
                 </Stack>
 
                 <Stack gap='10px' flexDirection='row'>
-                    <TextField fullWidth disabled={!edit} label={'Cliente'}  inputRef={clienteRef} defaultValue={cliente.cliente} />
+                    <TextField fullWidth disabled={!edit} label={'Cliente'} inputRef={clienteRef} defaultValue={cliente.cliente} />
                 </Stack>
             </Paper>
         </>
     )
+}
+
+function ItemDestino({ destino }) {
+
+    const [edit, setEdit] = useState(false)
+
+    const destinoRef = useRef();
+    const duracionRef = useRef();
+
+    async function saveChangues() {
+        try {
+
+            const { error } = await updateDestino(destino.id, { destino: destinoRef.current.value, duracion: duracionRef.current.value })
+
+            if (error) {
+                toast.error(`Error al actualizar cliente, error: ${error.message}`)
+            } else {
+                toast.success(`Cliente actualizado`)
+                setEdit(!edit)
+            }
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    return (
+        <>
+            <Paper elevation={2} sx={{ display: 'flex', flexDirection: 'column', padding: '10px', gap: '5px' }} >
+
+                <Stack flexDirection='row' justifyContent='flex-end' >
+                    <IconButton
+                        size='small'
+                        onClick={() => setEdit(!edit)}
+                    >
+                        <EditIcon />
+                    </IconButton>
+
+                    <IconButton
+                        size='small'
+                        color={edit ? "primary" : "default"}
+                        disabled={!edit}
+                        onClick={saveChangues}
+                    >
+                        <SaveIcon />
+                    </IconButton>
+
+                </Stack>
+
+                <Stack gap='10px' flexDirection='row'>
+                    <TextField fullWidth disabled={!edit} label={'Destino'} inputRef={destinoRef} defaultValue={destino.destino} />
+                    <TextField disabled={!edit} label={'Tiempo de viaje en minutos'} inputRef={duracionRef} defaultValue={destino.duracion} />
+                </Stack>
+            </Paper>
+
+        </>
+    )
+
 }
 

@@ -117,7 +117,7 @@ export function ItemPrelavadoChecklist({ prelavado, updater, type }) {
 
 function ItemPendiente({ prelavado, updater }) {
 
-    const { program_date, registros_detalles_entradas, id_detalle_entrada } = prelavado || {};
+    const { registros_detalles_entradas, id_detalle_entrada } = prelavado || {};
 
     const { carga, clientes, numero_pipa, numero_tanque, status, lavado, created_at } = registros_detalles_entradas || {};
 

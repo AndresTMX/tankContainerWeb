@@ -1,5 +1,4 @@
 import { Paper, Button, Chip, Stack, Divider, Typography, Box } from "@mui/material";
-import { TextGeneral } from "../TextGeneral";
 //icons
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
@@ -23,7 +22,7 @@ function ItemWashing({ data, type }) {
     const IsSmall = useMediaQuery('(max-width:830px)');
     const IsMovile = useMediaQuery('(max-width:500px)');
 
-    const { status, program_date, tentativeEnd, registros_detalles_entradas } = data || {};
+    const { status, tentativeEnd, registros_detalles_entradas } = data || {};
 
     const { carga, clientes, numero_pipa, numero_tanque, tipo, registros } = registros_detalles_entradas || {};
 
@@ -133,10 +132,10 @@ function ItemWashing({ data, type }) {
                     </Stack>
 
                     <Stack flexDirection={IsSmall? 'column': 'row'} gap={ IsSmall? '5px' : '10px'}>
-                        <Box>
+                        {/* <Box>
                             <Typography variant='subtitle2'>Cita de lavado</Typography>
                             <Typography variant='button'>{` ${dateTextShort(program_date)}  ${datetimeMXFormat(program_date)}`}</Typography>
-                        </Box>
+                        </Box> */}
 
                         <Divider flexItem />
 

@@ -1,23 +1,25 @@
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef } from "react"
 // custom components
 import { ContainerScroll } from "../../ContainerScroll"
 import { ItemLoadingState } from "../../ItemLoadingState"
 // components
-import { Stack, Alert, Chip, Button, Paper, Box, Divider, Typography, Modal, Pagination } from "@mui/material"
+import { Stack, Alert, Chip, Button, Paper, Box, Divider, Typography, Modal, Pagination, Select, MenuItem, FormControl, InputLabel, TextField } from "@mui/material"
 import { DemoContainer, DemoItem, } from "@mui/x-date-pickers/internals/demo"
 import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery"
+import { useFetchData } from "../../../Hooks/FetchData"
 import { useContextProgramacion } from "../../../Context/ProgramacionContext"
 //helpers
-import { tiempoTranscurrido, dateInText, datetimeMXFormat } from "../../../Helpers/date"
+import { tiempoTranscurrido, dateInText, datetimeMXFormat, minutosXhoras, currentDate } from "../../../Helpers/date"
 //libreries
 import dayjs from "dayjs"
 import { toast } from "sonner"
 import { Outlet, useNavigate, useParams } from "react-router-dom"
 //services
 import { programNewWashing } from "../../../services/programacion"
+import { getAllDestinos } from "../../../services/destinos"
 
 export function TanquesAlmacenados() {
 
@@ -42,6 +44,14 @@ export function TanquesAlmacenados() {
 
         return dataDinamic.slice(start, end);
     }, [page, dataDinamic]);
+
+    async function getDestinos() {
+        const { error, data } = await getAllDestinos();
+        return { error, data }
+    }
+
+    const { data: destinos, error: errorDestinos, loading: loadingDestinos } = useFetchData(getDestinos, 'destinos')
+
 
     return (
         <>
@@ -183,29 +193,45 @@ export function ProgramarLavadado() {
 
     const defaultDate = dayjs().tz('America/Mexico_City');
 
-    const [programing, setPrograming] = useState({ program_date: defaultDate, tentativeEnd: defaultDate });
+    const destinoRef = useRef();
+    const [programing, setPrograming] = useState({ tentativeEnd: defaultDate });
+
+    const destinos = JSON.parse(localStorage.getItem('destinos') || '[]');
 
     //controller submit
     const submit = async (e) => {
         try {
-            e.preventDefault()
+            e.preventDefault();
+
+            const destinoSeleccionado = destinos.find((destino) => destino.id === destinoRef.current.value);
+
+            const tiempoDeViaje = parseInt(destinoSeleccionado?.duracion);
+
+            const fechaDeEntrga = dayjs(programing.tentativeEnd).utc()
+
+            const entregaMenosViaje = fechaDeEntrga.subtract(tiempoDeViaje, 'minute');
+
+            if (entregaMenosViaje.isBefore(currentDate)) {
+                throw new Error('La fecha y hora selecionada menos el tiempo de viaje resulta en una fecha pasada');
+            } 
+
             const newWashing = {
-                program_date: dayjs(programing.program_date).utc(),
-                tentativeEnd: dayjs(programing.tentativeEnd).utc(),
-                id_detalle_entrada: id
+                tentativeEnd: entregaMenosViaje,
+                id_detalle_entrada: id,
+                destino_id: destinoRef.current.value
             }
 
             const { error } = await programNewWashing(newWashing)
 
             if (error) {
-                toast.error('Error al programar lavado')
+                throw new Error('Error al programar lavado')
             } else {
                 toast.success('Lavado programado')
                 navigate('/programacion/programados')
             }
 
         } catch (error) {
-            console.error(error)
+            toast.error(error?.message)
         }
     }
 
@@ -224,21 +250,31 @@ export function ProgramarLavadado() {
                                             'DateTimePicker',
                                         ]}
                                     >
-                                        <DemoItem label='Fecha y hora de lavado'>
-                                            <DateTimePicker
-                                                required
-                                                value={programing.program_date}
-                                                onChange={(newValue) => setPrograming({ ...programing, program_date: newValue })}
-                                            />
-                                        </DemoItem>
 
-                                        <DemoItem label="Fecha y hora tentativa de recolección">
+                                        <DemoItem label="Fecha y Hora de llegada a la planta">
                                             <DateTimePicker
                                                 required
                                                 value={programing.tentativeEnd}
                                                 onChange={(newValue) => setPrograming({ ...programing, tentativeEnd: newValue })}
                                             />
                                         </DemoItem>
+
+                                        <FormControl>
+                                            <InputLabel>Planta destino</InputLabel>
+                                            <Select
+                                                label="Planta destino"
+                                                defaultValue=""
+                                                inputRef={destinoRef}
+                                            >
+                                                {destinos.map((destino) => (
+                                                    <MenuItem
+                                                        key={destino.id}
+                                                        value={destino.id}>
+                                                        {destino.destino} <span style={{ fontSize: '14px', color: 'gray', padding: '2px', marginLeft: '10px' }} >{minutosXhoras(destino.duracion / 60, destino.duracion % 60)} horas</span>
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
 
                                     </DemoContainer>
                                 </LocalizationProvider>
