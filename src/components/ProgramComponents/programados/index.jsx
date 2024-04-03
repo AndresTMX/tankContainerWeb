@@ -116,7 +116,7 @@ function TanqueProgramado({ tanque }) {
     }
 
     useEffect(() => {
-        if (entregaTentativa.isBefore(currentDate, 'day')) {
+        if (entregaTentativa.isBefore(currentDate)) {
             setVencimiento(true)
         } else {
             setVencimiento(false)
