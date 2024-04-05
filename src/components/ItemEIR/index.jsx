@@ -7,6 +7,7 @@ import { TextGeneral } from "../TextGeneral";
 import InfoIcon from "@mui/icons-material/Info";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 //helpers
 import { tiempoTranscurrido, dateMXFormat, datetimeMXFormat, dateInText } from "../../Helpers/date";
 //hooks
@@ -232,6 +233,8 @@ export function ItemComplete({ data, selectItem }) {
         usuario_emisor: `${first_name} ${last_name}`
     }
 
+    const [button, setButton] = useState(false)
+
     return (
         <>
 
@@ -286,10 +289,20 @@ export function ItemComplete({ data, selectItem }) {
 
                         <Stack width={isMovile ? '100%' : 'auto'}>
 
-                            <ButtonDowloand
+                            {button && <ButtonDowloand
                                 dataDocument={dataDocument}
                                 checklist={checklistJson}
-                            />
+                            />}
+
+                            {!button && <Button
+                                variant="contained"
+                                size="small"
+                                color="primary"
+                                onClick={() => setButton(!button)}
+                                endIcon={<PictureAsPdfIcon />}
+                            >
+                                Exportar PDF
+                            </Button>}
                         </Stack>
 
                     </Stack>

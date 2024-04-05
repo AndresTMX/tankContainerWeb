@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
-import { Container, Box, Paper, Button, Typography, Stack, IconButton, Divider, Chip, Modal, Tab, Tabs, TextField, } from "@mui/material";
+import { Container, Box, Paper, Button, Typography, Stack, IconButton, Divider, Chip, Modal, Tab, Tabs, TextField, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 //icons
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import UpdateIcon from '@mui/icons-material/Update';
@@ -80,7 +80,7 @@ function PageAdmin() {
 
     async function addNewDestino() {
         try {
-            const { error } = await createDestino({ destino: 'nuevo destino', duracion:'60' })
+            const { error } = await createDestino({ destino: 'nuevo destino', duracion: '60' })
 
             if (error) {
                 toast.error(error?.message)
@@ -466,8 +466,14 @@ function ItemCliente({ cliente }) {
                     </IconButton>
                 </Stack>
 
-                <Stack gap='10px' flexDirection='row'>
+                <Stack gap='10px' flexDirection='row' sx={{ marginBottom: '10px' }}>
                     <TextField fullWidth disabled={!edit} label={'Cliente'} inputRef={clienteRef} defaultValue={cliente.cliente} />
+                </Stack>
+
+                <Stack gap='10px' flexDirection='row'>
+                    <TextField fullWidth disabled={!edit} label={'correo'} />
+                    <TextField fullWidth disabled={!edit} label={'correo'} />
+
                 </Stack>
             </Paper>
         </>
@@ -480,6 +486,7 @@ function ItemDestino({ destino }) {
 
     const destinoRef = useRef();
     const duracionRef = useRef();
+    const clienteIdRef = useRef();
 
     async function saveChangues() {
         try {
@@ -523,6 +530,17 @@ function ItemDestino({ destino }) {
 
                 <Stack gap='10px' flexDirection='row'>
                     <TextField fullWidth disabled={!edit} label={'Destino'} inputRef={destinoRef} defaultValue={destino.destino} />
+                    <FormControl fullWidth>
+                        <InputLabel>Cliente</InputLabel>
+                        <Select
+                            disabled={!edit}
+                            label={'Cliente'}
+                            inputRef={clienteIdRef}
+                            defaultValue={destino.cliente_id}
+                        >
+                            <MenuItem>1</MenuItem>
+                        </Select>
+                    </FormControl>
                     <TextField disabled={!edit} label={'Tiempo de viaje en minutos'} inputRef={duracionRef} defaultValue={destino.duracion} />
                 </Stack>
             </Paper>

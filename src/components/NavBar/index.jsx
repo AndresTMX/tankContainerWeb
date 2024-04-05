@@ -55,6 +55,7 @@ function NavBar() {
             { to: '/vigilancia', text: 'Vigilancia' },
         ],
         maniobrista: [
+            { to: '/vigilancia', text: 'Vigilancia' },
             { to: '/maniobras', text: 'Maniobras' },
             { to: '/programacion/almacenados', text: 'Programación' },
             { to: '/reparaciones', text: 'Reparación' },

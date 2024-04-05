@@ -65,6 +65,9 @@ function usePostCheckList() {
                 .select()
 
             if (error) {
+                await supabase.from('registros_detalles_entradas')
+                .update({ status: 'eir' })
+                .eq('id', item.id)
                 throw new Error(error.message)
             }
 

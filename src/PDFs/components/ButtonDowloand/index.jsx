@@ -28,7 +28,7 @@ function ButtonDowloand({ dataDocument, checklist, }) {
             color="primary"
             endIcon={<PictureAsPdfIcon />}
           >
-            Exportar PDF</Button>
+            descargar</Button>
         )
       }
     </PDFDownloadLink>

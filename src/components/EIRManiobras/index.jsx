@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 //components
-import { Box, Stack, Fade, Paper, Chip, Alert } from "@mui/material";
+import { Box, Stack, Fade, Paper, Chip, Alert, Pagination } from "@mui/material";
 import { DetailsCheckList } from "../../components/DetailsCheckList";
 import { CheckListEIR } from "../../sections/CheckListEIR";
 import { NotConexionState } from "../NotConectionState";
@@ -28,6 +28,25 @@ function EIRManiobras() {
 
     const [modalCheck, setModalCheck] = useState(false);
     const toggleModalCheck = () => setModalCheck(!modalCheck);
+
+
+    const [page, setPage] = useState(1);
+
+    const handleChange = (event, value) => {
+        setPage(value);
+    };
+
+    const rowsPerPage = 10;
+
+    const pages = Math.ceil(dataEIR?.length / rowsPerPage);
+
+    const items = useMemo(() => {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        return dataEIR.slice(start, end);
+    }, [page, dataEIR]);
+
 
     return (
         <>
@@ -118,7 +137,7 @@ function EIRManiobras() {
                                 <Fade in={!loadingEIR} timeout={500}>
                                     <Stack spacing='10px'>
                                         {
-                                            dataEIR.map((element) => (
+                                            items.map((element) => (
                                                 <ItemEIR
                                                     key={typeRegister === 'pendientes' ? element.id : element.folio}
                                                     data={element}
@@ -131,7 +150,7 @@ function EIRManiobras() {
                                 </Fade>}
 
                         </ContainerScroll>
-
+                        <Pagination variant="outlined" shape="rounded" color="primary" sx={{marginX:'auto'}} count={pages} page={page} onChange={handleChange} />
                     </Stack>
                 }
             </Box>
