@@ -9,7 +9,7 @@ import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery"
-import { useFetchData } from "../../../Hooks/FetchData"
+import { useRealtime } from "../../../Hooks/FetchData"
 import { useContextProgramacion } from "../../../Context/ProgramacionContext"
 //helpers
 import { tiempoTranscurrido, dateInText, datetimeMXFormat, minutosXhoras, currentDate } from "../../../Helpers/date"
@@ -18,8 +18,7 @@ import dayjs from "dayjs"
 import { toast } from "sonner"
 import { Outlet, useNavigate, useParams } from "react-router-dom"
 //services
-import { programNewWashing } from "../../../services/programacion"
-import { getAllDestinos } from "../../../services/destinos"
+import { getAllOrders } from "../../../services/ordenes"
 
 export function TanquesAlmacenados() {
 
@@ -45,12 +44,12 @@ export function TanquesAlmacenados() {
         return dataDinamic.slice(start, end);
     }, [page, dataDinamic]);
 
-    async function getDestinos() {
-        const { error, data } = await getAllDestinos();
+    async function getOrders() {
+        const { error, data } = await getAllOrders();
         return { error, data }
     }
 
-    const { data: destinos, error: errorDestinos, loading: loadingDestinos } = useFetchData(getDestinos, 'destinos')
+    // const { data: ordenes, error: error, loading: loading } = useRealtime(getOrders, 'ordenes_lavado', 'ordenes_lavado')
 
 
     return (
@@ -67,7 +66,7 @@ export function TanquesAlmacenados() {
                             <ItemLoadingState />
                         </>
                     }
-
+                    {/* 
                     {(!loading && !error && dataDinamic.length === 0 && mode === 'data') &&
                         <Alert severity='info'>Sin registros añadidos</Alert>
                     }
@@ -88,13 +87,14 @@ export function TanquesAlmacenados() {
                                 tanque={tanque}
                             />
                         ))
-                    }
+                    } */}
 
+                    <Order />
 
 
                 </Stack>
             </ContainerScroll>
-            <Pagination variant="outlined" shape="rounded" color="primary" count={pages} page={page} onChange={handleChange} />
+            {/* <Pagination variant="outlined" shape="rounded" color="primary" count={pages} page={page} onChange={handleChange} /> */}
 
             <Outlet />
 
@@ -213,7 +213,7 @@ export function ProgramarLavadado() {
 
             if (entregaMenosViaje.isBefore(currentDate)) {
                 throw new Error('La fecha y hora selecionada menos el tiempo de viaje resulta en una fecha pasada');
-            } 
+            }
 
             const newWashing = {
                 tentativeEnd: entregaMenosViaje,
@@ -301,6 +301,147 @@ export function ProgramarLavadado() {
                     </form>
                 </Box>
             </Modal>
+        </>
+    )
+}
+
+function updateOrder() {
+
+    //recibir la solicitud por parametros
+    const { solicitud } = useParams();
+    const navigate = useNavigate();
+
+    const solicitudJson = JSON.parse(decodeURI(solicitud));
+
+
+    //abrir un modal donde pueda ver los tanques que coincidan con la solicitud 
+    // poder seleccionar uno de esos tanques
+    //actualizar la condicion del tanque en la solicitud
+    // crear un nuevo lavado con los datos del tanque seleccionado y el id de solicitud
+
+    //actualizar 
+
+    return (
+        <>
+            <Modal
+                open={true}
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center'
+                }}
+            >
+                <Paper>
+
+                    <Stack padding='10px' gap='10px'>
+
+                        <Box>
+                            <span>cliente</span>
+                            <span>hora de entrega</span>
+                        </Box>
+
+                        <Box>
+                            tanques disponibles
+                        </Box>
+                    </Stack>
+
+                </Paper>
+
+            </Modal>
+        </>
+    )
+}
+
+function Order() {
+
+    const random = ['1', '2', '3']
+
+    const [tanques, setTanques] = useState([
+        {
+            id: "a760ca03-4041-48b1-a93d-aa7c8d7651b9",
+            tipo: "AGMU",
+            especificacion: "NFC",
+            editing: false,
+            numero_tanque: ''
+        },
+        {
+            id: "186ae9ab-cfbe-473c-b144-1450464df207",
+            tipo: "AGMU",
+            especificacion: "NFC",
+            editing: false,
+            numero_tanque: ''
+        },
+        {
+            id: "8aa834d1-ca12-4bc0-91c6-9059aceeab26",
+            tipo: "AGMU",
+            especificacion: "NFC",
+            editing: false,
+            numero_tanque: ''
+        }
+    ])
+
+
+    return (
+        <>
+            <Paper>
+                <Stack flexDirection='row' padding='10px' gap='10px'>
+
+                    <Chip label={'status'} />
+
+                    <Chip label={'cliente'} />
+
+                    <Chip label={'hora de entrega'} />
+                    
+                    <Chip label={'hora 5 min'} />
+
+                </Stack>
+
+                <Box sx={{ paddingX: '10px' }} >
+                    <strong>destino</strong> <span>{ }</span>
+                </Box>
+
+                <Stack sx={{ bgcolor: 'paper.bg' }} flexDirection='column' gap='10px' padding='10px'>
+
+                    {tanques.map((tanque) => (
+                        <Paper
+                            elevation={3}
+                            key={tanque.id}
+                            sx={{ padding: '10px', display: 'flex', flexDirection: 'row', gap: '15px', justifyContent: 'space-between', alignItems: 'center' }}>
+
+                            <Stack flexDirection='row' gap='30px'>
+
+                                <Stack>
+                                    <strong>número de tanque</strong>
+                                    <span>{tanque.numero_tanque || '####'}</span>
+                                </Stack>
+
+                                <Stack>
+                                    <strong>tipo</strong>
+                                    <span>{tanque.tipo}</span>
+                                </Stack>
+
+                                <Stack>
+                                    <strong>especificación</strong>
+                                    <span>{tanque.especificacion}</span>
+                                </Stack>
+
+                            </Stack>
+
+                            {tanque.numero_tanque === '' &&
+                                <Box sx={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
+                                    <Button variant="contained" >reasignar tanque</Button>
+                                </Box>}
+
+
+                        </Paper>
+                    ))}
+
+                    <Button fullWidth variant="contained" >confirmar solicitud</Button>
+                </Stack>
+
+
+            </Paper>
+
         </>
     )
 }
