@@ -21,9 +21,9 @@ import { AssignItem } from "./outlets/AssignItem";
 import { ModalGrid } from "./outlets/ModalGrid";
 //Outlets programacion
 import { ProgramacionProvider } from "./Context/ProgramacionContext";
-import { TanquesAlmacenados } from "./components/ProgramComponents/almacenados";
+import { SolicitudesDeLavado } from "./components/ProgramComponents/almacenados";
 import { TanquesProgramados } from "./components/ProgramComponents/programados";
-import { ProgramarLavadado } from "./components/ProgramComponents/almacenados";
+import { ConfirmarSolicitud } from "./components/ProgramComponents/almacenados";
 import { ReprogramarLavado } from "./components/ProgramComponents/programados";
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -32,7 +32,7 @@ let theme = createTheme({
   palette: {
     primary: {
       main: "#0092ba",
-      border: '#e5e7eb'
+      border:'#E4E4E7',
     },
     secondary: {
       main: "#025E73",
@@ -182,8 +182,8 @@ function Router() {
                 }
               >
 
-                <Route path="/programacion/almacenados" element={<TanquesAlmacenados />} >
-                  <Route path="/programacion/almacenados/programar/:tanque" element={<ProgramarLavadado />} />
+                <Route path="/programacion/solicitudes" element={<SolicitudesDeLavado />} >
+                  <Route path="/programacion/solicitudes/programar/:solicitud/:id" element={<ConfirmarSolicitud />} />
                 </Route>
 
 

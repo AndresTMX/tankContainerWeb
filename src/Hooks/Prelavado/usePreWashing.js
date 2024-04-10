@@ -28,7 +28,7 @@ function usePreWashing() {
                 .from('lavados')
                 .select(` *, registros_detalles_entradas(*, clientes(*), registros(*))`)
                 .eq('status', 'pendiente')
-                .order('tentativeEnd', { ascending: true })
+                .order('fecha_entrega', { ascending: true })
 
 
             if (error) {

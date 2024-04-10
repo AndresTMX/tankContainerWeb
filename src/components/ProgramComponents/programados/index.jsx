@@ -43,9 +43,8 @@ export function TanquesProgramados() {
         const start = (page - 1) * rowsPerPage;
         const end = start + rowsPerPage;
 
-        return dataDinamic.slice(start, end);
+        return dataDinamic?.slice(start, end);
     }, [page, dataDinamic]);
-
 
 
     return (
@@ -54,7 +53,7 @@ export function TanquesProgramados() {
 
                 <Stack gap='10px' padding='0px' >
 
-
+                    
                     {(loading && !error && dataDinamic.length < 1) &&
                         <>
                             <ItemLoadingState />
@@ -87,7 +86,7 @@ export function TanquesProgramados() {
                 </Stack>
             </ContainerScroll>
 
-            <Pagination variant="outlined" shape="rounded" color="primary" count={pages} page={page} onChange={handleChange} />
+            {/* <Pagination variant="outlined" shape="rounded" color="primary" count={pages} page={page} onChange={handleChange} /> */}
 
             <Outlet />
         </>
@@ -101,19 +100,14 @@ function TanqueProgramado({ tanque }) {
     const movile = useMediaQuery('(max-width:820px)')
     const navigate = useNavigate();
 
-    const { created_at, tentativeEnd, registros_detalles_entradas } = tanque || {};
+    const { fecha_entrega, registros_detalles_entradas, ordenes_lavado } = tanque || {};
 
-    const { carga, numero_pipa, numero_tanque, status, transportistas, clientes, especificacion, tipo } = registros_detalles_entradas || {};
-    const { name: linea } = transportistas || {};
-    const { cliente } = clientes || {};
+    const { carga, numero_pipa, numero_tanque, status, transportistas, especificacion, tipo } = registros_detalles_entradas || {};
+
+    const { clientes } = ordenes_lavado || {};
 
     const [modalEdit, setModalEdit] = useState(false);
-    const entregaTentativa = dayjs(tentativeEnd);
-
-    const reprogramar = () => {
-        const tanqueString = encodeURIComponent(JSON.stringify(tanque));
-        navigate(`/programacion/programados/reprogramar/${tanqueString}`)
-    }
+    const entregaTentativa = dayjs(fecha_entrega);
 
     useEffect(() => {
         if (entregaTentativa.isBefore(currentDate)) {
@@ -136,10 +130,6 @@ function TanqueProgramado({ tanque }) {
             >
                 <Stack flexDirection='row' gap='10px' justifyContent='space-between'>
                     <Chip color='warning' label={status} />
-
-                    <IconButton onClick={reprogramar} variant="outlined" color='info'>
-                        <EditCalendarIcon />
-                    </IconButton>
                 </Stack>
 
                 <Stack flexDirection={movile ? 'column' : 'row'} gap={movile ? '15px' : '30px'} justifyContent='flex-start'>
@@ -157,7 +147,7 @@ function TanqueProgramado({ tanque }) {
                     <Divider />
                     <Box>
                         <Typography variant="subtitle2">Cliente</Typography>
-                        <Typography>{cliente}</Typography>
+                        <Typography>{clientes.cliente}</Typography>
                     </Box>
 
 
@@ -169,7 +159,7 @@ function TanqueProgramado({ tanque }) {
                         <Typography variant="subtitle2">
                             {<ScheduleIcon fontSize="10px" />} {!vencimiento ? 'Tiempo para entrega' : 'Tiempo excedido'} </Typography>
                         <Typography>
-                            {vencimiento ? timepoParaX(tentativeEnd) : ''} {!vencimiento ? diferenciaEnHoras(tentativeEnd) : ''}
+                            {vencimiento ? timepoParaX(fecha_entrega) : ''} {!vencimiento ? diferenciaEnHoras(fecha_entrega) : ''}
                         </Typography>
                     </Box>
 
@@ -177,7 +167,7 @@ function TanqueProgramado({ tanque }) {
                     <Box sx={{ padding: '10px', bgcolor: '#0288d1', color: 'white', width: movile ? '100%' : '50%' }}>
                         <Typography variant="subtitle2">
                             {<AlarmIcon fontSize="10px" />} Fecha de entrega tentativa</Typography>
-                        <Typography>{dateInText(tentativeEnd)} {datetimeMXFormat(tentativeEnd)} </Typography>
+                        <Typography>{dateInText(fecha_entrega)} {datetimeMXFormat(fecha_entrega)} </Typography>
                     </Box>
 
                 </Stack>
@@ -196,15 +186,15 @@ export function ReprogramarLavado() {
 
     const tanqueJson = JSON.parse(decodeURI(tanque));
 
-    const { id, tentativeEnd } = tanqueJson;
+    const { id, fecha_entrega } = tanqueJson;
 
     const defaultDate = dayjs();
 
     const destinoRef = useRef();
 
-    const oldEnd = dayjs(tentativeEnd)
+    const oldEnd = dayjs(fecha_entrega)
 
-    const [programing, setPrograming] = useState({ tentativeEnd: oldEnd });
+    const [programing, setPrograming] = useState({ fecha_entrega: oldEnd });
 
     //controller submit
     const submit = async (e) => {
@@ -215,16 +205,16 @@ export function ReprogramarLavado() {
 
             const tiempoDeViaje = parseInt(destinoSeleccionado?.duracion);
 
-            const fechaDeEntrga = dayjs(programing.tentativeEnd).utc()
+            const fechaDeEntrga = dayjs(programing.fecha_entrega).utc()
 
             const entregaMenosViaje = fechaDeEntrga.subtract(tiempoDeViaje, 'minute');
 
             if (entregaMenosViaje.isBefore(currentDate)) {
                 throw new Error('La fecha y hora selecionada menos el tiempo de viaje resulta en una fecha pasada');
-            } 
+            }
 
             const newWashing = {
-                tentativeEnd: entregaMenosViaje,
+                fecha_entrega: entregaMenosViaje,
                 destino_id: destinoRef.current.value
             }
 
@@ -264,8 +254,8 @@ export function ReprogramarLavado() {
                                         <DemoItem label="Fecha y hora tentativa de recolección">
                                             <DateTimePicker
                                                 required
-                                                value={programing.tentativeEnd}
-                                                onChange={(newValue) => setPrograming({ ...programing, tentativeEnd: newValue })}
+                                                value={programing.fecha_entrega}
+                                                onChange={(newValue) => setPrograming({ ...programing, fecha_entrega: newValue })}
                                             />
                                         </DemoItem>
 

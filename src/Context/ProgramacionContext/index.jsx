@@ -1,7 +1,9 @@
+import supabase from "../../supabase";
 import { useEffect, useState, useContext, createContext, useRef } from "react";
 import { useLocation } from "react-router-dom";
 //services
 import { getStored, getPrograming } from "../../services/programacion";
+import { getAllOrders, getOrdersAprobe } from "../../services/ordenes";
 //libreries
 import { toast } from "sonner";
 
@@ -22,12 +24,14 @@ export function ProgramacionProvider({ children }) {
     const searchMode = 'search'
     const [dataSearch, setDataSearch] = useState([])
     const [mode, setMode] = useState(dataMode)
+    const [update, setUpdate] = useState(false);
+
 
     //parametro de busqueda
-    function extractKey(tanque) {
+    function extractKey(order) {
         try {
-            if (pathname.includes('almacenados')) {
-                return tanque['numero_tanque']
+            if (pathname.includes('solicitudes')) {
+                return `${order['clientes']['cliente'].toLowerCase()}-${order['destinos']['destino'].toLowerCase()}`
             } else {
                 const key = tanque['registros_detalles_entradas']['numero_tanque'];
                 return key
@@ -48,6 +52,7 @@ export function ProgramacionProvider({ children }) {
 
 
             registers.forEach(element => {
+                console.log(extractKey(element))
                 newData.set(extractKey(element), element)
             });
 
@@ -65,7 +70,6 @@ export function ProgramacionProvider({ children }) {
             console.error(error)
         }
     }
-    
 
     function handleKeyPress(e) {
         try {
@@ -87,8 +91,8 @@ export function ProgramacionProvider({ children }) {
     }
 
     //cache controller
-    const typeCache = pathname.includes('almacenados') ? 'tanques_registros_almacenados' : 'lavados_programados';
-    const cache = JSON.parse(localStorage.getItem(typeCache) || '[]');
+    const typeCache = pathname.includes('solicitudes') ? 'ordenes_lavado' : 'lavados_confirmados';
+    // const cache = JSON.parse(localStorage.getItem(typeCache) || '[]');
 
 
     async function fetchData(fetchFunction) {
@@ -112,17 +116,33 @@ export function ProgramacionProvider({ children }) {
         }
     }
 
+    const changes = supabase.channel(`custom-all-channel-ordenes_lavado`)
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'ordenes_lavado' },
+            (payload) => {
+                setUpdate(!update)
+            }
+        )
+        .subscribe()
+
+
     useEffect(() => {
-        setLoading(true);
         setRegisters([])
+        setLoading(true);
         setError(null);
         setMode(dataMode)
-        const fetchFunction = pathname.includes('almacenados') ? getStored : getPrograming;
+        const fetchFunction = pathname.includes('solicitudes') ? getAllOrders : getOrdersAprobe;
         fetchData(fetchFunction);
-    }, [pathname]);
+
+        return () => {
+            // Limpiar suscripción cuando el componente se desmonta
+            changes.unsubscribe();
+        };
+    }, [pathname, update]);
 
     const states = { searchValue, dataDinamic, loading, error, mode }
-    const actions = { SearchInData, handleKeyPress, onChangeClear }
+    const actions = { SearchInData, handleKeyPress, onChangeClear, setRegisters }
 
     return (
         <ProgramacionContext.Provider value={{ states, actions }}>

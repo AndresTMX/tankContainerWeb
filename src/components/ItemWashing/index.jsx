@@ -22,7 +22,7 @@ function ItemWashing({ data, type }) {
     const IsSmall = useMediaQuery('(max-width:830px)');
     const IsMovile = useMediaQuery('(max-width:500px)');
 
-    const { status, tentativeEnd, registros_detalles_entradas } = data || {};
+    const { status, fecha_entrega, registros_detalles_entradas } = data || {};
 
     const { carga, clientes, numero_pipa, numero_tanque, tipo, registros } = registros_detalles_entradas || {};
 
@@ -96,21 +96,21 @@ function ItemWashing({ data, type }) {
 
                                 <Chip
                                     icon={<CalendarTodayIcon />}
-                                    label={` Entregar el ${dateTextShort(tentativeEnd)}`}
+                                    label={` Entregar el ${dateTextShort(fecha_entrega)}`}
                                     color='info'
                                     size="small"
                                 />
 
                                 <Chip
                                     icon={<AccessTimeIcon />}
-                                    label={`${datetimeMXFormat(tentativeEnd)}`}
+                                    label={`${datetimeMXFormat(fecha_entrega)}`}
                                     color='info'
                                     size="small"
                                 />
 
                                 <Chip
                                     icon={<AccessTimeIcon />}
-                                    label={`${timepoParaX(tentativeEnd)} para entrega`}
+                                    label={`${timepoParaX(fecha_entrega)} para entrega`}
                                     color='info'
                                     size="small"
                                 />

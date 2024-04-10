@@ -32,7 +32,7 @@ function NavBar() {
         admin: [
             { to: '/vigilancia', text: 'Vigilancia' },
             { to: '/maniobras', text: 'Maniobras' },
-            { to: '/programacion/almacenados', text: 'Programación' },
+            { to: '/programacion/solicitudes', text: 'Programación' },
             { to: '/reparaciones', text: 'Reparación' },
             { to: '/prelavado', text: 'Prelavado' },
             { to: '/lavado', text: 'Lavado' },
@@ -44,7 +44,7 @@ function NavBar() {
             { to: '/transportista', text: 'Transportista' },
             { to: '/vigilancia', text: 'Vigilancia' },
             { to: '/maniobras', text: 'Maniobras' },
-            { to: '/programacion/almacenados', text: 'Programación' },
+            { to: '/programacion/solicitudes', text: 'Programación' },
             { to: '/reparaciones', text: 'Reparación' },
             { to: '/prelavado', text: 'Prelavado' },
             { to: '/lavado', text: 'Lavado' },
@@ -57,7 +57,7 @@ function NavBar() {
         maniobrista: [
             { to: '/vigilancia', text: 'Vigilancia' },
             { to: '/maniobras', text: 'Maniobras' },
-            { to: '/programacion/almacenados', text: 'Programación' },
+            { to: '/programacion/solicitudes', text: 'Programación' },
             { to: '/reparaciones', text: 'Reparación' },
             { to: '/prelavado', text: 'Prelavado' },
             { to: '/lavado', text: 'Lavado' },
@@ -66,7 +66,7 @@ function NavBar() {
         ],
         'gestor de calidad': [
             { to: '/maniobras', text: 'Maniobras' },
-            { to: '/programacion/almacenados', text: 'Programación' },
+            { to: '/programacion/solicitudes', text: 'Programación' },
             { to: '/reparaciones', text: 'Reparación' },
             { to: '/prelavado', text: 'Prelavado' },
             { to: '/lavado', text: 'Lavado' },

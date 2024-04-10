@@ -18,7 +18,7 @@ function Programacion() {
 
     const { states, actions } = useContextProgramacion();
 
-    const { handleKeyPress, onChangeClear } = actions;
+    const { handleKeyPress, onChangeClear, setRegisters } = actions;
     const { searchValue } = states;
 
     return (
@@ -44,13 +44,19 @@ function Programacion() {
                         }}>
                         <Stack flexDirection='row' gap='10px' width={movile ? '100%' : 'auto'}>
                             <Chip
-                                label='almacenados'
-                                color={pathname === '/programacion/almacenados' ? 'warning' : 'default'}
-                                onClick={() => navigate('almacenados')} />
+                                label='solicitudes'
+                                color={pathname === '/programacion/solicitudes' ? 'warning' : 'default'}
+                                onClick={() => {
+                                    setRegisters([])
+                                    navigate('solicitudes')
+                                }} />
                             <Chip
                                 label='programados'
                                 color={pathname === '/programacion/programados' ? 'info' : 'default'}
-                                onClick={() => navigate('programados')} />
+                                onClick={() => {
+                                    setRegisters([])
+                                    navigate('programados')
+                                }} />
                         </Stack>
 
                         <TextField

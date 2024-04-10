@@ -10,7 +10,7 @@ dayjs.extend(timezone);
 dayjs.extend(relativeTime);
 dayjs.extend(customParseFormat);
 
-export const dateInText = (date) => dayjs(date).format('dddd, MMMM D, YYYY');
+export const dateInText = (date) => dayjs(date).format('dddd D  MMMM YYYY');
 
 export const dateInTextEn = (date) => dayjs(date).locale('en').format('dddd, MMMM D, YYYY');
 
