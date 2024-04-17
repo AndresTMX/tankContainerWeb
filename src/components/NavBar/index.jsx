@@ -6,7 +6,6 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
@@ -14,6 +13,12 @@ import MenuItem from '@mui/material/MenuItem';
 import { NavLink } from 'react-router-dom';
 import { Button } from '@mui/material';
 import { TankContainerLogo } from '../../resourcesLinks';
+//icons
+import MenuIcon from '@mui/icons-material/Menu';
+import { IoMdNotifications } from "react-icons/io";
+//customComponents
+import { OrdenesNotificaciones } from '../OrdenesNotificaciones';
+
 
 function NavBar() {
 
@@ -32,7 +37,7 @@ function NavBar() {
         admin: [
             { to: '/vigilancia', text: 'Vigilancia' },
             { to: '/maniobras', text: 'Maniobras' },
-            { to: '/programacion/solicitudes', text: 'Programación' },
+            { to: '/programacion', text: 'Programación' },
             { to: '/reparaciones', text: 'Reparación' },
             { to: '/prelavado', text: 'Prelavado' },
             { to: '/lavado', text: 'Lavado' },
@@ -44,7 +49,7 @@ function NavBar() {
             { to: '/transportista', text: 'Transportista' },
             { to: '/vigilancia', text: 'Vigilancia' },
             { to: '/maniobras', text: 'Maniobras' },
-            { to: '/programacion/solicitudes', text: 'Programación' },
+            { to: '/programacion', text: 'Programación' },
             { to: '/reparaciones', text: 'Reparación' },
             { to: '/prelavado', text: 'Prelavado' },
             { to: '/lavado', text: 'Lavado' },
@@ -57,7 +62,7 @@ function NavBar() {
         maniobrista: [
             { to: '/vigilancia', text: 'Vigilancia' },
             { to: '/maniobras', text: 'Maniobras' },
-            { to: '/programacion/solicitudes', text: 'Programación' },
+            { to: '/programacion', text: 'Programación' },
             { to: '/reparaciones', text: 'Reparación' },
             { to: '/prelavado', text: 'Prelavado' },
             { to: '/lavado', text: 'Lavado' },
@@ -66,7 +71,7 @@ function NavBar() {
         ],
         'gestor de calidad': [
             { to: '/maniobras', text: 'Maniobras' },
-            { to: '/programacion/solicitudes', text: 'Programación' },
+            { to: '/programacion', text: 'Programación' },
             { to: '/reparaciones', text: 'Reparación' },
             { to: '/prelavado', text: 'Prelavado' },
             { to: '/lavado', text: 'Lavado' },
@@ -222,7 +227,8 @@ function NavBar() {
                         ))}
                     </Box>
 
-                    <Box sx={{ flexGrow: 0 }}>
+                    <Box sx={{ flexGrow: 0, display: 'flex', gap: '10px' }}>
+                        <OrdenesNotificaciones />
                         <Tooltip title="Ajustes de usuario">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                 <Avatar alt="user" />

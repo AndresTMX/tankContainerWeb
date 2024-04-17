@@ -2,8 +2,9 @@ import { useState, useMemo, useEffect } from "react"
 // custom components
 import { ContainerScroll } from "../../ContainerScroll"
 import { ItemLoadingState } from "../../ItemLoadingState"
+import { CopyPaste } from "../../CopyPaste"
 // components
-import { Stack, Alert, Chip, Button, Paper, Box, Modal, Pagination, MenuItem, Menu, IconButton, Skeleton } from "@mui/material"
+import { Stack, Alert, Chip, Button, Paper, Box, Modal, Pagination, MenuItem, Menu, IconButton, Skeleton, Divider } from "@mui/material"
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { useContextProgramacion } from "../../../Context/ProgramacionContext"
@@ -16,9 +17,11 @@ import { Outlet, useNavigate, useParams } from "react-router-dom"
 //icons
 import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import TuneIcon from '@mui/icons-material/Tune';
 import { Add } from "@mui/icons-material"
 //services
-import { getRegistersWhereEspectAndType, assignTankOfItemOrder, removeTankOfItemOrder, confirmOrderWhitId } from "../../../services/ordenes"
+import { updateRegistroWhitId } from "../../../services/maniobras"
+import { getRegistersWhereEspectAndType, assignTankOfItemOrder, removeTankOfItemOrder, confirmOrderWhitId, updateOrderWhitId } from "../../../services/ordenes"
 
 
 export function SolicitudesDeLavado() {
@@ -86,7 +89,7 @@ export function SolicitudesDeLavado() {
 
                 </Stack>
             </ContainerScroll>
-            {/* <Pagination variant="outlined" shape="rounded" color="primary" count={pages} page={page} onChange={handleChange} /> */}
+            <Pagination variant="outlined" shape="rounded" color="primary" count={pages} page={page} onChange={handleChange} />
 
             <Outlet />
 
@@ -97,13 +100,15 @@ export function SolicitudesDeLavado() {
 function ItemOrder({ order }) {
 
     const movile = useMediaQuery('(max-width:700px)');
+    const small = useMediaQuery('(max-width:500px)');
 
     const routerColorsStatus = {
         'por confirmar': 'warning',
         'confirmada': 'success',
+        'almacenado':'success'
     }
 
-    const { clientes, destinos, fecha_entrega, status, tanques, created_at } = order || {};
+    const { clientes, destinos, status, tanques, created_at, fecha_recoleccion } = order || {};
 
     const navigate = useNavigate();
 
@@ -153,50 +158,105 @@ function ItemOrder({ order }) {
         }
     }
 
+    async function discardItem(id, index) {
+        try {
+
+            const updatesOrder = [...tanques];
+            updatesOrder.splice(index, 1);
+
+            const { error: errorOrder } = await updateOrderWhitId(order.id, { tanques: updatesOrder });
+
+            const { error: errorUpdate } = await updateRegistroWhitId(id, { status: 'descartado' })
+
+            let error = errorOrder || errorUpdate;
+
+            if (error) {
+                throw new Error(error?.message)
+            }
+
+        } catch (error) {
+            toast.error(error)
+        }
+    }
+
+    async function deleteOrderEmpty() {
+        try {
+
+            const { error } = await updateOrderWhitId(order.id, { status: 'cancelada' });
+
+            if (error) {
+                throw new Error(error)
+            }
+
+        } catch (error) {
+            toast.error(error?.message)
+        }
+    }
+
     return (
         <>
             <Paper>
 
-                <Stack flexDirection='row' flexWrap='wrap' padding='10px' gap='10px'>
+                <Stack flexDirection='row' flexWrap='wrap' padding='10px' gap='10px' alignItems='center' justifyContent='space-between'>
 
-                    <Chip size="small" color={routerColorsStatus[status]} label={status} />
+                    <Stack flexDirection='row' flexWrap='wrap' gap='10px'>
+                        <Chip size="small" color={routerColorsStatus[status]} label={status} />
 
-                    <Chip size="small" color={'info'} label={clientes.cliente} />
+                        <Chip size="small" color={'info'} label={clientes?.cliente} />
 
-                    <Chip size="small" color={'info'} label={`hace ${tiempoTranscurrido(created_at)}`} />
+                        <Chip size="small" color={'info'} label={`hace ${tiempoTranscurrido(created_at)}`} />
+                    </Stack>
+
+                    <CopyPaste text={order.id} />
 
                 </Stack>
 
                 <Stack padding='10px' gap='5px' alignItems='flex-start' >
-                    <span style={{ fontWeight: '500' }}>DESTINO: <span>{destinos.destino}</span></span>
+                    <span style={{ fontWeight: '500' }}>DESTINO: <span>{destinos?.destino}</span></span>
                     <Alert
                         severity={'info'}
                         icon={<EditCalendarIcon />}
                         sx={{ width: '100%' }} >
-                        entregar el  {dateInText(fecha_entrega)} - {datetimeMXFormat(fecha_entrega)}
+                        entregar el  {dateInText(fecha_recoleccion)} - {datetimeMXFormat(fecha_recoleccion)}
                     </Alert>
                 </Stack>
 
                 <Stack sx={{ bgcolor: 'paper.bg' }} flexDirection='column' gap='10px' padding='10px'>
 
-                    {tanques.map((tanque) => (
+                    {tanques?.map((tanque, index) => (
                         <Paper
                             elevation={1}
                             key={tanque.id}
-                            sx={{ padding: '10px', display: 'flex', flexDirection: 'row', gap: '15px', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #E4E4E7' }}>
+                            sx={{
+                                display: 'flex',
+                                padding: '10px',
+                                gap: '15px',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                border: '1px solid #E4E4E7',
+                                // backgroundColor: tanque.descartado ? '#ed6c02' : '',
+                                // color: tanque.descartado ? 'white' : '',
+                            }}>
+
 
                             <Stack flexDirection='row' alignItems='center' justifyContent='space-between' width='100%' flexWrap='wrap' spacing='10px' >
 
-                                <Stack flexDirection='row' gap='30px'>
+                                <Stack flexDirection={small ? 'column' : 'row'} gap={small ? '10px' : '30px'} width={small ? '100%' : 'auto'}>
+
                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                                         <strong>número de tanque</strong>
                                         <span>{tanque?.numero_tanque || 'por asignar'}</span>
                                     </Box>
 
+                                    {small && <Divider flexItem sx={{ width: '100%' }} />}
+
                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                                         <strong>tipo</strong>
                                         <span>{tanque.tipo}</span>
                                     </Box>
+
+                                    {small && <Divider flexItem sx={{ width: '100%' }} />}
 
                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                                         <strong>especificación</strong>
@@ -204,7 +264,7 @@ function ItemOrder({ order }) {
                                     </Box>
                                 </Stack>
 
-                                {!tanque.numero_tanque &&
+                                {(!tanque.numero_tanque) &&
                                     <Button
                                         fullWidth={movile}
                                         size="small"
@@ -213,7 +273,7 @@ function ItemOrder({ order }) {
                                         asignar tanque
                                     </Button>}
 
-                                {tanque?.numero_tanque &&
+                                {(tanque?.numero_tanque && !tanque.descartado) &&
                                     <Button
                                         variant="contained"
                                         color="warning"
@@ -224,18 +284,43 @@ function ItemOrder({ order }) {
                                     </Button>
                                 }
 
+                                {(tanque.numero_tanque && tanque.descartado) &&
+                                    <Alert severity="error" >
+                                        <Stack gap='10px' >
+                                            <span>tanque retirado de la orden  </span>
+                                            <Button
+                                                variant="contained"
+                                                color='error'
+                                                size="small"
+                                                onClick={() => discardItem(tanque.registro_id, index)}
+                                            >
+                                                descartar
+                                            </Button>
+                                        </Stack>
+                                    </Alert>
+
+                                }
+
                             </Stack>
-
-
-
 
                         </Paper>
                     ))}
+
+                    {(tanques?.length === 0) &&
+                        <Button
+                            fullWidth
+                            size="small"
+                            color='error'
+                            onClick={deleteOrderEmpty}
+                            variant="contained">
+                            eliminar orden vacia
+                        </Button>}
 
                     <Button
                         fullWidth
                         size="small"
                         color='error'
+                        disabled={tanques?.length ? false : true}
                         onClick={() => confirmOrder()}
                         variant="contained">
                         confirmar solicitud
@@ -257,9 +342,11 @@ export function ConfirmarSolicitud() {
     const solicitudJson = JSON.parse(decodeURI(solicitud));
     const movile = useMediaQuery('(max-width:700px)');
 
+    const [menu, setMenu] = useState(false);
+    const [tipo, setTipo] = useState('AGMU');
 
-    const [menu, setMenu] = useState(false)
-    const [tipo, setTipo] = useState('AGMU')
+    const [menuStatus, setMenuStatus] = useState(false);
+    const [status, setStatus] = useState('almacenado')
     // const [espect, setEspect] = useState('NFC')
     const [loading, setLoading] = useState(null)
     const [data, setData] = useState([])
@@ -271,18 +358,23 @@ export function ConfirmarSolicitud() {
 
     async function get() {
         setLoading(true)
-        const { error, data } = await getRegistersWhereEspectAndType(tipo);
+        const { error, data } = await getRegistersWhereEspectAndType(tipo, status);
         setData(data)
         setLoading(null)
     }
 
     useEffect(() => {
         get();
-    }, [tipo])
+    }, [tipo, status])
 
     const handleFilter = (newValue) => {
         setTipo(newValue)
         setMenu(false)
+    }
+
+    const handleStatus = (newValue) => {
+        setStatus(newValue)
+        setMenuStatus(false)
     }
 
     async function assignOrder() {
@@ -342,7 +434,7 @@ export function ConfirmarSolicitud() {
                             <span>Asignar tanque a solicitud</span>
                         </Box>
 
-                        <Stack flexDirection='row' justifyContent='space-between' >
+                        <Stack flexDirection='row' gap='10px' >
 
                             <Stack flexDirection='row' alignItems='center' gap='5px'>
                                 <IconButton
@@ -352,7 +444,7 @@ export function ConfirmarSolicitud() {
                                     aria-expanded={menu ? 'true' : undefined}
                                     onClick={(e) => setMenu(e.currentTarget)}
                                 >
-                                    <FilterAltIcon />
+                                    <TuneIcon />
                                 </IconButton>
                                 <Menu
                                     id="basic-menu"
@@ -368,6 +460,31 @@ export function ConfirmarSolicitud() {
                                     <MenuItem onClick={() => handleFilter('DYOU')}>DYOU</MenuItem>
                                 </Menu>
                                 <span>{tipo}</span>
+                            </Stack>
+
+                            <Stack flexDirection='row' alignItems='center' gap='5px'>
+                                <IconButton
+                                    id="basic-button"
+                                    aria-controls={menuStatus ? 'basic-menu-status' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={menuStatus ? 'true' : undefined}
+                                    onClick={(e) => setMenuStatus(e.currentTarget)}
+                                >
+                                    <FilterAltIcon />
+                                </IconButton>
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={menuStatus}
+                                    open={menuStatus}
+                                    onClose={() => setMenuStatus(false)}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                    }}
+                                >
+                                    <MenuItem onClick={() => handleStatus('almacenado')}>almacenado</MenuItem>
+                                    <MenuItem onClick={() => handleStatus('descartado')}>descartado</MenuItem>
+                                </Menu>
+                                <span>{status}</span>
                             </Stack>
 
 
@@ -386,10 +503,31 @@ export function ConfirmarSolicitud() {
                                     <strong>Especificación</strong>
                                     <span>{item.especificacion}</span>
                                 </Stack>
+
+                                <Stack>
+                                    <strong>Status de tanque</strong>
+                                    <span>{item.status}</span>
+                                </Stack>
+
                             </Box>
 
 
                         </Alert>}
+
+                        {(item?.lavados.length > 0) &&
+                            <Paper elevation={1} sx={{ padding: '10px', border: '1px solid #E4E4E7' }}>
+                                <Stack>
+                                    {item?.lavados.map((lavado, indexLavado) => (
+                                        <Stack flexDirection='row' gap='10px' justifyContent='space-between'  flexWrap='wrap'>
+                                            <strong>Lavado {indexLavado + 1}</strong>
+                                            <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }} >
+                                                <Chip label={lavado.status} size="small" color='info' />
+                                                <Chip label={dateInText(lavado.created_at)} size="small" color='info' />
+                                            </div>
+                                        </Stack>
+                                    ))}
+                                </Stack>
+                            </Paper>}
 
                         <Box sx={{ bgcolor: '#f5f5f5', maxHeight: '400px', overflow: 'auto' }} >
 
@@ -442,3 +580,5 @@ export function ConfirmarSolicitud() {
         </>
     )
 }
+
+

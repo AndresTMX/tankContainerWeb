@@ -3,10 +3,11 @@ import { useState, useEffect, useMemo, useRef } from "react"
 import { ContainerScroll } from "../../ContainerScroll"
 import { ItemLoadingState } from "../../ItemLoadingState"
 // components
-import { Stack, Alert, Chip, Button, Paper, Box, Divider, Typography, IconButton, Modal, Pagination, Select, MenuItem, InputLabel, FormControl } from "@mui/material"
+import { Stack, Alert, Chip, Button, Paper, Box, Divider, Typography, IconButton, Modal, Pagination, Select, MenuItem, InputLabel, FormControl, } from "@mui/material"
 import { DemoContainer, DemoItem, } from "@mui/x-date-pickers/internals/demo"
 import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
+import { CopyPaste } from "../../CopyPaste"
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { useContextProgramacion } from "../../../Context/ProgramacionContext"
@@ -53,7 +54,7 @@ export function TanquesProgramados() {
 
                 <Stack gap='10px' padding='0px' >
 
-                    
+
                     {(loading && !error && dataDinamic.length < 1) &&
                         <>
                             <ItemLoadingState />
@@ -76,7 +77,7 @@ export function TanquesProgramados() {
                     }
 
                     {
-                        dataDinamic.map((tanque, index) => (
+                        items.map((tanque, index) => (
                             <TanqueProgramado
                                 key={index}
                                 tanque={tanque}
@@ -86,7 +87,7 @@ export function TanquesProgramados() {
                 </Stack>
             </ContainerScroll>
 
-            {/* <Pagination variant="outlined" shape="rounded" color="primary" count={pages} page={page} onChange={handleChange} /> */}
+            <Pagination variant="outlined" shape="rounded" color="primary" count={pages} page={page} onChange={handleChange} />
 
             <Outlet />
         </>
@@ -100,14 +101,23 @@ function TanqueProgramado({ tanque }) {
     const movile = useMediaQuery('(max-width:820px)')
     const navigate = useNavigate();
 
-    const { fecha_entrega, registros_detalles_entradas, ordenes_lavado } = tanque || {};
+    const { registros_detalles_entradas, ordenes_lavado, fecha_recoleccion, status: statusLavado } = tanque || {};
 
-    const { carga, numero_pipa, numero_tanque, status, transportistas, especificacion, tipo } = registros_detalles_entradas || {};
+    const { carga, numero_pipa, numero_tanque, status: statusTanque, transportistas, especificacion, tipo } = registros_detalles_entradas || {};
 
-    const { clientes } = ordenes_lavado || {};
+    const { clientes, destinos, status: statusOrden } = ordenes_lavado || {};
+
+    const { destino, duracion } = destinos || {};
+
+    const tiempoViaje = parseInt(duracion);
 
     const [modalEdit, setModalEdit] = useState(false);
-    const entregaTentativa = dayjs(fecha_entrega);
+    const entregaTentativa = dayjs(fecha_recoleccion).subtract(tiempoViaje, 'minute');
+
+    const tanqueColorStatus = {
+        'descartado': 'error',
+        'programado': 'info'
+    }
 
     useEffect(() => {
         if (entregaTentativa.isBefore(currentDate)) {
@@ -119,61 +129,67 @@ function TanqueProgramado({ tanque }) {
 
     return (
         <>
-            <Paper
-                elevation={2}
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px',
-                    padding: movile ? '10px' : '15px'
-                }}
-            >
-                <Stack flexDirection='row' gap='10px' justifyContent='space-between'>
-                    <Chip color='warning' label={status} />
-                </Stack>
+            {statusOrden === 'confirmada' &&
+                <Paper
+                    elevation={2}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '10px',
+                        padding: movile ? '10px' : '15px'
+                    }}
+                >
+                    <Stack flexDirection='row' justifyContent='space-between' alignItems='center' gap='10px' flexWrap='wrap' spacing='10px' >
+                        <Stack flexDirection='row' alignItems='center' gap='10px' flexWrap='wrap' >
+                            <Chip color={tanqueColorStatus[statusTanque]} label={`tanque ${statusTanque}`} />
+                            <Chip color='warning' label={`lavado ${statusLavado}`} />
+                            <Chip color='warning' label={`orden ${statusOrden}`} />
+                        </Stack>
+                        <CopyPaste text={tanque.ordenes_lavado.id} />
+                    </Stack>
 
-                <Stack flexDirection={movile ? 'column' : 'row'} gap={movile ? '15px' : '30px'} justifyContent='flex-start'>
+                    <Stack flexDirection={movile ? 'column' : 'row'} gap={movile ? '15px' : '30px'} justifyContent='flex-start'>
 
-                    <Box>
-                        <Typography variant="subtitle2">{`N° ${carga}`}</Typography>
-                        <Typography>{tipo}  {numero_tanque || numero_pipa}</Typography>
-                    </Box>
-                    <Divider />
-                    {especificacion &&
                         <Box>
-                            <Typography variant="subtitle2">Especificacion</Typography>
-                            <Typography>{especificacion}</Typography>
-                        </Box>}
-                    <Divider />
-                    <Box>
-                        <Typography variant="subtitle2">Cliente</Typography>
-                        <Typography>{clientes.cliente}</Typography>
-                    </Box>
+                            <Typography variant="subtitle2">{`N° ${carga}`}</Typography>
+                            <Typography>{tipo}  {numero_tanque || numero_pipa}</Typography>
+                        </Box>
+                        <Divider />
+                        {especificacion &&
+                            <Box>
+                                <Typography variant="subtitle2">Especificacion</Typography>
+                                <Typography>{especificacion}</Typography>
+                            </Box>}
+                        <Divider />
+                        <Box>
+                            <Typography variant="subtitle2">Cliente</Typography>
+                            <Typography>{clientes.cliente}</Typography>
+                        </Box>
 
 
-                </Stack>
+                    </Stack>
 
-                <Stack flexDirection={movile ? 'column' : 'row'} alignItems='center' justifyContent='space-between' bgcolor='whitesmoke' width={'100%'} >
+                    <Stack flexDirection={movile ? 'column' : 'row'} alignItems='center' justifyContent='space-between' bgcolor='whitesmoke' width={'100%'} >
 
-                    <Box sx={{ padding: '10px', bgcolor: !vencimiento ? '#ed6c02' : '#d32f2f', color: 'white', width: movile ? '100%' : '50%' }}>
-                        <Typography variant="subtitle2">
-                            {<ScheduleIcon fontSize="10px" />} {!vencimiento ? 'Tiempo para entrega' : 'Tiempo excedido'} </Typography>
-                        <Typography>
-                            {vencimiento ? timepoParaX(fecha_entrega) : ''} {!vencimiento ? diferenciaEnHoras(fecha_entrega) : ''}
-                        </Typography>
-                    </Box>
+                        <Box sx={{ padding: '10px', bgcolor: !vencimiento ? '#ed6c02' : '#d32f2f', color: 'white', width: movile ? '100%' : '50%' }}>
+                            <Typography variant="subtitle2">
+                                {<ScheduleIcon fontSize="10px" />} {!vencimiento ? 'Tiempo para entrega' : 'Tiempo excedido'} </Typography>
+                            <Typography>
+                                {vencimiento ? timepoParaX(entregaTentativa) : ''} {!vencimiento ? diferenciaEnHoras(entregaTentativa) : ''}
+                            </Typography>
+                        </Box>
 
 
-                    <Box sx={{ padding: '10px', bgcolor: '#0288d1', color: 'white', width: movile ? '100%' : '50%' }}>
-                        <Typography variant="subtitle2">
-                            {<AlarmIcon fontSize="10px" />} Fecha de entrega tentativa</Typography>
-                        <Typography>{dateInText(fecha_entrega)} {datetimeMXFormat(fecha_entrega)} </Typography>
-                    </Box>
+                        <Box sx={{ padding: '10px', bgcolor: '#0288d1', color: 'white', width: movile ? '100%' : '50%' }}>
+                            <Typography variant="subtitle2">
+                                {<AlarmIcon fontSize="10px" />} Fecha de entrega tentativa</Typography>
+                            <Typography>{dateInText(entregaTentativa)} {datetimeMXFormat(entregaTentativa)} </Typography>
+                        </Box>
 
-                </Stack>
+                    </Stack>
 
-            </Paper>
-
+                </Paper>
+            }
 
         </>
     )

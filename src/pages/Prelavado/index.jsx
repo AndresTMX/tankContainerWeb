@@ -1,138 +1,257 @@
-import { useState, useContext } from "react";
+import { useState, useEffect } from "react";
 //imports materialui
-import { Container, Box, Tabs, Tab, Button, Stack, Fade, Paper, Divider, Chip } from "@mui/material";
-import { StoreMap } from "../../components/StoreMap";
-import { currentDate } from "../../Helpers/date";
-//components
-import { CustomTabPanel } from "../../components/CustomTabPanel";
-import { LoadingState } from "../../components/LoadingState";
-import { Notification } from "../../components/Notification"
-import { Searcher } from "../../components/Searcher";
-import { ItemWashing } from "../../components/ItemWashing";
-//calendar experimental
-import { WashingAgend } from "../../components/WashingAgend";
+import { Box, Stack, Paper, Chip, TextField, Alert, Button, Typography, Divider } from "@mui/material";
+import { ContainerScroll } from "../../components/ContainerScroll";
+import { NotConexionState } from "../../components/NotConectionState";
+import { ItemLoadingState } from "../../components/ItemLoadingState";
+import { CopyPaste } from "../../components/CopyPaste";
 //hooks
-import { usePreWashing } from "../../Hooks/Prelavado/usePreWashing";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useSearcher } from "../../Hooks/useSearcher";
+import { Outlet } from "react-router-dom";
+//icons
+import SearchIcon from '@mui/icons-material/Search';
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+//libraries
+import dayjs from "dayjs";
+import { Toaster, toast } from "sonner";
 //context
-import { PrelavadoContext } from "../../Context/PrelavadoContext";
-import { ListWashing } from "../../components/ListWashing";
-//checklist
-import { CheckListPrelavado } from "../../sections/CheckListPrelavado";
+import { usePrelavadoContext } from "../../Context/PrelavadoContext";
+//helpers
+import { currentDate, datetimeMXFormat, timepoParaX, dateInTextEn } from "../../Helpers/date";
 
-function Prelavado() {
+export function Prelavado() {
 
-   const [state, dispatch] = useContext(PrelavadoContext);
-   const { washing, loadignWashing, errorWashing, updater, } = usePreWashing('prelavado');
+   const { loading, error, dataDinamic, mode, searchValue, handleKeyPress, onChangeClear } = usePrelavadoContext();
 
-   const IsSmall = useMediaQuery('(max-width:900px)');
-   const isMovile = useMediaQuery("(max-width:640px)");
-
-   const { selectCheck } = state;
+   const IsSmall = useMediaQuery('(max-width:540px)')
 
    return (
       <>
-         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px', overflowX: 'hidden', minHeight: '90vh' }}>
+         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px' }}>
 
-            {!state.selectCheck &&
-               <Box sx={{ width: '90vw', maxWidth: '750px' }}>
-                  <Fade in={!state.selectCheck} timeout={300}>
-                     <Box
-                        sx={{
-                           gap: '10px',
-                           display: 'flex',
-                           flexDirection: 'column',
-                           justifyContent: 'center',
-                           alignItems: 'center',
-                        }}
-                     >
-                        <Paper
-                           elevation={2}
-                           sx={{
-                              width: '100%',
-                              padding: IsSmall ? '0px' : '10px',
-                              background: 'whitesmoke',
-                              alignItems: isMovile ? 'center' : '',
-                           }}>
+            <Stack alignItems='center' width='100%' gap='10px' maxWidth='900px'>
 
-                           <Stack
-                              sx={{
-                                 padding:'10px',
-                                 borderRadius: '4px',
-                              }}
-                              flexDirection="row"
-                              justifyContent={isMovile ? "center" : "space-between"}
-                              alignItems="center"
-                              flexWrap="wrap"
-                              gap="20px"
-
-                           >
-                              <Stack
-                                 flexDirection="row"
-                                 alignItems="center"
-                                 flexWrap="wrap"
-                                 gap="10px"
-                                 width={isMovile ? "100%" : "auto"}
-                              >
-                                 <Chip
-                                    color={'warning'}
-                                    label="pendientes"
-                                 />
-
-
-                              </Stack>
-
-                              <Stack width={isMovile ? '100%' : '350px'}>
-                                 <Searcher
-                                 // search={search}
-                                 // searching={searching}
-                                 // placeholder={'Busca registros usando ....'}
-                                 // searchingKey={searchingKey}
-                                 // onChangueSearch={onChangueSearch}
-                                 />
-                              </Stack>
-
-                           </Stack>
-
-                        </Paper>
-
-                        <ListWashing
-                           washingList={washing}
-                           loadignWashing={loadignWashing}
-                           errorWashing={errorWashing}
-                        />
-
-                     </Box>
-                  </Fade>
-               </Box>}
-
-            {selectCheck && (
                <Paper
-                  elevation={4}
                   sx={{
                      display: 'flex',
-                     justifyContent: 'center',
-                     width: 'auto',
-                     maxWidth: '95vw',
-                     padding: '10px',
+                     flexDirection: IsSmall ? 'column' : 'row',
+                     flexFlow: IsSmall ? 'column-reverse' : '',
+                     justifyContent: 'space-between',
+                     alignItems: IsSmall ? 'start' : 'center',
+                     bgcolor: 'whitesmoke',
+                     border: '1px',
+                     borderColor: '#E4E4E7',
+                     borderStyle: 'solid',
+                     maxWidth: '900px',
+                     padding: '15px',
+                     width: '96vw',
+                     gap: '10px',
                   }}>
-                  <Box sx={{ padding: isMovile ? '0px' : '15px', width: '90vw', maxWidth: '800px' }}>
-                     <ItemWashing data={selectCheck} type={'header'} />
-                     <CheckListPrelavado updater={updater} />
-                  </Box>
+                  <Stack flexDirection='row' gap='10px' width={IsSmall ? '100%' : 'auto'}>
+                     <Chip
+                        label='prelavados pendientes'
+                        color='warning'
+                     />
+
+                  </Stack>
+
+                  <TextField
+                     sx={{ width: IsSmall ? '80vw' : 'auto' }}
+                     size='small'
+                     variant='outlined'
+                     name="searchProgram"
+                     onKeyDown={handleKeyPress}
+                     onChange={onChangeClear}
+                     inputRef={searchValue}
+                     InputProps={{
+                        endAdornment: <SearchIcon />
+                     }}
+                  />
+
                </Paper>
-            )}
+
+               <ContainerScroll height='78vh'>
+
+                  {(!dataDinamic.length && !error && !loading) &&
+                     <Box sx={{ width: '100%' }}  >
+                        <Alert sx={{ width: '100%' }} severity={mode != 'search' ? "info" : "warning"}>
+                           {mode === 'data' ? 'Sin prelavados pendientes' : `Sin coincidencias para ${searchValue.current.value}`}
+                        </Alert>
+                     </Box>
+                  }
+
+                  {(error) &&
+                     <NotConexionState />
+                  }
+
+                  <Stack gap='10px' >
+                     {(!loading && !error && dataDinamic.length >= 1) &&
+                        dataDinamic.map((item) => (
+                           <PrelavadoItem
+                              key={item.id}
+                              data={item} />
+                        ))}
+                  </Stack>
+
+                  {(loading && !error) &&
+                     <Stack gap='10px' >
+                        <ItemLoadingState />
+                        <ItemLoadingState />
+                        <ItemLoadingState />
+                     </Stack>
+                  }
+
+               </ContainerScroll>
+
+            </Stack>
+
+            <Outlet />
 
          </Box>
 
-         <LoadingState duration={1000} />
-
-         <Notification />
+         <Toaster richColors position='top-center' />
 
       </>
    );
 }
 
-export { Prelavado };
+function PrelavadoItem({ data }) {
+
+   const { item, selectItem } = usePrelavadoContext();
+
+   const [vencimiento, setVencimiento] = useState(false)
+
+   const IsSmall = useMediaQuery('(max-width:830px)');
+
+   const { status: statusLavado, registros_detalles_entradas, fecha_recoleccion, ordenes_lavado } = data || {};
+
+   const { carga, numero_pipa, numero_tanque, tipo, registros, especificacion, status: statusTanque } = registros_detalles_entradas || {};
+
+   const { clientes, destinos } = ordenes_lavado || {};
+
+   const { cliente } = clientes || {};
+
+   const { checkIn, checkOut } = registros || {};
+
+   const onWashing = () => {
+      // dispatch({
+      //     type: actionTypes.setSelectCheck,
+      //     payload: data
+      // })
+      toast.success('onWashing')
+   }
+
+   const CancelChecklist = () => {
+      // dispatch({
+      //     type: actionTypes.setSelectCheck,
+      //     payload: false
+      // })
+      toast.success('cancel check')
+   }
+
+   const { destino, duracion } = destinos || {};
+
+   const entregaTentativa = dayjs(fecha_recoleccion);
+
+   const tanqueColorStatus = {
+      'descartado': 'error',
+      'programado': 'info'
+   }
+
+   useEffect(() => {
+      if (entregaTentativa.isBefore(currentDate)) {
+         setVencimiento(true)
+      } else {
+         setVencimiento(false)
+      }
+   }, [data])
+
+   return (
+      <>
+
+         <Paper
+            elevation={3}
+            sx={{ display: 'flex', flexDirection: 'column', padding: '15px', gap: '10px' }} >
+
+            <Stack flexDirection='row' justifyContent='space-between' alignItems='center' gap='10px' flexWrap='wrap' spacing='10px' >
+               <Stack flexDirection='row' alignItems='center' gap='10px' flexWrap='wrap' >
+                  <Chip color={tanqueColorStatus[statusTanque]} label={`tanque ${statusTanque}`} />
+                  <Chip color='warning' label={`lavado ${statusLavado}`} />
+               </Stack>
+               <CopyPaste text={data.id} />
+            </Stack>
+
+            <Stack flexDirection='row' gap='10px' flexWrap='wrap' >
+
+               <Chip
+                  icon={<CalendarTodayIcon />}
+                  label={` Entregar el ${dateInTextEn(fecha_recoleccion)}`}
+                  color='info'
+                  size="small"
+               />
+
+               <Chip
+                  icon={<AccessTimeIcon />}
+                  label={`${datetimeMXFormat(fecha_recoleccion)}`}
+                  color='info'
+                  size="small"
+               />
+
+               {!vencimiento && <Chip
+                  icon={<AccessTimeIcon />}
+                  label={`${timepoParaX(fecha_recoleccion)} para entrega`}
+                  color='info'
+                  size="small"
+               />}
+
+               {vencimiento && <Chip
+                  icon={<AccessTimeIcon />}
+                  label={`${timepoParaX(fecha_recoleccion)} de retraso`}
+                  color='error'
+                  size="small"
+               />}
+
+            </Stack>
+
+            <Stack flexDirection={IsSmall ? 'column' : 'row'} gap={IsSmall ? '15px' : '30px'} justifyContent='flex-start'>
+
+               <Box>
+                  <Typography variant="subtitle2">{`N° ${carga}`}</Typography>
+                  <Typography>{tipo}  {numero_tanque || numero_pipa}</Typography>
+               </Box>
+               <Divider />
+               <Box>
+                  <Typography variant="subtitle2">Especificacion</Typography>
+                  <Typography>{especificacion}</Typography>
+               </Box>
+               <Divider />
+               <Box>
+                  <Typography variant="subtitle2">Cliente</Typography>
+                  <Typography>{clientes.cliente}</Typography>
+               </Box>
+               <Divider />
+               <Box>
+                  <Typography variant="subtitle2">Destino</Typography>
+                  <Typography>{destino}</Typography>
+               </Box>
+
+            </Stack>
+
+            <Button
+               fullWidth={IsSmall}
+               onClick={onWashing}
+               variant="contained"
+               color="primary"
+               size="small"
+            >
+               Checklist
+            </Button>
+
+         </Paper>
+
+      </>
+   );
+}
+
 

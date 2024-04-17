@@ -12,6 +12,7 @@ import { Reparaciones } from "./pages/Reparaciones";
 import { ManiobrasForm } from "./pages/ManiobrasForm";
 import { Programacion } from "./pages/Programacion";
 import { Prelavado } from "./pages/Prelavado";
+import { ModalChecklistPrelavado } from "./components/ModalChecklistPrelavado";
 import { Calidad } from "./pages/Calidad";
 import { Lavado } from "./pages/Lavado";
 import { Layout } from "./pages/Layout";
@@ -32,7 +33,7 @@ let theme = createTheme({
   palette: {
     primary: {
       main: "#0092ba",
-      border:'#E4E4E7',
+      border: '#E4E4E7',
     },
     secondary: {
       main: "#025E73",
@@ -205,7 +206,9 @@ function Router() {
                     </PrelavadoProvider>
                   </RouteProtect>
                 }
-              />
+              >
+                <Route path="/prelavado/checklist" element={<ModalChecklistPrelavado />} />
+              </Route>
 
               <Route
                 path="/calidad"

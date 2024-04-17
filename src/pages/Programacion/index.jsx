@@ -1,4 +1,5 @@
-import { Box, Stack, Paper, Chip, TextField, } from "@mui/material";
+import { useState } from "react";
+import { Box, Stack, Paper, Chip, TextField, IconButton, Menu, MenuItem } from "@mui/material";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useContextProgramacion } from "../../Context/ProgramacionContext";
@@ -6,20 +7,27 @@ import { useContextProgramacion } from "../../Context/ProgramacionContext";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 //icons
 import SearchIcon from '@mui/icons-material/Search';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import TuneIcon from '@mui/icons-material/Tune';
 //libraries
 import { Toaster } from "sonner";
 
 function Programacion() {
 
     const movile = useMediaQuery('(max-width:540px)')
+    const small = useMediaQuery('(max-width:760px)')
 
     const { pathname } = useLocation();
     const navigate = useNavigate();
 
     const { states, actions } = useContextProgramacion();
 
-    const { handleKeyPress, onChangeClear, setRegisters } = actions;
-    const { searchValue } = states;
+    const { handleKeyPress, onChangeClear, setRegisters, handleAssending, handleStatus } = actions;
+    const { searchValue, statusField, asscending } = states;
+
+    const [menuFilter, setMenuFilter] = useState(false);
+    const [menuOrder, setMenuOrder] = useState(false);
+
 
     return (
         <>
@@ -42,7 +50,8 @@ function Programacion() {
                             width: '96vw',
                             gap: '10px',
                         }}>
-                        <Stack flexDirection='row' gap='10px' width={movile ? '100%' : 'auto'}>
+
+                        <Stack flexDirection='row' gap='10px' alignItems='center' width={movile ? '100%' : 'auto'}>
                             <Chip
                                 label='solicitudes'
                                 color={pathname === '/programacion/solicitudes' ? 'warning' : 'default'}
@@ -57,6 +66,74 @@ function Programacion() {
                                     setRegisters([])
                                     navigate('programados')
                                 }} />
+
+                            {pathname.includes('solicitudes') && <div>
+                                <IconButton
+                                    id="basic-button"
+                                    aria-controls={menuFilter ? 'basic-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={menuFilter ? 'true' : undefined}
+                                    onClick={(e) => setMenuFilter(e.currentTarget)}
+                                >
+                                    <FilterAltIcon />
+                                </IconButton>
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={menuFilter}
+                                    open={menuFilter}
+                                    onClose={() => setMenuFilter(false)}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                    }}
+                                >
+                                    <MenuItem
+                                        style={{ color: `${statusField === 'por confirmar' ? '#0092ba' : ''}`, fontWeight: `${statusField === 'por confirmar' ? 500 : ''}` }}
+                                        onClick={() => handleStatus('por confirmar', () => setMenuFilter(false))}>
+                                        por confirmar
+                                    </MenuItem>
+                                    <MenuItem
+                                        style={{ color: `${statusField != 'por confirmar' ? '#0092ba' : ''}`, fontWeight: `${statusField != 'por confirmar' ? 500 : ''}` }}
+                                        onClick={() => handleStatus('confirmada', () => setMenuFilter(false))}>
+                                        confirmadas
+                                    </MenuItem>
+                                </Menu>
+                                {!small && <span style={{ fontSize: '12px', fontWeight: '500' }} >{statusField != 'confirmada' ? 'por confirmar' : 'confirmadas'}</span>}
+                            </div>}
+
+                            <div>
+                                <IconButton
+                                    id="tune-button"
+                                    aria-controls={menuOrder ? 'tune-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={menuOrder ? 'true' : undefined}
+                                    onClick={(e) => setMenuOrder(e.currentTarget)}
+                                >
+                                    <TuneIcon />
+                                </IconButton>
+                                <Menu
+                                    id="tune-menu"
+                                    anchorEl={menuOrder}
+                                    open={menuOrder}
+                                    onClose={() => setMenuOrder(false)}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                    }}
+                                >
+                                    <MenuItem
+                                        style={{ color: `${asscending ? '#0092ba' : ''}`, fontWeight: `${asscending ? 500 : ''}` }}
+                                        onClick={() => handleAssending(() => setMenuOrder(false))}>
+                                        ascendente
+                                    </MenuItem>
+                                    <MenuItem
+                                        style={{ color: `${!asscending ? '#0092ba' : ''}`, fontWeight: `${!asscending ? 500 : ''}` }}
+                                        onClick={() => handleAssending(() => setMenuOrder(false))}>
+                                        descendente
+                                    </MenuItem>
+                                </Menu>
+                                {!small && <span style={{ fontSize: '12px', fontWeight: '500' }} >{asscending ? 'ascendente' : 'descendente'}</span>}
+                            </div>
+
+
                         </Stack>
 
                         <TextField
@@ -76,8 +153,8 @@ function Programacion() {
 
                     <Outlet />
 
-                </Stack>
-            </Box>
+                </Stack >
+            </Box >
 
             <Toaster richColors position='top-center' />
 

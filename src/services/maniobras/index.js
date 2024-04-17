@@ -68,3 +68,20 @@ export async function createManiobra(operador_id, numero_economico, arrayRegistr
         console.error(error)
     }
 }
+
+export async function updateRegistroWhitId(id, updates) {
+    try {
+        const { error } = await supabase
+            .from('registros_detalles_entradas')
+            .update({ ...updates })
+            .eq('id', id)
+
+        if (error) {
+            throw new Error(`Error al actualizar detalles del tanque, error: ${error.message}`)
+        }
+
+        return { error }
+    } catch (error) {
+        console.error(error)
+    }
+}

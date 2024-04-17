@@ -3,7 +3,7 @@ import { useEffect, useState, useContext, createContext, useRef } from "react";
 import { useLocation } from "react-router-dom";
 //services
 import { getStored, getPrograming } from "../../services/programacion";
-import { getAllOrders, getOrdersAprobe } from "../../services/ordenes";
+import { getAllOrdersDinamic, getOrdersAprobe } from "../../services/ordenes";
 //libreries
 import { toast } from "sonner";
 
@@ -27,14 +27,29 @@ export function ProgramacionProvider({ children }) {
     const [update, setUpdate] = useState(false);
 
 
+    //modificadores de ordenamiento 
+    const [statusField, setStatusField] = useState('por confirmar');
+    const [asscending, setAsscending] = useState(true);
+
+
+    function handleStatus(order, callback) {
+        setStatusField(order)
+        callback()
+    }
+
+    function handleAssending(callback) {
+        setAsscending(!asscending);
+        callback()
+    }
+
+
     //parametro de busqueda
     function extractKey(order) {
         try {
             if (pathname.includes('solicitudes')) {
-                return `${order['clientes']['cliente'].toLowerCase()}-${order['destinos']['destino'].toLowerCase()}`
+                return `${order['id']}-${order['clientes']['cliente'].toLowerCase()}-${order['destinos']['destino'].toLowerCase()}`
             } else {
-                const key = tanque['registros_detalles_entradas']['numero_tanque'];
-                return key
+                return `${order['registros_detalles_entradas']['numero_tanque']}-${order['ordenes_lavado']['id']}`;
             }
         } catch (error) {
             console.error(error)
@@ -52,7 +67,6 @@ export function ProgramacionProvider({ children }) {
 
 
             registers.forEach(element => {
-                console.log(extractKey(element))
                 newData.set(extractKey(element), element)
             });
 
@@ -92,9 +106,18 @@ export function ProgramacionProvider({ children }) {
 
     //cache controller
     const typeCache = pathname.includes('solicitudes') ? 'ordenes_lavado' : 'lavados_confirmados';
-    // const cache = JSON.parse(localStorage.getItem(typeCache) || '[]');
 
+    async function getOrders() {
+        const { error, data } = await getAllOrdersDinamic(statusField, asscending);
+        return { error, data }
+    }
 
+    async function getArpobe() {
+        const { error, data } = await getOrdersAprobe(asscending);
+        return { error, data }
+    }
+
+    //fetch de datos
     async function fetchData(fetchFunction) {
         try {
 
@@ -116,6 +139,7 @@ export function ProgramacionProvider({ children }) {
         }
     }
 
+    //escuchador de la base 
     const changes = supabase.channel(`custom-all-channel-ordenes_lavado`)
         .on(
             'postgres_changes',
@@ -125,24 +149,24 @@ export function ProgramacionProvider({ children }) {
             }
         )
         .subscribe()
-
+    
 
     useEffect(() => {
         setRegisters([])
         setLoading(true);
         setError(null);
         setMode(dataMode)
-        const fetchFunction = pathname.includes('solicitudes') ? getAllOrders : getOrdersAprobe;
+        const fetchFunction = pathname.includes('solicitudes') ? getOrders : getArpobe;
         fetchData(fetchFunction);
 
         return () => {
             // Limpiar suscripción cuando el componente se desmonta
             changes.unsubscribe();
         };
-    }, [pathname, update]);
+    }, [pathname, update, statusField, asscending]);
 
-    const states = { searchValue, dataDinamic, loading, error, mode }
-    const actions = { SearchInData, handleKeyPress, onChangeClear, setRegisters }
+    const states = { searchValue, dataDinamic, loading, error, mode, statusField, asscending }
+    const actions = { SearchInData, handleKeyPress, onChangeClear, setRegisters, handleAssending, handleStatus, }
 
     return (
         <ProgramacionContext.Provider value={{ states, actions }}>

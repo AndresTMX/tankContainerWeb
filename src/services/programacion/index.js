@@ -76,7 +76,7 @@ export async function updateWashing(id, updates) {
         const { error } = await supabase
             .from('lavados')
             .update({ ...updates })
-            .eq('id', id)
+            .eq('id_detalle_entrada', id)
 
         if (error) {
             throw new Error(`Error al programar lavado, error: ${error.message}`)

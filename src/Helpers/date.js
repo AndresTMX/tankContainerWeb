@@ -12,7 +12,7 @@ dayjs.extend(customParseFormat);
 
 export const dateInText = (date) => dayjs(date).format('dddd D  MMMM YYYY');
 
-export const dateInTextEn = (date) => dayjs(date).locale('en').format('dddd, MMMM D, YYYY');
+export const dateInTextEn = (date) => dayjs(date).locale('es').format('dddd, MMMM D, YYYY');
 
 export const currentDate = new dayjs(new Date()).utc();
 
@@ -35,12 +35,12 @@ export const datetimeMXFormat = (date) => {
 
 export const currenDateFormatTz = dateMX(currentDate);
 
-export const tiempoTranscurrido = (date) => dayjs(date).tz('America/Mexico_City').fromNow(true)
+export const tiempoTranscurrido = (date) => dayjs(date).fromNow(true)
 
 export const timepoParaX = (date) => {
 
     const fechaActualInString = dayjs(currentDate).toISOString();
-    const fechaRecibida = dayjs(date).toISOString();
+    const fechaRecibida = dayjs(date);
 
     return dayjs(fechaRecibida).from(fechaActualInString, true)
 }
