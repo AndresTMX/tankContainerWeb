@@ -207,7 +207,7 @@ function Router() {
                   </RouteProtect>
                 }
               >
-                <Route path="/prelavado/checklist" element={<ModalChecklistPrelavado />} />
+                <Route path="/prelavado/checklist/:lavado" element={<ModalChecklistPrelavado />} />
               </Route>
 
               <Route

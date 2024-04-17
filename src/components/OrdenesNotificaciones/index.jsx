@@ -75,7 +75,7 @@ export function OrdenesNotificaciones() {
                             padding: '10px',
                             position: 'absolute',
                             right: movile ? '32px' : '90px',
-                            top: '65px',
+                            top: '55px',
                             width: movile ? '100%' : '350px',
                             background: 'whitesmoke',
                             maxWidth: '95vw',
@@ -122,7 +122,9 @@ export function OrdenesNotificaciones() {
                         </Stack>
 
                         {notificaciones.map((n) => (
-                            <Box sx={{ display: 'flex', flexDirection: 'column', padding: '10px', backgroundColor: 'white', gap: '8px', width: '100%', border: '1px solid #E4E4E7', position: 'relative' }} >
+                            <Box 
+                            key={n.id}
+                            sx={{ display: 'flex', flexDirection: 'column', padding: '10px', backgroundColor: 'white', gap: '8px', width: '100%', border: '1px solid #E4E4E7', position: 'relative' }} >
                                 <span style={{ fontSize: '10px', color: 'gray', position: 'absolute', right: 10, top: 8 }} > hace {tiempoTranscurrido(n.created_at)}</span>
                                 <Typography variant='caption' fontWeight={500} sx={{ marginTop:'12px' }} >
                                     <Typography color='primary' variant='caption' fontWeight={500} sx={{ paddingRight: '5px' }}>{n.ordenes_lavado.clientes.cliente}</Typography>

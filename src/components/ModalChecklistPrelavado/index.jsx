@@ -11,52 +11,76 @@ import { datetimeMXFormat, timepoParaX, dateTextShort, dateInTextEn, currentDate
 import { usePrelavadoContext } from "../../Context/PrelavadoContext";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { useParams, useNavigate } from "react-router-dom";
 //libraries
 import dayjs from "dayjs";
 import { toast } from "sonner"
+//customComponents
+import { CheckListPrelavado } from "../../sections/CheckListPrelavado";
 
 export function ModalChecklistPrelavado() {
 
+    const { lavado } = useParams();
+    const navigate = useNavigate();
+    const movile = useMediaQuery('(max-width:650px)');
+
+
+    const JsonLavado = JSON.parse(decodeURI(lavado));
+
+    const { status: statusLavado, registros_detalles_entradas, fecha_recoleccion, ordenes_lavado } = JsonLavado || {};
+
+    const { carga, numero_pipa, numero_tanque, tipo, especificacion, status: statusTanque } = registros_detalles_entradas || {};
+
+    const { clientes, destinos } = ordenes_lavado || {};
+
+    const { cliente } = clientes || {};
+
+
+
     return (
         <>
-            <Modal>
-                <Container>
+            <Modal
+                open={true}
+                sx={{
+                    paddingTop: movile ? '5px' : '3%',
+                }}
+            >
+                <Container
+                    sx={{
+                        width: movile ? '100vw' : 'auto',
+                        padding: movile ? '5px' : '10px',
+                    }}>
 
                     <Paper
                         elevation={4}
                         sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            width: 'auto',
-                            maxWidth: '95vw',
-                            padding: '10px',
+                            padding: '15px',
+                            width:'100%'
                         }}>
-                        <Box sx={{ padding: isMovile ? '0px' : '15px', width: '90vw', maxWidth: '800px' }}>
 
-                            <Paper elevation={3} sx={{ width: '100%', padding: '15px', justifyContent: 'space-between', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '10px' }}>
+                        <Paper
+                            elevation={3}
+                            sx={{ display: 'flex', flexDirection: 'row', gap: '10px', padding: '15px', justifyContent: 'space-between', alignItems: 'center' }}>
 
-                                <Stack flexDirection='row' gap='10px' justifyContent='flex-start' flexWrap='wrap'>
-                                    <Chip color="info" size="small" label={`${carga != 'pipa' ? tipo : ''}  ${numero_tanque || numero_pipa}`} />
-                                    <Chip color="info" size="small" label={'Cliente:  ' + clientes.cliente} />
-                                    <Chip color="info" size="small" label={'Llego el ' + dateTextShort(checkIn)} />
-                                </Stack>
+                            <Stack flexDirection='row' gap='10px' justifyContent='flex-start' flexWrap='wrap'>
+                                {!movile && <Chip color="info" label={cliente} />}
+                                <Chip color="info" size={movile ? 'small' : 'medium'} label={`${carga != 'pipa' ? tipo : ''}  ${numero_tanque || numero_pipa}`} />
+                            </Stack>
 
-                                <Button
-                                    fullWidth={IsMovile}
-                                    endIcon={<DoDisturbIcon />}
-                                    onClick={CancelChecklist}
-                                    variant='contained'
-                                    color="error"
-                                    size="small"
-                                >
-                                    Cancelar
-                                </Button>
+                            <Button
+                                size={movile ? 'small' : 'medium'}
+                                endIcon={<DoDisturbIcon />}
+                                onClick={() => navigate('/prelavado')}
+                                variant='contained'
+                                color="error"
+                            >
+                                Cancelar
+                            </Button>
 
-                            </Paper>
+                        </Paper>
 
 
-                            <CheckListPrelavado updater={updater} />
-                        </Box>
+                        <CheckListPrelavado lavado={JsonLavado} />
                     </Paper>
 
                 </Container>

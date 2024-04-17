@@ -125,10 +125,12 @@ function NavBar() {
         >
             <Container maxWidth='xxl'>
                 <Toolbar disableGutters>
+
+                    {/* / LOGOTIPO / */}
                     <Box
                         sx={{
                             mr: 2,
-                            display: { xs: 'none', md: 'none', xxl: 'flex' },
+                            display: { xs: 'none', md: 'none', lg: 'flex', },
                             flexGrow: 1,
                             fontFamily: 'monospace',
                             fontWeight: 700,
@@ -143,7 +145,12 @@ function NavBar() {
                             alt='logo' />
                     </Box>
 
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                    {/* / ICONO DE MENU / */}
+                    <Box
+                        sx={{
+                            display: { xs: 'flex', md: 'flex', lg: 'none', },
+                            flexGrow: 1,
+                        }}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -154,6 +161,7 @@ function NavBar() {
                         >
                             <MenuIcon />
                         </IconButton>
+                         {/* / MENU RESPONSIVO / */}
                         <Menu
                             id="menu-appbar"
                             anchorEl={anchorElNav}
@@ -169,7 +177,7 @@ function NavBar() {
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
                             sx={{
-                                display: { xs: 'block', md: 'none' },
+                                display: { xs: 'block', md: 'flex' },
                             }}
                         >
                             {pagesRol.map((page) => (
@@ -193,10 +201,11 @@ function NavBar() {
                         </Menu>
                     </Box>
 
+                    {/* / ICONO DE MENU / */}
                     <Box
                         sx={{
                             mr: 2,
-                            display: { xs: 'flex', md: 'none' },
+                            display: { xs: 'flex', md: 'flex' },
                             flexGrow: 1,
                             fontFamily: 'monospace',
                             fontWeight: 700,
@@ -206,7 +215,7 @@ function NavBar() {
                     >
                     </Box>
 
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'none', lg: 'flex', } }}>
                         {pagesRol.map((page) => (
                             <NavLink
                                 key={page.text}
@@ -227,7 +236,7 @@ function NavBar() {
                         ))}
                     </Box>
 
-                    <Box sx={{ flexGrow: 0, display: 'flex', gap: '10px' }}>
+                    <Box sx={{ flexGrow: 0, display: 'flex', flexDirection:'row', gap: '20px', alignItems:'center' }}>
                         <OrdenesNotificaciones />
                         <Tooltip title="Ajustes de usuario">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import {
     Box,
     Stack,
@@ -19,6 +19,7 @@ import {
     MenuItem,
     FormControl,
     InputLabel,
+    Container,
 } from "@mui/material";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
@@ -26,19 +27,16 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { StepBarProgress } from "../StepBarProgress";
 //context
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
-import { actionTypes } from "../../Reducers/PrelavadoReducer";
 import { PrelavadoContext } from "../../Context/PrelavadoContext";
 //hooks
 import { useChecklistPrelavado } from "../../Hooks/Prelavado/useChecklistPrelavado";
+import { useNavigate } from "react-router-dom";
+//librairies
+import { Toaster, toast } from "sonner";
 
-function CheckListPrelavado({ updater }) {
+function CheckListPrelavado({ lavado }) {
 
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-    const [state, dispatch] = useContext(PrelavadoContext);
-
-    const { id_detalle_entrada, registros_detalles_entradas, id: idLavado } = state.selectCheck || {};
+    const { id_detalle_entrada, registros_detalles_entradas, id: idLavado } = lavado || {};
 
     const { numero_pipa, numero_tanque, clientes } = registros_detalles_entradas || {};
 
@@ -61,8 +59,7 @@ function CheckListPrelavado({ updater }) {
 
         await completeChecklist(id_detalle_entrada, idLavado, dataChecklist, newStatus);
         setStep(1);
-        dispatch({ type: actionTypes.setSelectCheck, payload: false });
-        updater();
+        // dispatch({ type: actionTypes.setSelectCheck, payload: false });
     }
 
     const updateQuestions = (questions, key) => {
@@ -114,10 +111,7 @@ function CheckListPrelavado({ updater }) {
 
 
         if (valuesNull.length >= 1 || responsesIncorrect.length >= 1) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: `Termina el checklist y anexe las evidencias necesarias para continuar`
-            })
+            toast.error(`Termina el checklist y anexe las evidencias necesarias para continuar`)
         } else {
             callback()
         }
@@ -126,7 +120,7 @@ function CheckListPrelavado({ updater }) {
     return (
         <>
             <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: '10px' }}>
-            <StepBarProgress step={step} numSteps={7} />
+                <StepBarProgress step={step} numSteps={7} />
 
                 {(step === 1) &&
                     <StepOne
@@ -1193,6 +1187,8 @@ function StepFive({ updateQuestions, changueValue, changueImage, changueComent, 
 
 function Recap({ checklist, previusStep, SendForm }) {
 
+    const navigate = useNavigate();
+
     const [select, setSelect] = useState('');
 
     const arrayForms = Object.values(checklist);
@@ -1201,6 +1197,7 @@ function Recap({ checklist, previusStep, SendForm }) {
     const sendValues = (e) => {
         e.preventDefault();
         SendForm(flatCheck, select)
+        navigate('/prelavado')
     }
 
     const evalColor = (question) => {
@@ -1360,14 +1357,27 @@ function ItemCheckList({ item, index, state, set, changueValue, changueImage, ch
 
             <TextField id={`coment-${item.question}`} value={item.coment} onChange={(e) => changueComent(index, e, state, set)} label='Observaciones' />
 
-            <Modal open={image}>
-                <Box
-                    onClick={() => setImage(!image)}
-                    sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '5%', width: '100%', minHeight: '100vh' }}>
-                    <Paper elevation={3} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '15px', maxWidth: '90vw' }}>
-                        <img width='100%' src={item.preview} />
+            <Modal
+                open={image}
+                onClose={() => setImage(!image)}
+                sx={{ display: 'flex', flexDirection: 'column', paddingTop: '2%' }}
+            >
+                <Container sx={{ display:'flex', justifyContent:'center',  height: '70vh', width:'fit-content' }}>
+                    <Paper
+                        elevation={3}
+                        sx={{
+                            display: 'flex',
+                            height: '100%',
+                            padding: '10px',
+                            width:'fit-content'
+                        }}>
+                        <img
+                            width='auto'
+                            height='100%'
+                            src={item.preview}
+                        />
                     </Paper>
-                </Box>
+                </Container>
             </Modal>
 
         </Paper>

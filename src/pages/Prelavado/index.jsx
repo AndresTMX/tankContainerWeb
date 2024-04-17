@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 //imports materialui
-import { Box, Stack, Paper, Chip, TextField, Alert, Button, Typography, Divider } from "@mui/material";
+import { Box, Stack, Paper, Chip, TextField, Alert, Button, Typography, Divider, Pagination } from "@mui/material";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import { NotConexionState } from "../../components/NotConectionState";
 import { ItemLoadingState } from "../../components/ItemLoadingState";
 import { CopyPaste } from "../../components/CopyPaste";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 //icons
 import SearchIcon from '@mui/icons-material/Search';
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -24,7 +24,25 @@ export function Prelavado() {
 
    const { loading, error, dataDinamic, mode, searchValue, handleKeyPress, onChangeClear } = usePrelavadoContext();
 
-   const IsSmall = useMediaQuery('(max-width:540px)')
+   const IsSmall = useMediaQuery('(max-width:540px)');
+
+   const [page, setPage] = useState(1);
+
+   const handleChange = (event, value) => {
+      setPage(value);
+   };
+
+   const rowsPerPage = 10;
+
+   const pages = Math.ceil(dataDinamic?.length / rowsPerPage);
+
+   const items = useMemo(() => {
+      const start = (page - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+
+      return dataDinamic?.slice(start, end);
+   }, [page, dataDinamic]);
+
 
    return (
       <>
@@ -73,13 +91,18 @@ export function Prelavado() {
 
                <ContainerScroll height='78vh'>
 
-                  {(!dataDinamic.length && !error && !loading) &&
-                     <Box sx={{ width: '100%' }}  >
-                        <Alert sx={{ width: '100%' }} severity={mode != 'search' ? "info" : "warning"}>
-                           {mode === 'data' ? 'Sin prelavados pendientes' : `Sin coincidencias para ${searchValue.current.value}`}
-                        </Alert>
-                     </Box>
+                  {(!loading && !error && !dataDinamic.length && mode === 'data') &&
+                     <Alert severity='info'>Sin registros añadidos</Alert>
                   }
+
+                  {(!error && !loading && dataDinamic.length && mode === 'search') &&
+                     <Alert severity='info'>Resultados de busqueda {searchValue.current?.value} </Alert>
+                  }
+
+                  {(!error && !loading && !dataDinamic.length && mode === 'search') &&
+                     <Alert severity='warning'>No se encontraron coincidencias para tu busqueda, {searchValue.current?.value}</Alert>
+                  }
+
 
                   {(error) &&
                      <NotConexionState />
@@ -87,7 +110,7 @@ export function Prelavado() {
 
                   <Stack gap='10px' >
                      {(!loading && !error && dataDinamic.length >= 1) &&
-                        dataDinamic.map((item) => (
+                        items.map((item) => (
                            <PrelavadoItem
                               key={item.id}
                               data={item} />
@@ -103,7 +126,7 @@ export function Prelavado() {
                   }
 
                </ContainerScroll>
-
+               <Pagination variant="outlined" shape="rounded" color="primary" count={pages} page={page} onChange={handleChange} />
             </Stack>
 
             <Outlet />
@@ -120,26 +143,27 @@ function PrelavadoItem({ data }) {
 
    const { item, selectItem } = usePrelavadoContext();
 
-   const [vencimiento, setVencimiento] = useState(false)
+   const [vencimiento, setVencimiento] = useState(false);
 
    const IsSmall = useMediaQuery('(max-width:830px)');
 
    const { status: statusLavado, registros_detalles_entradas, fecha_recoleccion, ordenes_lavado } = data || {};
 
-   const { carga, numero_pipa, numero_tanque, tipo, registros, especificacion, status: statusTanque } = registros_detalles_entradas || {};
+   const { carga, numero_pipa, numero_tanque, tipo, especificacion, status: statusTanque } = registros_detalles_entradas || {};
 
    const { clientes, destinos } = ordenes_lavado || {};
 
    const { cliente } = clientes || {};
 
-   const { checkIn, checkOut } = registros || {};
+   const navigate = useNavigate();
 
    const onWashing = () => {
       // dispatch({
       //     type: actionTypes.setSelectCheck,
       //     payload: data
       // })
-      toast.success('onWashing')
+      const lavado = encodeURIComponent(JSON.stringify(data));
+      navigate(`/prelavado/checklist/${lavado}`)
    }
 
    const CancelChecklist = () => {

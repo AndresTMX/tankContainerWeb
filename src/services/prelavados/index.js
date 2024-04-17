@@ -6,7 +6,7 @@ export async function getPending() {
             .from('lavados')
             .select(` *, registros_detalles_entradas(*), ordenes_lavado(destino_id, cliente_id, clientes(cliente), destinos(destino, duracion))`)
             .eq('status', 'pendiente')
-            .order('fecha_recoleccion', { ascending: false })
+            .order('fecha_recoleccion', { ascending: true })
             .limit(100)
 
 
