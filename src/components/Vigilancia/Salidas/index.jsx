@@ -12,6 +12,10 @@ import { useVigilanciaContext } from "../../../Context/VigilanciaContext";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import InfoIcon from "@mui/icons-material/Info";
+//services
+import { checkOutRegister } from "../../../services/registros";
+//librairies
+import { toast, Toaster } from "sonner";
 
 
 export function SalidasVigilancia() {
@@ -38,7 +42,7 @@ export function SalidasVigilancia() {
 
     return (
         <>
-
+            <Toaster richColors position="top-center" />
             <ContainerScroll height={movile ? '70vh' : '76vh'} background='whitesmoke'>
 
                 <Stack gap='10px' padding='0px' >
@@ -88,11 +92,8 @@ function ItemSalida({ register }) {
 
     const IsSmall = useMediaQuery("(max-width:900px)");
 
-    // const { checkOutRegisterWhitId, checkRegisterWhitId } = useUpdateRegister();
-
-    const { checkIn, created_at, numero_economico, tracto, operadores, type: typeRegister, status: statusRegister, id: idRegister } = register || {};
-    const { details, detailManiobras, loading, error, updateDetails } = useDetailsForManiobra(idRegister, typeRegister)
-    const { carga, transportistas, status, clientes } = details[0] || {};
+    const { numero_economico, operadores, status, registros_detalles_salidas, type: typeRegister, id: idRegister } = register || {};
+    const { transportistas, carga, clientes } = registros_detalles_salidas?.[0] || {};
     const { nombre, contacto } = operadores || {};
     const { name: linea } = transportistas || {};
     const { cliente, id: idCliente } = clientes || {};
@@ -103,25 +104,38 @@ function ItemSalida({ register }) {
         setModalOperator(!modalOperator)
     }
 
+    async function Check() {
+        try {
+
+            const { error } = await checkOutRegister(idRegister);
+
+            if (error) {
+                throw new Error(error)
+            } else {
+                toast.success('salida confirmada')
+            }
+
+        } catch (error) {
+            toast.error(error?.message)
+        }
+    }
+
     return (
         <>
-            <Paper
-                elevation={4}
-                sx={{ display: "flex", flexDirection: "column", padding: "10px", gap: '5px' }}>
+            <Paper elevation={4} sx={{ display: "flex", flexDirection: "column", padding: "10px", gap: '5px' }}>
 
 
                 <Stack flexDirection="row" alignItems="center" justifyContent='space-between' gap="10px" >
 
                     <Chip
                         size="small"
-                        color={typeRegister === "entrada" ? "success" : "warning"}
+                        color="warning"
                         label={typeRegister}
                         icon={<KeyboardDoubleArrowLeftIcon />}
-
                     />
 
                     <Button
-                        // onClick={() => checkOutRegisterWhitId(idRegister, details)}
+                        onClick={Check}
                         size="small"
                         variant="contained"
                         color="primary"
@@ -133,14 +147,7 @@ function ItemSalida({ register }) {
                 </Stack>
 
 
-
-                <Stack
-                    bgcolor='whitesmoke'
-                    flexDirection={IsSmall ? 'column' : 'row'}
-                    justifyContent='space-around'
-                    gap='10px'
-                    padding='10px'
-                >
+                <Stack bgcolor='whitesmoke' flexDirection={IsSmall ? 'column' : 'row'} justifyContent='space-around' gap='10px' padding='10px' >
 
 
                     <Box>
@@ -165,28 +172,8 @@ function ItemSalida({ register }) {
                     />
 
                     <Box>
-                        <Typography variant='caption'>
-                            Cliente
-                        </Typography>
-
-                        <Typography >
-                            {cliente}
-                        </Typography>
-                    </Box>
-
-                    <Divider
-                        orientation={IsSmall ? "horizontal" : "vertical"}
-                        flexItem
-                    />
-
-                    <Box>
-                        <Typography variant='caption'>
-                            Linea
-                        </Typography>
-
-                        <Typography >
-                            {linea}
-                        </Typography>
+                        <Typography variant='caption'>Cliente</Typography>
+                        <Typography >{cliente} </Typography>
                     </Box>
 
 
@@ -214,7 +201,24 @@ function ItemSalida({ register }) {
                     >
 
 
-                     
+                        <Box>
+                            <Typography variant='caption'>
+                                Linea
+                            </Typography>
+
+                            <Typography >
+                                {linea}
+                            </Typography>
+                        </Box>
+
+
+                        <Divider
+                            orientation={IsSmall ? "horizontal" : "vertical"}
+                            flexItem
+                        />
+
+
+
                         <Stack flexDirection="row" gap="10px">
                             <Box>
                                 <Typography variant='caption'>Operador</Typography>
@@ -227,7 +231,7 @@ function ItemSalida({ register }) {
                     </Stack>
                 </Box>
 
-                {(carga != 'vacio' && details.length >= 1) && (
+                {(carga != 'vacio' && registros_detalles_salidas?.length >= 1) && (
                     <Stack
                         justifyContent="center"
                         spacing="10px"
@@ -240,7 +244,7 @@ function ItemSalida({ register }) {
                         <Typography variant="button">
                             {`${carga}s`}
                         </Typography>
-                        {details.map((detail, index) => (
+                        {registros_detalles_salidas.map((detail, index) => (
                             <Box key={detail.id}>
                                 <Box
                                     sx={{
@@ -257,14 +261,13 @@ function ItemSalida({ register }) {
                                     </Stack>
 
                                 </Box>
-                                {details.length != index + 1 && (
+                                {registros_detalles_salidas.length != index + 1 && (
                                     <Divider orientation={"horizontal"} flexItem />
                                 )}
                             </Box>
                         ))}
                     </Stack>
                 )}
-
 
 
             </Paper>

@@ -15,21 +15,11 @@ const VigilanciaProvider = ({ children }) => {
 
     const searchValue = useRef();
 
+    const fetchFunction = pathname.includes('entradas') ? getRegistersInput : getRegistersOutput;
+
     async function get() {
-
-        let fetchFunction
-
-        if (pathname.includes('entradas')) {
-            fetchFunction = getRegistersInput;
-        }
-
-        if (pathname.includes('salidas')) {
-            fetchFunction = getRegistersOutput;
-        }
-
         const { error, data } = await fetchFunction();
         return { error, data }
-
     }
 
     const { loading, error, data } = useRealtime(get, 'registros-vigilancia', 'registros', [pathname]);
@@ -47,16 +37,10 @@ const VigilanciaProvider = ({ children }) => {
 
             let key
 
-            if (pathname.includes('entrada')) {
-                let id = item['id'] || "";
-                let operador = item['operadores']['nombre'].toLowerCase() || "";
-                let economico = item['numero_economico']
-                return `${id}-${operador}-${economico}`
-            }
-
-            if (pathname.includes('salida')) {
-
-            }
+            let id = item['id'] || "";
+            let operador = item['operadores']['nombre'].toLowerCase() || "";
+            let economico = item['numero_economico']
+            key = `${id}-${operador}-${economico}`
 
             return key
         } catch (error) {
@@ -66,7 +50,6 @@ const VigilanciaProvider = ({ children }) => {
 
     //array dinamico
     const dataDinamic = mode === dataMode ? data : dataSearch;
-    console.log("🚀 ~ VigilanciaProvider ~ dataDinamic:", dataDinamic)
 
     //functions searcher
     function SearchInData() {

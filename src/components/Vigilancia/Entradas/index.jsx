@@ -1,18 +1,19 @@
 import { useState, useMemo, } from "react";
-import { Paper, Box, Stack, Pagination, Alert, Chip, Typography, Divider, IconButton, } from "@mui/material";
+import { Paper, Box, Stack, Pagination, Alert, Chip, Typography, Divider, IconButton, Button } from "@mui/material";
 //custom components
 import { ContainerScroll } from "../../ContainerScroll";
 import { ModalInfoOperator } from "../../ModalInfoOperator";
 import { ItemLoadingState } from "../../ItemLoadingState";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useDetailsForManiobra } from "../../../Hooks/Maniobras/useDetailsForManiobra";
 import { useVigilanciaContext } from "../../../Context/VigilanciaContext";
 //icons
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
-import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import InfoIcon from "@mui/icons-material/Info";
-
+//services
+import { checkInRegister } from "../../../services/registros";
+//librairies
+import { toast, Toaster } from "sonner";
 
 export function EntradasVigilancia() {
 
@@ -38,7 +39,7 @@ export function EntradasVigilancia() {
 
     return (
         <>
-
+            <Toaster richColors position="top-center" />
             <ContainerScroll height={movile ? '70vh' : '76vh'} background='whitesmoke'>
 
                 <Stack gap='10px' padding='0px' >
@@ -78,7 +79,6 @@ export function EntradasVigilancia() {
                 </Stack>
             </ContainerScroll>
             <Pagination variant="outlined" shape="rounded" color="primary" count={pages} page={page} onChange={handleChange} />
-
         </>
     )
 }
@@ -87,11 +87,8 @@ function ItemEntrada({ register }) {
 
     const IsSmall = useMediaQuery("(max-width:900px)");
 
-    const { checkOutRegisterWhitId, checkRegisterWhitId } = useUpdateRegister();
-
-    const { checkIn, created_at, numero_economico, tracto, operadores, type: typeRegister, status: statusRegister, id: idRegister } = register || {};
-    const { details, detailManiobras, loading, error, updateDetails } = useDetailsForManiobra(idRegister, typeRegister)
-    const { carga, transportistas, status, clientes } = details[0] || {};
+    const { numero_economico, operadores, registros_detalles_entradas, type: typeRegister, id: idRegister } = register || {};
+    const { carga, transportistas, status, clientes } = registros_detalles_entradas?.[0] || {};
     const { nombre, contacto } = operadores || {};
     const { name: linea } = transportistas || {};
     const { cliente, id: idCliente } = clientes || {};
@@ -102,226 +99,181 @@ function ItemEntrada({ register }) {
         setModalOperator(!modalOperator)
     }
 
+    async function Check() {
+        try {
+
+            const { error } = await checkInRegister(idRegister, registros_detalles_entradas);
+
+            if (error) {
+                throw new Error(error)
+            } else {
+                toast.success('entrada confirmada')
+            }
+
+        } catch (error) {
+            toast.error(error?.message)
+        }
+    }
+
     return (
         <>
-            <Paper
-                elevation={4}
-                sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    padding: "10px",
-                }}>
+            <Paper elevation={4} sx={{ display: "flex", flexDirection: "column", padding: "10px", gap: '5px' }}>
 
-                <Stack spacing="8px" flexDirection="column">
+                <Stack flexDirection="row" justifyContent="space-between" flexWrap="wrap" gap="10px">
 
-                    <Stack
-                        flexDirection="row"
-                        justifyContent="space-between"
-                        flexWrap="wrap"
-                        gap="10px"
+                    <Chip
+                        size="small"
+                        color={typeRegister === "entrada" ? "success" : "warning"}
+                        label={typeRegister}
+                        icon={<KeyboardDoubleArrowLeftIcon />}
+                    />
+
+                    <Button
+                        onClick={Check}
+                        size="small"
+                        variant="contained"
+                        color="primary"
                     >
-                        <Stack
-                            flexDirection="row"
-                            alignItems="center"
-                            flexWrap="wrap"
-                            gap="10px"
-                        >
-                            <Chip
-                                size="small"
-                                color={typeRegister === "entrada" ? "success" : "warning"}
-                                label={typeRegister}
-                                icon={
-                                    typeRegister === "entrada" ? (
-                                        <KeyboardDoubleArrowRightIcon />
-                                    ) : (
-                                        <KeyboardDoubleArrowLeftIcon />
-                                    )
-                                }
-                                sx={{
-                                    maxWidth: "120px",
-                                    fontWeight: 500,
-                                    padding: "5px",
-                                }}
-                            />
-
-
-                        </Stack>
-
-
-                        <Stack>
-
-                            {(typeRegister === 'entrada') &&
-                                <Button
-                                    onClick={() => checkRegisterWhitId(idRegister, details)}
-                                    size="small"
-                                    variant="contained"
-                                    color="primary"
-                                >
-                                    CheckIn
-                                </Button>}
-
-
-                            {/* {(typeRegister === 'salida') &&
-                                <Button
-                                    onClick={() => checkOutRegisterWhitId(idRegister, details)}
-                                    size="small"
-                                    variant="contained"
-                                    color="primary"
-                                >
-                                    CheckOut
-                                </Button>} */}
-
-                        </Stack>
-
-                    </Stack>
-
-                    <Stack
-                        bgcolor='whitesmoke'
-                        flexDirection={IsSmall ? 'column' : 'row'}
-                        justifyContent='space-around'
-                        gap='10px'
-                        padding='10px'
-                    >
-                        <Box>
-                            <Typography variant='caption' >Tractocamion</Typography>
-                            <Typography>{tracto}</Typography>
-                        </Box>
-
-                        <Divider
-                            orientation={IsSmall ? "horizontal" : "vertical"}
-                            flexItem
-                        />
-
-                        <Box>
-                            <Typography variant='caption' >Economico</Typography>
-                            <Typography>{numero_economico}</Typography>
-                        </Box>
-
-
-                        <Divider
-                            orientation={IsSmall ? "horizontal" : "vertical"}
-                            flexItem
-                        />
-
-                        <Box>
-                            <Typography variant='caption' >Tipo de carga</Typography>
-                            <Typography>{carga}</Typography>
-                        </Box>
-
-                    </Stack>
-
-                    <Box
-                        sx={{
-                            display: "flex",
-                            width: '100%',
-                            flexDirection: IsSmall ? "column" : "row",
-                            gap: "10px",
-                            justifyContent: "space-between",
-                            alignItems: !IsSmall ? "center" : "start",
-                            backgroundColor: "whitesmoke",
-                            borderRadius: "4px",
-                            padding: "15px",
-                        }}
-                    >
-                        <Stack
-                            width={'100%'}
-                            flexDirection={IsSmall ? "column" : "row"}
-                            justifyContent={IsSmall ? "flex-start" : "space-around"}
-                            alignItems={IsSmall ? "start" : "center"}
-                            gap="10px"
-                        >
-
-                            <Box>
-                                <Typography variant='caption'>
-                                    Cliente
-                                </Typography>
-
-                                <Typography >
-                                    {cliente}
-                                </Typography>
-                            </Box>
-
-                            <Divider
-                                orientation={IsSmall ? "horizontal" : "vertical"}
-                                flexItem
-                            />
-
-                            <Box>
-                                <Typography variant='caption'>
-                                    Linea
-                                </Typography>
-
-                                <Typography >
-                                    {linea}
-                                </Typography>
-                            </Box>
-
-                            <Divider
-                                orientation={IsSmall ? "horizontal" : "vertical"}
-                                flexItem
-                            />
-
-                            <Stack flexDirection="row" gap="10px">
-                                <Box>
-                                    <Typography variant='caption'>Operador</Typography>
-                                    <Typography>{nombre}</Typography>
-                                </Box>
-                                <IconButton color="info" onClick={toggleModalOperator}>
-                                    <InfoIcon />
-                                </IconButton>
-                            </Stack>
-                        </Stack>
-                    </Box>
-
-                    {(carga != 'vacio' && details.length >= 1) && (
-                        <Stack
-                            justifyContent="center"
-                            spacing="10px"
-                            sx={{
-                                borderRadius: "4px",
-                                backgroundColor: "whitesmoke",
-                                padding: "15px",
-                            }}
-                        >
-                            <Typography variant="button">
-                                {`${carga}s`}
-                            </Typography>
-                            {details.map((detail, index) => (
-                                <Box key={detail.id}>
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            justifyContent: "space-between",
-                                            alignItems: 'center',
-                                            height: '50px'
-                                        }}
-                                    >
-                                        <Stack flexDirection={'row'} gap='5px'>
-                                            <Typography>{`${index + 1} °  ${detail?.tipo || ''} `}</Typography>
-                                            <Typography variant="button">{detail.numero_tanque || detail.numero_pipa}</Typography>
-                                        </Stack>
-
-                                    </Box>
-                                    {details.length != index + 1 && (
-                                        <Divider orientation={"horizontal"} flexItem />
-                                    )}
-                                </Box>
-                            ))}
-                        </Stack>
-                    )}
+                        CheckIn
+                    </Button>
 
                 </Stack>
 
-                <ModalInfoOperator
-                    nombre={nombre}
-                    contacto={contacto}
-                    modal={modalOperator}
-                    toggleModal={toggleModalOperator}
-                />
+                <Stack
+                    bgcolor='whitesmoke'
+                    flexDirection={IsSmall ? 'column' : 'row'}
+                    justifyContent='space-around'
+                    gap='10px'
+                    padding='10px'
+                >
 
+                    <Box>
+                        <Typography variant='caption' >Economico</Typography>
+                        <Typography>{numero_economico}</Typography>
+                    </Box>
+
+
+                    <Divider
+                        orientation={IsSmall ? "horizontal" : "vertical"}
+                        flexItem
+                    />
+
+                    <Box>
+                        <Typography variant='caption' >Tipo de carga</Typography>
+                        <Typography>{carga}</Typography>
+                    </Box>
+
+                    <Divider
+                        orientation={IsSmall ? "horizontal" : "vertical"}
+                        flexItem
+                    />
+
+                    <Box>
+                        <Typography variant='caption'>
+                            Cliente
+                        </Typography>
+
+                        <Typography >
+                            {cliente}
+                        </Typography>
+                    </Box>
+
+                </Stack>
+
+                <Box
+                    sx={{
+                        display: "flex",
+                        width: '100%',
+                        flexDirection: IsSmall ? "column" : "row",
+                        gap: "10px",
+                        justifyContent: "space-between",
+                        alignItems: !IsSmall ? "center" : "start",
+                        backgroundColor: "whitesmoke",
+                        borderRadius: "4px",
+                        padding: "15px",
+                    }}
+                >
+                    <Stack
+                        width={'100%'}
+                        flexDirection={IsSmall ? "column" : "row"}
+                        justifyContent={IsSmall ? "flex-start" : "space-around"}
+                        alignItems={IsSmall ? "start" : "center"}
+                        gap="10px"
+                    >
+
+
+                        <Box>
+                            <Typography variant='caption'>
+                                Linea
+                            </Typography>
+
+                            <Typography >
+                                {linea}
+                            </Typography>
+                        </Box>
+
+                        <Divider
+                            orientation={IsSmall ? "horizontal" : "vertical"}
+                            flexItem
+                        />
+
+                        <Stack flexDirection="row" gap="10px">
+                            <Box>
+                                <Typography variant='caption'>Operador</Typography>
+                                <Typography>{nombre}</Typography>
+                            </Box>
+                            <IconButton color="info" onClick={toggleModalOperator}>
+                                <InfoIcon />
+                            </IconButton>
+                        </Stack>
+                    </Stack>
+                </Box>
+
+                {(carga != 'vacio' && registros_detalles_entradas?.length >= 1) && (
+                    <Stack justifyContent="center" spacing="10px"
+                        sx={{
+                            borderRadius: "4px",
+                            backgroundColor: "whitesmoke",
+                            padding: "15px",
+                        }}
+                    >
+                        <Typography variant="button">
+                            {`${carga}s`}
+                        </Typography>
+                        {registros_detalles_entradas?.map((detail, index) => (
+                            <Box key={detail.id}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                        alignItems: 'center',
+                                        height: '50px'
+                                    }}
+                                >
+                                    <Stack flexDirection={'row'} gap='5px'>
+                                        <Typography>{`${index + 1} °  ${detail?.tipo || ''} `}</Typography>
+                                        <Typography variant="button">{detail.numero_tanque || detail.numero_pipa}</Typography>
+                                    </Stack>
+
+                                </Box>
+                                {registros_detalles_entradas?.length != index + 1 && (
+                                    <Divider orientation={"horizontal"} flexItem />
+                                )}
+                            </Box>
+                        ))}
+                    </Stack>
+                )}
 
             </Paper>
+
+
+            <ModalInfoOperator
+                nombre={nombre}
+                contacto={contacto}
+                modal={modalOperator}
+                toggleModal={toggleModalOperator}
+            />
         </>
     )
 
