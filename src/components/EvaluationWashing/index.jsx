@@ -23,18 +23,18 @@ import {
 import { ContainerScroll } from "../ContainerScroll";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { actionTypes } from "../../Reducers/GlobalReducer";
-import { GlobalContext } from "../../Context/GlobalContext";
 import { useCreateConditionsWashing } from "../../Hooks/Lavado/useCreateConditionsWashing";
+import { useSendToSanitization } from "../../Hooks/Calidad/useSendToSanitzation";
+import { useSaniticeValue } from "../../Hooks/Lavado/useSaniticeValue";
+import { useSealItem } from "../../Hooks/Lavado/useSealItem";
 //icons
 import ClearIcon from '@mui/icons-material/Clear';
-import { useSaniticeValue } from "../../Hooks/Lavado/useSaniticeValue";
 import SaveIcon from '@mui/icons-material/Save';
-import { useSealItem } from "../../Hooks/Lavado/useSealItem";
-import { useSendToSanitization } from "../../Hooks/Calidad/useSendToSanitzation";
+//librearies
+import { toast, Toaster } from "sonner";
 
 
-function EvaluationWashing({ modal, toggleModal, lavado, updateList }) {
+function EvaluationWashing({ modal, toggleModal, lavado }) {
 
     const { updateDateTimeWashing } = useCreateConditionsWashing();
 
@@ -42,8 +42,6 @@ function EvaluationWashing({ modal, toggleModal, lavado, updateList }) {
     const { num: numLavado } = lavado.tipos_lavado || {};
 
     const isAgmark = cliente === 'agmark' ? true : false;
-
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
     const questions = [
         {
@@ -243,10 +241,7 @@ function EvaluationWashing({ modal, toggleModal, lavado, updateList }) {
         });
 
         if (valuesNull.length >= 1) {
-            dispatchGlobal({
-                type: actionTypes.setNotification,
-                payload: `Termina el checklist para continuar`
-            })
+            toast.error(`Termina el checklist para continuar`)
         }
 
         if (responsesIncorrect.length >= 1 && valuesNull.length === 0) {
@@ -265,16 +260,14 @@ function EvaluationWashing({ modal, toggleModal, lavado, updateList }) {
             validateQuestions(revision, async () => await updateDateTimeWashing(lavado, revision))
 
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypes.setNotification,
-                payload: error.message
-            })
+            toast.error(error?.message)
         }
     }
 
     return (
         <>
 
+            <Toaster richColors position="top-center" />
             <Modal open={modal}>
                 <Container
                     sx={{
@@ -328,7 +321,6 @@ function EvaluationWashing({ modal, toggleModal, lavado, updateList }) {
                                 step={step}
                                 setStep={setStep}
                                 lavado={lavado}
-                                updateList={updateList}
                                 toggleModal={toggleModal}
                             />}
 
@@ -381,7 +373,7 @@ function RevisionLavado({ revision, changueValue, submitChecklist }) {
     );
 }
 
-export function EvaluacionResults({ step, setStep, idLavado, idRegistro, toggleModal, updaterList }) {
+export function EvaluacionResults({ step, setStep, idLavado, idRegistro, toggleModal, }) {
 
     const { returnToStatus } = useSendToSanitization()
 
@@ -392,7 +384,6 @@ export function EvaluacionResults({ step, setStep, idLavado, idRegistro, toggleM
 
         await returnToStatus(idLavado, idRegistro, select)
         toggleModal()
-        updaterList()
     }
 
     return (
@@ -445,7 +436,7 @@ export function EvaluacionResults({ step, setStep, idLavado, idRegistro, toggleM
     )
 }
 
-function ConditionsWashing({ step, setStep, lavado, updateList, toggleModal }) {
+function ConditionsWashing({ step, setStep, lavado,  toggleModal }) {
 
     const isMovile = useMediaQuery('(max-width:600px');
     const movile = useMediaQuery('(max-width:800px)');

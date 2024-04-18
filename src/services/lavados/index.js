@@ -34,3 +34,22 @@ export async function updateWashing(updates, id) {
         console.error(error)
     }
 }
+
+export async function getWashingWithStatus(arrayStatus) {
+    try {
+
+        const { data, error } = await supabase
+            .from('lavados')
+            .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), tipos_lavado(*)`)
+            .in('status', arrayStatus)
+            .order('fecha_recoleccion', { ascending: false })
+
+        if (error) {
+            throw new Error(`Error al consultar lavados pendientes , error: ${error.message}`)
+        }
+
+        return { error, data }
+    } catch (error) {
+        console.error(error)
+    }
+}

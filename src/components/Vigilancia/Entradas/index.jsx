@@ -1,102 +1,93 @@
-//components
-import { Box, Stack, Typography, Fade, Alert, Paper, Button, IconButton, Chip, Modal, Divider } from "@mui/material";
-import { TextGeneral } from "../TextGeneral";
-import { ItemLoadingState } from "../ItemLoadingState";
-import { NotConexionState } from "../NotConectionState";
-import { ContainerScroll } from "../ContainerScroll";
-import { ModalInfoOperator } from "../ModalInfoOperator";
+import { useState, useMemo, } from "react";
+import { Paper, Box, Stack, Pagination, Alert, Chip, Typography, Divider, IconButton, } from "@mui/material";
+//custom components
+import { ContainerScroll } from "../../ContainerScroll";
+import { ModalInfoOperator } from "../../ModalInfoOperator";
+import { ItemLoadingState } from "../../ItemLoadingState";
 //hooks
-import { useState } from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useDetailsForManiobra } from "../../Hooks/Maniobras/useDetailsForManiobra";
-import { useUpdateRegister } from "../../Hooks/Vigilancia/useUpdateRegister";
+import { useDetailsForManiobra } from "../../../Hooks/Maniobras/useDetailsForManiobra";
+import { useVigilanciaContext } from "../../../Context/VigilanciaContext";
 //icons
-import InfoIcon from "@mui/icons-material/Info";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-//helpers
-import { datetimeMXFormat, dateMXFormat } from "../../Helpers/date";
+import InfoIcon from "@mui/icons-material/Info";
 
-function RegistersVigilancia({ data, error, loading, search, resultsSearch, errorSearch, loadingSearch, updater }) {
 
-    const isMovile = useMediaQuery('(max-width:635px)');
+export function EntradasVigilancia() {
+
+    const movile = useMediaQuery('(max-width:820px)');
+    const { searchValue, dataDinamic, loading, error, mode } = useVigilanciaContext();
+
+    const [page, setPage] = useState(1);
+
+    const handleChange = (event, value) => {
+        setPage(value);
+    };
+
+    const rowsPerPage = 10;
+
+    const pages = Math.ceil(dataDinamic?.length / rowsPerPage);
+
+    const items = useMemo(() => {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        return dataDinamic?.slice(start, end);
+    }, [page, dataDinamic]);
 
     return (
         <>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: "10px", margin: 'auto' }}>
-                <ContainerScroll height={isMovile ? "68vh" : "72vh"}>
 
-                    <Stack gap='10px' width='100%'>
+            <ContainerScroll height={movile ? '70vh' : '76vh'} background='whitesmoke'>
 
-                        {(error) && (
-                            <NotConexionState />
-                        )}
+                <Stack gap='10px' padding='0px' >
 
-                        {(!error && errorSearch) &&
-                            <Fade in={errorSearch}>
-                                <Box sx={{ width: '90vw', maxWidth: '700px' }}  >
-                                    <Alert sx={{ width: '100%' }} severity="warning">{errorSearch.toString()}</Alert>
-                                </Box>
-                            </Fade>
-                        }
+                    {(loading && !error && !dataDinamic?.length) &&
+                        <>
+                            <ItemLoadingState />
+                            <ItemLoadingState />
+                            <ItemLoadingState />
+                            <ItemLoadingState />
+                        </>
+                    }
 
-                        {(!errorSearch && !loading && !loadingSearch && resultsSearch.length >= 1) &&
-                            <Typography>Coincidencias encontradas para la busqeda {search}</Typography>
-                        }
+                    {(!loading && !error && !dataDinamic.length && mode === 'data') &&
+                        <Alert severity='info'>Sin registros añadidos</Alert>
+                    }
 
-                        {(loading || loadingSearch) &&
-                            <>
-                                <ItemLoadingState />
-                                <ItemLoadingState />
-                                <ItemLoadingState />
-                            </>
-                        }
+                    {(!error && !loading && dataDinamic.length && mode === 'search') &&
+                        <Alert severity='info'>Resultados de busqueda {searchValue.current?.value} </Alert>
+                    }
 
-                        {(!error && !errorSearch && !loading && !loadingSearch && data.length === 0) &&
-                            <Box sx={{ width: '90vw', maxWidth: '700px' }} >
-                                <Alert sx={{ width: '100%' }} severity="warning">{'Sin maniobras pendientes'}</Alert>
-                            </Box>
-                        }
+                    {(!error && !loading && !dataDinamic.length && mode === 'search') &&
+                        <Alert severity='warning'>No se encontraron coincidencias para tu busqueda, {searchValue.current?.value}</Alert>
+                    }
 
 
-                        {(!error && !errorSearch && !loading && !loadingSearch && resultsSearch.length === 0 && data.length >= 1) &&
-                            data.map((item) => (
-                                <ItemVigilancia
-                                    updater={updater}
-                                    key={item.id}
-                                    register={item}
-                                />
-                            ))
-                        }
+                    {
+                        items.map((register) => (
+                            <ItemEntrada
+                                key={register.id}
+                                register={register}
+                            />
+                        ))
+                    }
 
-                        {(!errorSearch && !loading && !loadingSearch && resultsSearch.length >= 1) &&
-                            data.map((item) => (
-                                <ItemVigilancia
-                                    updater={updater}
-                                    key={item.id}
-                                    register={item}
-                                />
-                            ))
-                        }
 
-                    </Stack>
+                </Stack>
+            </ContainerScroll>
+            <Pagination variant="outlined" shape="rounded" color="primary" count={pages} page={page} onChange={handleChange} />
 
-                </ContainerScroll>
-            </Box>
         </>
-    );
+    )
 }
 
-export { RegistersVigilancia };
-
-function ItemVigilancia({ register, updater }) {
-console.log("🚀 ~ ItemVigilancia ~ register:", register)
+function ItemEntrada({ register }) {
 
     const IsSmall = useMediaQuery("(max-width:900px)");
 
-    const { checkOutRegisterWhitId, checkRegisterWhitId } = useUpdateRegister(updater);
+    const { checkOutRegisterWhitId, checkRegisterWhitId } = useUpdateRegister();
 
     const { checkIn, created_at, numero_economico, tracto, operadores, type: typeRegister, status: statusRegister, id: idRegister } = register || {};
     const { details, detailManiobras, loading, error, updateDetails } = useDetailsForManiobra(idRegister, typeRegister)
@@ -170,7 +161,7 @@ console.log("🚀 ~ ItemVigilancia ~ register:", register)
                                 </Button>}
 
 
-                            {(typeRegister === 'salida') &&
+                            {/* {(typeRegister === 'salida') &&
                                 <Button
                                     onClick={() => checkOutRegisterWhitId(idRegister, details)}
                                     size="small"
@@ -178,7 +169,7 @@ console.log("🚀 ~ ItemVigilancia ~ register:", register)
                                     color="primary"
                                 >
                                     CheckOut
-                                </Button>}
+                                </Button>} */}
 
                         </Stack>
 
@@ -205,7 +196,7 @@ console.log("🚀 ~ ItemVigilancia ~ register:", register)
                             <Typography variant='caption' >Economico</Typography>
                             <Typography>{numero_economico}</Typography>
                         </Box>
-        
+
 
                         <Divider
                             orientation={IsSmall ? "horizontal" : "vertical"}
@@ -319,6 +310,7 @@ console.log("🚀 ~ ItemVigilancia ~ register:", register)
                             ))}
                         </Stack>
                     )}
+
                 </Stack>
 
                 <ModalInfoOperator
@@ -330,9 +322,7 @@ console.log("🚀 ~ ItemVigilancia ~ register:", register)
 
 
             </Paper>
-
-
         </>
-    );
-}
+    )
 
+}

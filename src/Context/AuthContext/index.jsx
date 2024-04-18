@@ -24,6 +24,8 @@ function AuthProvider({ children }) {
         setLoading(false)
         navigate("/admin")
       }
+
+      return { error }
     } catch (error) {
       console.log(error);
     }
@@ -127,7 +129,7 @@ function RouteProtect({ children }) {
     },
     {
       rol: "vigilante",
-      routes: ["/", "/vigilancia", "/perfil",  ],
+      routes: ["/", "/vigilancia", "/perfil",],
     },
     {
       rol: "maniobrista",

@@ -11,7 +11,6 @@ import { filterSearchVigilancia } from "../../Helpers/searcher";
 //hooks
 import { useGetManiobrasType } from "../../Hooks/Maniobras/useGetManiobrasType";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useSearcher } from "../../Hooks/useSearcher";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 //icons
@@ -26,10 +25,6 @@ function RegistersManiobras() {
 
     const [typeManiobra, setTypeManiobra] = useState(parametro || 'confirmado')
     const { loadingManiobra, errorManiobra, maniobras, forceUpdate } = useGetManiobrasType(typeManiobra);
-
-    const { states, functions } = useSearcher(filterSearchVigilancia, maniobras);
-    const { search, results, loading, error } = states;
-    const { searching, onChangueSearch, searchingKey } = functions;
 
     const changueTypeManiobra = (newType) => setTypeManiobra(newType);
 

@@ -36,7 +36,7 @@ function usePreWashingInspect(typeInspect) {
                 .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
                 .eq('status', 'programado')
                 .is('id_tipo_lavado', null)
-                .order('tentativeEnd', { ascending: false })
+                .order('fecha_recoleccion', { ascending: false })
                 .range(0, 100)
             if (error) {
                 throw new Error(`Error al consultar prelavados por inspeccionar, error: ${error.message}`)

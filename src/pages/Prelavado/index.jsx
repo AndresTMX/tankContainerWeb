@@ -158,10 +158,6 @@ function PrelavadoItem({ data }) {
    const navigate = useNavigate();
 
    const onWashing = () => {
-      // dispatch({
-      //     type: actionTypes.setSelectCheck,
-      //     payload: data
-      // })
       const lavado = encodeURIComponent(JSON.stringify(data));
       navigate(`/prelavado/checklist/${lavado}`)
    }

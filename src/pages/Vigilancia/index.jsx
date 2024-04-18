@@ -1,90 +1,77 @@
-import { useState } from "react";
-//imports materialui
-import { Box, Paper, Chip, Stack, } from "@mui/material";
-//components
-import { Searcher } from "../../components/Searcher";
-import { Notification } from "../../components/Notification";
-import { RegistersVigilancia } from "../../components/RegistersVigilancia";
+import { Box, Paper, Chip, Stack, TextField } from "@mui/material";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useGetRegisters } from "../../Hooks/Vigilancia/useGetRegisters";
-import { useSearcherVigilancia } from "../../Hooks/Vigilancia/useSaearcherVigilancia";
+import { useLocation, useNavigate, Outlet } from "react-router-dom";
+import { useVigilanciaContext } from "../../Context/VigilanciaContext";
+//icons
+import SearchIcon from '@mui/icons-material/Search';
+//libraries
+import { Toaster, toast } from "sonner";
 
-function Vigilancia() {
-    const isMovile = useMediaQuery("(max-width:700px)");
+export function Vigilancia() {
 
-    const [typeRegister, setTypeRegister] = useState("entrada")
-    const { data, loading, error, updater } = useGetRegisters(typeRegister);
+    const movile = useMediaQuery("(max-width:700px)");
+    const navigate = useNavigate();
 
-    const { states, functions } = useSearcherVigilancia(data);
-    const { searching, onChangueSearch, searchingKey } = functions;
+    const { searchValue, handleKeyPress, onChangeClear, pathname} = useVigilanciaContext();
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Stack
-                paddingTop={'20px'}
-                width={ isMovile? '96vw': '90vw'}
-                maxWidth={'700px'}
-                gap={'10px'}
-            >
-                <Paper sx={{ backgroundColor: 'whitesmoke' }} elevation={4}>
-                    <Stack sx={{ padding: '20px', borderRadius: '4px', widht: '100%' }}
-                        flexDirection="row"
-                        justifyContent={'space-between'}
-                        alignItems="center"
-                        flexWrap="wrap"
-                        gap="20px"
-                    >
-                        <Stack
-                            flexDirection="row"
-                            alignItems="center"
-                            flexWrap="wrap"
-                            gap="10px"
-                        >
+        <>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px' }}>
+                <Stack alignItems='center' width='100%' gap='10px' maxWidth='900px'>
+                    <Paper
+                        sx={{
+                            display: 'flex',
+                            flexDirection: movile ? 'column' : 'row',
+                            flexFlow: movile ? 'column-reverse' : '',
+                            justifyContent: 'space-between',
+                            alignItems: movile ? 'start' : 'center',
+                            bgcolor: 'whitesmoke',
+                            border: '1px',
+                            borderColor: '#E4E4E7',
+                            borderStyle: 'solid',
+                            maxWidth: '900px',
+                            padding: '15px',
+                            width: '96vw',
+                            gap: '10px',
+                        }}>
+
+                        <Stack flexDirection='row' gap='10px' alignItems='center' width={movile ? '100%' : 'auto'}>
                             <Chip
-                                onClick={() => setTypeRegister("entrada")}
-                                color={typeRegister === "entrada" ? "success" : "default"}
-                                label="entradas"
-                            />
+                                label='entradas'
+                                color={pathname.includes('entradas') ? 'info' : 'default'}
+                                onClick={() => navigate('entradas')  } 
+                                />
                             <Chip
-                                onClick={() => setTypeRegister("salida")}
-                                color={typeRegister === "salida" ? "info" : "default"}
-                                label="salidas"
-                            />
+                                label='salidas'
+                                color={pathname.includes('salidas') ? 'info' : 'default'}
+                                onClick={() => navigate('salidas')  } 
+                                />
 
                         </Stack>
 
-                        <Stack width={'400px'}>
-                            <Searcher
-                                search={states.search}
-                                onChangueSearch={onChangueSearch}
-                                searchingKey={searchingKey}
-                                searching={searching}
-                                placeholder={'Busca entre tus registros pendientes'}
-                            />
-                        </Stack>
+                        <TextField
+                            sx={{ width: movile ? '80vw' : 'auto' }}
+                            size='small'
+                            variant='outlined'
+                            name="searchProgram"
+                            onKeyDown={handleKeyPress}
+                            onChange={onChangeClear}
+                            inputRef={searchValue}
+                            InputProps={{
+                                endAdornment: <SearchIcon />
+                            }}
+                        />
 
-                    </Stack>
-                </Paper>
+                    </Paper>
 
-                <Box>
-                    <RegistersVigilancia
-                        data={data}
-                        error={error}
-                        loading={loading}
-                        updater={updater}
-                        search={states.search}
-                        errorSearch={states.error}
-                        loadingSearch={states.loading}
-                        resultsSearch={states.results}
-                    />
-                </Box>
+                    <Outlet />
 
-            </Stack>
+                </Stack >
+            </Box >
 
-            <Notification />
-        </Box>
+            <Toaster richColors position='top-center' />
+        </>
     );
 }
 
-export { Vigilancia };

@@ -1,6 +1,5 @@
 //imports hooks
-import { useState} from "react";
-import { useSearcher } from "../../Hooks/useSearcher"
+import { useState } from "react";
 import { useGetRepairs } from "../../Hooks/Reparaciones/useGetRepairs";
 //imports materialui
 import { Box, Stack, Fade, Paper, Typography, Chip, } from "@mui/material";
@@ -14,21 +13,16 @@ import { ModalRepair } from "../../components/ModalRepair";
 import { Notification } from "../../components/Notification";
 import { LoadingState } from "../../components/LoadingState"
 //helpers
-import { filterSearchRepair } from "../../Helpers/searcher";
 
 function Reparaciones() {
 
     const IsSmall = useMediaQuery('(max-width:900px)')
     const IsExtraSmall = useMediaQuery('(max-width:700px)');
-    
+
     const [typeRepair, setTypeRepair] = useState('pendiente');
     const changueTypeRepair = (newRepair) => setTypeRepair(newRepair);
 
     const { repairs, loadingRepairs, errorRepairs, updateRepairs } = useGetRepairs(typeRepair);
-    const { states, functions } = useSearcher(filterSearchRepair, repairs, typeRepair);
-
-    const { search, results, loading, error } = states;
-    const { searching, onChangueSearch, clearResults, searchingKey } = functions;
 
     const [itemRepair, setItemRepair] = useState(false);
     const selectTedItemRepair = (item) => setItemRepair(item);
@@ -46,8 +40,8 @@ function Reparaciones() {
                 overflow: 'hidden',
                 minHeight: '90vh',
                 gap: '15px',
-            }}
-        >
+            }}>
+                
             {!itemRepair &&
                 <Fade in={!itemRepair}>
                     <Paper
@@ -89,13 +83,7 @@ function Reparaciones() {
                             </Stack>
 
                             <Stack width={IsExtraSmall ? '100%' : '250px'}>
-                                <Searcher
-                                    onChangueSearch={onChangueSearch}
-                                    searchingKey={searchingKey}
-                                    search={search}
-                                    searching={searching}
-                                    placeholder={'Busca reparaciones ....'}
-                                />
+
                             </Stack>
 
                         </Stack>

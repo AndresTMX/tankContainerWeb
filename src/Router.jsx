@@ -21,11 +21,14 @@ import { ItemGridInfo } from "./outlets/ItemGridInfo";
 import { AssignItem } from "./outlets/AssignItem";
 import { ModalGrid } from "./outlets/ModalGrid";
 //Outlets programacion
+import { EntradasVigilancia } from "./components/Vigilancia/Entradas";
+import { SalidasVigilancia } from "./components/Vigilancia/Salidas";
 import { ProgramacionProvider } from "./Context/ProgramacionContext";
-import { SolicitudesDeLavado } from "./components/ProgramComponents/almacenados";
-import { TanquesProgramados } from "./components/ProgramComponents/programados";
-import { ConfirmarSolicitud } from "./components/ProgramComponents/almacenados";
-import { ReprogramarLavado } from "./components/ProgramComponents/programados";
+import { SolicitudesDeLavado } from "./components/Programacion/almacenados";
+import { TanquesProgramados } from "./components/Programacion/programados";
+import { ConfirmarSolicitud } from "./components/Programacion/almacenados";
+import { ReprogramarLavado } from "./components/Programacion/programados";
+import { LavadosPendientes } from "./components/LavadosPendientes";
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -44,9 +47,11 @@ let theme = createTheme({
 //context
 import { AuthProvider } from "./Context/AuthContext";
 import { GlobalProvider } from "./Context/GlobalContext";
+import { VigilanciaProvider } from "./Context/VigilanciaContext";
 import { ManiobrasProvider } from "./Context/ManiobrasContext";
 import { ReparacionesProvider } from "./Context/ReparacionesContext";
 import { PrelavadoProvider } from "./Context/PrelavadoContext";
+import { LavadoProvider } from "./Context/LavadosContext";
 import { TransportistaProvider } from "./Context/TransportistaContext";
 //route protect
 import { RouteProtect } from "./Context/AuthContext";
@@ -117,13 +122,20 @@ function Router() {
                 element={
                   <RouteProtect>
                     <UI>
-                      <ManiobrasProvider>
+                      <VigilanciaProvider>
                         <Vigilancia />
-                      </ManiobrasProvider>
+                      </VigilanciaProvider>
                     </UI>
                   </RouteProtect>
                 }
-              />
+              >
+
+                <Route path="/vigilancia/entradas" element={<EntradasVigilancia />} />
+
+                <Route path="/vigilancia/salidas" element={<SalidasVigilancia/>} />
+
+
+              </Route>
 
               <Route
                 path="/maniobras"
@@ -137,15 +149,7 @@ function Router() {
                   </RouteProtect>
                 }
               >
-                <Route path=":parametro" element={
-                  <RouteProtect>
-                    <UI>
-                      <ManiobrasProvider>
-                        <Maniobras />
-                      </ManiobrasProvider>
-                    </UI>
-                  </RouteProtect>
-                } />
+
               </Route>
 
               <Route
@@ -225,12 +229,21 @@ function Router() {
                 path="/lavado"
                 element={
                   <RouteProtect>
-                    <UI>
-                      <Lavado />
-                    </UI>
+                    <LavadoProvider>
+                      <UI>
+                        <Lavado />
+                      </UI>
+                    </LavadoProvider>
                   </RouteProtect>
                 }
-              />
+              >
+
+                <Route path="/lavado/pendientes" element={<LavadosPendientes />} />
+
+                <Route path="/lavado/realizados" element={<p>realizados</p>} />
+
+
+              </Route>
 
               <Route
                 path="/ubicaciones"

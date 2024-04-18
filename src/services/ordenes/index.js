@@ -24,7 +24,7 @@ export async function getOrdersAprobe(asscending) {
         const { error, data } = await supabase
             .from('lavados')
             .select('*, registros_detalles_entradas(*), ordenes_lavado(*, clientes(*), destinos(destino, duracion))')
-            .eq('status', 'pendiente')
+            // .eq('status', 'pendiente')
             .order('fecha_recoleccion', { ascending: asscending })
             .limit(100)
 

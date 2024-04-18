@@ -27,6 +27,7 @@ import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArro
 
 
 export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra }) {
+console.log("🚀 ~ ItemManiobras ~ register:", register)
 
     const IsSmall = useMediaQuery("(max-width:900px)");
 
@@ -123,7 +124,7 @@ export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra 
                             <Chip
                                 size="small"
                                 color="secondary"
-                                label={checkIn != null ? `${typeRegister} el ${dateTextShort(checkIn)}` : `Creada el ${dateTextShort(created_at)}`}
+                                // label={checkIn != null ? `${typeRegister} el ${dateTextShort(checkIn)}` : `Creada el ${dateTextShort(created_at)}`}
                                 icon={<CalendarTodayIcon />}
                                 sx={{
                                     fontWeight: 500,
