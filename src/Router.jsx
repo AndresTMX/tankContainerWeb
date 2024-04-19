@@ -23,7 +23,9 @@ import { ModalGrid } from "./outlets/ModalGrid";
 //Outlets programacion
 import { EntradasVigilancia } from "./components/Vigilancia/Entradas";
 import { SalidasVigilancia } from "./components/Vigilancia/Salidas";
+import { AgregarCarga } from "./components/AgregarCarga";
 import { EditarManiobra } from "./components/EditarManiobra";
+import { NuevaSalida } from "./components/NuevaSalida";
 import { ProgramacionProvider } from "./Context/ProgramacionContext";
 import { SolicitudesDeLavado } from "./components/Programacion/almacenados";
 import { TanquesProgramados } from "./components/Programacion/programados";
@@ -144,7 +146,11 @@ function Router() {
                 }
               >
 
+                <Route path="/maniobras/adicion/:registro" element={<AgregarCarga />} />
+
                 <Route path="/maniobras/edicion/:items" element={<EditarManiobra />} />
+
+                <Route path="/maniobras/nueva-salida/:registro" element={<NuevaSalida />} />
 
               </Route>
 

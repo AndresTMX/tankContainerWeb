@@ -232,6 +232,23 @@ export async function updateItemManiobra(id_registro_detalle_entrada, updates) {
     }
 }
 
+export async function addItemManiobra(item) {
+    try {
+
+        const { error } = await supabase
+            .from('registros_detalles_entradas')
+            .insert({ ...item })
+
+        if (error) {
+            throw new Error(`Error al registrar nuevo tanque en maniobra, ${error.message}`)
+        }
+
+        return { error }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 export async function storagePipa(idRegister) {
     try {
 

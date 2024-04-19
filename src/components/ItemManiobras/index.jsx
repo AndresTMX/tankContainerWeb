@@ -5,8 +5,6 @@ import { Box, Paper, Stack, Button, IconButton, Skeleton, Chip, Modal, Fade, Ale
 import { ModalInfoOperator } from "../ModalInfoOperator";
 import { ItemLoadingState } from "../ItemLoadingState";
 import { TextGeneral } from "../TextGeneral";
-import { ModalAddCarga } from "../ModalAddCarga";
-import { ViewTanks } from "../ViewTanks";
 //hooks
 import { useNavigate } from "react-router-dom";
 import { useDetailsForManiobra } from "../../Hooks/Maniobras/useDetailsForManiobra";
@@ -37,16 +35,19 @@ export function ItemManiobras({ register, changueTypeManiobra }) {
     const { checkIn, created_at, tracto, numero_economico: economico, type: typeRegister, operadores, status: statusRegister, id: idRegister } = register || {};
     const { data: details, loading, error } = useDetailsForManiobra(idRegister, typeRegister)
     const { carga, transportistas, status, clientes } = details[0] || {};
-    const detailManiobras = details?.filter((i) => i.status === 'maniobras')
+
+
     const { nombre, contacto, id: operadorId } = operadores || {};
     const { name: linea, id: idTransportista } = transportistas || {};
     const { cliente, id: idCliente } = clientes || {};
 
     const registerData = { carga: carga, cliente_id: idCliente, entrada_id: idRegister, transportista_id: idTransportista }
 
+    const detailManiobras = details?.filter((i) => i.status === 'maniobras')
+
     // const [state, dispatch] = useContext(ManiobrasContext);
     const [modalTanks, setModalTanks] = useState(false);
-    const [modalChargue, setModalChargue] = useState(false)
+    // const [modalChargue, setModalChargue] = useState(false)
 
     //bajar tanque a maniobras
     async function downTank(id) {
@@ -220,7 +221,7 @@ export function ItemManiobras({ register, changueTypeManiobra }) {
 
                             {(carga != 'pipa' && statusRegister === 'confirm' && detailManiobras.length === 0) &&
                                 <Button
-                                    onClick={() => setModalTanks(!modalTanks)}
+                                    onClick={() => navigate(`nueva-salida/${encodeURIComponent(JSON.stringify({ register, details }))}`)}
                                     size="small"
                                     variant="contained"
                                     color="warning"
@@ -240,7 +241,7 @@ export function ItemManiobras({ register, changueTypeManiobra }) {
 
                             {(statusRegister === 'forconfirm' && typeRegister === 'entrada') &&
                                 <Button
-                                    onClick={() => navigate(`/maniobras/edicion/${encodeURIComponent(JSON.stringify({ items: details }))}`)}
+                                    onClick={() => navigate(`edicion/${encodeURIComponent(JSON.stringify({ items: details }))}`)}
                                     size="small"
                                     variant="contained"
                                     color="warning"
@@ -355,7 +356,7 @@ export function ItemManiobras({ register, changueTypeManiobra }) {
                                 {(statusRegister === 'forconfirm' && typeRegister === 'entrada') &&
                                     <Button
                                         endIcon={<AddIcon />}
-                                        onClick={() => setModalChargue(!modalChargue)}
+                                        onClick={() => navigate(`adicion/${encodeURIComponent(JSON.stringify({ register, details }))}`)}
                                         size="small"
                                         variant="outlined"
                                         color="info"
@@ -417,7 +418,7 @@ export function ItemManiobras({ register, changueTypeManiobra }) {
                                 {(statusRegister === 'forconfirm' && typeRegister === 'entrada') &&
                                     <Button
                                         endIcon={<AddIcon />}
-                                        onClick={() => setModalChargue(!modalChargue)}
+                                        onClick={() => navigate(`adicion/${encodeURIComponent(JSON.stringify({ register, details }))}`)}
                                         size="small"
                                         variant="outlined"
                                         color="info"
@@ -452,67 +453,6 @@ export function ItemManiobras({ register, changueTypeManiobra }) {
                     )}
 
                 </Stack>}
-
-            {/* {modalTanks &&
-                <Modal open={modalTanks}>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            overflowY: 'auto',
-                            paddingTop: '2%'
-                        }}>
-                        <ViewTanks
-                            register={register}
-                            details={details}
-                            toggle={setModalTanks}
-                            detailManiobras={detailManiobras}
-                            changueTypeManiobra={changueTypeManiobra}
-                        />
-                    </Box>
-                </Modal>
-            } */}
-
-            {/* {modalChargue &&
-                <Modal
-                    open={modalChargue}
-                >
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            overflowY: 'auto',
-                            paddingTop: '2%'
-                        }}
-                    >
-                        <ModalAddCarga
-                            details={details}
-                            registerData={registerData}
-                            setModal={setModalChargue}
-                        />
-                    </Box>
-                </Modal>
-            } */}
-
-            {/* {editData &&
-                <Modal open={editData}>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            height: '100vh',
-                        }}>
-                        <Box sx={{ display: 'flex', overflowY: 'auto', height: '90vh', width: '100%', justifyContent: 'center', }}>
-                            <FormEditManiobras
-                                register={register}
-                                detalles={details}
-                                toggleModal={setEditData}
-                            />
-                        </Box>
-                    </Box>
-                </Modal>
-            } */}
 
             <ModalInfoOperator modal={modalOperator} toggleModal={toggleModalOperator} nombre={nombre} contacto={contacto} />
         </Paper>
