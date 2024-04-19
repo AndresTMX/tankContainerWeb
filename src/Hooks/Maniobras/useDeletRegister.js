@@ -3,17 +3,18 @@ import { useContext } from "react";
 import { GlobalContext } from "../../Context/GlobalContext";
 import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 
-function useDeletRegister( updaterRegisters) {
+function useDeletRegister(updaterRegisters) {
 
     const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
-    const deleteRegisterTank = async ( idRegister, details) => {
+    const deleteRegisterTank = async (idRegister, details) => {
 
         try {
-   
+
             //actualizar los tanques con el estatus ready 
             const updateTanques = details.map(async (item) => {
-                const { error: errorUpdateTanques } = await supabase.from('tanques')
+                const { error: errorUpdateTanques } = await supabase
+                    .from('tanques')
                     .update({ status: 'ready' })
                     .eq('tanque', item.numero_tanque)
 
@@ -31,7 +32,8 @@ function useDeletRegister( updaterRegisters) {
             }
 
             //eliminar el registro de la tabla principal
-            const { error: errorDeleteRegister } = await supabase.from('registros')
+            const { error: errorDeleteRegister } = await supabase
+                .from('registros')
                 .delete()
                 .eq('id', idRegister);
 
@@ -114,8 +116,8 @@ function useDeletRegister( updaterRegisters) {
 
         const router = {
             tanque: () => deleteRegisterTank(idRegister, details),
-            pipa: () => deleteRegisterPipa(idRegister ),
-            vacio: () => deleteRegisterEmpty(idRegister ),
+            pipa: () => deleteRegisterPipa(idRegister),
+            vacio: () => deleteRegisterEmpty(idRegister),
         }
 
         try {

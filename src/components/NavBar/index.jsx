@@ -35,7 +35,7 @@ function NavBar() {
     const routes = {
 
         admin: [
-            { to: '/vigilancia', text: 'Vigilancia' },
+            { to: '/vigilancia/entradas', text: 'Vigilancia' },
             { to: '/maniobras', text: 'Maniobras' },
             { to: '/programacion', text: 'Programación' },
             { to: '/reparaciones', text: 'Reparación' },
@@ -47,7 +47,7 @@ function NavBar() {
         developer: [
             { to: '/importaciones', text: 'Importaciones' },
             { to: '/transportista', text: 'Transportista' },
-            { to: '/vigilancia', text: 'Vigilancia' },
+            { to: '/vigilancia/entradas', text: 'Vigilancia' },
             { to: '/maniobras', text: 'Maniobras' },
             { to: '/programacion', text: 'Programación' },
             { to: '/reparaciones', text: 'Reparación' },
@@ -57,10 +57,10 @@ function NavBar() {
             { to: '/ubicaciones', text: 'Ubicaciones' },
         ],
         vigilante: [
-            { to: '/vigilancia', text: 'Vigilancia' },
+            { to: '/vigilancia/entradas', text: 'Vigilancia' },
         ],
         maniobrista: [
-            { to: '/vigilancia', text: 'Vigilancia' },
+            { to: '/vigilancia/entradas', text: 'Vigilancia' },
             { to: '/maniobras', text: 'Maniobras' },
             { to: '/programacion', text: 'Programación' },
             { to: '/reparaciones', text: 'Reparación' },

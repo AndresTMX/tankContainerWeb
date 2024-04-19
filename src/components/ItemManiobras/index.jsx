@@ -3,20 +3,19 @@ import { useState } from "react";
 import { Box, Paper, Stack, Button, IconButton, Skeleton, Chip, Modal, Fade, Alert, Divider, Typography, TextField, InputLabel, FormControl, MenuItem, Select } from "@mui/material";
 //customComponents
 import { ModalInfoOperator } from "../ModalInfoOperator";
-import { FormEditManiobras } from "../FormEditManiobras";
 import { ItemLoadingState } from "../ItemLoadingState";
 import { TextGeneral } from "../TextGeneral";
 import { ModalAddCarga } from "../ModalAddCarga";
 import { ViewTanks } from "../ViewTanks";
 //hooks
+import { useNavigate } from "react-router-dom";
 import { useDetailsForManiobra } from "../../Hooks/Maniobras/useDetailsForManiobra";
 import { useDeletRegister } from "../../Hooks/Maniobras/useDeletRegister";
-import { useDownContainer } from "../../Hooks/Maniobras/useDownContainer";
 import { usePostRegister } from "../../Hooks/Maniobras/usePostRegister";
 import { useEditManiobra } from "../../Hooks/Maniobras/useEditManiobra";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //helpers
-import { dateMXFormat, dateTextShort, datetimeMXFormat } from "../../Helpers/date";
+import { dateMXFormat, dateInTextEn, datetimeMXFormat } from "../../Helpers/date";
 //icons
 import AddIcon from '@mui/icons-material/Add';
 import InfoIcon from "@mui/icons-material/Info";
@@ -24,16 +23,21 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+//services
+import { updateItemManiobra, storagePipa, deleteManiobra, returnTractoEmpty } from "../../services/registros";
+//libraries
+import { toast } from "sonner";
 
+export function ItemManiobras({ register, changueTypeManiobra }) {
 
-export function ItemManiobras({ register, updaterRegisters, changueTypeManiobra }) {
-console.log("🚀 ~ ItemManiobras ~ register:", register)
+    const navigate = useNavigate();
 
     const IsSmall = useMediaQuery("(max-width:900px)");
 
-    const { checkIn, created_at, tracto, numero_economico:economico, type: typeRegister, operadores, status: statusRegister, id: idRegister } = register || {};
-    const { details, detailManiobras, loading, error, updateDetails } = useDetailsForManiobra(idRegister, typeRegister)
+    const { checkIn, created_at, tracto, numero_economico: economico, type: typeRegister, operadores, status: statusRegister, id: idRegister } = register || {};
+    const { data: details, loading, error } = useDetailsForManiobra(idRegister, typeRegister)
     const { carga, transportistas, status, clientes } = details[0] || {};
+    const detailManiobras = details?.filter((i) => i.status === 'maniobras')
     const { nombre, contacto, id: operadorId } = operadores || {};
     const { name: linea, id: idTransportista } = transportistas || {};
     const { cliente, id: idCliente } = clientes || {};
@@ -42,17 +46,74 @@ console.log("🚀 ~ ItemManiobras ~ register:", register)
 
     // const [state, dispatch] = useContext(ManiobrasContext);
     const [modalTanks, setModalTanks] = useState(false);
-    const [editData, setEditData] = useState(false);
     const [modalChargue, setModalChargue] = useState(false)
 
     //bajar tanque a maniobras
-    const { downContainerToManiobra } = useDownContainer(updateDetails);
-    //mandar pipa a prelavado
-    const { changueStatusToWashing } = useEditManiobra(updaterRegisters);
-    //eliminar registro
-    const { routerDelet } = useDeletRegister(updaterRegisters);
+    async function downTank(id) {
+        try {
+
+            const { error } = await updateItemManiobra(id, { status: 'eir' });
+
+            if (error) {
+                throw new Error(error)
+            } else {
+                toast.success('tanque bajado a maniobras')
+            }
+
+        } catch (error) {
+            toast.error(error)
+        }
+    }
+
+    //eliminar maniobra y detalles
+    async function deleteManiobraAndDetails() {
+        try {
+
+            const { error } = await deleteManiobra(idRegister);
+
+            if (error) {
+                throw new Error(error)
+            } else {
+                toast.success('Registro y maniobra eliminados')
+            }
+
+        } catch (error) {
+            toast.error(error?.message)
+        }
+    }
+
     //retornar vacio
-    const { returnEmpty } = usePostRegister(updaterRegisters);
+    async function returnEmpty() {
+        try {
+
+            let dataOutputRegister = {
+                type: 'salida',
+                numero_economico: economico,
+                operador_id: operadorId,
+                tracto: tracto
+            }
+
+            let dataOuputDetail = {
+                carga: 'vacio',
+                numero_tanque: null,
+                cliente_id: idCliente,
+                transportista_id: idTransportista,
+            }
+
+
+            const { error } = await returnTractoEmpty(idRegister, dataOutputRegister, dataOuputDetail);
+
+            if (error) {
+                throw new Error(error)
+            } else {
+                toast.success('Cargas enviadas a EIR, salida creada')
+            }
+
+        } catch (error) {
+            toast.error(error?.message)
+        }
+    }
+
 
     const detalles = statusRegister === "forconfirm" ? details : detailManiobras;
 
@@ -60,7 +121,7 @@ console.log("🚀 ~ ItemManiobras ~ register:", register)
     const toggleModalOperator = () => setModalOperator(!modalOperator);
 
     return (
-        <Paper elevation={3}>
+        <Paper elevation={3} >
 
             {(loading && !error) &&
                 <Stack gap='8px' padding='15px'>
@@ -124,7 +185,7 @@ console.log("🚀 ~ ItemManiobras ~ register:", register)
                             <Chip
                                 size="small"
                                 color="secondary"
-                                // label={checkIn != null ? `${typeRegister} el ${dateTextShort(checkIn)}` : `Creada el ${dateTextShort(created_at)}`}
+                                label={checkIn != null ? `${typeRegister} el ${dateInTextEn(checkIn)}` : `Creada el ${dateMXFormat(created_at)}`}
                                 icon={<CalendarTodayIcon />}
                                 sx={{
                                     fontWeight: 500,
@@ -149,7 +210,7 @@ console.log("🚀 ~ ItemManiobras ~ register:", register)
 
                             {(carga === 'pipa' && statusRegister === 'confirm') &&
                                 <Button
-                                    onClick={() => changueStatusToWashing(idRegister)}
+                                    onClick={() => storagePipa(idRegister)}
                                     size="small"
                                     variant="contained"
                                     color="info"
@@ -179,7 +240,7 @@ console.log("🚀 ~ ItemManiobras ~ register:", register)
 
                             {(statusRegister === 'forconfirm' && typeRegister === 'entrada') &&
                                 <Button
-                                    onClick={() => setEditData(true)}
+                                    onClick={() => navigate(`/maniobras/edicion/${encodeURIComponent(JSON.stringify({ items: details }))}`)}
                                     size="small"
                                     variant="contained"
                                     color="warning"
@@ -189,7 +250,7 @@ console.log("🚀 ~ ItemManiobras ~ register:", register)
 
                             {(statusRegister === 'forconfirm' && typeRegister === 'entrada') &&
                                 <Button
-                                    onClick={() => routerDelet(carga, idRegister, details)}
+                                    onClick={deleteManiobraAndDetails}
                                     size="small"
                                     variant="contained"
                                     color="error"
@@ -244,7 +305,7 @@ console.log("🚀 ~ ItemManiobras ~ register:", register)
                                 orientation={IsSmall ? "horizontal" : "vertical"}
                                 flexItem
                             />
-                            <TextGeneral width={IsSmall ? 'auto' : '100px'} label="Tracto" text={tracto} />
+                            <TextGeneral width={IsSmall ? 'auto' : '100px'} label="Tracto" text={economico} />
                             <Divider
                                 orientation={IsSmall ? "horizontal" : "vertical"}
                                 flexItem
@@ -270,7 +331,7 @@ console.log("🚀 ~ ItemManiobras ~ register:", register)
 
                             <Stack flexDirection="row" gap="10px">
                                 <TextGeneral width={'100px'} label="Operador"
-                                    text={`${nombre?.split(" ").slice(0, 2)[0]} ${nombre?.split(" ").slice(0, 2)[1]} `} />
+                                    text={nombre} />
                                 <IconButton color="info" onClick={toggleModalOperator}>
                                     <InfoIcon />
                                 </IconButton>
@@ -323,7 +384,7 @@ console.log("🚀 ~ ItemManiobras ~ register:", register)
 
                                         {statusRegister === 'confirm' &&
                                             <Button
-                                                onClick={() => downContainerToManiobra(detail.id,)}
+                                                onClick={() => downTank(detail.id)}
                                                 size="small"
                                                 variant="contained"
                                                 color="warning"
@@ -392,7 +453,7 @@ console.log("🚀 ~ ItemManiobras ~ register:", register)
 
                 </Stack>}
 
-            {modalTanks &&
+            {/* {modalTanks &&
                 <Modal open={modalTanks}>
                     <Box
                         sx={{
@@ -410,9 +471,9 @@ console.log("🚀 ~ ItemManiobras ~ register:", register)
                         />
                     </Box>
                 </Modal>
-            }
+            } */}
 
-            {modalChargue &&
+            {/* {modalChargue &&
                 <Modal
                     open={modalChargue}
                 >
@@ -428,13 +489,12 @@ console.log("🚀 ~ ItemManiobras ~ register:", register)
                             details={details}
                             registerData={registerData}
                             setModal={setModalChargue}
-                            updater={updateDetails}
                         />
                     </Box>
                 </Modal>
-            }
+            } */}
 
-            {editData &&
+            {/* {editData &&
                 <Modal open={editData}>
                     <Box
                         sx={{
@@ -448,14 +508,11 @@ console.log("🚀 ~ ItemManiobras ~ register:", register)
                                 register={register}
                                 detalles={details}
                                 toggleModal={setEditData}
-                                updaterDetails={updateDetails}
-                                updaterRegisters={updaterRegisters}
                             />
                         </Box>
                     </Box>
                 </Modal>
-            }
-
+            } */}
 
             <ModalInfoOperator modal={modalOperator} toggleModal={toggleModalOperator} nombre={nombre} contacto={contacto} />
         </Paper>

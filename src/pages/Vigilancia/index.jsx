@@ -13,7 +13,7 @@ export function Vigilancia() {
     const movile = useMediaQuery("(max-width:700px)");
     const navigate = useNavigate();
 
-    const { searchValue, handleKeyPress, onChangeClear, pathname} = useVigilanciaContext();
+    const { searchValue, handleKeyPress, onChangeClear, pathname } = useVigilanciaContext();
 
     return (
         <>
@@ -40,13 +40,13 @@ export function Vigilancia() {
                             <Chip
                                 label='entradas'
                                 color={pathname.includes('entradas') ? 'info' : 'default'}
-                                onClick={() => navigate('entradas')  } 
-                                />
+                                onClick={() => navigate('entradas')}
+                            />
                             <Chip
                                 label='salidas'
                                 color={pathname.includes('salidas') ? 'info' : 'default'}
-                                onClick={() => navigate('salidas')  } 
-                                />
+                                onClick={() => navigate('salidas')}
+                            />
 
                         </Stack>
 

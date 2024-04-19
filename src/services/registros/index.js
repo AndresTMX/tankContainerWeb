@@ -1,6 +1,8 @@
 import supabase from "../../supabase";
 import dayjs from "dayjs";
 
+// VIGILANCIA
+
 export async function getRegistersInput() {
     try {
 
@@ -168,3 +170,190 @@ export async function checkOutRegister(idRegister) {
         console.error(error)
     }
 }
+
+// MANIOBRAS
+
+export async function getManiobrasConfirmadas() {
+    try {
+
+        const { data, error } = await supabase
+            .from('registros')
+            .select(`*, operadores(*)`)
+            .eq('status', 'confirm')
+            .order('created_at', { ascending: false })
+            .range(0, 100)
+
+        if (error) {
+            throw new Error(`Error al recuperar registros de maniobras, error: ${error.message}`)
+        }
+
+        return { error, data }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export async function getManiobrasPendientes() {
+    try {
+
+        const { data, error } = await supabase
+            .from('registros')
+            .select(`*, operadores(*)`)
+            .eq('status', 'forconfirm')
+            .order('created_at', { ascending: false })
+            .range(0, 100)
+
+
+        if (error) {
+            throw new Error(`Error al recuperar registros de maniobras, error: ${error.message}`)
+        }
+
+        return { error, data }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export async function updateItemManiobra(id_registro_detalle_entrada, updates) {
+    try {
+
+        const { error } = await supabase
+            .from('registros_detalles_entradas')
+            .update({ ...updates })
+            .eq('id', id_registro_detalle_entrada)
+
+        if (error) {
+            throw new Error(`Error al actualizar los detalles del registro, error: ${error.message}`)
+        }
+
+        return { error }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export async function storagePipa(idRegister) {
+    try {
+
+        let error
+
+        //actualizar el registro
+        const { error: errorUpdateRegister } = await supabase
+            .from('registros')
+            .update({ status: 'proceso' })
+            .eq('id', idRegister)
+
+        if (errorUpdateRegister) {
+            await supabase.from('registros').update({ status: 'maniobras' }).eq('id', id);
+            throw new Error(`Error al intentar actualizar el registro, error: ${errorUpdateRegister.message}`)
+        }
+
+        //actualizar los detalles del registro
+        const { error: errorUpdateDetails } = await supabase
+            .from('registros_detalles_entradas')
+            .update({ status: 'almacenado' })
+            .eq('entrada_id', idRegister)
+
+        if (errorUpdateDetails) {
+            await supabase.from('registros_detalles_entradas').update({ status: 'maniobras' }).eq('entrada_id', idRegister);
+            throw new Error(`Error al intentar actualizar el registro, error: ${errorUpdateDetails.message}`)
+        }
+
+        error = errorUpdateRegister || errorUpdateDetails;
+
+        return { error }
+    } catch (error) {
+
+    }
+}
+
+export async function deleteManiobra(idRegister) {
+    try {
+
+        let error
+
+        const { error: errorDetails } = await supabase
+            .from('registros_detalles_entradas')
+            .delete()
+            .eq('entrada_id', idRegister)
+
+        if (errorDetails) {
+            throw new Error(`Error al intentar actualizar los estatus de tanques, error: ${errorDetails.message}`)
+        }
+
+        const { error: errorRegister } = await supabase
+            .from('registros')
+            .delete()
+            .eq('id', idRegister);
+
+        if (errorRegister) {
+            throw new Error(`Error al intentar actualizar los estatus de tanques, error: ${errorRegister.message}`)
+        }
+
+        error = errorDetails || errorRegister;
+
+        return { error }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export async function returnTractoEmpty(idRegister, dataOutputRegister, dataOuputDetail) {
+    try {
+
+        let error
+
+        const currentDate = new dayjs(new Date()).utc();
+
+        //actualizar el registro general a finalizado
+        const { error: errorUpdateRegister } = await supabase
+            .from('registros')
+            .update({ status: 'finalizado', checkOut: currentDate })
+            .eq('id', idRegister)
+
+        if (errorUpdateRegister) {
+            throw new Error(`Error al intentar actualizar el registro, error: ${errorUpdateRegister.message}`)
+        }
+
+        //Se crea un nuevo registro general de salida 
+        const { data: dataRegister, error: errorAddRegister } = await supabase
+            .from('registros')
+            .insert({ ...dataOutputRegister })
+            .select()
+
+        if (errorAddRegister) {
+            await supabase.from('registros').update({ status: 'confirm', checkOut: null }).eq('id', idRegister)
+            throw new Error(`Error al agregar nuevo registro de salida, error: ${errorAddRegister.message}`)
+        }
+
+        //agregar detalles de salida 
+        const { error: errorDetails } = await supabase
+            .from('registros_detalles_salidas')
+            .insert({ salida_id: dataRegister[0].id, ...dataOuputDetail })
+
+        if (errorDetails) {
+            throw new Error(`Error al agregar detalles al registro de salida, error: ${errorDetails.message}`)
+        }
+
+        //actualizar el estatus de todos los tanques asociados al idRegistro a eir
+
+        const { error: errorUpdateDetails } = await supabase
+            .from('registros_detalles_entradas')
+            .update({ status: 'eir' })
+            .eq('entrada_id', idRegister)
+
+        if (errorUpdateDetails) {
+            throw new Error(`Error al actualizar status de las cargas, error: ${errorUpdateDetails.message}`)
+        }
+
+        error = errorUpdateRegister || errorAddRegister || errorDetails || errorUpdateDetails;
+
+        return { error }
+
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+
+

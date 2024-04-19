@@ -85,3 +85,21 @@ export async function updateRegistroWhitId(id, updates) {
         console.error(error)
     }
 }
+
+export async function deleteRegisterWhitId(id) {
+    try {
+
+        const { error } = await supabase
+            .from('registros_detalles_entradas')
+            .delete()
+            .eq('id', id)
+
+        if (error) {
+            throw new Error(`Error al eliminar item de maniobra ${error?.message}`)
+        }
+
+        return { error }
+    } catch (error) {
+        console.error(error)
+    }
+}

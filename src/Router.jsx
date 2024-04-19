@@ -23,6 +23,7 @@ import { ModalGrid } from "./outlets/ModalGrid";
 //Outlets programacion
 import { EntradasVigilancia } from "./components/Vigilancia/Entradas";
 import { SalidasVigilancia } from "./components/Vigilancia/Salidas";
+import { EditarManiobra } from "./components/EditarManiobra";
 import { ProgramacionProvider } from "./Context/ProgramacionContext";
 import { SolicitudesDeLavado } from "./components/Programacion/almacenados";
 import { TanquesProgramados } from "./components/Programacion/programados";
@@ -64,14 +65,12 @@ function Router() {
           <GlobalProvider>
             <Routes>
 
-              <Route
-                path="/"
+              <Route path="/"
                 element={
                   <Login />
                 } />
 
-              <Route
-                path="/admin"
+              <Route path="/admin"
                 element={
                   <RouteProtect>
                     <UI>
@@ -81,8 +80,7 @@ function Router() {
                 }
               />
 
-              <Route
-                path="/perfil"
+              <Route path="/perfil"
                 element={
                   <RouteProtect>
                     <UI>
@@ -92,8 +90,7 @@ function Router() {
                 }
               />
 
-              <Route
-                path="/importaciones"
+              <Route path="/importaciones"
                 element={
                   <RouteProtect>
                     <UI>
@@ -103,8 +100,7 @@ function Router() {
                 }
               />
 
-              <Route
-                path="/transportista"
+              <Route path="/transportista"
                 element={
                   <RouteProtect>
                     <TransportistaProvider>
@@ -116,9 +112,7 @@ function Router() {
                 }
               />
 
-
-              <Route
-                path="/vigilancia"
+              <Route path="/vigilancia"
                 element={
                   <RouteProtect>
                     <UI>
@@ -132,7 +126,7 @@ function Router() {
 
                 <Route path="/vigilancia/entradas" element={<EntradasVigilancia />} />
 
-                <Route path="/vigilancia/salidas" element={<SalidasVigilancia/>} />
+                <Route path="/vigilancia/salidas" element={<SalidasVigilancia />} />
 
 
               </Route>
@@ -149,6 +143,8 @@ function Router() {
                   </RouteProtect>
                 }
               >
+
+                <Route path="/maniobras/edicion/:items" element={<EditarManiobra />} />
 
               </Route>
 

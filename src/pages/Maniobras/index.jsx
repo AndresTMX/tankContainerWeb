@@ -1,5 +1,4 @@
 import { useState } from "react";
-import dayjs from "dayjs";
 //components
 import { Box, Tabs, Tab, Stack } from "@mui/material";
 import { Materiales } from "../../components/Materiales";
@@ -13,6 +12,7 @@ import { LoadingState } from "../../components/LoadingState";
 import { EIRManiobras } from "../../components/EIRManiobras";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { Outlet } from "react-router-dom";
 
 function Maniobras() {
 
@@ -67,6 +67,7 @@ function Maniobras() {
 
             <Notification />
             <LoadingState duration={1000} />
+            <Outlet />
 
         </Box>
     );
