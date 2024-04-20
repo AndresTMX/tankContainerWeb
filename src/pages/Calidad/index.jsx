@@ -20,7 +20,7 @@ function Calidad() {
    const navigate = useNavigate();
 
    const IsSmall = useMediaQuery('(max-width:900px)');
-   const [tab, setTab] = useState('prelavados');
+   const [tab, setTab] = useState(pathname);
 
    const ToggleTab = (event, newValue) => {
       setTab(newValue)
@@ -37,13 +37,13 @@ function Calidad() {
                variant={IsSmall ? "scrollable" : ''}
                scrollButtons="auto"
             >
-               <Tab label="Prelavados" value='/calidad/prelavados' />
+               <Tab label="Prelavados" value='/calidad/prelavados/pendientes' />
                <Tab label="Lavados" value='lavados' />
                <Tab label="Liberados" value='liberados' />
             </Tabs>
          </Box>
 
-         <CustomTabPanel value={tab} index={'/calidad/prelavados'}>
+         <CustomTabPanel value={tab} index={'/calidad/prelavados/pendientes'}>
             <Box>
                {/* <ListPrelavadosPending /> */}
                <Outlet />

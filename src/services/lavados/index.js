@@ -96,3 +96,22 @@ export async function getPrewashingInspect() {
         console.error(error)
     }
 }
+
+export async function getTypesWashing() {
+    try {
+        const { data, error } = await supabase
+            .from('tipos_lavado')
+            .select('*')
+
+        if (error) {
+            throw new Error(`Error al obtener los tipos de lavado, error:${error?.message}`)
+        }
+
+
+        return { error, data }
+    } catch (error) {
+        setLoading(false)
+        setError(error.message)
+    }
+
+}

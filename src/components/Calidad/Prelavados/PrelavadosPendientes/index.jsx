@@ -10,9 +10,9 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 //helpers
-import { dateInTextEn, dateMXFormat, datetimeMXFormat, currentDate, timepoParaX } from "../../../../Helpers/date";
+import { dateInTextEn, datetimeMXFormat, currentDate, timepoParaX } from "../../../../Helpers/date";
 //hooks
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useGetCheckListPrelavado } from "../../../../Hooks/Prelavado/useGetChecklists";
 //context
@@ -20,8 +20,8 @@ import { useCalidadContext } from "../../../../Context/CalidadContext";
 //libraries
 import dayjs from "dayjs";
 
-import { usePreWashingInspect } from "../../../../Hooks/Calidad/usePrewashingInspect";
-import { CheckListCalidadPrelavado } from "../../../../sections/CheckListCalidadPrelavado";
+// import { usePreWashingInspect } from "../../../../Hooks/Calidad/usePrewashingInspect";
+// import { CheckListCalidadPrelavado } from "../../../../sections/CheckListCalidadPrelavado";
 
 export function PrelavadosPendientes() {
 
@@ -49,7 +49,7 @@ export function PrelavadosPendientes() {
 
     return (
         <Stack gap='10px' width='100%' alignItems='center' >
-            <ContainerScroll height={ movile? '68vh':'72vh'} background='whitesmoke'>
+            <ContainerScroll height='calc(100vh - 250px)' background='whitesmoke'>
 
                 <Stack gap='10px' padding='0px'  >
 
@@ -93,6 +93,7 @@ export function PrelavadosPendientes() {
 
 function ItemPendiente({ prelavado }) {
 
+    const navigate = useNavigate();
     const IsSmall = useMediaQuery('(max-width:880px)');
 
     const { registros_detalles_entradas, id_detalle_entrada, fecha_recoleccion, ordenes_lavado } = prelavado || {};
@@ -105,10 +106,8 @@ function ItemPendiente({ prelavado }) {
 
     const { checklist, error, loading } = useGetCheckListPrelavado(id_detalle_entrada)
 
-    const [viewPrelavados, setViewPrelavados] = useState(false);
     const [viewChecklist, setViewChecklist] = useState(false);
 
-    const togglePrelavados = () => setViewPrelavados(!viewPrelavados);
     const toggleChecklist = () => setViewChecklist(!viewChecklist);
 
     const isMovile = useMediaQuery('(max-width:500px)')
@@ -169,7 +168,7 @@ function ItemPendiente({ prelavado }) {
                     <CopyPaste text={prelavado.id} />
                 </Stack>
 
-                <Stack flexDirection={IsSmall ? 'column' : 'row'} gap={IsSmall ? '15px' : '30px'} justifyContent='flex-start'>
+                <Stack flexDirection={IsSmall ? 'column' : 'row'} gap={IsSmall ? '8px' : '30px'} justifyContent='flex-start'>
 
                     <Box>
                         <Typography variant="subtitle2">{`N° ${carga}`}</Typography>
@@ -199,42 +198,32 @@ function ItemPendiente({ prelavado }) {
                 </Stack>
 
 
-                <Stack flexDirection='row' alignItems='center' flexWrap='wrap' gap='10px'>
-                    
+                <Stack flexDirection='row' alignItems='center' justifyContent='flex-end' flexWrap='wrap' gap='10px'>
+
                     <Button
                         fullWidth={IsSmall}
-                        onClick={togglePrelavados}
+                        onClick={() => navigate(`/calidad/prelavados/pendientes/historial-prelavado/${ encodeURIComponent(JSON.stringify(checklist)) }`)}
                         endIcon={<HistoryIcon />}
                         size='small'
                         variant='outlined'
                         color='primary'
-                    >prelavados</Button>
+                    >
+                        prelavados
+                    </Button>
 
                     <Button
                         fullWidth={IsSmall}
-                        onClick={toggleChecklist}
+                        onClick={() => navigate(`/calidad/prelavados/pendientes/revision-prelavado/${ encodeURIComponent(JSON.stringify(prelavado)) }`)}
                         endIcon={<ManageSearchIcon />}
                         size='small'
                         variant='contained'
                         color='primary'
-                    >inspeccionar</Button>
+                    >
+                        inspeccionar
+                    </Button>
                 </Stack>
 
             </Paper>
-
-            {/* 
-            <ModalVisualizePrelavados
-                modal={viewPrelavados}
-                toggleModal={togglePrelavados}
-                prelavados={checklist}
-            />
-
-            <CheckListCalidadPrelavado
-                modal={viewChecklist}
-                toggleModal={toggleChecklist}
-                prelavado={prelavado}
-                updater={updater}
-            /> */}
 
         </>
     )

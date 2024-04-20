@@ -34,6 +34,8 @@ import { ReprogramarLavado } from "./components/Programacion/programados";
 import { LavadosPendientes } from "./components/LavadosPendientes";
 import { Prelavados } from "./components/Calidad/Prelavados";
 import { PrelavadosPendientes } from "./components/Calidad/Prelavados/PrelavadosPendientes";
+import { RevisionPrelavado } from "./components/Calidad/Prelavados/RevisionPrelavado";
+import { HistorialPrelavados } from "./components/Calidad/Prelavados/HistorialPrelavados";
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -226,10 +228,10 @@ function Router() {
                 }
               >
 
-                <Route path="/calidad/prelavados" element={<Prelavados/>}>
-                  <Route path="/calidad/prelavados/pendientes" element={<PrelavadosPendientes/>}>
-                    <Route path="/calidad/prelavados/pendientes/historial-prelavados/:id" element={<p>ewdqed</p>} />
-                    <Route path="/calidad/prelavados/pendientes/inspeccion-prelavado/:id" element={<p>ewdqed</p>} />
+                <Route path="/calidad/prelavados" element={<Prelavados />}>
+                  <Route path="/calidad/prelavados/pendientes" element={<PrelavadosPendientes />}>
+                    <Route path="/calidad/prelavados/pendientes/historial-prelavado/:data" element={<HistorialPrelavados />} />
+                    <Route path="/calidad/prelavados/pendientes/revision-prelavado/:id" element={<RevisionPrelavado />} />
                   </Route>
 
                   <Route path="/calidad/prelavados/realizados" element={<p>realizados</p>} >
