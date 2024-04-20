@@ -1,31 +1,59 @@
-import { createContext, useContext, useState, useRef } from "react";
+import { useState, createContext, useContext, useRef } from "react";
 import { useRealtime } from "../../Hooks/FetchData";
-//services
-import { getWashingWithStatus } from "../../services/lavados";
-//libreries
-import { toast } from "sonner";
-//hooks
 import { useLocation } from "react-router-dom";
+//services
+import { getPrewashingForInspect, getPrewashingInspect } from "../../services/lavados";
+//libraries
+import { toast } from "sonner";
 
-const LavadoContext = createContext();
+const CalidadContext = createContext();
 
-const LavadoProvider = ({ children }) => {
+export function CalidadProvider({ children }) {
 
     const searchValue = useRef();
-
-    const statusPendientes = ['programado', 'sellado'];
-    const statusRealizados = ['lavado']
-
-    const [status, setStatus] = ([statusPendientes]);
-
     const { pathname } = useLocation();
+    const [cache, setCache] = useState('');
+    const [table, setTable] = useState('');
 
-    async function getLavados() {
-        const { error, data } = await getWashingWithStatus(status);
-        return { error, data }
+    const routerFetcher = {
+        '/calidad/prelavados/pendientes': getPrewashingForInspect,
+        '/calidad/prelavados/realizados': getPrewashingInspect,
     }
 
-    const { loading, error, data } = useRealtime(getLavados, 'lavados', 'lavados', status);
+    const routerTablesDB = {
+        '/calidad/prelavados/pendientes': 'lavados',
+        '/calidad/prelavados/realizados': 'prelavados_revisiones',
+    }
+
+    const routerCache = {
+        '/calidad/prelavados/pendientes': 'prelavados_pendientes',
+        '/calidad/prelavados/realizados': 'prelavados_revisados',
+    }
+
+    async function fetch() {
+        try {
+
+            let fetchFunction
+
+            if (routerFetcher[pathname]) {
+                fetchFunction = routerFetcher[pathname]
+                setTable(routerFetcher[pathname])
+                setCache(routerCache[pathname])
+            }
+
+            const { error, data } = await fetchFunction()
+
+            if (error) {
+                throw new Error(error)
+            }
+
+            return { error, data }
+        } catch (error) {
+            toast.error(error?.message)
+        }
+    }
+
+    const { error, loading, data } = useRealtime(fetch, cache, table, [pathname]);
 
     //searcher state
     const dataMode = 'data'
@@ -47,7 +75,7 @@ const LavadoProvider = ({ children }) => {
                 let especificacion = lavado['registros_detalles_entradas']['especificacion'].toLowerCase() || "";
                 let numero_tanque = lavado['registros_detalles_entradas']['numero_tanque'] || "";
                 let tipo = lavado['registros_detalles_entradas']['tipo'].toLowerCase() || "";
-                
+
                 key = `${id}-${numero_tanque}-${especificacion}-${tipo}-${cliente}`
             }
 
@@ -112,15 +140,13 @@ const LavadoProvider = ({ children }) => {
 
 
     return (
-        <LavadoContext.Provider value={{ loading, error, dataDinamic, searchValue, item, mode, handleKeyPress, onChangeClear, selectItem }}>
+        <CalidadContext.Provider value={{  loading, error, dataDinamic, searchValue, item, mode, pathname, handleKeyPress, onChangeClear, selectItem }}>
             {children}
-        </LavadoContext.Provider>
+        </CalidadContext.Provider>
     )
 }
 
-export { LavadoProvider, LavadoContext }
-
-export function useLavadoContext() {
-    const context = useContext(LavadoContext);
-    return context;
+export function useCalidadContext() {
+    const context = useContext(CalidadContext);
+    return context
 }

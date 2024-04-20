@@ -32,6 +32,8 @@ import { TanquesProgramados } from "./components/Programacion/programados";
 import { ConfirmarSolicitud } from "./components/Programacion/almacenados";
 import { ReprogramarLavado } from "./components/Programacion/programados";
 import { LavadosPendientes } from "./components/LavadosPendientes";
+import { Prelavados } from "./components/Calidad/Prelavados";
+import { PrelavadosPendientes } from "./components/Calidad/Prelavados/PrelavadosPendientes";
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -55,6 +57,7 @@ import { ManiobrasProvider } from "./Context/ManiobrasContext";
 import { ReparacionesProvider } from "./Context/ReparacionesContext";
 import { PrelavadoProvider } from "./Context/PrelavadoContext";
 import { LavadoProvider } from "./Context/LavadosContext";
+import { CalidadProvider } from "./Context/CalidadContext";
 import { TransportistaProvider } from "./Context/TransportistaContext";
 //route protect
 import { RouteProtect } from "./Context/AuthContext";
@@ -133,8 +136,7 @@ function Router() {
 
               </Route>
 
-              <Route
-                path="/maniobras"
+              <Route path="/maniobras"
                 element={
                   <RouteProtect>
                     <UI>
@@ -154,8 +156,7 @@ function Router() {
 
               </Route>
 
-              <Route
-                path="/create_maniobra"
+              <Route path="/create_maniobra"
                 element={
                   <RouteProtect>
                     <ManiobrasForm />
@@ -163,8 +164,7 @@ function Router() {
                 }
               />
 
-              <Route
-                path="/reparaciones"
+              <Route path="/reparaciones"
                 element={
                   <RouteProtect>
                     <ReparacionesProvider>
@@ -176,8 +176,7 @@ function Router() {
                 }
               />
 
-              <Route
-                path="/programacion"
+              <Route path="/programacion"
                 element={
                   <RouteProtect>
                     <ProgramacionProvider>
@@ -201,8 +200,7 @@ function Router() {
 
               </Route>
 
-              <Route
-                path="/prelavado"
+              <Route path="/prelavado"
                 element={
                   <RouteProtect>
                     <PrelavadoProvider>
@@ -216,16 +214,60 @@ function Router() {
                 <Route path="/prelavado/checklist/:lavado" element={<ModalChecklistPrelavado />} />
               </Route>
 
-              <Route
-                path="/calidad"
+              <Route path="/calidad"
                 element={
                   <RouteProtect>
-                    <UI>
-                      <Calidad />
-                    </UI>
+                    <CalidadProvider>
+                      <UI>
+                        <Calidad />
+                      </UI>
+                    </CalidadProvider>
                   </RouteProtect>
                 }
-              />
+              >
+
+                <Route path="/calidad/prelavados" element={<Prelavados/>}>
+                  <Route path="/calidad/prelavados/pendientes" element={<PrelavadosPendientes/>}>
+                    <Route path="/calidad/prelavados/pendientes/historial-prelavados/:id" element={<p>ewdqed</p>} />
+                    <Route path="/calidad/prelavados/pendientes/inspeccion-prelavado/:id" element={<p>ewdqed</p>} />
+                  </Route>
+
+                  <Route path="/calidad/prelavados/realizados" element={<p>realizados</p>} >
+
+                  </Route>
+
+                </Route>
+
+
+                <Route path="/calidad/lavados" element={<p>lavados</p>} >
+
+                  <Route path="/calidad/lavados/pendientes" element={<p>pendientes</p>}>
+                    <Route path="/calidad/lavados/pendientes/historial-prelavados/:id" element={<p>ewdqed</p>} />
+
+                  </Route>
+
+                  <Route path="/calidad/lavados/realizados" element={<p>realizados</p>} >
+                    <Route path="/calidad/lavados/realizados/historial-prelavados/:id" element={<p>ewdqed</p>} />
+                  </Route>
+
+                </Route>
+
+                <Route path="/calidad/liberados" element={<p>liberados</p>} >
+
+                  <Route path="/calidad/liberados/pendientes" element={<p>pendientes</p>}>
+                    <Route path="/calidad/liberados/pendientes/historial-prelavados/:id" element={<p>ewdqed</p>} />
+
+                  </Route>
+
+                  <Route path="/calidad/liberados/realizados" element={<p>realizados</p>} >
+                    <Route path="/calidad/liberados/realizados/historial-prelavados/:id" element={<p>ewdqed</p>} />
+                  </Route>
+
+                </Route>
+
+
+
+              </Route>
 
               <Route
                 path="/lavado"

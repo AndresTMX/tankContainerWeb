@@ -14,6 +14,7 @@ import { EIRManiobras } from "../../components/EIRManiobras";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Outlet } from "react-router-dom";
 
+
 function Maniobras() {
 
     const IsSmall = useMediaQuery('(max-width:700px)');

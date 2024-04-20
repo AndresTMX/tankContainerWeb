@@ -41,7 +41,7 @@ function NavBar() {
             { to: '/reparaciones', text: 'Reparación' },
             { to: '/prelavado', text: 'Prelavado' },
             { to: '/lavado', text: 'Lavado' },
-            { to: '/calidad', text: 'Calidad' },
+            { to: '/calidad/prelavados/pendientes', text: 'Calidad' },
             { to: '/ubicaciones', text: 'Ubicaciones' },
         ],
         developer: [
@@ -53,7 +53,7 @@ function NavBar() {
             { to: '/reparaciones', text: 'Reparación' },
             { to: '/prelavado', text: 'Prelavado' },
             { to: '/lavado', text: 'Lavado' },
-            { to: '/calidad', text: 'Calidad' },
+            { to: '/calidad/prelavados/pendientes', text: 'Calidad' },
             { to: '/ubicaciones', text: 'Ubicaciones' },
         ],
         vigilante: [
@@ -66,7 +66,7 @@ function NavBar() {
             { to: '/reparaciones', text: 'Reparación' },
             { to: '/prelavado', text: 'Prelavado' },
             { to: '/lavado', text: 'Lavado' },
-            { to: '/calidad', text: 'Calidad' },
+            { to: '/calidad/prelavados/pendientes', text: 'Calidad' },
             { to: '/ubicaciones', text: 'Ubicaciones' },
         ],
         'gestor de calidad': [
@@ -75,7 +75,7 @@ function NavBar() {
             { to: '/reparaciones', text: 'Reparación' },
             { to: '/prelavado', text: 'Prelavado' },
             { to: '/lavado', text: 'Lavado' },
-            { to: '/calidad', text: 'Calidad' },
+            { to: '/calidad/prelavados/pendientes', text: 'Calidad' },
             { to: '/ubicaciones', text: 'Ubicaciones' },
         ],
     }

@@ -53,3 +53,46 @@ export async function getWashingWithStatus(arrayStatus) {
         console.error(error)
     }
 }
+
+//CALIDAD
+
+export async function getPrewashingForInspect() {
+    try {
+
+        const { data, error } = await supabase
+            .from('lavados')
+            .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), ordenes_lavado(destino_id , destinos(destino) ) `)
+            .eq('status', 'programado')
+            .is('id_tipo_lavado', null)
+            .order('fecha_recoleccion', { ascending: false })
+            .range(0, 100)
+
+        if (error) {
+            throw new Error(`Error al recuperar lavados por inspeccionar`)
+        }
+
+        return { error, data }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export async function getPrewashingInspect() {
+    try {
+
+        const { data, error } = await supabase
+            .from('prelavados_revisiones')
+            .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
+            .eq('status', 'aprobado')
+            .order('created_at', { ascending: false })
+            .range(0, 100)
+
+        if (error) {
+            throw new Error(`Error al recuperar lavados por inspeccionar`)
+        }
+
+        return { error, data }
+    } catch (error) {
+        console.error(error)
+    }
+}
