@@ -1,12 +1,47 @@
+import { Stack, Alert, Pagination, Box, Chip, Paper, Typography, Divider, Button } from "@mui/material";
+//custom components
+import { ContainerScroll } from "../../../ContainerScroll";
+import { ItemLoadingState } from "../../../ItemLoadingState";
+import { CopyPaste } from "../../../CopyPaste";
+//hooks
+import { useState, useMemo } from "react";
+import { Outlet, useNavigate, } from "react-router-dom";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useCalidadContext } from "../../../../Context/CalidadContext";
+//icons
+import InfoIcon from '@mui/icons-material/Info';
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+//helpers
+import { dateInTextEn, datetimeMXFormat,  } from "../../../../Helpers/date";
 
 
 export function PrelavadosRealizados() {
 
+    const { loading, error, dataDinamic, searchValue, mode } = useCalidadContext();
+
+    const [page, setPage] = useState(1);
+
+    const handleChange = (event, value) => {
+        setPage(value);
+    };
+
+    const rowsPerPage = 10;
+
+    const pages = Math.ceil(dataDinamic?.length / rowsPerPage);
+
+    const items = useMemo(() => {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        return dataDinamic?.slice(start, end);
+    }, [page, dataDinamic]);
+
     const movile = useMediaQuery('(max-width:820px)');
 
     return (
-        <Stack gap='10px'>
-            <ContainerScroll height={movile ? '70vh' : '76vh'} background='whitesmoke'>
+        <Stack gap='10px' width='100%' alignItems='center'>
+            <ContainerScroll height='calc(100vh - 250px)' background='whitesmoke'>
 
                 <Stack gap='10px' padding='0px' >
 
@@ -33,8 +68,8 @@ export function PrelavadosRealizados() {
 
 
                     {
-                        items.map((prelavado) => (
-                            <ItemPendiente key={prelavado.id} prelavado={prelavado} />
+                        items.map((revision) => (
+                            <ItemRevisado key={revision.id} revision={revision} />
                         ))
                     }
 
@@ -48,142 +83,82 @@ export function PrelavadosRealizados() {
     );
 }
 
-function ItemRevisado({ prelavado }) {
+function ItemRevisado({ revision }) {
 
-    const {
-        data,
-        created_at,
-        registro_detalle_entrada_id,
-        registros_detalles_entradas,
-        tipo_lavado,
-    } = prelavado;
+    const { created_at, data, id, lavado_id, lavados, status, } = revision || {};
 
-    const { carga, numero_pipa, numero_tanque, status, } =
-        registros_detalles_entradas ? registros_detalles_entradas : {};
+    const { registros_detalles_entradas, ordenes_lavado, tipos_lavado, } = lavados || {};
 
-    // const prelavadosInJson = data? JSON.parse(data): {};
+    const { carga, tipo, numero_pipa, numero_tanque, especificacion } = registros_detalles_entradas || {};
 
-    const [modal, setModal] = useState(false)
+    const navigate = useNavigate();
+    const IsSmall = useMediaQuery('(max-width:880px)');
 
     return (
         <>
-            <Box
-                sx={{
-                    display: 'flex',
-                    width: '100%',
-                    flexDirection: 'column',
-                    alignItems: 'center'
-                }}>
-                <Paper elevation={4} sx={{ padding: '20px', width: '100%', display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                    <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
 
-                        <Stack flexDirection={'row'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
-                            <Chip size='small' color='warning' label={status} />
-                        </Stack>
+            <Paper
+                elevation={4}
+                sx={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
 
-                        <Stack flexDirection={'row'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
+                <Stack flexDirection='row' justifyContent='space-between' alignItems='center' gap='10px' flexWrap='wrap' spacing='10px' >
+                    <Stack flexDirection='row' gap='10px' flexWrap='wrap' alignItems='center' >
 
-                            <Chip
-                                size='small'
-                                color='info'
-                                icon={<CalendarTodayIcon />}
-                                label={dateMXFormat(created_at)} />
-                            <Chip
-                                size='small'
-                                color='info'
-                                icon={<ScheduleIcon />}
-                                label={datetimeMXFormat(created_at)} />
+                        <Chip
+                            label={status}
+                            color="info"
+                            size="small"
+                        />
 
-                            <Chip
-                                size='small'
-                                color='info'
-                                icon={<ScheduleIcon />}
-                                label={tiempoTranscurrido(created_at)} />
-                        </Stack>
+                        <Chip
+                            icon={<CalendarTodayIcon />}
+                            label={` realizado ${dateInTextEn(created_at)}`}
+                            color='info'
+                            size="small"
+                        />
+
+                        <Chip
+                            icon={<AccessTimeIcon />}
+                            label={`${datetimeMXFormat(created_at)}`}
+                            color='info'
+                            size="small"
+                        />
 
                     </Stack>
+                    <CopyPaste text={lavado_id} />
+                </Stack>
 
-                    <Stack flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
+                <Stack flexDirection={IsSmall ? 'column' : 'row'} gap={IsSmall ? '8px' : '30px'} justifyContent='flex-start'>
 
-                        <Stack flexDirection={'row'} alignItems={'center'} flexWrap={'wrap'} gap={'20px'}>
+                    <Box>
+                        <Typography variant="subtitle2">{`N° ${carga}`}</Typography>
+                        <Typography>{tipo}  {numero_tanque || numero_pipa}</Typography>
+                    </Box>
+                    <Divider />
+                    <Box>
+                        <Typography variant="subtitle2">Especificacion</Typography>
+                        <Typography>{especificacion}</Typography>
+                    </Box>
+                    <Divider />
 
-                            <Stack>
-                                <Typography variant='caption'>
-                                    {numero_tanque != null ? 'Tanque ' : 'Pipa '}
-                                </Typography>
-                                <Typography variant='button'>
-                                    {numero_tanque != null ? numero_tanque : numero_pipa}
-                                </Typography>
-                            </Stack>
+                </Stack>
 
-                            <Stack>
-                                <Typography variant='caption'>
-                                    Tipo de lavado
-                                </Typography>
-                                <Typography variant='button'>
-                                    {tipo_lavado}
-                                </Typography>
-                            </Stack>
-                        </Stack>
-
-                        <Stack flexDirection={'row'} alignItems={'center'} flexWrap={'wrap'} gap={'10px'}>
-
-                            <Button
-                                onClick={() => setModal(true)}
-                                endIcon={<ManageSearchIcon />}
-                                size='small'
-                                variant='contained'
-                                color='primary'
-                            >checklist</Button>
-                        </Stack>
-
-                    </Stack>
-
-                </Paper>
-            </Box>
-            {/* 
-            <Modal open={modal}>
-                <Container sx={{ display: 'flex', flexDirection: 'column', paddingTop: '5%', minHeight: '100vh', width: '100vw', alignItems: 'center' }}>
-                    <Paper sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '90vw', maxWidth: '700px' }}>
-                        <Stack
-                            flexDirection={'row'}
-                            alignItems={'center'}
-                            justifyContent={'space-between'}
-                        >
-                            <Typography variant="button">
-                                inspección de calidad
-                            </Typography>
-
-                            <IconButton
-                                onClick={() => setModal(!modal)}
-                            >
-                                <ClearIcon color='error' />
-                            </IconButton>
-                        </Stack>
-
-                        <ContainerScroll height={'400px'}>
-                            <Stack gap='8px'>
-                                {prelavadosInJson.map((question) => (
-                                    <Paper elevation={2} sx={{ padding: '15px' }} key={question.question}>
-                                        <Stack gap={'5px'}>
-                                            <Typography variant='body2'>
-                                                {question.question}
-                                            </Typography>
-
-                                            <Typography variant='caption'>
-                                                {question.value}
-                                            </Typography>
-                                        </Stack>
-                                    </Paper>
-                                ))}
-                            </Stack>
-                        </ContainerScroll>
+                <Button
+                    sx={{
+                        justifyContent: 'space-between'
+                    }}
+                    fullWidth
+                    onClick={() => navigate(`/calidad/prelavados/realizados/detalles/${encodeURIComponent(data)}`)}
+                    endIcon={<InfoIcon />}
+                    size='small'
+                    variant='outlined'
+                    color='primary'
+                >
+                    ver revision
+                </Button>
 
 
-                    </Paper>
-                </Container>
-            </Modal> */}
-
+            </Paper>
         </>
     )
 }

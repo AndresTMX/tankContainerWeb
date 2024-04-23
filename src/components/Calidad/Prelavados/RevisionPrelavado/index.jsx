@@ -5,7 +5,7 @@ import { ContainerScroll } from "../../../ContainerScroll";
 //icons
 import ClearIcon from "@mui/icons-material/Clear";
 //hooks
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useFetchData } from "../../../../Hooks/FetchData";
 import { useManagmentInspection } from "../../../../Hooks/Calidad/useManagmentInspection";
@@ -18,7 +18,8 @@ import { DateTimePicker } from "@mui/x-date-pickers";
 //services
 import { getTypesWashing } from "../../../../services/lavados";
 //libraries
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
+import { retornarPrelavado, revisarPrelavado } from "../../../../services/calidad";
 
 export function RevisionPrelavado() {
 
@@ -26,24 +27,17 @@ export function RevisionPrelavado() {
     const navigate = useNavigate();
     const isSmall = useMediaQuery('(max-width:720px)');
 
+    const { data: params } = useParams();
+
+    const JsonPrelavado = JSON.parse(decodeURIComponent(params))
+
+    const { id_detalle_entrada, registros_detalles_entradas, id: idWashing } = JsonPrelavado || {};
+
+    const { numero_tanque, numero_pipa, carga, registros, tipo, id: idDetalle } = registros_detalles_entradas || {};
+
+    const { id: idRegistro } = registros || {};
+
     const { data, error, loading } = useFetchData(getTypesWashing, 'tipos-lavaos')
-
-    async function sendInspectPrewashing() {
-        try {
-            toast.success('prueba toast send')
-        } catch (error) {
-
-        }
-    }
-
-    async function returnToPrewashing() {
-        try {
-            toast.success('prueba toast return')
-        } catch (error) {
-
-        }
-    }
-
 
     const questionsChecklist = [
         {
@@ -109,15 +103,6 @@ export function RevisionPrelavado() {
     const [questions, setQuestions] = useState(questionsChecklist);
     const [component, setComponent] = useState(questionsComponent);
 
-    const closeModal = () => {
-        setQuestions(questionsChecklist);
-        setComponent(questionsComponent);
-        setCargasPrevias({ carga1: "", carga2: "", carga3: "" });
-        setTypeWashing("");
-        setStep(1);
-        toggleModal();
-    };
-
     const nextStep = () => {
         const routerStep = {
             1: () => validateChecklist(),
@@ -134,10 +119,7 @@ export function RevisionPrelavado() {
         let validate = questionsEmpty.length > 0 ? false : true;
 
         if (!validate) {
-            // dispatchGlobal({
-            //     type: actionTypesGlobal.setNotification,
-            //     payload: "Completa el checklist para continuar",
-            // });
+            toast.warning("Completa el checklist para continuar")
         } else {
             setStep(step + 1);
         }
@@ -150,20 +132,14 @@ export function RevisionPrelavado() {
         const routesValidate = {
             si: () => {
                 if (component[1].value.trim() === "") {
-                    // dispatchGlobal({
-                    //     type: actionTypesGlobal.setNotification,
-                    //     payload: "Completa el formulario para continuar",
-                    // });
+                    toast.warning("Completa el checklist para continuar")
                 } else {
                     setStep(step + 1);
                 }
             },
             no: () => {
                 if (!validate) {
-                    // dispatchGlobal({
-                    //     type: actionTypesGlobal.setNotification,
-                    //     payload: "Completa el formulario para continuar",
-                    // });
+                    toast.warning("Completa el checklist para continuar")
                 } else {
                     setStep(step + 1);
                 }
@@ -177,10 +153,7 @@ export function RevisionPrelavado() {
                 throw new Error("No completado");
             }
         } catch (error) {
-            // dispatchGlobal({
-            //     type: actionTypesGlobal.setNotification,
-            //     payload: "Completa el formulario para continuar",
-            // });
+            toast.warning("Completa el checklist para continuar")
         }
     };
 
@@ -202,40 +175,70 @@ export function RevisionPrelavado() {
 
     const evaluacion = questionsFilter.length >= 1 ? false : true;
 
-    //funciones de manejo de formateo de datos para envio
+    async function sendInspectPrewashing(event) {
+        try {
 
-    const routerPostFuction = (e) => {
+            event.preventDefault();
 
-        const { id_detalle_entrada, registros_detalles_entradas, id: idWashing } = prelavado;
+            const data = JSON.stringify([...questions, ...component]);
 
-        const { numero_tanque, numero_pipa, carga } = registros_detalles_entradas || {};
+            const evaluacionString = evaluacion ? 'aprobado' : 'reprobado';
 
-        const evaluacionString = evaluacion ? 'aprobado' : 'reprobado';
+            const cargasPreviasInString = JSON.stringify(cargasPrevias);
 
-        const cargasPreviasInString = JSON.stringify(cargasPrevias);
-
-        const routes = {
-            aprobado: () => {
-                e.preventDefault();
-                const data = JSON.stringify([...questions, ...component]);
-                const newRegister = { registro_detalle_entrada_id: id_detalle_entrada, data: data, status: 'aprobado' }
-                sendInspectPrewashing(newRegister, idWashing, typeWashing, cargasPreviasInString, numero_tanque, numero_pipa, carga)
-                closeModal()
-            },
-            reprobado: () => {
-                returnToPrewashing(id_detalle_entrada, idWashing, newStatus)
-                closeModal();
+            const revision = {
+                data: data,
+                status: 'aprobado',
+                lavado_id: idWashing
             }
-        }
 
-        if (routes[evaluacionString]) {
-            routes[evaluacionString]()
-        }
+            const actualizacionLavado = {
+                id_tipo_lavado: typeWashing,
+                status: 'asignado',
+            }
 
+            const actualizacionCargas = {
+                cargas_previas: cargasPreviasInString,
+                tanque: numero_tanque || numero_pipa,
+                tipo: tipo
+            }
+
+            const actualizacionDetalles = { status: 'lavado' }
+
+            const { error } = await revisarPrelavado(revision, actualizacionLavado, actualizacionCargas, actualizacionDetalles, idRegistro, idWashing, id_detalle_entrada)
+
+            if (error) {
+                throw new Error(error)
+            } else {
+                navigate('/calidad/prelavados/pendientes')
+            }
+
+        } catch (error) {
+            console.error(error?.message)
+        }
+    }
+
+    async function returnToPrewashing() {
+        try {
+
+            const { error } = await retornarPrelavado(newStatus, idWashing, idDetalle)
+
+            if (error) {
+                throw new Error(error)
+            } else {
+                navigate('/calidad/prelavados/pendientes')
+            }
+
+        } catch (error) {
+            toast.error(error?.message)
+        }
     }
 
     return (
         <>
+
+            <Toaster richColors position="top-center" />
+
             <Modal open={true} onClose={() => navigate('/calidad/prelavados/pendientes')} >
 
                 <Container sx={{ display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: '3%', width: 'fit-content' }}>
@@ -312,7 +315,7 @@ export function RevisionPrelavado() {
                                 )}
 
                                 {evaluacion && (
-                                    <form onSubmit={(e) => routerPostFuction(e)}>
+                                    <form onSubmit={(e) => sendInspectPrewashing(e)}>
                                         <Stack gap="15px">
                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                 <DemoContainer
@@ -489,7 +492,7 @@ export function RevisionPrelavado() {
                                             </FormControl>
 
                                             <Button
-                                                onClick={routerPostFuction}
+                                                onClick={returnToPrewashing}
                                                 variant="contained"
                                                 color="error">
                                                 Enviar

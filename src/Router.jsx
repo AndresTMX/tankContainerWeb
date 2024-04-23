@@ -31,11 +31,15 @@ import { SolicitudesDeLavado } from "./components/Programacion/almacenados";
 import { TanquesProgramados } from "./components/Programacion/programados";
 import { ConfirmarSolicitud } from "./components/Programacion/almacenados";
 import { ReprogramarLavado } from "./components/Programacion/programados";
-import { LavadosPendientes } from "./components/LavadosPendientes";
+import { LavadosPendientes } from "./components/Lavados/LavadosPendientes";
 import { Prelavados } from "./components/Calidad/Prelavados";
+import { IniciarLavado } from "./components/Lavados/IniciarLavado";
 import { PrelavadosPendientes } from "./components/Calidad/Prelavados/PrelavadosPendientes";
 import { RevisionPrelavado } from "./components/Calidad/Prelavados/RevisionPrelavado";
 import { HistorialPrelavados } from "./components/Calidad/Prelavados/HistorialPrelavados";
+import { CondicionesLavado } from "./components/Lavados/CondicionesLavado";
+import { DetallesLavado } from "./components/Calidad/Prelavados/DetallesPrelavado";
+import { PrelavadosRealizados } from "./components/Calidad/Prelavados/PrelavadosRealizados";
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -63,6 +67,7 @@ import { CalidadProvider } from "./Context/CalidadContext";
 import { TransportistaProvider } from "./Context/TransportistaContext";
 //route protect
 import { RouteProtect } from "./Context/AuthContext";
+import { LavadosRealizados } from "./components/Lavados/LavadosRealizados";
 
 function Router() {
   return (
@@ -229,13 +234,14 @@ function Router() {
               >
 
                 <Route path="/calidad/prelavados" element={<Prelavados />}>
+
                   <Route path="/calidad/prelavados/pendientes" element={<PrelavadosPendientes />}>
                     <Route path="/calidad/prelavados/pendientes/historial-prelavado/:data" element={<HistorialPrelavados />} />
-                    <Route path="/calidad/prelavados/pendientes/revision-prelavado/:id" element={<RevisionPrelavado />} />
+                    <Route path="/calidad/prelavados/pendientes/revision-prelavado/:data" element={<RevisionPrelavado />} />
                   </Route>
 
-                  <Route path="/calidad/prelavados/realizados" element={<p>realizados</p>} >
-
+                  <Route path="/calidad/prelavados/realizados" element={<PrelavadosRealizados />} >
+                    <Route path="/calidad/prelavados/realizados/detalles/:data" element={<DetallesLavado />} />
                   </Route>
 
                 </Route>
@@ -271,8 +277,7 @@ function Router() {
 
               </Route>
 
-              <Route
-                path="/lavado"
+              <Route path="/lavado"
                 element={
                   <RouteProtect>
                     <LavadoProvider>
@@ -284,9 +289,13 @@ function Router() {
                 }
               >
 
-                <Route path="/lavado/pendientes" element={<LavadosPendientes />} />
+                <Route path="/lavado/pendientes" element={<LavadosPendientes />} >
+                  <Route path="/lavado/pendientes/iniciar-lavado/:lavado" element={<IniciarLavado />} />
+                </Route>
 
-                <Route path="/lavado/realizados" element={<p>realizados</p>} />
+                <Route path="/lavado/realizados" element={<LavadosRealizados />} >
+                  <Route path="/lavado/realizados/condiciones-lavado/:condiciones/:numLavado" element={<CondicionesLavado/>} />
+                </Route>
 
 
               </Route>

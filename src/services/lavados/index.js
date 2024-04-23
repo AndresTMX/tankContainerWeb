@@ -62,7 +62,7 @@ export async function getPrewashingForInspect() {
         const { data, error } = await supabase
             .from('lavados')
             .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), ordenes_lavado(destino_id , destinos(destino) ) `)
-            .eq('status', 'programado')
+            .eq('status', 'revision')
             .is('id_tipo_lavado', null)
             .order('fecha_recoleccion', { ascending: false })
             .range(0, 100)
@@ -82,13 +82,12 @@ export async function getPrewashingInspect() {
 
         const { data, error } = await supabase
             .from('prelavados_revisiones')
-            .select(`*,registros_detalles_entradas(*, clientes(*), registros(*))`)
-            .eq('status', 'aprobado')
+            .select(`*, lavados(*, tipos_lavado(*), registros_detalles_entradas(*), ordenes_lavado(*, clientes(cliente)) ) `)
             .order('created_at', { ascending: false })
             .range(0, 100)
 
         if (error) {
-            throw new Error(`Error al recuperar lavados por inspeccionar`)
+            throw new Error(`Error al recuperar prelavados realizados`)
         }
 
         return { error, data }

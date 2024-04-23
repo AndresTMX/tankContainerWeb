@@ -1,20 +1,9 @@
-import { useState, useEffect } from "react";
-import { Paper, Button, Chip, Stack, Divider, Typography, Box, Modal, Container } from "@mui/material";
+import { Paper, Button, Chip, Stack, Modal, Container } from "@mui/material";
 //icons
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-//helpers
-import { datetimeMXFormat, timepoParaX, dateTextShort, dateInTextEn, currentDate } from "../../Helpers/date";
-//context
-import { usePrelavadoContext } from "../../Context/PrelavadoContext";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useParams, useNavigate } from "react-router-dom";
-//libraries
-import dayjs from "dayjs";
-import { toast } from "sonner"
 //customComponents
 import { CheckListPrelavado } from "../../sections/CheckListPrelavado";
 
@@ -36,7 +25,6 @@ export function ModalChecklistPrelavado() {
     const { cliente } = clientes || {};
 
 
-
     return (
         <>
             <Modal
@@ -55,7 +43,7 @@ export function ModalChecklistPrelavado() {
                         elevation={4}
                         sx={{
                             padding: '15px',
-                            width:'100%'
+                            width: '100%'
                         }}>
 
                         <Paper

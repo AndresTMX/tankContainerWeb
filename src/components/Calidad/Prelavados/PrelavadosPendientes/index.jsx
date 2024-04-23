@@ -106,10 +106,6 @@ function ItemPendiente({ prelavado }) {
 
     const { checklist, error, loading } = useGetCheckListPrelavado(id_detalle_entrada)
 
-    const [viewChecklist, setViewChecklist] = useState(false);
-
-    const toggleChecklist = () => setViewChecklist(!viewChecklist);
-
     const isMovile = useMediaQuery('(max-width:500px)')
 
     const retornos = !loading ? checklist.length - 1 : '...cargando';
@@ -187,7 +183,7 @@ function ItemPendiente({ prelavado }) {
                     <Divider />
                     <Box>
                         <Typography variant="subtitle2">Destino</Typography>
-                        <Typography>{destinos.destino}</Typography>
+                        <Typography>{destinos?.destino}</Typography>
                     </Box>
                     <Divider />
                     <Box>

@@ -1,15 +1,14 @@
 import { useState, useMemo, useEffect } from "react";
 import { Paper, Stack, Chip, Typography, Button, Alert, Pagination } from "@mui/material";
 //estados genericos
-import { NotConexionState } from "../NotConectionState";
-import { ItemLoadingState } from "../ItemLoadingState";
+import { NotConexionState } from "../../NotConectionState";
+import { ItemLoadingState } from "../../ItemLoadingState";
 //custom components
-import { ContainerScroll } from "../ContainerScroll";
-import { SealItem } from "../EvaluationWashing";
-import { EvaluationWashing } from "../EvaluationWashing";
-import { CopyPaste } from "../CopyPaste";
+import { ContainerScroll } from "../../ContainerScroll";
+// import { SealItem } from "../IniciarLavado";
+import { CopyPaste } from "../../CopyPaste";
 //helpers
-import { dateMXFormat, datetimeMXFormat, tiempoTranscurrido, timepoParaX, dateTextShort, dateInTextEn, currentDate } from "../../Helpers/date";
+import { datetimeMXFormat, timepoParaX, dateTextShort, dateInTextEn, currentDate } from "../../../Helpers/date";
 //icons
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
@@ -17,9 +16,11 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 //context
-import { useLavadoContext } from "../../Context/LavadosContext";
+import { useLavadoContext } from "../../../Context/LavadosContext";
 //libraries
 import dayjs from "dayjs";
+//hooks
+import { Outlet, useNavigate } from "react-router-dom";
 
 export function LavadosPendientes() {
 
@@ -84,6 +85,7 @@ export function LavadosPendientes() {
                 </ContainerScroll>
                 <Pagination variant="outlined" shape="rounded" color="primary" count={pages} page={page} onChange={handleChange} />
             </Stack>
+            <Outlet />
         </>
     );
 }
@@ -91,8 +93,7 @@ export function LavadosPendientes() {
 
 function LavadoPendiente({ lavado }) {
 
-    const [modal, setModal] = useState(false);
-    const toggleModal = () => setModal(!modal)
+    const navigate = useNavigate();
 
     const { created_at, data, status, tipos_lavado, registros_detalles_entradas, fecha_recoleccion } = lavado || {};
 
@@ -119,14 +120,7 @@ function LavadoPendiente({ lavado }) {
 
     return (
         <>
-            <Paper
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    padding: '15px',
-                    gap: '10px'
-                }}
-            >
+            <Paper sx={{ display: 'flex', flexDirection: 'column', padding: '15px', gap: '10px' }}>
 
                 <Stack flexDirection='row' justifyContent='space-between' alignItems='center' gap='10px' flexWrap='wrap' spacing='10px' >
                     <Stack flexDirection='row' gap='10px' flexWrap='wrap' >
@@ -177,7 +171,7 @@ function LavadoPendiente({ lavado }) {
                 </Stack>
 
                 <Button
-                    onClick={toggleModal}
+                    onClick={() => navigate(`/lavado/pendientes/iniciar-lavado/${encodeURIComponent(JSON.stringify(lavado))}`)}
                     size='small'
                     color='primary'
                     variant='contained'
@@ -189,38 +183,9 @@ function LavadoPendiente({ lavado }) {
 
             </Paper>
 
-            <EvaluationWashing
-                lavado={lavado}
-                modal={modal}
-                toggleModal={toggleModal} />
-
         </>
     )
 }
-
-function ItemLavados({ lavado, typeWashing, updateList }) {
-
-    const { status } = lavado || {};
-
-    return (
-        <>
-            {status === 'asignado' &&
-                <LavadoPendiente lavado={lavado} updateList={updateList} />
-            }
-
-            {status === 'lavado' &&
-                <Typography>lavado aprobrado por sanitizar</Typography>
-            }
-
-            {status === 'sellado' &&
-                <ItemForSealed lavado={lavado} updateList={updateList} />
-            }
-
-
-        </>
-    );
-}
-
 
 
 function ItemForSealed({ lavado, updateList }) {

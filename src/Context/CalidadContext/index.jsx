@@ -49,7 +49,7 @@ export function CalidadProvider({ children }) {
 
             return { error, data }
         } catch (error) {
-            toast.error(error?.message)
+            console.error(error?.message)
         }
     }
 
@@ -63,24 +63,18 @@ export function CalidadProvider({ children }) {
     const [item, selectItem] = useState({})
 
     //parametro de busqueda
-    function extractKey(lavado) {
+    function extractKey(item) {
         try {
 
             let key
 
-            if (pathname.includes('pendientes')) {
-
-                let id = lavado['id'] || "";
-                let cliente = lavado['registros_detalles_entradas']['clientes']['cliente'].toLowerCase() || "";
-                let especificacion = lavado['registros_detalles_entradas']['especificacion'].toLowerCase() || "";
-                let numero_tanque = lavado['registros_detalles_entradas']['numero_tanque'] || "";
-                let tipo = lavado['registros_detalles_entradas']['tipo'].toLowerCase() || "";
-
-                key = `${id}-${numero_tanque}-${especificacion}-${tipo}-${cliente}`
+            const routesFilter = {
+                '/calidad/prelavados/pendientes': () => extractPrelavadosPendientes(item),
+                '/calidad/prelavados/realizados': () => extractPrelavadoRealizado(item),
             }
 
-            if (pathname.includes('realizados')) {
-
+            if (routesFilter[pathname]) {
+                key = routesFilter[pathname]()
             }
 
             return key
@@ -88,6 +82,32 @@ export function CalidadProvider({ children }) {
         } catch (error) {
             console.error(error)
         }
+    }
+
+    function extractPrelavadosPendientes(item) {
+
+        let key
+
+        let id = item['id'] || "";
+        let cliente = item['registros_detalles_entradas']['clientes']['cliente'].toLowerCase() || "";
+        let especificacion = item['registros_detalles_entradas']['especificacion'].toLowerCase() || "";
+        let numero_tanque = item['registros_detalles_entradas']['numero_tanque'] || "";
+        let tipo = item['registros_detalles_entradas']['tipo'].toLowerCase() || "";
+        key = `${id}-${numero_tanque}-${especificacion}-${tipo}-${cliente}`
+
+        return key
+    }
+
+    function extractPrelavadoRealizado(item) {
+        let key
+
+        let id = item['lavados']['id'].toLowerCase() || "";
+        let especificacion = item['lavados']['registros_detalles_entradas']['especificacion'].toLowerCase() || "";
+        let numero_tanque = item['lavados']['registros_detalles_entradas']['numero_tanque'] || "";
+        let tipo = item['lavados']['registros_detalles_entradas']['tipo'].toLowerCase() || "";
+        key = `${id}-${numero_tanque}-${especificacion}-${tipo}`
+
+        return key
     }
 
     //array dinamico
@@ -140,7 +160,7 @@ export function CalidadProvider({ children }) {
 
 
     return (
-        <CalidadContext.Provider value={{  loading, error, dataDinamic, searchValue, item, mode, pathname, handleKeyPress, onChangeClear, selectItem }}>
+        <CalidadContext.Provider value={{ loading, error, dataDinamic, searchValue, item, mode, pathname, handleKeyPress, onChangeClear, selectItem }}>
             {children}
         </CalidadContext.Provider>
     )

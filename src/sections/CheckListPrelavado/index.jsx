@@ -59,7 +59,6 @@ function CheckListPrelavado({ lavado }) {
 
         await completeChecklist(id_detalle_entrada, idLavado, dataChecklist, newStatus);
         setStep(1);
-        // dispatch({ type: actionTypes.setSelectCheck, payload: false });
     }
 
     const updateQuestions = (questions, key) => {

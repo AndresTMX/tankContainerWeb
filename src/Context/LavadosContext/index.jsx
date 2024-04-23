@@ -12,13 +12,17 @@ const LavadoContext = createContext();
 const LavadoProvider = ({ children }) => {
 
     const searchValue = useRef();
+    const { pathname } = useLocation();
 
-    const statusPendientes = ['programado', 'sellado'];
+    const statusPendientes = ['programado', 'sellado', 'asignado'];
     const statusRealizados = ['lavado']
 
-    const [status, setStatus] = ([statusPendientes]);
+    const statusRoutes = {
+        '/lavado/pendientes': statusPendientes,
+        '/lavado/realizados': statusRealizados
+    }
 
-    const { pathname } = useLocation();
+    const status = pathname.includes('pendientes') ? [...statusPendientes] : [...statusRealizados];
 
     async function getLavados() {
         const { error, data } = await getWashingWithStatus(status);
@@ -40,21 +44,14 @@ const LavadoProvider = ({ children }) => {
 
             let key
 
-            if (pathname.includes('pendientes')) {
-
                 let id = lavado['id'] || "";
                 let cliente = lavado['registros_detalles_entradas']['clientes']['cliente'].toLowerCase() || "";
                 let especificacion = lavado['registros_detalles_entradas']['especificacion'].toLowerCase() || "";
                 let numero_tanque = lavado['registros_detalles_entradas']['numero_tanque'] || "";
                 let tipo = lavado['registros_detalles_entradas']['tipo'].toLowerCase() || "";
-                
+
                 key = `${id}-${numero_tanque}-${especificacion}-${tipo}-${cliente}`
-            }
-
-            if (pathname.includes('realizados')) {
-
-            }
-
+    
             return key
 
         } catch (error) {

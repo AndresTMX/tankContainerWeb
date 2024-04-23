@@ -184,7 +184,7 @@ function useChecklistPrelavado(updaterFunction) {
 
                 const { error } = await supabase
                     .from('registros_detalles_entradas')
-                    .update({ status: newStatus })
+                    .update({ status: 'revision' })
                     .eq('id', idRegister);
 
                 if (error) {
@@ -194,7 +194,7 @@ function useChecklistPrelavado(updaterFunction) {
 
                 const { error: errorUpdateWashing } = await supabase
                     .from('lavados')
-                    .update({ status: 'prelavado' })
+                    .update({ status: 'revision' })
                     .eq('id', idLavado)
 
                 if (errorUpdateWashing) {
