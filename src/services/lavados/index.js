@@ -3,7 +3,7 @@ import supabase from "../../supabase";
 //CREAR NUEVO LAVADO
 export async function createWashing(newWashing) {
     try {
-        const { error, data } = await supabase
+        const { error } = await supabase
             .from('lavados')
             .insert({ ...newWashing })
 
@@ -41,6 +41,7 @@ export async function getWashingWithStatus(arrayStatus) {
         const { data, error } = await supabase
             .from('lavados')
             .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), tipos_lavado(*)`)
+            // .is('condiciones_lavado', null)
             .in('status', arrayStatus)
             .order('fecha_recoleccion', { ascending: false })
 
@@ -114,3 +115,43 @@ export async function getTypesWashing() {
     }
 
 }
+
+export async function getWashingForAprobe() {
+    try {
+
+        const { data, error } = await supabase
+            .from('lavados')
+            .select('*, registros_detalles_entradas(*, clientes(*), registros(*)), ordenes_lavado(destino_id , destinos(destino) ), tipos_lavado(*)')
+            .eq('status', 'revision')
+            .not('condiciones_lavado', 'is', null)
+
+        if (error) {
+            throw new Error(`Error al consultar la base de datos`)
+        }
+
+        return { error, data }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export async function getAllWashingSuccess() {
+    try {
+
+        const { data, error } = await supabase
+            .from('lavados')
+            .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), tipos_lavado(*)`)
+            .not('condiciones_lavado', 'is', null)
+            .order('fecha_recoleccion', { ascending: false })
+            .limit(100)
+
+        if (error) {
+            throw new Error(`Error al consultar lavados pendientes , error: ${error.message}`)
+        }
+
+        return { error, data }
+    } catch (error) {
+        console.error(error)
+    }
+}
+

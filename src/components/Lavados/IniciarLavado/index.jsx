@@ -28,8 +28,6 @@ export function IniciarLavado() {
 
     const JsonLavado = JSON.parse(decodeURIComponent(lavadoParam));
 
-    const { updateDateTimeWashing } = useCreateConditionsWashing();
-
     const { registros_detalles_entradas, tipos_lavado } = JsonLavado || {};
 
     const { clientes } = registros_detalles_entradas || {};
@@ -480,7 +478,7 @@ function ConditionsWashing({ step, setStep, lavado,  }) {
             //subir condiciones de lavado
             const dataInString = JSON.stringify(conditions);
             const { numero_bahia } = conditions || {};
-            const { error: errorLavado } = await updateWashing({ bahia: numero_bahia, condiciones_lavado: dataInString, status:'lavado' }, lavadoId);
+            const { error: errorLavado } = await updateWashing({ bahia: numero_bahia, condiciones_lavado: dataInString, status:'revision' }, lavadoId);
 
             if (errorLavado) {
                 throw new Error(errorLavado)

@@ -39,7 +39,12 @@ import { RevisionPrelavado } from "./components/Calidad/Prelavados/RevisionPrela
 import { HistorialPrelavados } from "./components/Calidad/Prelavados/HistorialPrelavados";
 import { CondicionesLavado } from "./components/Lavados/CondicionesLavado";
 import { DetallesLavado } from "./components/Calidad/Prelavados/DetallesPrelavado";
+import { LavadosRealizados } from "./components/Lavados/LavadosRealizados";
 import { PrelavadosRealizados } from "./components/Calidad/Prelavados/PrelavadosRealizados";
+import { Lavados } from "./components/Calidad/Lavados";
+import { LavadosPorEvaluar } from "./components/Calidad/Lavados/LavadosPorEvaluar";
+import { EvaluacionLavado } from "./components/Calidad/Lavados/EvaluacionLavado";
+import { LavadosEvaluados } from "./components/Calidad/Lavados/LavadosEvaluados";
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -67,7 +72,6 @@ import { CalidadProvider } from "./Context/CalidadContext";
 import { TransportistaProvider } from "./Context/TransportistaContext";
 //route protect
 import { RouteProtect } from "./Context/AuthContext";
-import { LavadosRealizados } from "./components/Lavados/LavadosRealizados";
 
 function Router() {
   return (
@@ -221,6 +225,29 @@ function Router() {
                 <Route path="/prelavado/checklist/:lavado" element={<ModalChecklistPrelavado />} />
               </Route>
 
+              <Route path="/lavado"
+                element={
+                  <RouteProtect>
+                    <LavadoProvider>
+                      <UI>
+                        <Lavado />
+                      </UI>
+                    </LavadoProvider>
+                  </RouteProtect>
+                }
+              >
+
+                <Route path="/lavado/pendientes" element={<LavadosPendientes />} >
+                  <Route path="/lavado/pendientes/iniciar-lavado/:lavado" element={<IniciarLavado />} />
+                </Route>
+
+                <Route path="/lavado/realizados" element={<LavadosRealizados />} >
+                  <Route path="/lavado/realizados/condiciones-lavado/:condiciones/:numLavado" element={<CondicionesLavado />} />
+                </Route>
+
+
+              </Route>
+
               <Route path="/calidad"
                 element={
                   <RouteProtect>
@@ -247,14 +274,15 @@ function Router() {
                 </Route>
 
 
-                <Route path="/calidad/lavados" element={<p>lavados</p>} >
+                <Route path="/calidad/lavados" element={<Lavados />} >
 
-                  <Route path="/calidad/lavados/pendientes" element={<p>pendientes</p>}>
-                    <Route path="/calidad/lavados/pendientes/historial-prelavados/:id" element={<p>ewdqed</p>} />
+                  <Route path="/calidad/lavados/pendientes" element={<LavadosPorEvaluar />}>
+                    <Route path="/calidad/lavados/pendientes/evaluacion-lavado/:lavado" element={<EvaluacionLavado />} />
+                    <Route path="/calidad/lavados/pendientes/condiciones-lavado/:condiciones/:numLavado" element={<CondicionesLavado />} />
 
                   </Route>
 
-                  <Route path="/calidad/lavados/realizados" element={<p>realizados</p>} >
+                  <Route path="/calidad/lavados/realizados" element={<LavadosEvaluados />} >
                     <Route path="/calidad/lavados/realizados/historial-prelavados/:id" element={<p>ewdqed</p>} />
                   </Route>
 
@@ -277,31 +305,8 @@ function Router() {
 
               </Route>
 
-              <Route path="/lavado"
-                element={
-                  <RouteProtect>
-                    <LavadoProvider>
-                      <UI>
-                        <Lavado />
-                      </UI>
-                    </LavadoProvider>
-                  </RouteProtect>
-                }
-              >
 
-                <Route path="/lavado/pendientes" element={<LavadosPendientes />} >
-                  <Route path="/lavado/pendientes/iniciar-lavado/:lavado" element={<IniciarLavado />} />
-                </Route>
-
-                <Route path="/lavado/realizados" element={<LavadosRealizados />} >
-                  <Route path="/lavado/realizados/condiciones-lavado/:condiciones/:numLavado" element={<CondicionesLavado/>} />
-                </Route>
-
-
-              </Route>
-
-              <Route
-                path="/ubicaciones"
+              <Route path="/ubicaciones"
                 element={
                   <RouteProtect>
                     <UI>

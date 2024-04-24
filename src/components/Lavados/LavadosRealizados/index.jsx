@@ -101,8 +101,9 @@ function LavadoRealizado({ lavado }) {
     const { lavado: lavado_asignado, num: numLavado } = tipos_lavado || {};
 
     const tanqueColorStatus = {
-        'descartado': 'error',
-        'programado': 'info'
+        'rechazado': 'error',
+        'lavado': 'success',
+        'finalizado': 'info'
     }
 
     const [vencimiento, setVencimiento] = useState(false);
@@ -144,6 +145,13 @@ function LavadoRealizado({ lavado }) {
                             color='info'
                             size="small"
                         />
+
+                        <Chip
+                            label={status}
+                            color={tanqueColorStatus[status]}
+                            size="small"
+                        />
+
 
                     </Stack>
                     <CopyPaste text={lavado.id} />

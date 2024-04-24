@@ -152,6 +152,7 @@ function LavadoPendiente({ lavado }) {
                             color='error'
                             size="small"
                         />}
+                        
 
                     </Stack>
                     <CopyPaste text={lavado.id} />

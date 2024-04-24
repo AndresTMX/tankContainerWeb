@@ -2,7 +2,7 @@ import { Modal, Container, Paper, Stack, Box, Button, TextField, Typography, Ico
 //customComponents
 import { ContainerScroll } from "../../ContainerScroll";
 //hooks
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams, useLocation } from "react-router-dom"
 import useMediaQuery from "@mui/material/useMediaQuery";
 //icons
 import ClearIcon from '@mui/icons-material/Clear';
@@ -28,11 +28,31 @@ export function CondicionesLavado() {
 
     const movile = useMediaQuery('(max-width:800px)');
 
+    const { pathname } = useLocation();
+
+    function handleBackpage () {
+
+        const routesBack = {
+            '/lavado/pendientes': () => navigate('/lavado/pendientes'),
+            '/lavado/realizados': () => navigate('/lavado/realizados'),
+            '/calidad/lavados/pendientes': () => navigate('/calidad/lavados/pendientes'),
+        }
+    
+        for(let route of Object.keys(routesBack)){
+
+            if(pathname.includes(route)){
+                routesBack[route]()
+            }
+
+        }
+
+    }
+
 
     return (
         <>
 
-            <Modal open={true} onClose={() => navigate('/lavado/realizados')} >
+            <Modal open={true} onClose={handleBackpage} >
 
                 <Container sx={{ display: 'flex', justifyContent: 'center', paddingTop: '3%' }} >
 
@@ -42,7 +62,7 @@ export function CondicionesLavado() {
 
                             <Stack flexDirection='row' alignItems='center' justifyContent='space-between'  >
                                 <Typography>Recapitulación</Typography>
-                                <IconButton color="error" onClick={() => navigate('/lavado/realizados')} >
+                                <IconButton color="error" onClick={handleBackpage} >
                                     <ClearIcon />
                                 </IconButton>
                             </Stack>

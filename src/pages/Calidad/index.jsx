@@ -4,11 +4,6 @@ import { Box, Tabs, Tab, } from "@mui/material";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 // import { ListWashingForAprobe } from "../../components/ListWashingsForAprobe";
 // import { ListLiberations } from "../../components/ListLiberations";
-
-//nuevos
-import { Prelavados } from "../../components/Calidad/Prelavados";
-
-
 //hooks
 import { Outlet, useNavigate } from "react-router-dom";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -45,14 +40,12 @@ function Calidad() {
 
          <CustomTabPanel value={tab} index={'/calidad/prelavados/pendientes'}>
             <Box>
-               {/* <ListPrelavadosPending /> */}
                <Outlet />
             </Box>
          </CustomTabPanel>
 
          <CustomTabPanel value={tab} index={'/calidad/lavados/pendientes'}>
             <Box>
-               {/* <ListWashingForAprobe /> */}
                <Outlet />
             </Box>
          </CustomTabPanel>

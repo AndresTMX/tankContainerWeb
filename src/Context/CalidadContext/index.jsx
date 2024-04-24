@@ -2,7 +2,7 @@ import { useState, createContext, useContext, useRef } from "react";
 import { useRealtime } from "../../Hooks/FetchData";
 import { useLocation } from "react-router-dom";
 //services
-import { getPrewashingForInspect, getPrewashingInspect } from "../../services/lavados";
+import { getPrewashingForInspect, getPrewashingInspect, getWashingForAprobe, getAllWashingSuccess } from "../../services/lavados";
 //libraries
 import { toast } from "sonner";
 
@@ -18,16 +18,21 @@ export function CalidadProvider({ children }) {
     const routerFetcher = {
         '/calidad/prelavados/pendientes': getPrewashingForInspect,
         '/calidad/prelavados/realizados': getPrewashingInspect,
+        '/calidad/lavados/pendientes': getWashingForAprobe,
+        '/calidad/lavados/realizados': getAllWashingSuccess,
     }
 
     const routerTablesDB = {
         '/calidad/prelavados/pendientes': 'lavados',
         '/calidad/prelavados/realizados': 'prelavados_revisiones',
+        '/calidad/lavados/pendientes': 'lavados',
+        '/calidad/lavados/realizados': 'lavados',
     }
 
     const routerCache = {
         '/calidad/prelavados/pendientes': 'prelavados_pendientes',
         '/calidad/prelavados/realizados': 'prelavados_revisados',
+        '/calidad/lavados/pendientes': 'lavados_pendientes_revisiones',
     }
 
     async function fetch() {
@@ -37,7 +42,7 @@ export function CalidadProvider({ children }) {
 
             if (routerFetcher[pathname]) {
                 fetchFunction = routerFetcher[pathname]
-                setTable(routerFetcher[pathname])
+                setTable(routerTablesDB[pathname])
                 setCache(routerCache[pathname])
             }
 
@@ -71,6 +76,8 @@ export function CalidadProvider({ children }) {
             const routesFilter = {
                 '/calidad/prelavados/pendientes': () => extractPrelavadosPendientes(item),
                 '/calidad/prelavados/realizados': () => extractPrelavadoRealizado(item),
+                '/calidad/lavados/pendientes': () => extractPrelavadosPendientes(item),
+                '/calidad/lavados/realizados': () => extractPrelavadosPendientes(item),
             }
 
             if (routesFilter[pathname]) {

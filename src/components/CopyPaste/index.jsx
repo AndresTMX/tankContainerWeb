@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { IconButton, Paper, Stack, Typography } from "@mui/material";
 import { IoIosCopy } from "react-icons/io";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -6,7 +6,6 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 export function CopyPaste({ text }) {
 
     const [copy, setCopy] = useState(false)
-    const textRef = useRef();
 
     return (
         <>
@@ -18,7 +17,8 @@ export function CopyPaste({ text }) {
                     alignItems: 'center',
                     justifyContent: 'between',
                     backgroundColor:'whitesmoke',
-                    gap: '10px'
+                    border:'1px solid #E4E4E7',
+                    gap: '10px',
                 }}>
                 <CopyToClipboard text={text}
                     onCopy={() => setCopy(true)}>
