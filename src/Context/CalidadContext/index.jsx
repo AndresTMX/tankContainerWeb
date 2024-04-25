@@ -2,7 +2,15 @@ import { useState, createContext, useContext, useRef } from "react";
 import { useRealtime } from "../../Hooks/FetchData";
 import { useLocation } from "react-router-dom";
 //services
-import { getPrewashingForInspect, getPrewashingInspect, getWashingForAprobe, getAllWashingSuccess } from "../../services/lavados";
+import {
+    getPrewashingForInspect,
+    getPrewashingInspect,
+    getWashingForAprobe,
+    getAllWashingSuccess,
+    getAllWashingReleased,
+    getAllWashingRejected
+
+} from "../../services/lavados";
 //libraries
 import { toast } from "sonner";
 
@@ -20,6 +28,8 @@ export function CalidadProvider({ children }) {
         '/calidad/prelavados/realizados': getPrewashingInspect,
         '/calidad/lavados/pendientes': getWashingForAprobe,
         '/calidad/lavados/realizados': getAllWashingSuccess,
+        '/calidad/liberados/listos': getAllWashingReleased,
+        '/calidad/liberados/rechazados': getAllWashingRejected,
     }
 
     const routerTablesDB = {
@@ -27,12 +37,17 @@ export function CalidadProvider({ children }) {
         '/calidad/prelavados/realizados': 'prelavados_revisiones',
         '/calidad/lavados/pendientes': 'lavados',
         '/calidad/lavados/realizados': 'lavados',
+        '/calidad/liberados/listos': 'lavados',
+        '/calidad/liberados/rechazados': 'lavados',
     }
 
     const routerCache = {
         '/calidad/prelavados/pendientes': 'prelavados_pendientes',
         '/calidad/prelavados/realizados': 'prelavados_revisados',
         '/calidad/lavados/pendientes': 'lavados_pendientes_revisiones',
+        '/calidad/lavados/pendientes': 'lavados_realizados_revisiones',
+        '/calidad/liberados/listos': 'lavados_liberados',
+        '/calidad/liberados/rechazados': 'lavados_rechazados',
     }
 
     async function fetch() {

@@ -91,7 +91,7 @@ function LavadoPendiente({ lavado }) {
 
     const IsSmall = useMediaQuery('(max-width:880px)');
 
-    const { registros_detalles_entradas, id_detalle_entrada, fecha_recoleccion, ordenes_lavado, bahia, tipos_lavado, condiciones_lavado } = lavado || {};
+    const { registros_detalles_entradas, id_detalle_entrada, fecha_recoleccion, ordenes_lavado, bahia, tipos_lavado, condiciones_lavado, status } = lavado || {};
 
     const { carga, clientes, numero_pipa, numero_tanque, tipo, especificacion } = registros_detalles_entradas || {};
 

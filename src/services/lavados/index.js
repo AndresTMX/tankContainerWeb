@@ -40,7 +40,7 @@ export async function getWashingWithStatus(arrayStatus) {
 
         const { data, error } = await supabase
             .from('lavados')
-            .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), tipos_lavado(*)`)
+            .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), tipos_lavado(*) ) , ordenes_lavado(id, destinos(*)`)
             // .is('condiciones_lavado', null)
             .in('status', arrayStatus)
             .order('fecha_recoleccion', { ascending: false })
@@ -140,10 +140,49 @@ export async function getAllWashingSuccess() {
 
         const { data, error } = await supabase
             .from('lavados')
-            .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), tipos_lavado(*)`)
+            .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), tipos_lavado(*), ordenes_lavado(id, destinos(destino))`)
             .not('condiciones_lavado', 'is', null)
             .order('fecha_recoleccion', { ascending: false })
             .limit(100)
+
+        if (error) {
+            throw new Error(`Error al consultar lavados pendientes , error: ${error.message}`)
+        }
+
+        return { error, data }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export async function getAllWashingReleased() {
+    try {
+
+        const { data, error } = await supabase
+            .from('lavados')
+            .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), tipos_lavado(*) ) , ordenes_lavado(id, destinos(*)`)
+            .eq('status', 'liberado')
+            .order('fecha_recoleccion', { ascending: false })
+
+        if (error) {
+            throw new Error(`Error al consultar lavados pendientes , error: ${error.message}`)
+        }
+
+        return { error, data }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export async function getAllWashingRejected() {
+    try {
+
+        const { data, error } = await supabase
+            .from('lavados')
+            .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), tipos_lavado(*) ) , ordenes_lavado(id, destinos(*)`)
+            .eq('status', 'rechazado')
+            .is('condiciones_lavado', null)
+            .order('fecha_recoleccion', { ascending: false })
 
         if (error) {
             throw new Error(`Error al consultar lavados pendientes , error: ${error.message}`)

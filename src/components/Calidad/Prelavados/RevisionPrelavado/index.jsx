@@ -8,7 +8,6 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { useNavigate, useParams } from "react-router-dom";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useFetchData } from "../../../../Hooks/FetchData";
-import { useManagmentInspection } from "../../../../Hooks/Calidad/useManagmentInspection";
 //libraries
 import dayjs from "dayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";

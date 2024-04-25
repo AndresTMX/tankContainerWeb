@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Paper, Stack, Chip, Typography, Button, Alert, Pagination } from "@mui/material";
+import { Paper, Stack, Chip, Typography, Button, Alert, Pagination, Divider } from "@mui/material";
 //estados genericos
 import { NotConexionState } from "../../NotConectionState";
 import { ItemLoadingState } from "../../ItemLoadingState";
@@ -8,13 +8,14 @@ import { ContainerScroll } from "../../ContainerScroll";
 // import { SealItem } from "../IniciarLavado";
 import { CopyPaste } from "../../CopyPaste";
 //helpers
-import { datetimeMXFormat, timepoParaX, dateTextShort, dateInTextEn, currentDate } from "../../../Helpers/date";
+import { datetimeMXFormat, timepoParaX, dateInTextEn, currentDate } from "../../../Helpers/date";
 //icons
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 //context
 import { useLavadoContext } from "../../../Context/LavadosContext";
 //libraries
@@ -95,7 +96,7 @@ function LavadoPendiente({ lavado }) {
 
     const navigate = useNavigate();
 
-    const { created_at, data, status, tipos_lavado, registros_detalles_entradas, fecha_recoleccion } = lavado || {};
+    const { created_at, data, status, tipos_lavado, registros_detalles_entradas, fecha_recoleccion, id:idLavado } = lavado || {};
 
     const { carga, numero_pipa, numero_tanque, tracto } = registros_detalles_entradas || {};
 
@@ -103,7 +104,10 @@ function LavadoPendiente({ lavado }) {
 
     const tanqueColorStatus = {
         'descartado': 'error',
-        'programado': 'info'
+        'programado': 'info',
+        'sellado': 'info',
+        'pendiente':'warning',
+        'liberado':'info'
     }
 
     const [vencimiento, setVencimiento] = useState(false);
@@ -152,7 +156,7 @@ function LavadoPendiente({ lavado }) {
                             color='error'
                             size="small"
                         />}
-                        
+
 
                     </Stack>
                     <CopyPaste text={lavado.id} />
@@ -165,122 +169,47 @@ function LavadoPendiente({ lavado }) {
                         <Typography textTransform='uppercase' variant='body2'>{numero_tanque || numero_pipa}</Typography>
                     </Stack>
 
+                    <Divider flexItem orientation='horizontal' />
+
                     <Stack>
                         <Typography variant='caption'>Lavado asignado</Typography>
                         <Typography variant='body2'>{lavado_asignado ?? 'pendiente'}</Typography>
                     </Stack>
+
+                    <Divider flexItem orientation='horizontal' />
+
+                    <Stack>
+                        <Typography variant='caption'>status</Typography>
+                        <Chip size="small" color={tanqueColorStatus[status]} label={status} />
+                    </Stack>
                 </Stack>
 
-                <Button
-                    onClick={() => navigate(`/lavado/pendientes/iniciar-lavado/${encodeURIComponent(JSON.stringify(lavado))}`)}
-                    size='small'
-                    color='primary'
-                    variant='contained'
-                    disabled={!tipos_lavado}
-                    endIcon={<ManageSearchIcon />}
-                >
-                    Iniciar lavado
-                </Button>
+                {(status != 'sellado') &&
+                    <Button
+                        onClick={() => navigate(`/lavado/pendientes/iniciar-lavado/${encodeURIComponent(JSON.stringify(lavado))}`)}
+                        size='small'
+                        color='primary'
+                        variant='contained'
+                        disabled={!tipos_lavado}
+                        endIcon={<ManageSearchIcon />}
+                    >
+                        Iniciar lavado
+                    </Button>}
+
+                {(status === 'sellado') &&
+                    <Button
+                        onClick={() => navigate(`/lavado/pendientes/asignar-sellos/${idLavado}`)}
+                        size='small'
+                        color='primary'
+                        variant='contained'
+                        disabled={!tipos_lavado}
+                        endIcon={<LibraryAddIcon />}
+                    >
+                        asignar sellos
+                    </Button>}
 
             </Paper>
 
-        </>
-    )
-}
-
-
-function ItemForSealed({ lavado, updateList }) {
-
-    const [modal, setModal] = useState(false);
-    const toggleModal = () => setModal(!modal)
-
-    const { created_at, tentativeEnd, data, status, tipo_lavado, registros_detalles_entradas, id: idWashing, condiciones_lavado } = lavado;
-    const { carga, numero_pipa, numero_tanque, tracto, tipo, id: idRegister } = registros_detalles_entradas || {};
-
-    const dataConditions = JSON.parse(condiciones_lavado);
-
-    return (
-        <>
-            <Paper
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    padding: '15px',
-                    gap: '10px'
-                }}
-            >
-                <Stack
-                    flexWrap={'wrap'}
-                    flexDirection={'row'}
-                    alignItems={'center'}
-                    gap={'10px'}
-                >
-                    <Chip
-                        color='warning'
-                        size='small'
-                        icon={<FiberManualRecordIcon style={{ color: '#ab5005' }} />}
-                        label={'por sellar'}
-                    />
-
-                    <Chip
-                        color='info'
-                        size='small'
-                        icon={<CalendarTodayIcon />}
-                        label={'Entregar antes del ' + dateTextShort(tentativeEnd)}
-                    />
-
-                </Stack>
-
-                <Stack
-                    flexDirection={'row'}
-                    alignItems={'center'}
-                    justifyContent={'space-between'}
-                    gap={'20px'}
-                >
-
-                    <Stack
-                        gap={'20px'}
-                        flexDirection={'row'}
-                        alignItems={'center'}
-                    >
-                        <Stack>
-                            <Typography variant='caption'>{numero_tanque ? 'Tanque' : 'Pipa'}</Typography>
-                            <Typography textTransform='uppercase' variant='body2'>{tipo || ''}  {numero_tanque || numero_pipa}</Typography>
-                        </Stack>
-
-
-                    </Stack>
-
-                    <Stack
-                        gap={'10px'}
-                        flexDirection={'row'}
-                        alignItems={'center'}
-                        justifyContent={'flex-end'}
-                    >
-                        <Button
-                            onClick={toggleModal}
-                            size='small'
-                            color='primary'
-                            variant='contained'
-                            endIcon={<PlayCircleIcon />}
-                        >
-                            asignar sellos
-                        </Button>
-
-                    </Stack>
-
-
-                </Stack>
-            </Paper>
-
-            <SealItem
-                modal={modal}
-                idWashing={idWashing}
-                idRegister={idRegister}
-                updateList={updateList}
-                toggleModal={toggleModal}
-                dataConditions={dataConditions}
-            />
         </>
     )
 }

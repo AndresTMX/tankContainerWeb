@@ -45,6 +45,8 @@ import { Lavados } from "./components/Calidad/Lavados";
 import { LavadosPorEvaluar } from "./components/Calidad/Lavados/LavadosPorEvaluar";
 import { EvaluacionLavado } from "./components/Calidad/Lavados/EvaluacionLavado";
 import { LavadosEvaluados } from "./components/Calidad/Lavados/LavadosEvaluados";
+import { SellarTanque } from "./components/Lavados/SellarTanque";
+import { Liberados } from "./components/Calidad/Liberados/LavadosLiberados";
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -239,6 +241,7 @@ function Router() {
 
                 <Route path="/lavado/pendientes" element={<LavadosPendientes />} >
                   <Route path="/lavado/pendientes/iniciar-lavado/:lavado" element={<IniciarLavado />} />
+                  <Route path="/lavado/pendientes/asignar-sellos/:idLavado" element={<SellarTanque />} />
                 </Route>
 
                 <Route path="/lavado/realizados" element={<LavadosRealizados />} >
@@ -288,15 +291,15 @@ function Router() {
 
                 </Route>
 
-                <Route path="/calidad/liberados" element={<p>liberados</p>} >
+                <Route path="/calidad/liberados" element={<Liberados/>} >
 
-                  <Route path="/calidad/liberados/pendientes" element={<p>pendientes</p>}>
-                    <Route path="/calidad/liberados/pendientes/historial-prelavados/:id" element={<p>ewdqed</p>} />
+                  <Route path="/calidad/liberados/listos" element={<p>pendientes</p>}>
+                    <Route path="/calidad/liberados/listos/historial-prelavados/:id" element={<p>ewdqed</p>} />
 
                   </Route>
 
-                  <Route path="/calidad/liberados/realizados" element={<p>realizados</p>} >
-                    <Route path="/calidad/liberados/realizados/historial-prelavados/:id" element={<p>ewdqed</p>} />
+                  <Route path="/calidad/liberados/rechazados" element={<p>realizados</p>} >
+                    <Route path="/calidad/liberados/rechazados/historial-prelavados/:id" element={<p>ewdqed</p>} />
                   </Route>
 
                 </Route>

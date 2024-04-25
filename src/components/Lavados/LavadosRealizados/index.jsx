@@ -103,7 +103,8 @@ function LavadoRealizado({ lavado }) {
     const tanqueColorStatus = {
         'rechazado': 'error',
         'lavado': 'success',
-        'finalizado': 'info'
+        'finalizado': 'info',
+        'liberado':'info'
     }
 
     const [vencimiento, setVencimiento] = useState(false);

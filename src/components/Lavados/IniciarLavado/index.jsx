@@ -5,7 +5,6 @@ import { MenuItem, FormControl, InputLabel, FormControlLabel, FormGroup, Checkbo
 import { ContainerScroll } from "../../ContainerScroll";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useCreateConditionsWashing } from "../../../Hooks/Lavado/useCreateConditionsWashing";
 import { useSendToSanitization } from "../../../Hooks/Calidad/useSendToSanitzation";
 import { useSealItem } from "../../../Hooks/Lavado/useSealItem";
 //icons
@@ -446,8 +445,6 @@ function ConditionsWashing({ step, setStep, lavado,  }) {
             tiempo_sanitizado: '5',
             temperatura_sanitizado: 'ambiente',
         });
-
-        // console.log(conditions)
 
     const conditionsWashing = {
         '1': ['5', '6'],
@@ -1151,143 +1148,3 @@ function ItemQuestion({ item, index, changueValue }) {
     )
 }
 
-function SellarTanque() {
-
-    const movile = useMediaQuery('(max-width:800px)');
-    const { sealItem } = useSealItem()
-    const [step, setStep] = useState(1);
-    const [sellos, setSellos] = useState([])
-
-    const submitStepOne = (e) => {
-        e.preventDefault();
-
-        const formulario = e.target;
-        const formData = new FormData(formulario);
-
-        const valuesForm = [];
-
-        for (const [campo, valor] of formData.entries()) {
-            if (valor != '') {
-                valuesForm.push({ [campo]: valor });
-            }
-        }
-
-        setSellos(valuesForm)
-        setStep(2)
-    }
-
-    const SubmitRegister = async (e) => {
-        e.preventDefault();
-        const sellosInString = JSON.stringify(sellos);
-        await sealItem(idWashing, sellosInString)
-        toggleModal()
-        updateList()
-    }
-
-
-
-    return (
-        <>
-            <Modal open={modal}>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        paddingTop: '2%',
-                        width: '100%',
-                        minHeight: '100vh',
-                        alignItems: 'center',
-                    }}>
-                    <Paper
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            padding: '10px',
-                            gap: '10px',
-                            width: '95vw',
-                            maxWidth: '700px'
-                        }}>
-
-                        <Stack flexDirection='row' alignItems='center' justifyContent='space-between' width='100%'>
-                            <Typography>Asignación de sellos</Typography>
-
-                            <IconButton onClick={toggleModal} color="error">
-                                <ClearIcon />
-                            </IconButton>
-                        </Stack>
-
-                        {(step === 1) &&
-                            <form onSubmit={submitStepOne} style={{ width: '100%' }}>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '100%' }}>
-                                    <ContainerScroll height='300px'>
-                                        <Stack gap='10px' width='100%'>
-                                            <Typography>Sellos en domo</Typography>
-                                            <TextField fullWidth required label='sello #1' id="sello-domo-1" name="sello-domo-1" />
-                                            <TextField fullWidth label='sello #2' id="sello-domo-2" name="sello-domo-2" />
-                                            <TextField fullWidth label='sello #3' id="sello-domo-3" name="sello-domo-3" />
-                                            <TextField fullWidth label='sello #4' id="sello-domo-4" name="sello-domo-4" />
-                                            <TextField fullWidth label='sello #5' id="sello-domo-5" name="sello-domo-5" />
-                                            <Typography>Sellos en valvula superior</Typography>
-                                            <TextField fullWidth label='sello #6' id="sello-inderior-1" name="sello-superior-1" />
-                                            <TextField fullWidth label='sello #7' id="sello-inderior-2" name="sello-superior-2" />
-                                            <TextField fullWidth label='sello #8' id="sello-inderior-3" name="sello-superior-3" />
-                                            <TextField fullWidth label='sello #9' id="sello-inderior-4" name="sello-superior-4" />
-                                            <TextField fullWidth label='sello #10' id="sello-inderior-5" name="sello-superior-5" />
-                                        </Stack>
-                                    </ContainerScroll>
-                                    <Stack flexDirection='row' alignItems='center' justifyContent='flex-end'>
-
-                                        <Button
-                                            type="submit"
-                                            variant="contained"
-                                            color='primary'>
-                                            asignar sellos
-                                        </Button>
-                                    </Stack>
-                                </Box>
-                            </form>
-                        }
-
-                        {(step === 2) &&
-                            <form onSubmit={SubmitRegister} style={{ width: '100%' }}>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', width: '100%' }}>
-
-                                    <Box padding='10px'>
-                                        <Typography padding='5px' variant="subtitle2">Sellos asignados</Typography>
-                                        <Stack flexDirection='row' alignItems='center' flexWrap='wrap' gap='10px' padding='15px' bgcolor='whitesmoke'>
-                                            {sellos.map((obj, index) => (
-                                                <Chip key={index} label={obj[Object.keys(obj)[0]]} color='info' />
-                                            ))}
-                                        </Stack>
-                                    </Box>
-
-                                    <Stack flexDirection='row' alignItems='center' justifyContent='space-between'>
-                                        <Button
-                                            variant="contained"
-                                            color='warning'
-                                            onClick={() => setStep(2)}
-                                            size="small"
-                                        >
-                                            anterior
-                                        </Button>
-
-                                        <Button
-                                            variant="contained"
-                                            type='submit'
-                                            size="small"
-                                        >
-                                            Enviar
-                                        </Button>
-                                    </Stack>
-
-                                </Box>
-                            </form>
-                        }
-
-                    </Paper>
-                </Box>
-            </Modal>
-        </>
-    )
-}

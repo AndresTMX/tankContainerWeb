@@ -15,7 +15,7 @@ const LavadoProvider = ({ children }) => {
     const { pathname } = useLocation();
 
     const statusPendientes = ['programado', 'sellado', 'asignado'];
-    const statusRealizados = ['lavado', 'finalizado', 'rechazado']
+    const statusRealizados = ['lavado', 'liberado', 'rechazado']
 
     const statusRoutes = {
         '/lavado/pendientes': statusPendientes,

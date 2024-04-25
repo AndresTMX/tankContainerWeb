@@ -117,8 +117,9 @@ function LavadosRealizado({ lavado }) {
         'rechazado': 'error',
         'lavado': 'success',
         'finalizado': 'info',
-        'revision':'warning',
-        'sellado':'info'
+        'revision': 'warning',
+        'sellado': 'info',
+        'liberado': 'info'
     }
 
 
@@ -162,7 +163,13 @@ function LavadosRealizado({ lavado }) {
                     <CopyPaste text={lavado.id} />
                 </Stack>
 
-                <Stack flexDirection={IsSmall ? 'column' : 'row'} gap={IsSmall ? '8px' : '30px'} justifyContent='flex-start'>
+                <Box>
+                    <Typography variant="subtitle2">Destino</Typography>
+                    <Typography>{destinos?.destino}</Typography>
+                </Box>
+                <Divider />
+
+                <Stack flexDirection={IsSmall ? 'column' : 'row'} gap={IsSmall ? '8px' : '30px'} justifyContent='space-around'>
 
                     <Box>
                         <Typography variant="subtitle2">{`N° ${carga}`}</Typography>
@@ -180,11 +187,6 @@ function LavadosRealizado({ lavado }) {
                     </Box>
                     <Divider />
                     <Box>
-                        <Typography variant="subtitle2">Destino</Typography>
-                        <Typography>{destinos?.destino}</Typography>
-                    </Box>
-                    <Divider />
-                    <Box>
                         <Typography variant="subtitle2">Bahia</Typography>
                         <Typography>{bahia}</Typography>
                     </Box>
@@ -198,32 +200,7 @@ function LavadosRealizado({ lavado }) {
                         />
                     </Box>
 
-
                 </Stack>
-
-
-                {/* <Stack flexDirection='row' alignItems='center' justifyContent='flex-end' flexWrap='wrap' gap='10px'>
-
-                    <Button
-                        fullWidth={IsSmall}
-                        onClick={() => navigate(`condiciones-lavado/${condiciones_lavado}/${numLavado}`)}
-                        size="small"
-                        variant="outlined"
-                        endIcon={<LaunchIcon />}
-                    >
-                        condiciones de lavado
-                    </Button>
-
-                    <Button
-                        fullWidth={IsSmall}
-                        onClick={() => navigate(`evaluacion-lavado/${encodeURIComponent(JSON.stringify(lavado))}`)}
-                        endIcon={<PlaylistAddCheckIcon />}
-                        size='small'
-                        variant="contained">
-                        Evaluar lavado
-                    </Button>
-
-                </Stack> */}
 
             </Paper>
 

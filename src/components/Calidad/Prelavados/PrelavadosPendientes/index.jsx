@@ -20,9 +20,6 @@ import { useCalidadContext } from "../../../../Context/CalidadContext";
 //libraries
 import dayjs from "dayjs";
 
-// import { usePreWashingInspect } from "../../../../Hooks/Calidad/usePrewashingInspect";
-// import { CheckListCalidadPrelavado } from "../../../../sections/CheckListCalidadPrelavado";
-
 export function PrelavadosPendientes() {
 
     const movile = useMediaQuery('(max-width:880px)');

@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import { useDetailsForManiobra } from "../../Hooks/Maniobras/useDetailsForManiobra";
 import { useDeletRegister } from "../../Hooks/Maniobras/useDeletRegister";
 import { usePostRegister } from "../../Hooks/Maniobras/usePostRegister";
-import { useEditManiobra } from "../../Hooks/Maniobras/useEditManiobra";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //helpers
 import { dateMXFormat, dateInTextEn, datetimeMXFormat } from "../../Helpers/date";
