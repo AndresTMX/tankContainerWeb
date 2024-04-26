@@ -324,9 +324,7 @@ function EvidenceURL({ idLavado, idRegistro }) {
 
             }
 
-            const url = { ...urls, coments: coments }
-
-            const urlInString = JSON.stringify(url);
+            const url = { pruebas: urls, coments: coments }
 
             //actualizar el registro general a sanitizando
             const { error: errorUpdateRegister } = await updateRegistroWhitId(idRegistro, { status: 'sellado' });
@@ -336,7 +334,7 @@ function EvidenceURL({ idLavado, idRegistro }) {
             }
 
             //actualizar el registro de lavado a sanitizado
-            const { error: errorUpdateWashing } = await updateWashing({ status: 'sellado', URL: urlInString }, idLavado);
+            const { error: errorUpdateWashing } = await updateWashing({ status: 'sellado', URL: url }, idLavado);
 
             if (errorUpdateWashing) {
                 throw new Error(errorUpdateWashing)

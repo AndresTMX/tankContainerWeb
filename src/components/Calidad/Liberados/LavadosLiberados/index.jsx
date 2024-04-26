@@ -1,97 +1,211 @@
-import { Box, Stack, Paper, Chip, TextField, Menu, MenuItem, IconButton, Typography, } from "@mui/material";
+import { Stack, Paper, Alert, Pagination, Box, Chip, Button, Typography, Divider, } from "@mui/material";
+import { ItemLoadingState } from "../../../ItemLoadingState";
+import { ContainerScroll } from "../../../ContainerScroll";
+import { CopyPaste } from "../../../CopyPaste";
 //hooks
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import useMediaQuery from "@mui/material/useMediaQuery";
-//icons
-import SearchIcon from '@mui/icons-material/Search';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-
 //context
 import { useCalidadContext } from "../../../../Context/CalidadContext";
+//helpers
+import { dateInTextEn, datetimeMXFormat, timepoParaX, currentDate, dateExpiration } from "../../../../Helpers/date";
+//icons
+import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import LaunchIcon from '@mui/icons-material/Launch';
+//libraries
+import dayjs from "dayjs";
 
-export function Liberados() {
 
-    const { pathname, searchValue, handleKeyPress, onChangeClear } = useCalidadContext();
-    const IsSmall = useMediaQuery('(max-width:900px)');
-    const navigate = useNavigate();
+export function LavadosLiberados() {
 
-    const [filter, setFilter] = useState('listos');
-    const [menu, setMenu] = useState(false);
+    const { loading, error, dataDinamic, searchValue, mode } = useCalidadContext();
 
-    const handleFilter = (newFilter) => {
-        setMenu(false)
-        setFilter(newFilter)
-        navigate(newFilter)
-    }
+    const [page, setPage] = useState(1);
+
+    const handleChange = (event, value) => {
+        setPage(value);
+    };
+
+    const rowsPerPage = 10;
+
+    const pages = Math.ceil(dataDinamic?.length / rowsPerPage);
+
+    const items = useMemo(() => {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        return dataDinamic?.slice(start, end);
+    }, [page, dataDinamic]);
 
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px' }}>
-            <Stack alignItems='center' width='100%' gap='10px' maxWidth='900px' >
+        <Stack gap='10px' width='100%' alignItems='center' >
+            <ContainerScroll height='calc(100vh - 250px)' background='whitesmoke'>
 
-                <Paper
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        bgcolor: 'whitesmoke',
-                        border: '1px',
-                        borderColor: '#E4E4E7',
-                        borderStyle: 'solid',
-                        maxWidth: '900px',
-                        padding: '15px',
-                        width: '96vw',
-                        gap: '5px',
-                    }}
-                >
+                <Stack gap='10px' padding='0px'  >
 
-                    <Stack flexDirection='row' alignItems='center' gap='2px' >
-                        <IconButton
-                            id="group-button"
-                            aria-controls={menu ? 'group-menu' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={menu ? 'true' : undefined}
-                            onClick={(e) => setMenu(e.currentTarget)}
-                        >
-                            <FilterAltIcon />
-                        </IconButton>
-                        <Menu
-                            id='group-menu'
-                            anchorEl={menu}
-                            open={menu}
-                            onClose={() => setMenu(false)}
-                            MenuListProps={{
-                                'aria-labelledby': 'group-menu',
-                            }}
-                        >
-                            <MenuItem onClick={() => handleFilter('listos')}>listos</MenuItem>
-                            <MenuItem onClick={() => handleFilter('rechazados')}>rechazados</MenuItem>
+                    {(loading && !error && !dataDinamic?.length) &&
+                        <>
+                            <ItemLoadingState />
+                            <ItemLoadingState />
+                            <ItemLoadingState />
+                            <ItemLoadingState />
+                        </>
+                    }
 
-                        </Menu>
-                        {!IsSmall && <Typography variant='caption' >{filter}</Typography>}
+                    {(!loading && !error && !dataDinamic.length && mode === 'data') &&
+                        <Alert severity='info'>Sin registros añadidos</Alert>
+                    }
+
+                    {(!error && !loading && dataDinamic.length && mode === 'search') &&
+                        <Alert severity='info'>Resultados de busqueda {searchValue.current?.value} </Alert>
+                    }
+
+                    {(!error && !loading && !dataDinamic.length && mode === 'search') &&
+                        <Alert severity='warning'>No se encontraron coincidencias para tu busqueda, {searchValue.current?.value}</Alert>
+                    }
+
+
+                    {
+                        items.map((lavado) => (
+                            <ItemLiberado key={lavado.id} lavado={lavado} />
+                        ))
+                    }
+
+
+                </Stack>
+            </ContainerScroll>
+            <Pagination variant="outlined" shape="rounded" color="primary" count={pages} page={page} onChange={handleChange} />
+
+            <Outlet />
+        </Stack>
+    )
+}
+
+
+function ItemLiberado({ lavado }) {
+
+    const movile = useMediaQuery('(max-width:880px)');
+    const navigate = useNavigate();
+
+    const { registros_detalles_entradas, id_detalle_entrada, fecha_recoleccion, ordenes_lavado, bahia, tipos_lavado, condiciones_lavado, status, URL, id: idLavado } = lavado || {};
+
+    const { carga, clientes, numero_pipa, numero_tanque, tipo, especificacion } = registros_detalles_entradas || {};
+
+    const { duration, num: numLavado, lavado: tipoLavado } = tipos_lavado || {};
+
+    const { cliente } = clientes || {};
+
+    const { destinos } = ordenes_lavado || {}
+
+
+    return (
+        <>
+            <Paper sx={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '10px', gap: '10px' }}>
+
+                <Stack flexDirection='row' justifyContent='space-between' alignItems='center' gap='10px' flexWrap='wrap'>
+
+                    <Stack flexDirection='row' gap='10px' >
+                        <Chip
+                            size='small'
+                            color='info'
+                            label={'Fecha de entrega: ' + dateInTextEn(fecha_recoleccion)}
+                        />
+
+                        <Chip
+                            size='small'
+                            color='info'
+                            label={status}
+                        />
                     </Stack>
 
+                    <CopyPaste text={idLavado} />
 
-                    <TextField
-                        sx={{ width: IsSmall ? '80vw' : 'auto' }}
-                        size='small'
-                        variant='outlined'
-                        name="searchProgram"
-                        onKeyDown={handleKeyPress}
-                        onChange={onChangeClear}
-                        inputRef={searchValue}
-                        InputProps={{
-                            endAdornment: <SearchIcon />
-                        }}
-                    />
+                </Stack>
 
-                </Paper>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center', }}>
 
-                <Outlet />
+                    <Stack width='100%' paddingX='10px' >
+                        <Typography variant='caption'>Destino</Typography>
+                        <Typography textTransform='uppercase' >{destinos?.destino}</Typography>
+                    </Stack>
 
-            </Stack>
-        </Box>
+                    <Divider flexItem orientation="horizontal" />
+
+                    <Stack flexDirection={movile ? 'column' : 'row'} justifyContent='space-around' width='100%' gap='10px' paddingX='10px'>
+
+                        <Box >
+                            <Typography variant='caption' >{carga}</Typography>
+                            <Typography>{tipo || ''} {numero_tanque || numero_pipa} </Typography>
+                        </Box>
+
+                        <Divider flexItem orientation="horizontal" />
+
+                        <Box >
+                            <Typography variant='caption'>Especificacion</Typography>
+                            <Typography>{especificacion}</Typography>
+                        </Box>
+
+                        <Divider flexItem orientation="horizontal" />
+
+                        <Box >
+                            <Typography variant='caption'>Cliente</Typography>
+                            <Typography textTransform='uppercase' >{cliente}</Typography>
+                        </Box>
+
+                        <Divider flexItem orientation="horizontal" />
+
+                        <Box >
+                            <Typography variant='caption'>Lavado asignado</Typography>
+                            <Typography>{tipoLavado}</Typography>
+                        </Box>
+
+                        <Divider flexItem orientation="horizontal" />
+
+                        <Box >
+                            <Typography variant='caption'>Caducidad de lavado</Typography>
+                            <Typography>{dateExpiration(fecha_recoleccion)}</Typography>
+                        </Box>
+
+                    </Stack>
+
+                    <Stack flexDirection='row' alignItems='center' justifyContent='flex-end' flexWrap='wrap' width='100%' gap='10px' >
+
+                        <Button
+                            fullWidth={movile}
+                            variant="contained"
+                            color='info'
+                            size="small"
+                            onClick={() => navigate(`prueba-url/${encodeURIComponent(JSON.stringify(URL))}`)}
+                        >
+                            URL
+                        </Button>
+
+                        <Button
+                            fullWidth={movile}
+                            variant="contained"
+                            size="small"
+                            onClick={() => navigate(`certificado/${idLavado}`)}
+                        >
+                            Generar certificado
+                        </Button>
+
+                        <Button
+                            fullWidth={movile}
+                            variant="contained"
+                            color="error"
+                            size="small">
+                            Marcar como rechazado
+                        </Button>
+                    </Stack>
+
+                </Box>
+
+            </Paper>
+
+        </>
     )
 }

@@ -475,7 +475,7 @@ function ConditionsWashing({ step, setStep, lavado,  }) {
             //subir condiciones de lavado
             const dataInString = JSON.stringify(conditions);
             const { numero_bahia } = conditions || {};
-            const { error: errorLavado } = await updateWashing({ bahia: numero_bahia, condiciones_lavado: dataInString, status:'revision' }, lavadoId);
+            const { error: errorLavado } = await updateWashing({ bahia: numero_bahia, condiciones_lavado: conditions, status:'revision' }, lavadoId);
 
             if (errorLavado) {
                 throw new Error(errorLavado)

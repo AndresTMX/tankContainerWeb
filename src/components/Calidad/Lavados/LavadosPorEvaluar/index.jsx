@@ -189,7 +189,7 @@ function LavadoPendiente({ lavado }) {
 
                     <Button
                         fullWidth={IsSmall}
-                        onClick={() => navigate(`condiciones-lavado/${condiciones_lavado}/${numLavado}`)}
+                        onClick={() => navigate(`condiciones-lavado/${encodeURIComponent(JSON.stringify(condiciones_lavado))}/${numLavado}`)}
                         size="small"
                         variant="outlined"
                         endIcon={<LaunchIcon />}
@@ -209,13 +209,6 @@ function LavadoPendiente({ lavado }) {
                 </Stack>
 
             </Paper>
-
-            {/* <WashingTest
-                idLavado={idLavado}
-                idRegistro={idRegistro}
-                updaterList={updaterList}
-                modal={modalTest}
-                toggleModal={toggleTest} /> */}
         </>
     )
 }

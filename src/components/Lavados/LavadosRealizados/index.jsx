@@ -172,7 +172,7 @@ function LavadoRealizado({ lavado }) {
                 </Stack>
 
                 <Button
-                    onClick={() => navigate(`condiciones-lavado/${encodeURIComponent(condiciones_lavado)}/${numLavado}`)}
+                    onClick={() => navigate(`condiciones-lavado/${encodeURIComponent(JSON.stringify(condiciones_lavado))}/${numLavado}`)}
                     size='small'
                     color='primary'
                     variant='contained'

@@ -46,7 +46,10 @@ import { LavadosPorEvaluar } from "./components/Calidad/Lavados/LavadosPorEvalua
 import { EvaluacionLavado } from "./components/Calidad/Lavados/EvaluacionLavado";
 import { LavadosEvaluados } from "./components/Calidad/Lavados/LavadosEvaluados";
 import { SellarTanque } from "./components/Lavados/SellarTanque";
-import { Liberados } from "./components/Calidad/Liberados/LavadosLiberados";
+import { Liberados } from "./components/Calidad/Liberados";
+import { LavadosLiberados } from "./components/Calidad/Liberados/LavadosLiberados";
+import { PruebaURL } from "./components/Calidad/Liberados/PruebaURL";
+import { CertificadoCalidad } from "./components/Calidad/Liberados/Certificado";
 //theme material ui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -291,10 +294,13 @@ function Router() {
 
                 </Route>
 
-                <Route path="/calidad/liberados" element={<Liberados/>} >
+                <Route path="/calidad/liberados" element={<Liberados />} >
 
-                  <Route path="/calidad/liberados/listos" element={<p>pendientes</p>}>
-                    <Route path="/calidad/liberados/listos/historial-prelavados/:id" element={<p>ewdqed</p>} />
+                  <Route path="/calidad/liberados/listos" element={<LavadosLiberados />}>
+                    <Route path="/calidad/liberados/listos/historial-prelavados/:id" element={<p>historial de prelavado</p>} />
+                    <Route path="/calidad/liberados/listos/cargas-previas/:numeroTanque" element={<p>cargas previas</p>} />
+                    <Route path="/calidad/liberados/listos/prueba-url/:URL" element={<PruebaURL />} />
+                    <Route path="/calidad/liberados/listos/certificado/:id" element={<CertificadoCalidad />} />
 
                   </Route>
 

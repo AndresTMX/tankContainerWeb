@@ -1,4 +1,4 @@
-import { Box, Paper, Chip, Stack, Typography, Alert, Button, Modal, IconButton, Card, CardMedia, CardContent, FormControl, Select, MenuItem, InputLabel, } from "@mui/material";
+import { Box, Paper, Chip, Stack, Typography, Alert, Button, Modal, Card, CardMedia, CardContent, FormControl, Select, MenuItem, InputLabel, IconButton } from "@mui/material";
 import { NotConexionState } from "../NotConectionState";
 import { ItemLoadingState } from "../ItemLoadingState";
 import { ContainerScroll } from "../ContainerScroll";
@@ -257,21 +257,6 @@ function ItemLiberado({ lavado, updaterList }) {
             </Paper>
 
             <ModalViewURL modal={modalUrl} toggleModal={toggleUrl} url={URL} />
-
-            <ModalEditingDocument
-                logo={logo}
-                modal={modalForm}
-                toggleCert={toggleCert}
-                setTypeLogo={setTypeLogo}
-                typeWashing={typeWashing}
-                toggleModal={toggleModalForm}
-                setTypeWashing={setTypeWashing}
-            />
-
-            <ViewerDocument stateModal={modalCert} ToggleModal={toggleCert}>
-                <Certificado dataCert={dataCert} />
-            </ViewerDocument>
-
 
         </>
     )

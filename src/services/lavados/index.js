@@ -160,7 +160,7 @@ export async function getAllWashingReleased() {
 
         const { data, error } = await supabase
             .from('lavados')
-            .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), tipos_lavado(*) ) , ordenes_lavado(id, destinos(*)`)
+            .select('*, registros_detalles_entradas(*, clientes(*), registros(*)), ordenes_lavado(destino_id , destinos(destino) ), tipos_lavado(*)')
             .eq('status', 'liberado')
             .order('fecha_recoleccion', { ascending: false })
 
@@ -183,6 +183,25 @@ export async function getAllWashingRejected() {
             .eq('status', 'rechazado')
             .is('condiciones_lavado', null)
             .order('fecha_recoleccion', { ascending: false })
+
+        if (error) {
+            throw new Error(`Error al consultar lavados pendientes , error: ${error.message}`)
+        }
+
+        return { error, data }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export async function getOneWashingFullDetail(idLavado) {
+    try {
+
+        const { data, error } = await supabase
+            .from('lavados')
+            .select(`*,registros_detalles_entradas(*, clientes(*), registros(*)), tipos_lavado(*) ) , ordenes_lavado(id, destinos(*)`)
+            .eq('id', idLavado)
+
 
         if (error) {
             throw new Error(`Error al consultar lavados pendientes , error: ${error.message}`)
