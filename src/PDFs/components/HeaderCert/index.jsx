@@ -8,11 +8,11 @@ function HeaderCert() {
         <View style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '10px' }}>
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
 
-                <View style={{ display: 'flex', alignItems: 'center', height: 'auto', width: '30%' }}>
+                <View style={{ display: 'flex', alignItems: 'center', height: 'auto', width: '20%' }}>
                     <Image src={TankContainerLogo} />
                 </View>
 
-                <View style={{ display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'flex-start', position:'relative', top:'-25px' }}>
+                <View style={{ display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'flex-start', position:'relative', top:'-15px' }}>
                     <Text style={{ fontWeight: 'semibold', fontSize: '9px', fontFamily: 'Helvetica-Bold' }}>Código: TKC-FO-AC-21</Text>
                     <Text style={{ fontWeight: 'semibold', fontSize: '9px', fontFamily: 'Helvetica-Bold' }}>Elaborado: {dateMXFormat(currentDate)}</Text>
                     <Text style={{ fontWeight: 'semibold', fontSize: '9px', fontFamily: 'Helvetica-Bold' }}>Revisión: 2</Text>

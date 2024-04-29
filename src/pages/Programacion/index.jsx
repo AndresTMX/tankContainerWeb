@@ -9,8 +9,11 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import SearchIcon from '@mui/icons-material/Search';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import TuneIcon from '@mui/icons-material/Tune';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 //libraries
 import { Toaster } from "sonner";
+//experimental component
+import { AgendaProgramacion } from "../../components/Agenda";
 
 function Programacion() {
 
@@ -34,7 +37,7 @@ function Programacion() {
 
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px' }}>
                 <Stack alignItems='center' width='100%' gap='10px' maxWidth='900px'>
-                    <Paper
+                    {pathname != '/programacion' && <Paper
                         sx={{
                             display: 'flex',
                             flexDirection: movile ? 'column' : 'row',
@@ -66,6 +69,16 @@ function Programacion() {
                                     setRegisters([])
                                     navigate('programados')
                                 }} />
+
+                            <IconButton
+                                label='programados'
+                                color={pathname === '/programacion' ? 'info' : 'default'}
+                                onClick={() => {
+                                    setRegisters([])
+                                    navigate('/programacion')
+                                }} >
+                                <CalendarTodayIcon />
+                            </IconButton>
 
                             {pathname.includes('solicitudes') && <div>
                                 <IconButton
@@ -149,9 +162,78 @@ function Programacion() {
                             }}
                         />
 
-                    </Paper>
+                    </Paper>}
+
+                    {pathname === '/programacion' &&
+                        <Stack flexDirection='row' gap='10px' alignItems='center' width='100%'>
+                            <Chip
+                                label='solicitudes'
+                                color={pathname === '/programacion/solicitudes' ? 'warning' : 'default'}
+                                onClick={() => {
+                                    setRegisters([])
+                                    navigate('solicitudes')
+                                }} />
+                            <Chip
+                                label='programados'
+                                color={pathname === '/programacion/programados' ? 'info' : 'default'}
+                                onClick={() => {
+                                    setRegisters([])
+                                    navigate('programados')
+                                }} />
+
+                            <IconButton
+                                label='programados'
+                                color={pathname === '/programacion' ? 'info' : 'default'}
+                                onClick={() => {
+                                    setRegisters([])
+                                    navigate('/programacion')
+                                }} >
+                                <CalendarTodayIcon />
+                            </IconButton>
+
+                            {pathname.includes('solicitudes') && <div>
+                                <IconButton
+                                    id="basic-button"
+                                    aria-controls={menuFilter ? 'basic-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={menuFilter ? 'true' : undefined}
+                                    onClick={(e) => setMenuFilter(e.currentTarget)}
+                                >
+                                    <FilterAltIcon />
+                                </IconButton>
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={menuFilter}
+                                    open={menuFilter}
+                                    onClose={() => setMenuFilter(false)}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                    }}
+                                >
+                                    <MenuItem
+                                        style={{ color: `${statusField === 'por confirmar' ? '#0092ba' : ''}`, fontWeight: `${statusField === 'por confirmar' ? 500 : ''}` }}
+                                        onClick={() => handleStatus('por confirmar', () => setMenuFilter(false))}>
+                                        por confirmar
+                                    </MenuItem>
+                                    <MenuItem
+                                        style={{ color: `${statusField != 'por confirmar' ? '#0092ba' : ''}`, fontWeight: `${statusField != 'por confirmar' ? 500 : ''}` }}
+                                        onClick={() => handleStatus('confirmada', () => setMenuFilter(false))}>
+                                        confirmadas
+                                    </MenuItem>
+                                </Menu>
+                                {!small && <span style={{ fontSize: '12px', fontWeight: '500' }} >{statusField != 'confirmada' ? 'por confirmar' : 'confirmadas'}</span>}
+                            </div>}
+
+                        </Stack>
+                    }
 
                     <Outlet />
+
+                    {pathname === '/programacion' &&
+                        <Box sx={{ width: '100%', paddingTop: '3%' }} >
+                            <AgendaProgramacion />
+                        </Box>
+                    }
 
                 </Stack >
             </Box >

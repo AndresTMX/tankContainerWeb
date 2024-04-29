@@ -104,7 +104,8 @@ function LavadoRealizado({ lavado }) {
         'rechazado': 'error',
         'lavado': 'success',
         'finalizado': 'info',
-        'liberado':'info'
+        'liberado': 'info',
+        'descartado': 'error'
     }
 
     const [vencimiento, setVencimiento] = useState(false);

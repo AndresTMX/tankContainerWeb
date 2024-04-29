@@ -11,6 +11,7 @@ import { useSealItem } from "../../../Hooks/Lavado/useSealItem";
 import ClearIcon from '@mui/icons-material/Clear';
 import SaveIcon from '@mui/icons-material/Save';
 //librearies
+import dayjs from "dayjs";
 import { toast, Toaster } from "sonner";
 //hooks
 import { useNavigate, useParams } from "react-router-dom";
@@ -420,7 +421,26 @@ function RevisionReprobada({ step, setStep, }) {
     )
 }
 
-function ConditionsWashing({ step, setStep, lavado,  }) {
+function ConditionsWashing({ step, setStep, lavado, }) {
+
+    useEffect(() => {
+
+        const currentDate = new dayjs(new Date()).utc();
+
+        async function InitDate() {
+            try {
+                const { error } = await updateWashing({ dateInit: currentDate });
+                if(error){
+                    throw new Error(error)
+                }
+            } catch (error) {
+                console.error(error)
+            }
+        }
+
+        InitDate();
+
+    }, [lavado])
 
     const isMovile = useMediaQuery('(max-width:600px');
     const movile = useMediaQuery('(max-width:800px)');
@@ -462,7 +482,7 @@ function ConditionsWashing({ step, setStep, lavado,  }) {
         event.preventDefault();
 
 
-        setConditions({ ...conditions})
+        setConditions({ ...conditions })
         callback();
 
     }
@@ -472,10 +492,12 @@ function ConditionsWashing({ step, setStep, lavado,  }) {
 
             e.preventDefault()
 
+            const currentDate = new dayjs(new Date()).utc();
+
             //subir condiciones de lavado
             const dataInString = JSON.stringify(conditions);
             const { numero_bahia } = conditions || {};
-            const { error: errorLavado } = await updateWashing({ bahia: numero_bahia, condiciones_lavado: conditions, status:'revision' }, lavadoId);
+            const { error: errorLavado } = await updateWashing({ bahia: numero_bahia, condiciones_lavado: conditions, status: 'revision', dateEnd: currentDate }, lavadoId);
 
             if (errorLavado) {
                 throw new Error(errorLavado)
@@ -513,10 +535,10 @@ function ConditionsWashing({ step, setStep, lavado,  }) {
                                         fullWidth
                                         id='numero_bahia'
                                         name='numero_bahia'
-                                        label='Número de bahía' 
+                                        label='Número de bahía'
                                         value={conditions.numero_bahia}
                                         onChange={(e) => setConditions({ ...conditions, numero_bahia: e.target.value })}
-                                        />
+                                    />
 
                                     <Stack flexDirection={isMovile ? 'column' : 'row'} alignItems='center' gap='10px'>
                                         <TextField

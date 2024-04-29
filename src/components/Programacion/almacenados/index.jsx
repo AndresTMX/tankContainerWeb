@@ -221,7 +221,7 @@ function ItemOrder({ order }) {
                     </Alert>
                 </Stack>
 
-                <Stack sx={{ bgcolor: 'paper.bg' }} flexDirection='column' gap='10px' padding='10px'>
+                <Stack sx={{ bgcolor: 'paper.bg', }} flexDirection='column' gap='10px' padding='10px'>
 
                     {tanques?.map((tanque, index) => (
                         <Paper

@@ -14,6 +14,7 @@ function Login() {
     const submit = async (e) => {
         try {
             e.preventDefault()
+            
             const { error } = await initSession(user.email, user.password);
 
             if (error) {

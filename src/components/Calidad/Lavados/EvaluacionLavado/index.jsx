@@ -195,7 +195,7 @@ function ResultadosEvaluacion({ idLavado, idRegistro, cloneDataWashing }) {
                 status: 'asignado'
             }
 
-            const { error: errorUpdateWashing } = await updateWashing({ status: 'rechazado' }, idLavado);
+            const { error: errorUpdateWashing } = await updateWashing({ status: 'descartado' }, idLavado);
 
             if (errorUpdateWashing) {
                 throw new Error(`Error al actualizar lavado, error: ${errorUpdateWashing.message} `)

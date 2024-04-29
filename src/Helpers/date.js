@@ -72,6 +72,12 @@ export const dateTimeMoreMinutes = (date, minutes) => {
 
 }
 
+export const dateTimeLessMinutes = (date, minutes) => {
+    const fecha = dayjs(date)
+    const fechaModificada = fecha.subtract(minutes, 'minute');
+    return fechaModificada;
+}
+
 export const minutosXhoras = (horas, minutos) => dayjs().set('hour', horas).set('minute', minutos).format('HH:mm');
 
 export const diferenciaEnHoras = (hora) => {
@@ -80,5 +86,5 @@ export const diferenciaEnHoras = (hora) => {
     const horasRestantes = Math.floor(diferencia / 60)
     const minutosRestantes = diferencia % 60
 
-    return(`${horasRestantes} horas y ${minutosRestantes} minutos restantes`);
+    return (`${horasRestantes} horas y ${minutosRestantes} minutos restantes`);
 }

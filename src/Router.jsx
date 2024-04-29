@@ -77,6 +77,7 @@ import { CalidadProvider } from "./Context/CalidadContext";
 import { TransportistaProvider } from "./Context/TransportistaContext";
 //route protect
 import { RouteProtect } from "./Context/AuthContext";
+import { LavadosRechazados } from "./components/Calidad/Liberados/LavadosRechazados";
 
 function Router() {
   return (
@@ -300,11 +301,11 @@ function Router() {
                     <Route path="/calidad/liberados/listos/historial-prelavados/:id" element={<p>historial de prelavado</p>} />
                     <Route path="/calidad/liberados/listos/cargas-previas/:numeroTanque" element={<p>cargas previas</p>} />
                     <Route path="/calidad/liberados/listos/prueba-url/:URL" element={<PruebaURL />} />
-                    <Route path="/calidad/liberados/listos/certificado/:id" element={<CertificadoCalidad />} />
+                    <Route path="/calidad/liberados/listos/certificado/:id/:numero_tanque" element={<CertificadoCalidad />} />
 
                   </Route>
 
-                  <Route path="/calidad/liberados/rechazados" element={<p>realizados</p>} >
+                  <Route path="/calidad/liberados/rechazados" element={<LavadosRechazados />} >
                     <Route path="/calidad/liberados/rechazados/historial-prelavados/:id" element={<p>ewdqed</p>} />
                   </Route>
 

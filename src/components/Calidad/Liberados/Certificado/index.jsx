@@ -1,53 +1,82 @@
 import { Modal, Container, Paper, Box, Stack, Button, CircularProgress, Typography, IconButton, InputLabel, FormControl, Select, MenuItem } from "@mui/material"
-//hooks
-import { useNavigate, useParams } from "react-router-dom"
+//icons
 import ClearIcon from '@mui/icons-material/Clear';
 //pdfAssets
 import { ViewerDocument } from "../../../../PDFs/components/Viewer"
-import { Certificado } from "../../../../PDFs/plantillas/Certificado";
+import { Certificado } from "../../../../PDFs/plantillas/Certificado"
+import { PDFViewer } from "@react-pdf/renderer";
 //resources web
 import { LogoKosher, LogoJuiceProducts } from "../../../../resourcesLinks";
-import { useEffect, useState } from "react";
 //services
-import { getOneWashingFullDetail } from "../../../../services/lavados";
+import { getOneWashingFullDetail, updateWashing, getCargasPrevias } from "../../../../services/lavados";
+//hooks
+import { useState } from "react";
+import { useFetchData, useRealtime } from "../../../../Hooks/FetchData"
+import { useNavigate, useParams } from "react-router-dom"
+//libraries
+import { toast } from "sonner";
 
 export function CertificadoCalidad() {
 
-    const { id: idLavado } = useParams();
+    const { id: idLavado, numero_tanque } = useParams();
     const navigate = useNavigate();
-
-    const [data, setData] = useState([]);
-    console.log("🚀 ~ CertificadoCalidad ~ data:", data)
-    const [loading, setLoading] = useState(null);
-    const [error, setError] = useState(null);
 
     const [config, setConfig] = useState({
         tipo_lavado: '',
         tipo_logo: ''
     });
 
+    async function getData() {
+        const { data, error } = await getOneWashingFullDetail(idLavado);
+        return { data, error }
+    }
 
+    async function getCargas() {
+        const { error, data } = await getCargasPrevias(numero_tanque)
+        return { error, data }
+    }
 
-    useEffect(() => {
+    const { loading, error, data } = useRealtime(getData, false, 'lavados', [idLavado]);
 
-        async function getData() {
-            setLoading(true)
-            const { data: lavado, error } = await getOneWashingFullDetail(idLavado);
+    const { data: cargas, loading: loadingCargas } = useFetchData(getCargas, false)
 
-            if (!error) {
-                setData(lavado)
-            } else {
-                setError(error)
+    const { configuracion_certificado, sellos, tipos_lavado, folio, registros_detalles_entradas, URL, dateEnd } = data[0] || {};
 
-            }
-            setLoading(false)
-        }
+    const { clientes, numero_pipa, tipo, registros, transportistas } = registros_detalles_entradas || {};
 
-        getData();
+    const { cliente } = clientes || {};
 
-    }, [idLavado])
+    const { tipo_lavado, tipo_logo } = configuracion_certificado || {};
 
-    const { configuracion_certificado } = data || {};
+    const { checkIn, checkOut } = registros || {};
+
+    const { name: transportista } = transportistas || {};
+
+    const { num: numLavado, lavado: tipoLavado, temperature, duration, } = tipos_lavado || {};
+
+    const cargas_previas = cargas.length ? JSON.parse(cargas[0].cargas_previas) : {};
+
+    let dataCert = {
+        tipoLavado,
+        numLavado,
+        temperature,
+        numero_tanque,
+        numero_pipa,
+        tipo_lavado,
+        tipo_logo,
+        checkIn,
+        dateEnd,
+        sellos,
+        checkOut,
+        tipo,
+        cliente,
+        duration,
+        transportista,
+        cargas_previas,
+        folio,
+        URL,
+
+    };
 
 
     return (
@@ -57,17 +86,26 @@ export function CertificadoCalidad() {
                 onClose={() => navigate('/calidad/liberados/listos')}
             >
 
-                <Container sx={{ display:'flex', justifyContent:'center', paddingTop: '3%' }} >
+                <Container sx={{ display: 'flex', justifyContent: 'center', paddingTop: '3%' }} >
 
                     {loading && <CircularProgress color='info' size='large' />}
 
-                    {(config.tipo_lavado === '' && config.tipo_logo === '') &&
-                        <ConfigDocument config={config} setConfig={setConfig} />
+                    {(!loading && !loadingCargas && !configuracion_certificado) &&
+                        <ConfigDocument config={config} setConfig={setConfig} idLavado={idLavado} />
                     }
 
-                    {<ViewerDocument>
-                        {/* <Certificado dataCert={{}} /> */}
-                    </ViewerDocument>}
+                    {(configuracion_certificado && !loading && !loadingCargas) &&
+                        <Paper sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '90vw', height: '90vh', padding: '10px' }}>
+                            <Stack flexDirection='row' justifyContent='flex-end' alignItems='center' width='100%'>
+                                <IconButton color="error" onClick={() => navigate('/calidad/liberados/listos')} >
+                                    <ClearIcon />
+                                </IconButton>
+                            </Stack>
+                            <PDFViewer style={{ width: '100%', height: '90%', }}>
+                                <Certificado dataCert={dataCert} />
+                            </PDFViewer>
+                        </Paper>
+                    }
 
                 </Container>
 
@@ -76,13 +114,33 @@ export function CertificadoCalidad() {
     )
 }
 
-function ConfigDocument({ config, setConfig }) {
+function ConfigDocument({ config, setConfig, idLavado }) {
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
+    async function saveConfig() {
+        try {
+
+            if (config.tipo_lavado === '' || config.tipo_logo === '') {
+                throw new Error(`Complete la configuración para continuar`);
+            }
+
+            const { error } = await updateWashing({ configuracion_certificado: config }, idLavado);
+
+            if (error) {
+                throw new Error(error)
+            } else {
+                toast.success('configuración guardada')
+            }
+
+        } catch (error) {
+            toast.error(error?.message)
+        }
+    }
 
     return (
         <>
-            <Paper sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '10px', width:'fit-content' }}>
+            <Paper sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '10px', width: 'fit-content' }}>
 
                 <Stack flexDirection='row' justifyContent='space-between' alignItems='center' width='100%'>
                     <Typography variant="subtitle2" >Configuración del documento</Typography>
@@ -141,6 +199,7 @@ function ConfigDocument({ config, setConfig }) {
                 <Button
                     fullWidth
                     variant="contained"
+                    onClick={saveConfig}
                 >
                     Guardar configuración
                 </Button>

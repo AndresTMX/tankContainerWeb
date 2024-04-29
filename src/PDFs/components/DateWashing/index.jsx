@@ -2,17 +2,36 @@ import { View, Text, Image } from "@react-pdf/renderer";
 import { LogoJuiceProducts, ImageCert1, LogoKosher } from "../../../resourcesLinks";
 import { dateMXFormat, dateExpiration, dateInTextEn, datetimeMXFormat, dateTimeMoreMinutes } from "../../../Helpers/date";
 
-function DateWashing({ dataCerd }) {
+function DateWashing({ dataCert }) {
 
-    const { folio, numLavado, temperature, dateEnd, cliente, numero_taque, numero_pipa, tipo, transportista, cargas_previas, urlString, checkIn, checkOut, duration, logo } = dataCerd || {};
+    const {
+    
+        cargas_previas,
+        numLavado,
+        temperature,
+        numero_tanque,
+        numero_pipa,
+        tipo_lavado,
+        tipo_logo,
+        checkIn,
+        checkOut,
+        dateEnd,
+        dateInit,
+        cliente,
+        tipo,
+        duration,
+        transportista,
+        folio,
+        URL
+    } = dataCert || {};
+
+    const { pruebas: urls } = URL || {};
 
     const { carga1, carga2, carga3 } = cargas_previas || {};
 
-    const numero_carga = `${numero_taque || numero_pipa} ${tipo != 'pipa' ? tipo : ''}`;
+    const numero_carga = `${numero_tanque || numero_pipa} ${tipo != 'pipa' ? tipo : ''}`;
 
-    const renderLogo = logo === 'juice' ? LogoJuiceProducts : LogoKosher;
-
-    const urls = Object.values(urlString);
+    const renderLogo = tipo_lavado === 'juice' ? LogoJuiceProducts : LogoKosher;
 
     return (
         <View style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between', }}>
@@ -40,7 +59,7 @@ function DateWashing({ dataCerd }) {
                     </View>
 
                     <View style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '70%' }}>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateMXFormat(dateEnd)}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateMXFormat(dateInit)}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{cliente}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{numero_carga}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{transportista}</Text>
@@ -49,10 +68,10 @@ function DateWashing({ dataCerd }) {
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{carga2 || ''}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{carga3 || ''}</Text>
 
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateInTextEn(checkIn) + '  ' + datetimeMXFormat(checkIn)}</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateInTextEn(dateEnd) + '  ' + dateTimeMoreMinutes(checkIn, duration)}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateInTextEn(dateInit) + '  ' + datetimeMXFormat(dateInit)}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateInTextEn(dateInit) + '  ' + dateTimeMoreMinutes(dateInit, duration)}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{`${duration} MIN`}</Text>
-                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateExpiration(dateEnd) + '  ' + dateTimeMoreMinutes(checkIn, duration)}</Text>
+                        <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{dateExpiration(dateInit) + '  ' + dateTimeMoreMinutes(dateInit, duration)}</Text>
                     </View>
 
                 </View>
@@ -61,11 +80,11 @@ function DateWashing({ dataCerd }) {
 
             <View style={{ display: 'flex', flexDirection: 'column', width: '40%', alignItems: 'flex-end', }}>
 
-                <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', height: '100px', position: 'relative', top: '-60px' }}>
+                <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', height: '100px', position: 'relative', top: '-50px' }}>
                     <Image src={renderLogo} />
                 </View>
 
-                <View style={{ display: 'flex', flexDirection: 'row', gap: '5px', width: '100%', position: 'relative', top: '-55px' }}>
+                <View style={{ display: 'flex', flexDirection: 'row', gap: '5px', width: '100%', position: 'relative', top: '-50px' }}>
 
                     <View style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '50%' }}>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px' }} >Service Order:</Text>
@@ -83,7 +102,7 @@ function DateWashing({ dataCerd }) {
 
                     </View>
 
-                    <View style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '50%' }}>
+                    <View style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '50%', }}>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{folio}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{numLavado}</Text>
                         <Text style={{ fontSize: '10px', textTransform: 'uppercase', padding: '4px', backgroundColor: '#b4c6e7' }} >{temperature}</Text>
@@ -99,7 +118,7 @@ function DateWashing({ dataCerd }) {
 
                 </View>
 
-                <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', height: '100px', position: 'relative', top: '-64px' }}>
+                <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', height: '100px', position: 'relative', top: '-15px' }}>
                     <Image src={ImageCert1} />
                 </View>
 

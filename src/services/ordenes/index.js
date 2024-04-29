@@ -228,3 +228,23 @@ export async function verifyExist(id_detalle) {
         console.error(error)
     }
 }
+
+export async function getOrdersCalendar() {
+    try {
+        const { error, data } = await supabase
+            .from('ordenes_lavado')
+            .select('*, clientes(*), destinos(*)')
+            .eq('status', 'confirmada')
+            .order('fecha_recoleccion', { ascending: true })
+            .limit(100)
+
+        if (error) {
+            throw new Error(`Error al recuperar ordenes aprobadas, error: ${error.message}`)
+        }
+
+        return { error, data }
+
+    } catch (error) {
+        console.error(error)
+    }
+}

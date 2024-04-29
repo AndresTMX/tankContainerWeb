@@ -17,6 +17,8 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LaunchIcon from '@mui/icons-material/Launch';
 //libraries
 import dayjs from "dayjs";
+import { updateWashing } from "../../../../services/lavados";
+import { toast, Toaster } from "sonner";
 
 
 export function LavadosLiberados() {
@@ -43,6 +45,7 @@ export function LavadosLiberados() {
 
     return (
         <Stack gap='10px' width='100%' alignItems='center' >
+            <Toaster position="top-center" richColors />
             <ContainerScroll height='calc(100vh - 250px)' background='whitesmoke'>
 
                 <Stack gap='10px' padding='0px'  >
@@ -91,7 +94,7 @@ function ItemLiberado({ lavado }) {
     const movile = useMediaQuery('(max-width:880px)');
     const navigate = useNavigate();
 
-    const { registros_detalles_entradas, id_detalle_entrada, fecha_recoleccion, ordenes_lavado, bahia, tipos_lavado, condiciones_lavado, status, URL, id: idLavado } = lavado || {};
+    const { registros_detalles_entradas, id_detalle_entrada, fecha_recoleccion, ordenes_lavado, bahia, tipos_lavado, condiciones_lavado, status, URL, dateEnd, dateInit, id: idLavado } = lavado || {};
 
     const { carga, clientes, numero_pipa, numero_tanque, tipo, especificacion } = registros_detalles_entradas || {};
 
@@ -100,6 +103,22 @@ function ItemLiberado({ lavado }) {
     const { cliente } = clientes || {};
 
     const { destinos } = ordenes_lavado || {}
+
+    async function Rejected() {
+        try {
+
+            const { error } = await updateWashing({ status: 'rechazado' }, idLavado)
+
+            if (error) {
+                throw new Error(error)
+            } else {
+                toast.success('registro actualizado')
+            }
+
+        } catch (error) {
+            toast.error(error?.message)
+        }
+    }
 
 
     return (
@@ -167,7 +186,7 @@ function ItemLiberado({ lavado }) {
 
                         <Box >
                             <Typography variant='caption'>Caducidad de lavado</Typography>
-                            <Typography>{dateExpiration(fecha_recoleccion)}</Typography>
+                            <Typography>{dateExpiration(dateInit)}</Typography>
                         </Box>
 
                     </Stack>
@@ -188,12 +207,13 @@ function ItemLiberado({ lavado }) {
                             fullWidth={movile}
                             variant="contained"
                             size="small"
-                            onClick={() => navigate(`certificado/${idLavado}`)}
+                            onClick={() => navigate(`certificado/${idLavado}/${numero_tanque}`)}
                         >
                             Generar certificado
                         </Button>
 
                         <Button
+                            onClick={Rejected}
                             fullWidth={movile}
                             variant="contained"
                             color="error"

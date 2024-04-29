@@ -7,6 +7,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 const AuthContext = createContext();
 
 function AuthProvider({ children }) {
+
   const [key, setKey] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -68,7 +69,9 @@ function AuthProvider({ children }) {
 
   const auth = { logIn, logOut, getAuth, setLoading, key, loading };
 
-  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={auth}>
+    {children}
+    </AuthContext.Provider>;
 }
 
 export { AuthProvider, AuthContext };

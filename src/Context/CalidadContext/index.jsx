@@ -93,6 +93,9 @@ export function CalidadProvider({ children }) {
                 '/calidad/prelavados/realizados': () => extractPrelavadoRealizado(item),
                 '/calidad/lavados/pendientes': () => extractPrelavadosPendientes(item),
                 '/calidad/lavados/realizados': () => extractPrelavadosPendientes(item),
+                '/calidad/liberados/listos': () => extractPrelavadosPendientes(item),
+                '/calidad/liberados/rechazados': () => extractPrelavadosPendientes(item),
+
             }
 
             if (routesFilter[pathname]) {

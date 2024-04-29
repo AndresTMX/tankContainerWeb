@@ -5,17 +5,37 @@ import { DateWashing } from "../../components/DateWashing";
 import { TablesCert } from "../../components/TablesCert";
 import { ImageCert2, FirmaCalidad, FirmaManiobras } from "../../../resourcesLinks";
 
-function Certificado({ dataCert }) {
+export function Certificado({ dataCert }) {
 
-    const { valoresFiltradosDomo, valoresFiltradosValvule, typeWashing, numLavado } = dataCert;
+    const {
+        numLavado,
+        temperature,
+        numero_tanque,
+        numero_pipa,
+        tipoLavado,
+        tipo_lavado,
+        tipo_logo,
+        checkIn,
+        dateEnd,
+        sellos,
+        checkOut,
+        tipo,
+        cliente,
+        duration,
+        transportista,
+        cargas_previas,
+        folio,
+        URL
+
+    } = dataCert || {};
 
     return (
         <Document>
             <SimplePageLetter page={'1'} numPages={'1'}>
                 <HeaderCert />
-                <DateWashing dataCerd={dataCert} />
-                <TablesCert sellosDome={valoresFiltradosDomo} sellosValvule={valoresFiltradosValvule} typeWashing={typeWashing} />
-                <View style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'start', gap: '10px', position: 'relative', top: '-40px' }}>
+                <DateWashing dataCert={dataCert} />
+                <TablesCert sellos={sellos} tipoLavado={tipoLavado} />
+                <View style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'start', gap: '10px', position: 'relative', top: '-10px' }}>
 
                     <View style={{ display: 'flex', flexDirection: 'row', gap: '5px', width: '100%' }}>
                         <Text style={{ fontSize: '9px', textAlign: 'center' }}>REMARKS</Text>
@@ -32,15 +52,15 @@ function Certificado({ dataCert }) {
                 </View>
 
                 <View style={{ display: 'flex', flexDirection: 'row', width: '100%', alignItems: 'center', justifyContent: 'space-around', gap: '10px' }}>
-                    <View style={{ display: 'flex', flexDirection: 'column', gap: '1px', alignItems: 'center', position: 'relative', top: '-40px' }}>
+                    <View style={{ display: 'flex', flexDirection: 'column', gap: '1px', alignItems: 'center', position: 'relative', top: '-10px' }}>
                         <Image style={{ height: '40px', width: 'auto' }} src={FirmaCalidad} />
                         <Text style={{ fontSize: '9px', borderTop: 1, fontFamily: 'Helvetica-Bold', padding: '2px' }}>ING. EDITH APARICIO MÉNDEZ</Text>
                         <Text style={{ fontSize: '8px', fontFamily: 'Helvetica-Bold' }}>Quality System Responsible</Text>
                     </View>
 
-                    <Image style={{ height: '60px', width: 'auto', position: 'relative', top: '-40px' }} src={ImageCert2} />
+                    <Image style={{ height: '60px', width: 'auto', position: 'relative', top: '-10px' }} src={ImageCert2} />
 
-                    <View style={{ display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'center', position: 'relative', top: '-40px' }}>
+                    <View style={{ display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'center', position: 'relative', top: '-10px' }}>
                         <Image style={{ height: '40px', width: 'auto' }} src={FirmaManiobras} />
                         <Text style={{ fontSize: '9px', borderTop: 1, fontFamily: 'Helvetica-Bold', padding: '2px' }}>ING. ANGEL D. NICOLAS ORTEGA</Text>
                         <Text style={{ fontSize: '8px', fontFamily: 'Helvetica-Bold' }}>Operative Responsible</Text>
@@ -62,4 +82,3 @@ function Certificado({ dataCert }) {
     );
 }
 
-export { Certificado };
