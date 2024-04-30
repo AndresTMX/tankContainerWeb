@@ -4,8 +4,6 @@ import { ItemLoadingState } from "../ItemLoadingState";
 import { ContainerScroll } from "../ContainerScroll";
 import { ItemManiobras } from "../ItemManiobras";
 import { Box, Stack, Chip, Typography, Paper, Button, Fade, Alert, Pagination, TextField } from "@mui/material";
-//helpers
-import { filterSearchVigilancia } from "../../Helpers/searcher";
 //hooks
 import { useGetManiobrasType } from "../../Hooks/Maniobras/useGetManiobrasType";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -20,7 +18,7 @@ import { getManiobrasConfirmadas, getManiobrasPendientes } from "../../services/
 import { toast, Toaster } from "sonner";
 
 
-function RegistersManiobras() {
+export function RegistersManiobras() {
 
     const isMovile = useMediaQuery("(max-width:750px)");
     const movile = useMediaQuery('(max-width:820px)');
@@ -246,5 +244,3 @@ function RegistersManiobras() {
         </>
     );
 }
-
-export { RegistersManiobras };

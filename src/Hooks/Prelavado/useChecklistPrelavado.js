@@ -1,14 +1,7 @@
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { AuthContext } from "../../Context/AuthContext";
 import supabase from "../../supabase";
-import { useContext } from "react";
 import { sendImageCloudinary } from "../../cloudinary";
 
-function useChecklistPrelavado(updaterFunction) {
-
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-    const { key } = useContext(AuthContext);
+function useChecklistPrelavado() {
 
     //cloudinary data
     const preset = 'mvtjch9n';
@@ -22,7 +15,6 @@ function useChecklistPrelavado(updaterFunction) {
             const { error } = await supabase
                 .from('prelavado_checklist')
                 .insert({
-                    user_id: key,
                     ...data
                 })
 
@@ -30,16 +22,10 @@ function useChecklistPrelavado(updaterFunction) {
                 throw new Error(`Error al crear checklist de prelavado, error: ${error.message}`)
             }
 
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'checklist guardado'
-            })
+            return { error }
 
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
+            console.error(error?.message)
         }
     }
 
@@ -231,10 +217,7 @@ function useChecklistPrelavado(updaterFunction) {
             }
 
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
+            console.error(error?.message)
         }
 
     }

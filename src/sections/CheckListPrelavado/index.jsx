@@ -26,8 +26,6 @@ import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { StepBarProgress } from "../StepBarProgress";
-//context
-import { PrelavadoContext } from "../../Context/PrelavadoContext";
 //hooks
 import { useChecklistPrelavado } from "../../Hooks/Prelavado/useChecklistPrelavado";
 import { useNavigate } from "react-router-dom";

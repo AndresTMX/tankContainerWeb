@@ -1,12 +1,7 @@
 import supabase from "../../supabase";
-import { useContext } from "react";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes } from "../../Reducers/GlobalReducer";
 import { sendImageCloudinary } from "../../cloudinary";
 
 function useSendToSanitization() {
-
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
     //cloudinary data
     const preset = 'mvtjch9n';
@@ -14,11 +9,6 @@ function useSendToSanitization() {
 
     const sendToSanitization = async (idLavado, idRegistroEntrada, dataUrl) => {
         try {
-
-            dispatchGlobal({
-                type: actionTypes.setLoading,
-                payload: true
-            })
 
             //subir imagen de url y devolver string url image
             const { valueDome, coments, previewDome, imageDome, valueValve, previewValve, imageValve } = dataUrl || {};
@@ -78,26 +68,9 @@ function useSendToSanitization() {
                 throw new Error(`Error al actualizar el registro de lavado, error: ${errorUpdateWashing.message}`)
             }
 
-            dispatchGlobal({
-                type: actionTypes.setLoading,
-                payload: false
-            })
-
-            dispatchGlobal({
-                type: actionTypes.setNotification,
-                payload: 'Enviado a sellado'
-            })
 
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypes.setLoading,
-                payload: false
-            })
-
-            dispatchGlobal({
-                type: actionTypes.setNotification,
-                payload: error.message
-            })
+            console.error(error?.message)
         }
     }
 
@@ -162,7 +135,7 @@ function useSendToSanitization() {
                 }
 
             }
-            
+
         } catch (error) {
             console.error(error)
         }

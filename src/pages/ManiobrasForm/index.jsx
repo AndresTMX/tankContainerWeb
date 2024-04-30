@@ -15,7 +15,6 @@ import {
     Container,
 } from "@mui/material";
 import { AddDataTanks } from "../../components/AddNewTanks"
-import { Notification } from "../../components/Notification";
 import UpdateIcon from '@mui/icons-material/Update';
 //icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -27,6 +26,7 @@ import { useCustomers } from "../../Hooks/Customers/useCustomers";
 import { useFormRegister } from "../../Hooks/Maniobras/useFormRegister";
 import { useGetOperators } from "../../Hooks/operadoresManagment/useGetOperators";
 import { useGetTransporters } from "../../Hooks/transportersManagment/useGetTransporters";
+import { Toaster } from "sonner";
 
 function ManiobrasForm() {
 
@@ -176,6 +176,9 @@ function ManiobrasForm() {
                 paddingBottom: '50px',
             }}
         >
+
+            <Toaster richColors position="top-center" />
+
             <Paper
                 elevation={2}
                 sx={{

@@ -1,16 +1,11 @@
 import { useEffect, useState, useContext } from "react";
-import { Container, Box, Paper, Chip, Button, Stack, Tab, Tabs, Typography, Modal, IconButton, TextField, InputLabel, Select, MenuItem, FormControl, Divider, Skeleton } from "@mui/material";
+import { Box, Paper, Chip, Button, Stack, Tab, Tabs, Typography, Modal, TextField, InputLabel, Select, MenuItem, FormControl, Divider, Skeleton } from "@mui/material";
 import { CustomTabPanel } from "../CustomTabPanel";
 import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
 import { ContainerScroll } from "../ContainerScroll";
-import { DataGrid } from "@mui/x-data-grid";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { useAddTanks } from "../../Hooks/Maniobras/useAddTanks";
 
 function ViewAllTanks() {
-
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
     const { getAllTanks, tanks, tankError, tankLoading } = useGetTanks()
 
@@ -49,16 +44,16 @@ function ViewAllTanks() {
             try {
                 await routerUpdates[type]();
             } catch (error) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: `Error al ejecutar la acción para ${type}: ${error.message}`
-                })
+                // dispatchGlobal({
+                //     type: actionTypesGlobal.setNotification,
+                //     payload: `Error al ejecutar la acción para ${type}: ${error.message}`
+                // })
             }
         } else {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: `No se encontro una accion predeterminada para carga tipo ${type}`
-            })
+            // dispatchGlobal({
+            //     type: actionTypesGlobal.setNotification,
+            //     payload: `No se encontro una accion predeterminada para carga tipo ${type}`
+            // })
         }
 
         setEditTank(!editTank)
@@ -77,10 +72,10 @@ function ViewAllTanks() {
         if (selectTank.length >= 1) {
             setEditTank(!editTank)
         } else {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Selecciona al menos un tanque primero'
-            })
+            // dispatchGlobal({
+            //     type: actionTypesGlobal.setNotification,
+            //     payload: 'Selecciona al menos un tanque primero'
+            // })
         }
     }
 
@@ -88,10 +83,10 @@ function ViewAllTanks() {
         if (selectTank.length >= 1) {
             setDeleteModal(!deleteModal)
         } else {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Selecciona al menos un tanque primero'
-            })
+            // dispatchGlobal({
+            //     type: actionTypesGlobal.setNotification,
+            //     payload: 'Selecciona al menos un tanque primero'
+            // })
         }
     }
 

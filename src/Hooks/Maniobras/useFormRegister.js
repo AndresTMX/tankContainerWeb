@@ -1,11 +1,8 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { usePostRegister } from "./usePostRegister";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes } from "../../Reducers/GlobalReducer";
+import { toast } from "sonner";
 
 function useFormRegister() {
-
-  const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
   const {
     sendInputRegisterEmptyTracto,
@@ -51,10 +48,8 @@ function useFormRegister() {
 
   const validateNumTank = () => {
     if (dataTank.length >= 4) {
-      dispatchGlobal({
-        type: actionTypes.setNotification,
-        payload: 'No puedes agregar más de 4 tanques'
-      })
+
+      toast.error('No puedes agregar más de 4 tanques')
 
       return false
     } else {

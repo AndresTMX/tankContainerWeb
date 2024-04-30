@@ -19,7 +19,6 @@ import { ButtonDowloandProforma } from "../../PDFs/components/ButtonDowloand";
 import { Proforma } from "../../PDFs/plantillas/proforma";
 import { ContainerScroll } from "../ContainerScroll";
 import { PDFViewer } from "@react-pdf/renderer";
-import { SelectSimple } from "../SelectSimple";
 import { dateInText } from "../../Helpers/date";
 
 function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTypeRepair }) {
@@ -121,7 +120,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
 
             <Toaster richColors position='top-center' />
 
-            <Box sx={{ bgcolor: 'whitesmoke', display: 'flex', flexDirection: 'column', width: '100vw', alignItems: 'center', minHeight:'100vh' }}>
+            <Box sx={{ bgcolor: 'whitesmoke', display: 'flex', flexDirection: 'column', width: '100vw', alignItems: 'center', minHeight: '100vh' }}>
 
                 <Stack
                     width={'100%'}
@@ -213,13 +212,18 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
                             </Stack>
 
                             <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                                <SelectSimple
-                                    width={'300px'}
-                                    title={'Tipo de reparación'}
-                                    options={['interna', 'externa']}
-                                    value={reparation}
-                                    onChange={(e) => setReparation(e.target.value)}
-                                />
+                                
+                                <FormControl>
+                                    <InputLabel>Tipo de reparación</InputLabel>
+                                    <Select
+                                        label="Tipo de reparación"
+                                        value={reparation}
+                                        onChange={(e) => setReparation(e.target.value)}
+                                    >
+                                        <MenuItem value='interna' >interna</MenuItem>
+                                        <MenuItem value='externa' >externa</MenuItem>
+                                    </Select>
+                                </FormControl>
 
                                 <Button
                                     onClick={updateTypeMaintance}

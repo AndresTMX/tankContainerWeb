@@ -58,14 +58,7 @@ function ModalRepairPending() {
                 </Stack>
 
                 <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                    <SelectSimple
-                        width={'300px'}
-                        title={'Tipo de reparación'}
-                        options={['interna', 'externa']}
-                        value={reparation}
-                        onChange={(e) => setReparation(e.target.value)}
-                    />
-
+                    
                     <FormControl fullWidth>
                         <InputLabel>Tipo de reparación</InputLabel>
                         <Select

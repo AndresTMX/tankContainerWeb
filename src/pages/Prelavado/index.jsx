@@ -163,10 +163,6 @@ function PrelavadoItem({ data }) {
    }
 
    const CancelChecklist = () => {
-      // dispatch({
-      //     type: actionTypes.setSelectCheck,
-      //     payload: false
-      // })
       toast.success('cancel check')
    }
 

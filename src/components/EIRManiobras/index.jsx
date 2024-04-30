@@ -6,7 +6,6 @@ import { CheckListEIR } from "../../sections/CheckListEIR";
 import { NotConexionState } from "../NotConectionState";
 import { ItemLoadingState } from "../ItemLoadingState";
 import { ContainerScroll } from "../ContainerScroll";
-import { Searcher } from "../../components/Searcher";
 import { ItemEIR } from "../ItemEIR";
 //hooks
 import { useGetEIR } from "../../Hooks/Maniobras/useGetEIR";
@@ -96,9 +95,7 @@ function EIRManiobras() {
                                 </Stack>
 
                                 <Box sx={{ width: '350px', alignItems: isMovile ? 'center' : 'flex-end' }}>
-                                    <Searcher
-
-                                    />
+                                    
                                 </Box>
 
                             </Stack>

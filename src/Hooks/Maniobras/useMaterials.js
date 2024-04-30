@@ -1,12 +1,8 @@
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import supabase from "../../supabase";
 
 
 function useMaterials() {
-
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
     const [rowMaterials, setRowMaterials] = useState([]);
     const [materiales, setMateriales] = useState([]);
@@ -41,10 +37,6 @@ function useMaterials() {
 
         } catch (error) {
             setLoading(false)
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
         }
 
     }
@@ -61,10 +53,7 @@ function useMaterials() {
             updater();
 
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
+            console.error(error?.message)
         }
     }
 
@@ -79,10 +68,7 @@ function useMaterials() {
                         throw new Error(error.message)
                     }
                 } catch (error) {
-                    dispatchGlobal({
-                        type: actionTypesGlobal.setNotification,
-                        payload: error.message
-                    })
+                    console.error(error?.message)
                 }
             })
 
@@ -91,10 +77,7 @@ function useMaterials() {
             updater();
 
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
+            console.error(error?.message)
         }
     }
 
@@ -111,10 +94,7 @@ function useMaterials() {
                         throw new Error(error.message)
                     }
                 } catch (error) {
-                    dispatchGlobal({
-                        type: actionTypesGlobal.setNotification,
-                        payload: error.message
-                    })
+                    console.error(error?.message)
                 }
             })
 
@@ -123,10 +103,8 @@ function useMaterials() {
             updater();
 
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
+            console.error(error?.message)
+
         }
     }
 

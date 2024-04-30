@@ -1,8 +1,7 @@
 import { useState, } from "react";
 import { toast } from "sonner";
-import { Box, Paper, Stack, Button, IconButton, Typography, Modal, TextField, FormControlLabel, Checkbox, FormGroup, FormControl } from "@mui/material";
+import { Box, Paper, Stack, Button, IconButton, Typography, Modal, TextField, FormControlLabel, Checkbox, FormGroup, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { ContainerScroll } from "../../components/ContainerScroll";
-import { SelectSimple } from "../../components/SelectSimple";
 import { AccordionSimple } from "../../components/Accordion";
 import { TextGeneral } from "../../components/TextGeneral";
 import { StepBarProgress } from "../StepBarProgress";
@@ -912,24 +911,27 @@ export function StepOptions({ item, setItem, step, setStep }) {
       <Paper sx={{ width: '100%', padding: '20px' }}>
 
         <form onSubmit={onSumbit}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} >
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' , gap:'15px'}} >
 
             <TextField
               disabled
               fullWidth
-              helperText='Cliente'
+              label='Cliente'
               value={item.clientes.cliente}
             />
 
-            <SelectSimple
-              type={'obj'}
-              title='Siguiente etapa'
-              width={'100%'}
-              value={item.status}
-              options={optionsStatus}
-              onChange={(e) => setItem({ ...item, status: e.target.value })}
-              helperText={'Selecciona a que etapa pasa este contedor'}
-            />
+            <FormControl fullWidth>
+              <InputLabel>Siguiente etapa</InputLabel>
+              <Select
+                label='Siguiente etapa'
+                value={item.status}
+                onChange={(e) => setItem({ ...item, status: e.target.value })}
+              >
+                {optionsStatus.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>{item.nombre}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <Stack
               width={'100%'}

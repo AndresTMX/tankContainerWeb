@@ -1,11 +1,6 @@
 import supabase from "../../supabase";
-import { useContext } from "react";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 
 function useAddTanks() {
-
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
     const addTanks = async (arrayTanks, status) => {
         dispatchGlobal({
@@ -24,46 +19,20 @@ function useAddTanks() {
                 }
 
             } catch (error) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setLoading,
-                    payload: false
-                });
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: error.message
-                });
+                throw new Error(error)
             }
         });
 
         try {
             await Promise.all(newTanks)
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Base de datos actualizada con exito'
-            });
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            });
+           console.error(error?.message)
         }
 
     }
 
     const updateTankStatus = async (updates, tanques) => {
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: true
-        });
-
+        
         const updatesTanks = tanques.map(async (tanque) => {
             try {
                 const { error } = await supabase.from('tanques')
@@ -75,46 +44,20 @@ function useAddTanks() {
                 }
 
             } catch (error) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setLoading,
-                    payload: false
-                })
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: error.message
-                })
+               throw new Error(error)
             }
         });
 
         try {
             await Promise.all(updatesTanks)
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            })
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
+            console.error(error?.message)
         }
 
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: false
-        })
-        dispatchGlobal({
-            type: actionTypesGlobal.setNotification,
-            payload: 'Tanques actualizados con exito'
-        })
     }
 
     const updateTanksRepair = async (tanques) => {
 
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: true
-        });
 
         const updatesTanks = tanques.map(async (tanque) => {
             try {
@@ -130,46 +73,19 @@ function useAddTanks() {
                 }
 
             } catch (error) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setLoading,
-                    payload: false
-                })
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: error.message
-                })
+                console.error(error?.message)
             }
         });
 
         try {
             await Promise.all(updatesTanks)
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            })
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
+            console.error(error?.message)
         }
 
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: false
-        })
-        dispatchGlobal({
-            type: actionTypesGlobal.setNotification,
-            payload: 'Tanques actualizados con exito'
-        })
     }
 
     const deleteTanks = async (tanques) => {
-
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: true
-        });
 
         const deleteTanks = tanques.map(async (tanque) => {
 
@@ -182,42 +98,15 @@ function useAddTanks() {
                     throw new Error(`Error al eliminar el tanque ${tanque}`);
                 }
             } catch (error) {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setLoading,
-                    payload: false
-                });
-
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: error.message
-                });
+                console.error(error?.message)
             }
         });
 
         try {
             await Promise.all(deleteTanks);
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            });
+            console.error(error?.message)
         }
-
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: false
-        });
-
-        dispatchGlobal({
-            type: actionTypesGlobal.setNotification,
-            payload: 'Tanques eliminados'
-        });
-
 
     }
 

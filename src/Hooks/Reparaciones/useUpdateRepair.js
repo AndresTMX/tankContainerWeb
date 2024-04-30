@@ -1,24 +1,14 @@
 import dayjs from "dayjs";
 import supabase from "../../supabase";
-import { useContext } from "react";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { sendImageCloudinary } from "../../cloudinary";
 
 function useUpdateRepair() {
-
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
     //cloudinary data
     const preset = 'mvtjch9n';
     const folderName = 'evidencias_reparacion';
 
     const updateRepair = async (questionsForUpdate, dataMaintance, idRepair) => {
-
-        dispatchGlobal({
-            type: actionTypesGlobal.setLoading,
-            payload: true
-        });
 
         const { proforma, repairs } = dataMaintance;
 
@@ -45,37 +35,14 @@ function useUpdateRepair() {
                 throw new Error(`Error al actualizar el estatus de la reparacion ${idRepair}`)
             }
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            });
+           console.error(error?.message)
         }
-
-        setTimeout(() => {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Registro actualizado con exito'
-            });
-        }, 1000)
-
 
     }
 
     const completeRepair = async (updates, idRepair, idRegister) => {
 
         try {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: true
-            });
 
             const currentDate = new dayjs(new Date()).utc();
 
@@ -106,26 +73,9 @@ function useUpdateRepair() {
                 throw new Error(`Error al actualizar registro de entrada`)
             }
 
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'reparacion terminada, evidencias cargadas'
-            })
+            return { error }
         } catch (error) {
-            console.error(error)
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
+            console.error(error?.message)
         }
 
     }
@@ -183,8 +133,7 @@ function useUpdateRepair() {
             return checklistWhitUrlInString;
 
         } catch (error) {
-            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false })
-            dispatchGlobal({ tyoe: actionTypesGlobal.setNotification, payload: error.message })
+           console.error(error?.message)
         }
     }
 
@@ -215,8 +164,7 @@ function useUpdateRepair() {
             try {
                 await Promise.all(sendImages);
             } catch (error) {
-                dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false })
-                dispatchGlobal({ tyoe: actionTypesGlobal.setNotification, payload: error.message })
+                throw new Error(error?.message)
             }
 
             //copia profunda del array original 
@@ -239,7 +187,7 @@ function useUpdateRepair() {
 
             return arrayWhitUrls;
         } catch (error) {
-            console.error(error)
+            console.error(error?.message)
         }
     }
 

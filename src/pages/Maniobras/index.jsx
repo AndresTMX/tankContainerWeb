@@ -5,9 +5,6 @@ import { Materiales } from "../../components/Materiales";
 import { ViewAllTanks } from "../../components/ViewAllTanks";
 import { CustomTabPanel } from "../../components/CustomTabPanel";
 import { RegistersManiobras } from "../../components/RegistersManiobras";
-//Notification
-import { Notification } from "../../components/Notification";
-import { LoadingState } from "../../components/LoadingState";
 //helpers
 import { EIRManiobras } from "../../components/EIRManiobras";
 //hooks
@@ -66,8 +63,6 @@ function Maniobras() {
 
             </Stack>
 
-            <Notification />
-            <LoadingState duration={1000} />
             <Outlet />
 
         </Box>

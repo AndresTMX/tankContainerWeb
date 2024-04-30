@@ -1,7 +1,5 @@
 import supabase from "../../supabase";
-import { useState, useEffect, useContext } from "react";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
+import { useState, useEffect } from "react";
 
 function useCustomers(idCustomer) {
 
@@ -14,7 +12,6 @@ function useCustomers(idCustomer) {
     //dataGrid
     const [rowsCustomers, setRowsCustomers] = useState([]);
 
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
     const cache = localStorage.getItem('customers')
 
     useEffect(() => {
@@ -59,10 +56,10 @@ function useCustomers(idCustomer) {
 
         } catch (error) {
             setLoading(false)
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
+            // dispatchGlobal({
+            //     type: actionTypesGlobal.setNotification,
+            //     payload: error.message
+            // })
         }
     }
 
@@ -77,10 +74,10 @@ function useCustomers(idCustomer) {
             }
         } catch (error) {
             setLoading(false);
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            });
+            // dispatchGlobal({
+            //     type: actionTypesGlobal.setNotification,
+            //     payload: error.message
+            // });
         }
     }
 
@@ -100,10 +97,10 @@ function useCustomers(idCustomer) {
 
                 } catch (error) {
                     setLoading(false);
-                    dispatchGlobal({
-                        type: actionTypesGlobal.setNotification,
-                        payload: error.message
-                    });
+                    // dispatchGlobal({
+                    //     type: actionTypesGlobal.setNotification,
+                    //     payload: error.message
+                    // });
                 }
             })
 
@@ -111,10 +108,10 @@ function useCustomers(idCustomer) {
 
         } catch (error) {
             setLoading(false);
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            });
+            // dispatchGlobal({
+            //     type: actionTypesGlobal.setNotification,
+            //     payload: error.message
+            // });
         }
     }
 
@@ -133,10 +130,10 @@ function useCustomers(idCustomer) {
                 }
 
                 setLoading(false)
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: error.message
-                });
+                // dispatchGlobal({
+                //     type: actionTypesGlobal.setNotification,
+                //     payload: error.message
+                // });
             })
 
             try {
@@ -147,10 +144,10 @@ function useCustomers(idCustomer) {
 
         } catch (error) {
             setLoading(false);
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            });
+            // dispatchGlobal({
+            //     type: actionTypesGlobal.setNotification,
+            //     payload: error.message
+            // });
         }
     }
 
@@ -167,10 +164,10 @@ function useCustomers(idCustomer) {
 
             setCustomerId(...data);
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            });
+            // dispatchGlobal({
+            //     type: actionTypesGlobal.setNotification,
+            //     payload: error.message
+            // });
         }
     }
 

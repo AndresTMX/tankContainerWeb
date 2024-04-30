@@ -1,14 +1,11 @@
 import supabase from "../../supabase";
 import { useContext } from "react";
 import { AuthContext } from "../../Context/AuthContext"
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { currenDateFormatTz } from "../../Helpers/date";
 
 function usePostRegister(updaterRegisters) {
 
     const { key } = useContext(AuthContext);
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
     const session = JSON.parse(sessionStorage.getItem(key));
     const tableRegisters = 'registros';
@@ -22,11 +19,7 @@ function usePostRegister(updaterRegisters) {
     const sendInputRegistersTank = async (data, economico, tracto, operator) => {
 
         try {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: true
-            });
-
+            
             //crear nuevo registro general de tipo entrada
             const { data: dataRegister, error: errorCreateRegister } = await supabase
                 .from(tableRegisters)
@@ -68,36 +61,14 @@ function usePostRegister(updaterRegisters) {
                 throw new Error(error.message)
             }
 
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Registro enviado'
-            })
-
-
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
+            console.error(error?.message)
         }
 
     }
 
     const sendInputRegistersPipa = async (data, economico, tracto, operator) => {
         try {
-
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: true
-            });
 
             //registro de entrada general
             const { data: dataRegister, error: errorRegiser } = await supabase
@@ -135,32 +106,14 @@ function usePostRegister(updaterRegisters) {
                 throw new Error(error)
             }
 
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Registro enviado'
-            })
-
-
+           
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
+            console.error(error?.message)
         }
     }
 
     const sendInputRegisterEmptyTracto = async (register, economico, tracto, operator) => {
         try {
-            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
             //registro general de entrada
             const { data: dataRegister, error: errorRegister } = await supabase
@@ -188,24 +141,8 @@ function usePostRegister(updaterRegisters) {
                 throw new Error(`Error al crear detalles del registro, error: ${errorDetails.message}`)
             }
 
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Registro enviado'
-            })
-
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
+            console.error(error?.message)
         }
     }
 
@@ -215,11 +152,6 @@ function usePostRegister(updaterRegisters) {
 
     const returnEmpty = async (idRegister, registros, economico, tracto, operator) => {
         try {
-
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: true
-            });
 
             const idTransportista = registros[0].transportista_id;
             const idCliente = registros[0].clientes.id;
@@ -307,27 +239,10 @@ function usePostRegister(updaterRegisters) {
                 }
             }
 
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'Registro enviado'
-            });
-
             updaterRegisters()
 
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            });
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            });
+            console.error(error?.message)
         }
     }
 

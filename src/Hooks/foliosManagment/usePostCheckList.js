@@ -1,13 +1,8 @@
 import supabase from "../../supabase";
-import { useContext } from "react";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 import { sendImageCloudinary } from "../../cloudinary";
 
 
 function usePostCheckList() {
-
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
 
     const tableManiobrasChecklist = 'maniobras_checklist'
     //cloudinary data
@@ -16,9 +11,9 @@ function usePostCheckList() {
 
     const sendCheckList = async (dataCheck, flatCheckList, item) => {
         try {
-            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true })
+            // dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true })
 
-            const newStatus = item.status === 'interna' || item.status === 'externa' ? 'reparacion': item.status;
+            const newStatus = item.status === 'interna' || item.status === 'externa' ? 'reparacion' : item.status;
 
             if (item.status === 'interna' || item.status === 'externa') {
 
@@ -66,8 +61,8 @@ function usePostCheckList() {
 
             if (error) {
                 await supabase.from('registros_detalles_entradas')
-                .update({ status: 'eir' })
-                .eq('id', item.id)
+                    .update({ status: 'eir' })
+                    .eq('id', item.id)
                 throw new Error(error.message)
             }
 
@@ -77,8 +72,7 @@ function usePostCheckList() {
 
 
         } catch (error) {
-            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false })
-            dispatchGlobal({ type: actionTypesGlobal.setNotification, payload: error.message })
+            console.error(error?.message)
         }
 
     }
@@ -113,8 +107,7 @@ function usePostCheckList() {
             try {
                 await Promise.all(sendImages);
             } catch (error) {
-                dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false })
-                dispatchGlobal({ tyoe: actionTypesGlobal.setNotification, payload: error.message })
+                console.error(error?.message)
             }
 
             //copia profunda del array original 
@@ -137,8 +130,7 @@ function usePostCheckList() {
             return checklistWhitUrlInString;
 
         } catch (error) {
-            dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false })
-            dispatchGlobal({ tyoe: actionTypesGlobal.setNotification, payload: error.message })
+            console.error(error?.message)
         }
     }
 

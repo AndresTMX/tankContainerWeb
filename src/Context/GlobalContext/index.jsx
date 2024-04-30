@@ -1,16 +1,13 @@
-import { useReducer, createContext } from "react";
-import { initialState, reducer } from "../../Reducers/GlobalReducer";
+import { createContext } from "react";
 
-const GlobalContext = createContext();
+export const GlobalContext = createContext();
 
-const GlobalProvider = ({ children }) => {
-    const [state, dispatch] = useReducer(reducer, initialState)
+export function GlobalProvider({ children }) {
 
     return (
-        <GlobalContext.Provider value={[state, dispatch]}>
+        <GlobalContext.Provider value={{ }}>
             {children}
         </GlobalContext.Provider>
     )
 }
 
-export { GlobalContext, GlobalProvider }

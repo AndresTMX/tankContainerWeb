@@ -16,6 +16,7 @@ import { useGetTanks } from "../../Hooks/tanksManagment/useGetTanks";
 import { ItemTank } from "../ViewAndSelectTanks";
 //helpers
 import { useEffect, useState } from "react";
+import { Toaster } from "sonner";
 
 export function NuevaSalida() {
 
@@ -73,6 +74,8 @@ export function NuevaSalida() {
 
     return (
         <>
+
+        <Toaster richColors position="top-center" />
             <Modal
                 open={true}
                 onClose={() => navigate('/maniobras')}

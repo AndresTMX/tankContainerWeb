@@ -8,7 +8,6 @@ import { TextGeneral } from "../TextGeneral";
 //hooks
 import { useNavigate } from "react-router-dom";
 import { useDetailsForManiobra } from "../../Hooks/Maniobras/useDetailsForManiobra";
-import { useDeletRegister } from "../../Hooks/Maniobras/useDeletRegister";
 import { usePostRegister } from "../../Hooks/Maniobras/usePostRegister";
 import useMediaQuery from "@mui/material/useMediaQuery";
 //helpers
@@ -44,7 +43,6 @@ export function ItemManiobras({ register, changueTypeManiobra }) {
 
     const detailManiobras = details?.filter((i) => i.status === 'maniobras')
 
-    // const [state, dispatch] = useContext(ManiobrasContext);
     const [modalTanks, setModalTanks] = useState(false);
     // const [modalChargue, setModalChargue] = useState(false)
 

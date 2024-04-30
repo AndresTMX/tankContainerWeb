@@ -96,7 +96,6 @@ const VigilanciaProvider = ({ children }) => {
         }
     }
 
-
     return (
         <VigilanciaContext.Provider
             value={{

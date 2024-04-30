@@ -6,7 +6,6 @@ import { ContainerScroll } from "../../ContainerScroll";
 //hooks
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useSendToSanitization } from "../../../Hooks/Calidad/useSendToSanitzation";
-import { useSealItem } from "../../../Hooks/Lavado/useSealItem";
 //icons
 import ClearIcon from '@mui/icons-material/Clear';
 import SaveIcon from '@mui/icons-material/Save';
@@ -423,31 +422,18 @@ function RevisionReprobada({ step, setStep, }) {
 
 function ConditionsWashing({ step, setStep, lavado, }) {
 
-    useEffect(() => {
-
-        const currentDate = new dayjs(new Date()).utc();
-
-        async function InitDate() {
-            try {
-                const { error } = await updateWashing({ dateInit: currentDate });
-                if(error){
-                    throw new Error(error)
-                }
-            } catch (error) {
-                console.error(error)
-            }
-        }
-
-        InitDate();
-
-    }, [lavado])
-
     const isMovile = useMediaQuery('(max-width:600px');
     const movile = useMediaQuery('(max-width:800px)');
 
     const navigate = useNavigate();
 
-    const { id: lavadoId, id_detalle_entrada, tipos_lavado } = lavado || {};
+    const { id: lavadoId, id_detalle_entrada, tipos_lavado } = lavado || {}
+
+    const { duration } = tipos_lavado || {};
+    
+    const currentDate = new dayjs(new Date()).utc();
+
+    const dateLessTimeWashing = currentDate.subtract( duration, 'minute');
 
     const [conditions, setConditions] = useState(
         {
@@ -497,7 +483,7 @@ function ConditionsWashing({ step, setStep, lavado, }) {
             //subir condiciones de lavado
             const dataInString = JSON.stringify(conditions);
             const { numero_bahia } = conditions || {};
-            const { error: errorLavado } = await updateWashing({ bahia: numero_bahia, condiciones_lavado: conditions, status: 'revision', dateEnd: currentDate }, lavadoId);
+            const { error: errorLavado } = await updateWashing({ bahia: numero_bahia, condiciones_lavado: conditions, status: 'revision', dateInit: dateLessTimeWashing, dateEnd: currentDate }, lavadoId);
 
             if (errorLavado) {
                 throw new Error(errorLavado)

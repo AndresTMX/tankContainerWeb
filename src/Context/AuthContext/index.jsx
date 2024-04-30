@@ -138,9 +138,9 @@ function RouteProtect({ children }) {
       rol: "maniobrista",
       routes: [
         "/",
+        "/maniobras",
         "/admin",
         "/perfil",
-        "/maniobras",
         "/reparaciones",
         "/create_maniobra",
         "/maniobras/pendiente",
@@ -165,11 +165,11 @@ function RouteProtect({ children }) {
       rol: "gestor de calidad",
       routes: [
         "/",
+        "/calidad",
         "/admin",
         "/perfil",
         "/reparaciones",
         "/prelavado",
-        "/calidad",
         "/lavado",
         "/programacion",
         "/ubicaciones"

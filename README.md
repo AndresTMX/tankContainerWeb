@@ -33,3 +33,8 @@ Es una aplicación web hecha con javaScript y [reactjs](https://react.dev/) como
 - npm install
 - npm run dev
 
+**despliegue**
+
+- npm run build
+- descargar carpeta build
+- subir contenido al hosting

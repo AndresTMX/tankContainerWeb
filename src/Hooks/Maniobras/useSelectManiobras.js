@@ -1,6 +1,5 @@
-import { useState, useContext, useEffect } from "react";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 function useSelectManiobras(detallesRegister, tanksReady, tankLoading) {
 
@@ -12,17 +11,14 @@ function useSelectManiobras(detallesRegister, tanksReady, tankLoading) {
     const [copyTanksFree, setCopyTanksFree] = useState()
     const [copyTanksManiobras, setCopyTanksManiobras] = useState();
 
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
     const [dataTank, setDataTank] = useState([])
 
     const colorItemTank = (tanque) => dataTank.find((item) => item.tanque === tanque) ? 'info' : 'default';
 
     const validateNumTank = () => {
         if ((copyTanksManiobras.length) > 3) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'No puedes agregar más de 4 tanques'
-            })
+            
+            toast.error('No puedes agregar más de 4 tanques')
 
             return false
         } else {
@@ -59,10 +55,7 @@ function useSelectManiobras(detallesRegister, tanksReady, tankLoading) {
         const indexInTanksManiobras = copyTanksManiobras.findIndex((item) => item === tank);
 
         if (copyTanksManiobras.length === 0) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: 'No puedes eliminar todos los tanques'
-            })
+            toast.error('No puedes eliminar todos los tanques')
         } else {
             newStateTanksManiobras.splice(indexInTanksManiobras, 1);
             newStateTankReady.push(tank);

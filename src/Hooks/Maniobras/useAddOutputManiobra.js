@@ -1,15 +1,8 @@
 import supabase from "../../supabase";
-import { useContext } from "react";
-import { GlobalContext } from "../../Context/GlobalContext";
-import { actionTypes as actionTypesGlobal } from "../../Reducers/GlobalReducer";
 
 function useAddOutputManiobra() {
 
-    const [stateGlobal, dispatchGlobal] = useContext(GlobalContext);
-
     const addOutputRegisterForManiobra = async (idRegistro, dataTanques, tracto, numero_economico, operador_id, transportista_id, clienteId) => {
-
-        dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true });
 
         try {
 
@@ -82,26 +75,8 @@ function useAddOutputManiobra() {
                 throw new Error(error.message)
             }
 
-            setTimeout(() => {
-                dispatchGlobal({
-                    type: actionTypesGlobal.setLoading,
-                    payload: false
-                })
-                dispatchGlobal({
-                    type: actionTypesGlobal.setNotification,
-                    payload: 'Salida generada con exito'
-                })
-            }, 1200)
-
         } catch (error) {
-            dispatchGlobal({
-                type: actionTypesGlobal.setLoading,
-                payload: false
-            })
-            dispatchGlobal({
-                type: actionTypesGlobal.setNotification,
-                payload: error.message
-            })
+            console.error(error?.message)
         }
 
     }

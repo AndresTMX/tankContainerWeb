@@ -53,11 +53,14 @@ export const dateTextShort = (date) => {
 }
 
 export const dateExpiration = (date) => {
-    const datemx = dayjs(date).tz('America/Mexico_City')
-    const year = datemx.$y;
-    const month = datemx.$M;
-    const day = datemx.$D + 3;
-    return `${day}/${month}/${year}`
+    // Parsea la fecha dada
+    const fecha = dayjs(date).tz('America/Mexico_City');
+
+    // Suma los minutos especificados
+    const fechaModificada = fecha.add(3, 'day');
+
+    // Formatea la fecha modificada y devuelve la hora en formato HH:mm
+    return fechaModificada.format('DD/MM/YYYY');
 }
 
 export const dateTimeMoreMinutes = (date, minutes) => {

@@ -8,10 +8,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { MaintenancesItem } from "../../components/MaintenancesITem";
 import { ContainerScroll } from "../../components/ContainerScroll";
 import { ItemLoadingState } from "../../components/ItemLoadingState";
-import { Searcher } from "../../components/Searcher";
 import { ModalRepair } from "../../components/ModalRepair";
-import { Notification } from "../../components/Notification";
-import { LoadingState } from "../../components/LoadingState"
 //helpers
 
 function Reparaciones() {
@@ -133,10 +130,6 @@ function Reparaciones() {
                     </Box>
                 </Fade>
             }
-
-            <Notification />
-
-            <LoadingState duration={1000} />
 
         </Box>
     );
