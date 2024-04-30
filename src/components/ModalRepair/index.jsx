@@ -213,7 +213,7 @@ function ModalRepair({ tanque, selectItem, updateRepairs, typeRepair, changueTyp
 
                             <Stack flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'}>
                                 
-                                <FormControl>
+                                <FormControl sx={{ width:'200px' }}>
                                     <InputLabel>Tipo de reparación</InputLabel>
                                     <Select
                                         label="Tipo de reparación"

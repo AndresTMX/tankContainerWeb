@@ -60,7 +60,7 @@ function DataHeader({ data }) {
 
                     <View style={style.BoxData}>
                         <Text style={{ display: 'flex', fontSize: '10px' }}> No° de unidad :</Text>
-                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data?.registros?.tracto}</Text>
+                        <Text style={{ display: 'flex', borderBottom: 1, fontSize: '10px' }}>{data?.registros?.numero_economico}</Text>
                     </View>
 
 

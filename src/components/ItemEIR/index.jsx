@@ -214,12 +214,10 @@ export function ItemComplete({ data, selectItem }) {
 
     const isMovile = useMediaQuery('(max-width:620px)');
 
-    const { folio, created_at, ingreso, registros_detalles_entradas, clientes, users_data, data: checklistString } = data || {};
+    const { folio, created_at, ingreso, registros_detalles_entradas, clientes, users_data, data: checklist } = data || {};
     const { status, numero_tanque, registros } = registros_detalles_entradas || {};
-    const { first_name, last_name } = users_data || {}
+   const { first_name, last_name } = users_data || {}
     const { cliente } = clientes || {};
-
-    const checklistJson = checklistString ? JSON.parse(checklistString) : [];
 
     const dataDocument = {
         folio: folio,
@@ -291,7 +289,7 @@ export function ItemComplete({ data, selectItem }) {
 
                             {button && <ButtonDowloand
                                 dataDocument={dataDocument}
-                                checklist={checklistJson}
+                                checklist={checklist}
                             />}
 
                             {!button && <Button

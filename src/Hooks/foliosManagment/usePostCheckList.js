@@ -11,8 +11,6 @@ function usePostCheckList() {
 
     const sendCheckList = async (dataCheck, flatCheckList, item) => {
         try {
-            // dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: true })
-
             const newStatus = item.status === 'interna' || item.status === 'externa' ? 'reparacion' : item.status;
 
             if (item.status === 'interna' || item.status === 'externa') {
@@ -65,11 +63,6 @@ function usePostCheckList() {
                     .eq('id', item.id)
                 throw new Error(error.message)
             }
-
-            setTimeout(() => {
-                dispatchGlobal({ type: actionTypesGlobal.setLoading, payload: false })
-            }, 1000)
-
 
         } catch (error) {
             console.error(error?.message)
