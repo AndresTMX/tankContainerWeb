@@ -70,7 +70,7 @@ export function LavadosPorEvaluar() {
 
 
                     {
-                        items.map((lavado) => (
+                        items?.map((lavado) => (
                             <LavadoPendiente key={lavado.id} lavado={lavado} />
                         ))
                     }
